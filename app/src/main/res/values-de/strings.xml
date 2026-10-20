@@ -235,9 +235,12 @@
     <string name="certificate_changed_message">%1$s legt jetzt ein anderes Zertifikat vor als das, dem Sie zuvor vertraut haben. Möglicherweise wird Ihre Verbindung abgefangen. Fahren Sie nur fort, wenn die Serveradministration Ihnen mitgeteilt hat, dass das Zertifikat ersetzt wurde.</string>
     <string name="certificate_changed_accept">Neuem Zertifikat vertrauen</string>
     <string name="export_password_title">Exportiertes Zertifikat schützen</string>
-    <string name="export_password_message">Die Datei enthält Ihren privaten Schlüssel. Wählen Sie ein Passwort; Sie brauchen es, um das Zertifikat anderswo zu importieren.</string>
+    <string name="export_password_message">Die Datei enthält Ihren privaten Schlüssel. Wählen Sie ein Passwort, um sie anderswo zu importieren, oder lassen Sie es leer, um ohne Schutz zu exportieren.</string>
     <string name="export_password_confirm">Passwort bestätigen</string>
     <string name="export_password_mismatch">Die Passwörter stimmen nicht überein.</string>
+    <string name="export_unprotected_title">Ohne Passwort exportieren?</string>
+    <string name="export_unprotected_message">Wer diese Datei erhält, kann Ihre Identität verwenden und sich auf Servern, auf denen sie registriert ist, als Sie anmelden.</string>
+    <string name="export_unprotected_confirm">Ungeschützt exportieren</string>
     <string name="allowExternalPtt">Anderen Apps Push-to-Talk erlauben</string>
     <string name="allowExternalPttSum">Andere Apps, z. B. Tasker, dürfen das Senden steuern</string>
     <string name="microphone_permission_rationale">Mumla braucht das Mikrofon, damit andere auf dem Server Sie hören können.</string>
