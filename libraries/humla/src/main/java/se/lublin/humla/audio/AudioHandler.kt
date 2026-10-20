@@ -30,6 +30,7 @@ import se.lublin.humla.audio.capture.CaptureState
 import se.lublin.humla.audio.capture.PcmCaptureSourceFactory
 import se.lublin.humla.audio.encoder.IEncoder
 import se.lublin.humla.audio.encoder.OpusEncoder
+import se.lublin.humla.audio.routing.AudioDeviceCategory
 import se.lublin.humla.exception.AudioException
 import se.lublin.humla.exception.AudioInitializationException
 import se.lublin.humla.exception.NativeAudioException
@@ -85,14 +86,15 @@ internal class AudioHandler(
         val settings = config.settings
         val effects = settings.androidEffects
         val echo = config.echoCancellation
-        // Recording source and audio mode must agree: AudioSourcePolicy also resolves the source
-        // inside PcmCaptureSource, so the WebRTC canceller never captures on VOICE_COMMUNICATION
-        // while the manager is still in MODE_NORMAL. In a session AudioRouter already holds
-        // MODE_IN_COMMUNICATION; this is a second request for the same mode.
+        val route = config.routedDeviceType?.let(AudioDeviceCategory::of)
+        val voiceCallSource = settings.echoCancellationVoiceCallSource
+        // AudioSourcePolicy resolves the source again inside PcmCaptureSource from the same inputs,
+        // so both agree. In a session AudioRouter already holds MODE_IN_COMMUNICATION; this is a
+        // second request for the same mode.
         if (AudioSourcePolicy.needsCommunicationMode(effects, echo)) {
             audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
         }
-        val audioSource = AudioSourcePolicy.resolve(settings.audioSource, effects, echo)
+        val audioSource = AudioSourcePolicy.resolve(settings.audioSource, effects, echo, route, voiceCallSource)
 
         if (context.checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             throw AudioInitializationException("RECORD_AUDIO permission not granted")
@@ -100,7 +102,12 @@ internal class AudioHandler(
         // The listener is the transmitter below; AudioInput only calls it once recording starts.
         input = AudioInput(
             { frame, size -> transmitter.onAudioInputReceived(frame, size) },
-            captureFactory.open(CaptureRequest(audioSource, settings.inputSampleRate, effects, echo)),
+            captureFactory.open(
+                CaptureRequest(
+                    audioSource, settings.inputSampleRate, effects, echo,
+                    route = route, echoCancellationVoiceCallSource = voiceCallSource,
+                ),
+            ),
             onCaptureState,
         )
         // Both ends of the canceller come from one call: the chain goes to the capture thread, the

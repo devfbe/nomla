@@ -42,6 +42,7 @@ import se.lublin.humla.audio.capture.VadMode
 import se.lublin.humla.audio.capture.VoiceActivityDetector
 import se.lublin.humla.audio.inputmode.ActivityInputMode
 import se.lublin.humla.audio.routing.AndroidCommunicationDevices
+import se.lublin.humla.audio.routing.AudioDeviceCategory
 import se.lublin.humla.audio.routing.CommunicationDevice
 import se.lublin.humla.audio.routing.CommunicationDevices
 import se.lublin.humla.util.HumlaLog
@@ -140,10 +141,12 @@ public class DoubleTalkSelfTest internal constructor(
     private val resamplerFactory: (Int, Int) -> Resampler,
     private val readingIntervalFrames: Int = DEFAULT_READING_INTERVAL_FRAMES,
     private val listenFrames: Int = DEFAULT_LISTEN_FRAMES,
+    private val echoCancellationVoiceCallSource: Boolean = false,
 ) {
     /**
      * [clip] is the test voice, 48 kHz mono, played in a loop. [attenuationLimitDb] is RNNoise's
      * limit, as in [PipelineSettings.rnnoiseAttenuationLimitDb]; [setAttenuationLimitDb] moves it.
+     * [echoCancellationVoiceCallSource] is as in [PipelineSettings.echoCancellationVoiceCallSource].
      */
     public constructor(
         audioManager: AudioManager,
@@ -154,6 +157,7 @@ public class DoubleTalkSelfTest internal constructor(
         effects: AndroidAudioEffects,
         attenuationLimitDb: Float,
         clip: ShortArray,
+        echoCancellationVoiceCallSource: Boolean = false,
         onReading: (SelfTestReading) -> Unit,
     ) : this(
         audioManager,
@@ -163,6 +167,7 @@ public class DoubleTalkSelfTest internal constructor(
         vadConfig, noiseSuppression, speexNoiseSuppressDb, echoCancellation, effects, attenuationLimitDb, clip,
         onReading, AndroidAudioRecordSource.Factory(), AndroidAudioTrackSink.CallFactory(),
         CapturePreprocessorFactory(log = { HumlaLog.w(TAG, it) }), { from, to -> SpeexResampler(from, to) },
+        echoCancellationVoiceCallSource = echoCancellationVoiceCallSource,
     )
 
     init {
@@ -230,7 +235,12 @@ public class DoubleTalkSelfTest internal constructor(
         var started = false
         try {
             val src = captureFactory.open(
-                CaptureRequest(MediaRecorder.AudioSource.MIC, AudioHandler.SAMPLE_RATE, effects, echoCancellation),
+                // The test routes to the speaker, so capture resolves its source as a call there would.
+                CaptureRequest(
+                    MediaRecorder.AudioSource.MIC, AudioHandler.SAMPLE_RATE, effects, echoCancellation,
+                    route = AudioDeviceCategory.SPEAKER,
+                    echoCancellationVoiceCallSource = echoCancellationVoiceCallSource,
+                ),
             )
             source = src
             val chain = preprocessorFactory.create(

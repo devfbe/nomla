@@ -284,6 +284,9 @@ class Settings private constructor(private val context: Context) {
             automaticGainControl = preferences.read(ANDROID_AGC),
         )
 
+    /** Whether the echo canceller records on the voice-call source, as before; `PipelineSettings` has why. */
+    val isEchoCancellationVoiceCallSource: Boolean by pref(ECHO_CANCELLATION_VOICE_CALL_SOURCE)
+
     /** The user's echo-cancellation choice for a device kind, or null to use the kind's default. */
     fun getEchoCancellationOverride(category: AudioDeviceCategory): Boolean? {
         val key = echoCancellationKey(category)
@@ -484,6 +487,7 @@ class Settings private constructor(private val context: Context) {
 
         val ANDROID_NOISE_SUPPRESSOR = Pref("android_noise_suppressor", false)
         val ANDROID_AGC = Pref("android_agc", false)
+        val ECHO_CANCELLATION_VOICE_CALL_SOURCE = Pref("echo_cancellation_voice_call_source", false)
 
 
         /**

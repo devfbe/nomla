@@ -104,6 +104,9 @@ class SessionConfigReconnectTest(
                 copy(rnnoiseAttenuationLimitDb = Float.POSITIVE_INFINITY)
             },
             "audio.pipeline.androidEffects" to pipeline { copy(androidEffects = AndroidAudioEffects(true, true)) },
+            "audio.pipeline.echoCancellationVoiceCallSource" to pipeline {
+                copy(echoCancellationVoiceCallSource = true)
+            },
         )
 
         @JvmStatic

@@ -18,21 +18,41 @@
 package se.lublin.humla.audio.capture
 
 import android.media.MediaRecorder
+import se.lublin.humla.audio.routing.AudioDeviceCategory
 
 /**
- * Uses the `VOICE_COMMUNICATION` source and `MODE_IN_COMMUNICATION` whenever any Android audio effect
- * or echo canceller is active. Source and audio mode must agree (an AEC on a `MIC` session in
- * `MODE_NORMAL` misbehaves on many devices), so [resolve] is defined via [needsCommunicationMode].
+ * Picks the audio mode and the recording source. `MODE_IN_COMMUNICATION` whenever any Android audio
+ * effect or echo canceller is active ([needsCommunicationMode]); in a session `AudioRouter` holds
+ * that mode anyway, so the mode never decides between the paths below, only the source does.
  *
- * WebRTC AEC3 counts too: only the communication path gives capture and playback a shared clock and
- * fixed low capture latency. Downside: it also enables the device's own pre-processing, which then
- * runs in front of ours.
+ * An `android.media.audiofx` effect keeps the `VOICE_COMMUNICATION` source it has always had.
+ * WebRTC AEC3 alone takes the requested source (normally `MIC`): `VOICE_COMMUNICATION`
+ * switches on the device's own AEC/NS/AGC in front of ours, and two cascaded echo suppressors chop
+ * the user's speech on some phones (reported on a Motorola G56). AEC3 wants the raw microphone.
+ *
+ * Two exceptions keep `VOICE_COMMUNICATION` with AEC3: a Bluetooth route, because a `MIC` capture
+ * does not follow the communication device to the SCO headset's microphone; and the user's
+ * `voiceCallSource` setting, which brings the old behaviour back for comparison.
  */
 internal object AudioSourcePolicy {
     fun needsCommunicationMode(effects: AndroidAudioEffects, echo: EchoCancellationMode): Boolean =
         effects.any || echo != EchoCancellationMode.NONE
 
-    /** @return [requested] untouched, or `VOICE_COMMUNICATION` when [needsCommunicationMode]. */
-    fun resolve(requested: Int, effects: AndroidAudioEffects, echo: EchoCancellationMode): Int =
-        if (needsCommunicationMode(effects, echo)) MediaRecorder.AudioSource.VOICE_COMMUNICATION else requested
+    /**
+     * @param route the kind of device capture is routed to, null while the route is the platform's.
+     * @param voiceCallSource the user asks AEC3 to record on `VOICE_COMMUNICATION` too.
+     * @return `VOICE_COMMUNICATION` for an effect, or for AEC3 on Bluetooth or with
+     *   [voiceCallSource]; [requested] untouched otherwise.
+     */
+    fun resolve(
+        requested: Int,
+        effects: AndroidAudioEffects,
+        echo: EchoCancellationMode,
+        route: AudioDeviceCategory?,
+        voiceCallSource: Boolean,
+    ): Int {
+        val voiceCall = effects.any ||
+            (echo != EchoCancellationMode.NONE && (voiceCallSource || route == AudioDeviceCategory.BLUETOOTH))
+        return if (voiceCall) MediaRecorder.AudioSource.VOICE_COMMUNICATION else requested
+    }
 }

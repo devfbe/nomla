@@ -79,6 +79,8 @@ class MicCheck(private val context: Context, private val onReading: (MeterReadin
             rnnoiseAttenuationLimitDb = settings.rnnoiseAttenuationLimitDb,
             captureFactory = captureFactory,
             sinkFactory = sinkFactory,
+            route = echoCategory,
+            echoCancellationVoiceCallSource = settings.isEchoCancellationVoiceCallSource,
         )
         return try {
             started.start()

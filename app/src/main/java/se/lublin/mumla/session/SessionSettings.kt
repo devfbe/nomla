@@ -56,6 +56,7 @@ object SessionSettings {
         Settings.RNNOISE_ATTENUATION_LIMIT_DB.key,
         Settings.ANDROID_NOISE_SUPPRESSOR.key,
         Settings.ANDROID_AGC.key,
+        Settings.ECHO_CANCELLATION_VOICE_CALL_SOURCE.key,
         Settings.INPUT_QUALITY.key,
         Settings.INPUT_RATE.key,
         Settings.FRAMES_PER_PACKET.key,
@@ -83,6 +84,7 @@ object SessionSettings {
             speexNoiseSuppressDb = settings.speexNoiseSuppressDb,
             rnnoiseAttenuationLimitDb = settings.rnnoiseAttenuationLimitDb,
             androidEffects = settings.androidAudioEffects,
+            echoCancellationVoiceCallSource = settings.isEchoCancellationVoiceCallSource,
         ),
     )
 

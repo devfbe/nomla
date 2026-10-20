@@ -43,6 +43,11 @@ public data class PipelineSettings(
      */
     val rnnoiseAttenuationLimitDb: Float = DEFAULT_RNNOISE_ATTENUATION_LIMIT_DB,
     val androidEffects: AndroidAudioEffects = AndroidAudioEffects(),
+    /**
+     * Record on `VOICE_COMMUNICATION` while only the WebRTC canceller runs, as before, instead of
+     * [audioSource]; see `AudioSourcePolicy`. An A/B switch for devices whose own processing chops speech.
+     */
+    val echoCancellationVoiceCallSource: Boolean = false,
 ) {
     init {
         require(rnnoiseAttenuationLimitDb >= 0f) { "attenuation limit must be at least 0 dB" }

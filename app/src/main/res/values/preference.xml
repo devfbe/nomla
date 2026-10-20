@@ -93,6 +93,8 @@
     <string name="androidNoiseSuppressorSum">Also use the phone\'s own noise suppression</string>
     <string name="androidAgc">Device volume control</string>
     <string name="androidAgcSum">Also use the phone\'s own automatic gain control</string>
+    <string name="echoCancellationVoiceCallSource">Echo cancellation on the call microphone</string>
+    <string name="echoCancellationVoiceCallSourceSum">Adds the phone\'s call processing, as before. May chop speech</string>
     <string name="audioEffectUnavailable">Not available on this device.</string>
 
     <string name="vadMode">How speech is detected</string>

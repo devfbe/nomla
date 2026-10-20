@@ -206,6 +206,15 @@ class SessionSettingsSyncTest {
         }
     }
 
+    /** Both directions: the field is what the switch wrote, not a constant. */
+    @Test
+    fun `the echo cancellation voice-call source switch reaches the pipeline`() {
+        for (on in listOf(true, false)) {
+            prefs.edit().putBoolean(Settings.ECHO_CANCELLATION_VOICE_CALL_SOURCE.key, on).commit()
+            assertThat(pipeline().echoCancellationVoiceCallSource).isEqualTo(on)
+        }
+    }
+
     /**
      * Every `android:key` in the audio settings XML is either turned into an extra by
      * [SessionSettings] or exempted here with a reason, so a new switch that reaches nothing

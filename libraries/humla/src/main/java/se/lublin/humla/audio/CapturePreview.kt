@@ -35,6 +35,7 @@ import se.lublin.humla.audio.capture.VadConfig
 import se.lublin.humla.audio.capture.VadMode
 import se.lublin.humla.audio.capture.VoiceActivityDetector
 import se.lublin.humla.audio.inputmode.ActivityInputMode
+import se.lublin.humla.audio.routing.AudioDeviceCategory
 import se.lublin.humla.util.HumlaLog
 
 /** Capture runs in 10 ms frames. */
@@ -98,12 +99,16 @@ public class CapturePreview internal constructor(
     private val sinkFactory: PcmPlaybackSinkFactory,
     private val preprocessorFactory: CapturePreprocessorFactory,
     private val rnnoiseAttenuationLimitDb: Float = PipelineSettings.DEFAULT_RNNOISE_ATTENUATION_LIMIT_DB,
+    private val route: AudioDeviceCategory? = null,
+    private val echoCancellationVoiceCallSource: Boolean = false,
     private val resamplerFactory: (Int, Int) -> Resampler,
 ) {
     /**
      * [onReading] is called on the capture thread. [captureFactory] and [sinkFactory] replace the
      * microphone and the speaker. [rnnoiseAttenuationLimitDb] is RNNoise's limit, as in
-     * [PipelineSettings.rnnoiseAttenuationLimitDb].
+     * [PipelineSettings.rnnoiseAttenuationLimitDb]. [route] is the kind of device a session would
+     * capture from, which with [echoCancellationVoiceCallSource] (as in
+     * [PipelineSettings.echoCancellationVoiceCallSource]) picks the recording source.
      */
     public constructor(
         audioManager: AudioManager,
@@ -117,11 +122,13 @@ public class CapturePreview internal constructor(
         rnnoiseAttenuationLimitDb: Float = PipelineSettings.DEFAULT_RNNOISE_ATTENUATION_LIMIT_DB,
         captureFactory: PcmCaptureSourceFactory = AndroidAudioRecordSource.Factory(),
         sinkFactory: PcmPlaybackSinkFactory = AndroidAudioTrackSink.Factory(),
+        route: AudioDeviceCategory? = null,
+        echoCancellationVoiceCallSource: Boolean = false,
     ) : this(
         audioManager, vadConfig, noiseSuppression, speexNoiseSuppressDb, echoCancellation, effects, loopback,
         onReading, DEFAULT_READING_INTERVAL_FRAMES, captureFactory, sinkFactory,
         CapturePreprocessorFactory(log = { HumlaLog.w(TAG, it) }), rnnoiseAttenuationLimitDb,
-        { from, to -> SpeexResampler(from, to) },
+        route, echoCancellationVoiceCallSource, { from, to -> SpeexResampler(from, to) },
     )
 
     private var source: PcmCaptureSource? = null
@@ -147,7 +154,10 @@ public class CapturePreview internal constructor(
             ownsCommunicationMode = true
         }
         val src = captureFactory.open(
-            CaptureRequest(MediaRecorder.AudioSource.MIC, AudioHandler.SAMPLE_RATE, effects, echoCancellation)
+            CaptureRequest(
+                MediaRecorder.AudioSource.MIC, AudioHandler.SAMPLE_RATE, effects, echoCancellation,
+                route = route, echoCancellationVoiceCallSource = echoCancellationVoiceCallSource,
+            ),
         )
         var started = false
         try {

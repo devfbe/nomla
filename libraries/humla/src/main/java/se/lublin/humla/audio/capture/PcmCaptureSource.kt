@@ -26,6 +26,7 @@ import android.media.AudioRecordingConfiguration
 import android.media.audiofx.AudioEffect
 import android.media.audiofx.AutomaticGainControl
 import android.media.audiofx.NoiseSuppressor
+import se.lublin.humla.audio.routing.AudioDeviceCategory
 import se.lublin.humla.exception.AudioInitializationException
 import se.lublin.humla.util.HumlaLog
 import java.util.concurrent.Executor
@@ -70,6 +71,10 @@ public data class CaptureRequest(
     val echo: EchoCancellationMode = EchoCancellationMode.NONE,
     /** Routes capture to this device (e.g. the SCO headset) when set. */
     val preferredDevice: AudioDeviceInfo? = null,
+    /** The kind of device the route goes to, null while it is the platform's; [AudioSourcePolicy] reads it. */
+    val route: AudioDeviceCategory? = null,
+    /** As in `PipelineSettings.echoCancellationVoiceCallSource`. */
+    val echoCancellationVoiceCallSource: Boolean = false,
 )
 
 public fun interface PcmCaptureSourceFactory {
@@ -137,7 +142,10 @@ public class AndroidAudioRecordSource internal constructor(
         // RECORD_AUDIO is requested by the app; AudioHandler's constructor checks it before this.
         @SuppressLint("MissingPermission")
         override fun open(request: CaptureRequest): PcmCaptureSource {
-            val source = AudioSourcePolicy.resolve(request.audioSource, request.effects, request.echo)
+            val source = AudioSourcePolicy.resolve(
+                request.audioSource, request.effects, request.echo, request.route,
+                request.echoCancellationVoiceCallSource,
+            )
             val rates = listOf(request.targetSampleRate) + SAMPLE_RATES.filter { it != request.targetSampleRate }
             val record = rates.firstNotNullOfOrNull { tryOpen(source, it) }
                 ?: throw AudioInitializationException("Unable to open AudioRecord at any of $rates Hz")

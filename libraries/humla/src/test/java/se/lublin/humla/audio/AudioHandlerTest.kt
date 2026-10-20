@@ -1,17 +1,25 @@
 package se.lublin.humla.audio
 
+import android.Manifest
+import android.app.Application
 import android.content.Context
+import android.media.AudioDeviceInfo
 import android.media.AudioManager
+import android.media.MediaRecorder
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
 import org.junit.Assert.assertThrows
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 import se.lublin.humla.audio.capture.AndroidAudioEffects
+import se.lublin.humla.audio.capture.CaptureRequest
 import se.lublin.humla.audio.capture.EchoCancellationMode
 import se.lublin.humla.audio.inputmode.ContinuousInputMode
+import se.lublin.humla.audio.routing.AudioDeviceCategory
 import se.lublin.humla.exception.AudioException
+import se.lublin.humla.exception.AudioInitializationException
 import se.lublin.humla.model.UserState
 import se.lublin.humla.net.HumlaUDPMessageType
 import se.lublin.humla.testutil.NoopEncodeListener
@@ -59,5 +67,40 @@ class AudioHandlerTest {
         val settings = PipelineSettings(androidEffects = AndroidAudioEffects(automaticGainControl = true))
         assertThrows(AudioException::class.java) { create(AudioConfig(settings)) }
         assertThat(audioManager.mode).isEqualTo(AudioManager.MODE_IN_COMMUNICATION)
+    }
+
+    /** The request the microphone is opened with; the fake factory refuses it so nothing else runs. */
+    private fun captureRequest(config: AudioConfig): CaptureRequest {
+        shadowOf(context as Application).grantPermissions(Manifest.permission.RECORD_AUDIO)
+        var request: CaptureRequest? = null
+        assertThrows(AudioInitializationException::class.java) {
+            AudioHandler(host, config, params, {}) {
+                request = it
+                throw AudioInitializationException("test")
+            }
+        }
+        return requireNotNull(request)
+    }
+
+    /** The route and the setting reach the request, so the source resolves the same in both places. */
+    @Test
+    fun theCaptureRequestCarriesTheRouteAndTheVoiceCallSetting() {
+        val aec = AudioConfig(
+            echoCancellation = EchoCancellationMode.WEBRTC,
+            routedDeviceType = AudioDeviceInfo.TYPE_BUILTIN_SPEAKER,
+        )
+
+        val speaker = captureRequest(aec)
+        assertThat(speaker.audioSource).isEqualTo(MediaRecorder.AudioSource.MIC)
+        assertThat(speaker.route).isEqualTo(AudioDeviceCategory.SPEAKER)
+        assertThat(speaker.echoCancellationVoiceCallSource).isFalse()
+
+        val sco = captureRequest(aec.copy(routedDeviceType = AudioDeviceInfo.TYPE_BLUETOOTH_SCO))
+        assertThat(sco.audioSource).isEqualTo(MediaRecorder.AudioSource.VOICE_COMMUNICATION)
+        assertThat(sco.route).isEqualTo(AudioDeviceCategory.BLUETOOTH)
+
+        val asBefore = captureRequest(aec.copy(settings = PipelineSettings(echoCancellationVoiceCallSource = true)))
+        assertThat(asBefore.audioSource).isEqualTo(MediaRecorder.AudioSource.VOICE_COMMUNICATION)
+        assertThat(asBefore.echoCancellationVoiceCallSource).isTrue()
     }
 }

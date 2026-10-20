@@ -35,6 +35,7 @@ import se.lublin.humla.audio.capture.VadConfig
 import se.lublin.humla.audio.capture.fakes.FakeRnnoiseApi
 import se.lublin.humla.audio.capture.fakes.FakeSpeexPreprocessApi
 import se.lublin.humla.audio.capture.fakes.FakeWebRtcApmApi
+import se.lublin.humla.audio.routing.AudioDeviceCategory
 import se.lublin.humla.exception.AudioInitializationException
 import se.lublin.humla.testutil.FakeCommunicationDevices
 import se.lublin.humla.testutil.TestCaptureSource
@@ -113,15 +114,33 @@ class DoubleTalkSelfTestTest {
         },
         source: TestCaptureSource = TestCaptureSource(mic, loopLastFrame = true),
         rnnoiseApi: FakeRnnoiseApi = rnnoise,
+        captureFactory: TestCaptureSource.Factory = TestCaptureSource.Factory(source),
+        voiceCallSource: Boolean = false,
     ) = DoubleTalkSelfTest(
         audioManager, devices, VadConfig.adaptive(holdTimeMs = 0, onsetFrames = 1), noise, -25, echo,
         AndroidAudioEffects(), limitDb, CLIP, { readings += it },
-        TestCaptureSource.Factory(source), sinkFactory,
+        captureFactory, sinkFactory,
         CapturePreprocessorFactory({ FakeSpeexPreprocessApi() }, { rnnoiseApi }, { apm }),
         { _, _ -> error("no resampler expected at 48 kHz") },
         readingIntervalFrames = 1,
         listenFrames = listenFrames,
+        echoCancellationVoiceCallSource = voiceCallSource,
     ).also { test = it }
+
+    /** It plays on the speaker, so its capture resolves the source as a call on the speaker would. */
+    @Test
+    fun `the capture request names the speaker and carries the voice-call setting`() {
+        for (flag in listOf(false, true)) {
+            val factory = TestCaptureSource.Factory(TestCaptureSource(listOf(frameAt(-20f)), loopLastFrame = true))
+            val s = selfTest(listOf(frameAt(-20f)), captureFactory = factory, voiceCallSource = flag)
+            s.start()
+            s.stop()
+
+            val request = requireNotNull(factory.request)
+            assertThat(request.route).isEqualTo(AudioDeviceCategory.SPEAKER)
+            assertThat(request.echoCancellationVoiceCallSource).isEqualTo(flag)
+        }
+    }
 
     @Test
     fun `the test plays on the speaker in communication mode and puts the route back`() {

@@ -159,6 +159,7 @@ class AndroidSelfTestEngines(private val context: Context) : SelfTestEngineFacto
             settings.androidAudioEffects,
             settings.rnnoiseAttenuationLimitDb,
             clip,
+            settings.isEchoCancellationVoiceCallSource,
             onReading,
         )
         return object : SelfTestEngine {

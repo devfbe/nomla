@@ -34,6 +34,7 @@ import org.robolectric.shadows.AudioDeviceInfoBuilder
 import org.robolectric.shadows.ShadowAudioEffect
 import org.robolectric.shadows.ShadowAudioRecord
 import org.robolectric.util.ReflectionHelpers
+import se.lublin.humla.audio.routing.AudioDeviceCategory
 import java.util.UUID
 
 /**
@@ -101,15 +102,22 @@ class AndroidAudioRecordSourceTest {
         assertThat(source.record.sampleRate).isEqualTo(RATE)
     }
 
-    /** Verifies [AudioSourcePolicy] is actually applied: an effect or AEC3 needs the voice source. */
+    /**
+     * Verifies [AudioSourcePolicy] is actually applied, from the request's own fields: an effect
+     * needs the voice source, AEC3 only on Bluetooth or with the setting.
+     */
     @Test
     fun `the source follows the policy`() {
         val mic = CaptureRequest(MediaRecorder.AudioSource.MIC, RATE)
         val voice = MediaRecorder.AudioSource.VOICE_COMMUNICATION
+        val aec = mic.copy(echo = EchoCancellationMode.WEBRTC)
         val cases = listOf(
             mic to MediaRecorder.AudioSource.MIC,
             mic.copy(effects = AndroidAudioEffects(noiseSuppressor = true)) to voice,
-            mic.copy(echo = EchoCancellationMode.WEBRTC) to voice,
+            aec to MediaRecorder.AudioSource.MIC,
+            aec.copy(route = AudioDeviceCategory.SPEAKER) to MediaRecorder.AudioSource.MIC,
+            aec.copy(route = AudioDeviceCategory.BLUETOOTH) to voice,
+            aec.copy(echoCancellationVoiceCallSource = true) to voice,
         )
         for ((request, expected) in cases) {
             assertWithMessage("$request").that(open(request).record.audioSource).isEqualTo(expected)

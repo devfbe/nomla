@@ -37,6 +37,7 @@ import se.lublin.humla.audio.capture.VadConfig
 import se.lublin.humla.audio.capture.fakes.FakeRnnoiseApi
 import se.lublin.humla.audio.capture.fakes.FakeSpeexPreprocessApi
 import se.lublin.humla.audio.capture.fakes.FakeWebRtcApmApi
+import se.lublin.humla.audio.routing.AudioDeviceCategory
 import se.lublin.humla.testutil.TestCaptureSource
 import se.lublin.humla.testutil.TestPlaybackSink
 import se.lublin.humla.testutil.awaitUntil
@@ -75,6 +76,8 @@ class CapturePreviewTest {
         loopback: Boolean = false,
         effects: AndroidAudioEffects = AndroidAudioEffects(),
         echo: EchoCancellationMode = EchoCancellationMode.NONE,
+        route: AudioDeviceCategory? = null,
+        voiceCallSource: Boolean = false,
         speexGain: Float = 1f,
         speexProbability: Int = 0,
         sinkFactory: TestPlaybackSink.Factory = TestPlaybackSink.Factory(sink),
@@ -87,6 +90,8 @@ class CapturePreviewTest {
         sinkFactory = sinkFactory,
         preprocessorFactory = preprocessors(speexGain, speexProbability),
         resamplerFactory = resamplerFactory,
+        route = route,
+        echoCancellationVoiceCallSource = voiceCallSource,
     ).also { session = it }
 
     /** Runs the preview until [condition] holds, then stops it. */
@@ -285,6 +290,8 @@ class CapturePreviewTest {
             TestCaptureSource(emptyList()),
             effects = AndroidAudioEffects(noiseSuppressor = true, automaticGainControl = true),
             echo = EchoCancellationMode.WEBRTC,
+            route = AudioDeviceCategory.BLUETOOTH,
+            voiceCallSource = true,
             captureFactory = factory,
         )
         s.start()
@@ -295,6 +302,8 @@ class CapturePreviewTest {
         assertThat(request.effects.noiseSuppressor).isTrue()
         assertThat(request.effects.automaticGainControl).isTrue()
         assertThat(request.echo).isEqualTo(EchoCancellationMode.WEBRTC)
+        assertThat(request.route).isEqualTo(AudioDeviceCategory.BLUETOOTH)
+        assertThat(request.echoCancellationVoiceCallSource).isTrue()
     }
 
     /** The preview must route capture the same way the service will. */

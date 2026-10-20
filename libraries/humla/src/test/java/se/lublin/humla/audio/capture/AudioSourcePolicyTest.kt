@@ -20,6 +20,7 @@ package se.lublin.humla.audio.capture
 import android.media.MediaRecorder
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
+import se.lublin.humla.audio.routing.AudioDeviceCategory
 
 /**
  * All 2 x 2 x 2 corners of (noise suppressor, AGC, echo mode) are enumerated: `||` mutated to
@@ -29,6 +30,8 @@ class AudioSourcePolicyTest {
     private val mic = MediaRecorder.AudioSource.MIC
     private val voiceComm = MediaRecorder.AudioSource.VOICE_COMMUNICATION
     private val voiceRecognition = MediaRecorder.AudioSource.VOICE_RECOGNITION
+    private val noEffects = AndroidAudioEffects()
+    private val noEcho = EchoCancellationMode.NONE
 
     /** Every corner of (noiseSuppressor, automaticGainControl, echo) with the answer it must give. */
     private val corners: List<Triple<AndroidAudioEffects, EchoCancellationMode, Boolean>> =
@@ -46,8 +49,8 @@ class AudioSourcePolicyTest {
 
     /**
      * Swept over every corner: both effects at once is the one the `||`-to-`xor` mutation lives in.
-     * WebRTC echo cancellation is ours, not the platform's, but it still takes the communication
-     * source: AEC3 needs the capture and playback clocks the communication path shares.
+     * WebRTC echo cancellation is ours, not the platform's, but it still needs the communication
+     * mode the session's router holds anyway.
      */
     @Test
     fun `communication mode is needed exactly when an effect or a canceller is active`() {
@@ -59,21 +62,64 @@ class AudioSourcePolicyTest {
     }
 
     @Test
-    fun `the source is overridden exactly when communication mode is needed`() {
+    fun `an effect always takes the voice-call source`() {
         val wrong = corners.filter {
-            val resolved = AudioSourcePolicy.resolve(mic, it.first, it.second)
-            resolved != (if (it.third) voiceComm else mic)
+            val resolved = AudioSourcePolicy.resolve(mic, it.first, it.second, AudioDeviceCategory.SPEAKER, false)
+            resolved != (if (it.first.any) voiceComm else mic)
         }
         assertThat(wrong).isEmpty()
+    }
+
+    /** AEC3 alone wants the raw microphone, not the device's processing in front of it. */
+    @Test
+    fun `the webrtc canceller alone records from the requested source off bluetooth`() {
+        val routes = listOf(null, AudioDeviceCategory.SPEAKER, AudioDeviceCategory.EARPIECE, AudioDeviceCategory.WIRED)
+        for (route in routes) {
+            assertThat(webrtc(mic, route)).isEqualTo(mic)
+            assertThat(webrtc(voiceRecognition, route)).isEqualTo(voiceRecognition)
+        }
+    }
+
+    /** A `MIC` capture would not follow the communication device to the SCO headset's microphone. */
+    @Test
+    fun `the webrtc canceller on bluetooth takes the voice-call source`() {
+        assertThat(webrtc(mic, AudioDeviceCategory.BLUETOOTH)).isEqualTo(voiceComm)
+    }
+
+    @Test
+    fun `the voice-call setting brings the old source back for the webrtc canceller`() {
+        for (route in AudioDeviceCategory.entries + null) {
+            assertThat(webrtc(mic, route, voiceCallSource = true)).isEqualTo(voiceComm)
+        }
+    }
+
+    /** Without a canceller or an effect neither the route nor the setting moves the source. */
+    @Test
+    fun `plain capture ignores the route and the setting`() {
+        for (route in AudioDeviceCategory.entries + null) {
+            for (flag in listOf(false, true)) {
+                assertThat(AudioSourcePolicy.resolve(mic, noEffects, noEcho, route, flag)).isEqualTo(mic)
+            }
+        }
+    }
+
+    @Test
+    fun `an effect with the webrtc canceller takes the voice-call source on any route`() {
+        val effects = AndroidAudioEffects(noiseSuppressor = true)
+        for (route in AudioDeviceCategory.entries + null) {
+            assertThat(AudioSourcePolicy.resolve(mic, effects, EchoCancellationMode.WEBRTC, route, false))
+                .isEqualTo(voiceComm)
+        }
     }
 
     /** The pass-through returns the caller's source, not a hardcoded MIC. */
     @Test
     fun `plain capture keeps whichever source was requested`() {
-        assertThat(AudioSourcePolicy.resolve(voiceRecognition, AndroidAudioEffects(), EchoCancellationMode.NONE))
+        assertThat(AudioSourcePolicy.resolve(voiceRecognition, noEffects, noEcho, null, false))
             .isEqualTo(voiceRecognition)
-        assertThat(AudioSourcePolicy.resolve(mic, AndroidAudioEffects(), EchoCancellationMode.NONE))
-            .isEqualTo(mic)
+        assertThat(AudioSourcePolicy.resolve(mic, noEffects, noEcho, null, false)).isEqualTo(mic)
     }
 
+    private fun webrtc(requested: Int, route: AudioDeviceCategory?, voiceCallSource: Boolean = false) =
+        AudioSourcePolicy.resolve(requested, noEffects, EchoCancellationMode.WEBRTC, route, voiceCallSource)
 }

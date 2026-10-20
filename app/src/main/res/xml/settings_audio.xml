@@ -236,6 +236,13 @@
             android:summary="@string/androidAgcSum"
             app:iconSpaceReserved="false"/>
 
+        <SwitchPreferenceCompat
+            android:key="echo_cancellation_voice_call_source"
+            android:defaultValue="false"
+            android:title="@string/echoCancellationVoiceCallSource"
+            android:summary="@string/echoCancellationVoiceCallSourceSum"
+            app:iconSpaceReserved="false"/>
+
         <!-- The voice detector's tuning; like the section above, only used with voice activity. -->
         <SwitchPreferenceCompat
             android:key="vad_adaptive_floor"
