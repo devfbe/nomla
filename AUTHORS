@@ -1,0 +1,40 @@
+The Nomla Authors
+=================
+
+"The Nomla Authors" in the copyright notices of this repository are:
+
+    Felix Becker
+
+Upstream authors
+----------------
+
+Nomla is a port of Mumla and contains code derived from the following
+projects. Their authors keep their copyright; the notices in the individual
+files name them, and those notices are preserved in every derived file.
+
+  Mumla (https://gitlab.com/quite/mumla), 2020-2026
+      Daniel Lublin and the Mumla contributors.
+      Mumla is a fork and continuation of Plumble.
+
+  Humla (https://gitlab.com/quite/humla), 2020-2026
+      Daniel Lublin and the Humla contributors.
+      Humla, the Mumble protocol library of Mumla, is a fork of Jumble.
+
+  Plumble (https://github.com/acomminos/Plumble), 2013-2017
+  Jumble (https://github.com/acomminos/Jumble), 2013-2017
+      Andrew Comminos <andrew@comminos.com> and the Plumble and Jumble
+      contributors.
+
+Further copyright holders named in the notices of derived files:
+
+  Allan Nordhøy (2022)
+  Bartkk0 (2022)
+  Nicolas Peugnet <n.peugnet@free.fr> (2024)
+  William Goodspeed (2026)
+
+The translations carried over from Mumla were contributed by many translators
+through Weblate (https://hosted.weblate.org/engage/mumla/); the git history
+records their names.
+
+Third-party libraries bundled with Nomla have their own authors and licenses;
+see NOTICE and NOTICE.md.

@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2026 The Mumla authors
+ * Copyright (C) 2015 Andrew Comminos <andrew@comminos.com>
+ * Copyright (C) 2026 The Nomla Authors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

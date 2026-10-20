@@ -1,0 +1,49 @@
+Nomla
+Copyright (C) 2026 The Nomla Authors (see AUTHORS)
+
+Nomla is a Mumble voice-chat client for Android. It is a port of Mumla
+(https://gitlab.com/quite/mumla, Daniel Lublin and contributors), which is a
+fork of Plumble (https://github.com/acomminos/Plumble, Andrew Comminos). Its
+protocol and audio library, Humla (libraries/humla, libraries/humla-protocol),
+comes from Humla (https://gitlab.com/quite/humla, Daniel Lublin and
+contributors), a fork of Jumble (https://github.com/acomminos/Jumble, Andrew
+Comminos). Nomla has been almost completely rewritten, from Java to Kotlin;
+files derived from Mumla, Humla, Plumble or Jumble keep the copyright notices
+of their original authors.
+
+Nomla is free software: you can redistribute it and/or modify it under the
+terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version. See LICENSE.
+
+Bundled third-party code
+------------------------
+
+The native sources under libraries/humla/src/main/cpp/third_party/ are git
+submodules of their upstream projects and keep their own license files and
+headers:
+
+  opus                      BSD-3-Clause   Xiph.Org, Skype Limited, Octasic,
+                                           Jean-Marc Valin, Timothy B. Terriberry,
+                                           CSIRO, Gregory Maxwell, Mark Borgerding,
+                                           Erik de Castro Lopo, Mozilla, Amazon
+  speexdsp                  BSD-3-Clause   Xiph.org Foundation, Jean-Marc Valin,
+                                           Analog Devices Inc., CSIRO, David Rowe,
+                                           EpicGames, Jutta Degener, Carsten Bormann
+  rnnoise                   BSD-3-Clause   Jean-Marc Valin, Amazon, Mozilla,
+                                           Xiph.Org Foundation, Mark Borgerding
+  webrtc-audio-processing   BSD-3-Clause   Google Inc., The WebRTC project authors
+                                           (with vendored pffft, Ooura FFT,
+                                           spl_sqrt_floor and RNNoise VAD weights)
+  abseil-cpp                Apache-2.0     The Abseil Authors (Google Inc.)
+
+libraries/humla/src/main/cpp/rnnoise/model/ holds the RNNoise model data
+(rnnoise_data.h, rnnoise_data_init.c, weights_blob.bin), copied from the RNNoise
+model release and covered by RNNoise's BSD-3-Clause license.
+
+libraries/humla-protocol/src/Mumble.proto and MumbleUDP.proto are the Mumble
+protocol definitions, Copyright The Mumble Developers, under Mumble's BSD-style
+license (see the header of each file).
+
+NOTICE.md lists every bundled or linked third-party component, including the
+Java and Android libraries, with versions, licenses and attribution details.

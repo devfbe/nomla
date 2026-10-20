@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 The Mumla contributors
+ * Copyright (C) 2026 The Nomla Authors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
