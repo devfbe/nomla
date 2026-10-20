@@ -98,6 +98,8 @@
     <string name="androidNoiseSuppressorSum">Zusätzlich die Rauschunterdrückung des Telefons nutzen</string>
     <string name="androidAgc">Lautstärkeregelung des Geräts</string>
     <string name="androidAgcSum">Zusätzlich die Verstärkungsregelung des Telefons nutzen</string>
+    <string name="echoCancellationVoiceCallSource">Echounterdrückung über das Anrufmikrofon</string>
+    <string name="echoCancellationVoiceCallSourceSum">Wie bisher mit Anrufverarbeitung des Telefons; kann stocken</string>
     <string name="audioEffectUnavailable">Auf diesem Gerät nicht verfügbar.</string>
     <string name="vadMode">Spracherkennung</string>
     <string name="vadModeSum">Die Einstellungen darunter hängen hiervon ab</string>
