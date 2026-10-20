@@ -254,10 +254,12 @@
     <string name="error_writing_to_storage">Could not write to external storage.</string>
     <string name="export_success">Certificate exported to %s.</string>
     <string name="export_password_title">Protect the exported certificate</string>
-    <string name="export_password_message">The file contains your private key. Choose a password; you will need it to import the certificate elsewhere.</string>
+    <string name="export_password_message">The file contains your private key. Choose a password to import it elsewhere, or leave it empty to export without protection.</string>
     <string name="export_password_confirm">Confirm password</string>
-    <string name="export_password_empty">Enter a password.</string>
     <string name="export_password_mismatch">The passwords do not match.</string>
+    <string name="export_unprotected_title">Export without a password?</string>
+    <string name="export_unprotected_message">Anyone who gets this file can use your identity and log in as you on servers where it is registered.</string>
+    <string name="export_unprotected_confirm">Export unprotected</string>
     <string name="allowExternalPtt">Allow other apps to control push-to-talk</string>
     <string name="allowExternalPttSum">Let other apps, e.g. Tasker, start and stop transmitting</string>
     <string name="context_channel_link">Link</string>

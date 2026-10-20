@@ -46,7 +46,8 @@ import java.io.IOException
 
 /**
  * Exports a stored client certificate as a PKCS#12 file, re-encrypted under a password the user
- * chooses: the stored copy has an empty password and must not leave the device that way.
+ * chooses. Leaving the password empty exports it unprotected, in the layout Mumble writes, after
+ * the user confirmed a warning that anyone with the file can use the identity.
  */
 class CertificateExportActivity : AppCompatActivity(), DialogInterface.OnClickListener {
 
@@ -56,6 +57,7 @@ class CertificateExportActivity : AppCompatActivity(), DialogInterface.OnClickLi
     private val documentCreator: ActivityResultLauncher<String> =
         registerForActivityResult(CreateDocument("application/x-pkcs12"), ::onDocumentCreated)
     private var certificatePending: DatabaseCertificate? = null
+    /** The chosen password once the dialog is done; empty for an unprotected export, null before. */
     private var passwordPending: CharArray? = null
 
     /** Where the key derivation runs; it takes seconds on a phone. */
@@ -102,16 +104,30 @@ class CertificateExportActivity : AppCompatActivity(), DialogInterface.OnClickLi
         // Set after show() so a validation error keeps the dialog open.
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             val chosen = password.text.toString()
-            when {
-                chosen.isEmpty() -> password.error = getString(R.string.export_password_empty)
-                chosen != confirm.text.toString() -> confirm.error = getString(R.string.export_password_mismatch)
-                else -> {
-                    passwordPending = chosen.toCharArray()
-                    dialog.dismiss()
-                    documentCreator.launch(certificatePending!!.name)
-                }
+            when (ExportPasswordPolicy.decide(chosen, confirm.text)) {
+                ExportPasswordDecision.CONFIRM_UNPROTECTED -> confirmUnprotected(dialog)
+                ExportPasswordDecision.MISMATCH -> confirm.error = getString(R.string.export_password_mismatch)
+                ExportPasswordDecision.EXPORT -> createDocument(dialog, chosen.toCharArray())
             }
         }
+    }
+
+    /** Cancelling returns to the password dialog, which stays open underneath. */
+    private fun confirmUnprotected(passwordDialog: AlertDialog) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.export_unprotected_title)
+            .setMessage(R.string.export_unprotected_message)
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(R.string.export_unprotected_confirm) { _, _ ->
+                createDocument(passwordDialog, CharArray(0))
+            }
+            .show()
+    }
+
+    private fun createDocument(passwordDialog: AlertDialog, password: CharArray) {
+        passwordPending = password
+        passwordDialog.dismiss()
+        documentCreator.launch(certificatePending!!.name)
     }
 
     private fun onDocumentCreated(uri: Uri?) {
@@ -126,9 +142,15 @@ class CertificateExportActivity : AppCompatActivity(), DialogInterface.OnClickLi
         lifecycleScope.launch {
             val exported = try {
                 val stored = checkNotNull(repository.io { getCertificateData(pending.id) })
-                withContext(workDispatcher) { Pkcs12Certificates.exportWithPassword(stored, password) }
+                withContext(workDispatcher) {
+                    if (password.isEmpty()) {
+                        Pkcs12Certificates.exportWithoutPassword(stored)
+                    } else {
+                        Pkcs12Certificates.exportWithPassword(stored, password)
+                    }
+                }
             } catch (e: Exception) {
-                HumlaLog.w(TAG, "Could not re-encrypt certificate for export", e)
+                HumlaLog.w(TAG, "Could not prepare certificate for export", e)
                 null
             } finally {
                 clearPassword()

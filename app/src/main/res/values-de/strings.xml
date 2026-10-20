@@ -237,7 +237,6 @@
     <string name="export_password_title">Exportiertes Zertifikat schützen</string>
     <string name="export_password_message">Die Datei enthält Ihren privaten Schlüssel. Wählen Sie ein Passwort; Sie brauchen es, um das Zertifikat anderswo zu importieren.</string>
     <string name="export_password_confirm">Passwort bestätigen</string>
-    <string name="export_password_empty">Geben Sie ein Passwort ein.</string>
     <string name="export_password_mismatch">Die Passwörter stimmen nicht überein.</string>
     <string name="allowExternalPtt">Anderen Apps Push-to-Talk erlauben</string>
     <string name="allowExternalPttSum">Andere Apps, z. B. Tasker, dürfen das Senden steuern</string>

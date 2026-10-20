@@ -82,19 +82,62 @@ class CertificateExportActivityTest {
     }
 
     @Test
-    fun `an empty or mismatched password keeps the dialog open`() {
+    fun `a mismatched password keeps the dialog open`() {
+        storeCertificate("alice.p12", byteArrayOf(1, 2, 3))
+        val activity = startAndPick()
+        val dialog = passwordDialog()
+
+        dialog.enter("secret", "other")
+        assertThat(dialog.isShowing).isTrue()
+        assertThat(dialog.findViewById<EditText>(R.id.export_password_confirm)!!.error).isNotNull()
+
+        dialog.enter("", "other")
+        assertThat(dialog.isShowing).isTrue()
+        assertThat(ShadowDialog.getLatestDialog()).isSameInstanceAs(dialog)
+        assertThat(shadowOf(activity).nextStartedActivityForResult).isNull()
+    }
+
+    @Test
+    fun `an empty password asks before an unprotected export and cancelling returns to the password`() {
         storeCertificate("alice.p12", byteArrayOf(1, 2, 3))
         val activity = startAndPick()
         val dialog = passwordDialog()
 
         dialog.enter("", "")
-        assertThat(dialog.isShowing).isTrue()
-        assertThat(dialog.findViewById<EditText>(R.id.export_password)!!.error).isNotNull()
-
-        dialog.enter("secret", "other")
-        assertThat(dialog.isShowing).isTrue()
-        assertThat(dialog.findViewById<EditText>(R.id.export_password_confirm)!!.error).isNotNull()
+        val warning = ShadowDialog.getLatestDialog() as AlertDialog
+        assertThat(warning).isNotSameInstanceAs(dialog)
         assertThat(shadowOf(activity).nextStartedActivityForResult).isNull()
+
+        warning.getButton(AlertDialog.BUTTON_NEGATIVE).performClick()
+        idleMainLooper()
+        assertThat(warning.isShowing).isFalse()
+        assertThat(dialog.isShowing).isTrue()
+        assertThat(shadowOf(activity).nextStartedActivityForResult).isNull()
+        assertThat(activity.isFinishing).isFalse()
+    }
+
+    @Test
+    fun `a confirmed unprotected export opens with the empty password`() {
+        val stored = ByteArrayOutputStream().also { HumlaCertificateGenerator.generateCertificate(it) }.toByteArray()
+        storeCertificate("alice.p12", stored)
+        val uri = Uri.parse("content://test.documents/alice.p12")
+        val written = ByteArrayOutputStream()
+        shadowOf(context.contentResolver).registerOutputStream(uri, written)
+
+        val activity = startAndPick()
+        val dialog = passwordDialog()
+        dialog.enter("", "")
+        (ShadowDialog.getLatestDialog() as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE).performClick()
+        idleMainLooper()
+        assertThat(dialog.isShowing).isFalse()
+        val request = shadowOf(activity).nextStartedActivityForResult
+        assertThat(request.intent.action).isEqualTo(Intent.ACTION_CREATE_DOCUMENT)
+        shadowOf(activity).receiveResult(request.intent, Activity.RESULT_OK, Intent().setData(uri))
+        idleMainLooper()
+
+        val store = Pkcs12Certificates.load(written.toByteArray(), null)
+        assertThat(store.aliases().toList().any { store.isKeyEntry(it) }).isTrue()
+        assertThat(activity.isFinishing).isTrue()
     }
 
     @Test

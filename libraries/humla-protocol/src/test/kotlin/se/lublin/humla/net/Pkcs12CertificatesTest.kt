@@ -17,8 +17,10 @@ import org.bouncycastle.pkcs.jcajce.JcaPKCS12SafeBagBuilder
 import org.bouncycastle.pkcs.jcajce.JcePKCS12MacCalculatorBuilder
 import org.junit.Assert.assertThrows
 import org.junit.Test
+import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
+import java.security.KeyStore
 import java.security.MessageDigest
 import java.security.cert.X509Certificate
 import java.security.interfaces.RSAPrivateKey
@@ -63,6 +65,51 @@ class Pkcs12CertificatesTest {
         HumlaCertificateGenerator.generateCertificate(out)
         assertThat(Pkcs12Certificates.isPkcs12(out.toByteArray())).isTrue()
         assertThat(Pkcs12Certificates.isPkcs12(byteArrayOf(1, 2, 3))).isFalse()
+    }
+
+    @Test
+    fun `an export without password opens with the empty password and keeps key and certificate`() {
+        val out = ByteArrayOutputStream()
+        val generated = HumlaCertificateGenerator.generateCertificate(out)
+        val source = Pkcs12Certificates.load(out.toByteArray(), null)
+
+        val exported = Pkcs12Certificates.exportWithoutPassword(out.toByteArray())
+
+        assertIsUnencryptedKeyBagShape(exported)
+        val viaNull = Pkcs12Certificates.load(exported, null)
+        val viaEmpty = Pkcs12Certificates.load(ByteArrayInputStream(exported), CharArray(0))
+        for (store in listOf(viaNull, viaEmpty)) {
+            assertThat(store.aliases().toList()).containsExactly("Humla Key")
+            assertThat(store.getCertificate("Humla Key").encoded).isEqualTo(generated.encoded)
+            assertThat(store.getKey("Humla Key", CharArray(0)).encoded)
+                .isEqualTo(source.getKey("Humla Key", CharArray(0)).encoded)
+        }
+    }
+
+    /**
+     * An imported certificate is stored as `KeyStore.store` wrote it (encrypted bags, BouncyCastle's
+     * defaults), not in Mumble's layout; the export must still come out in Mumble's layout.
+     */
+    @Test
+    fun `an imported certificate with a chain is exported in the mumble layout`() {
+        val identity = TestCertificates.leaf(cn = "Imported")
+        val stored = ByteArrayOutputStream().also { out ->
+            KeyStore.getInstance("PKCS12", BouncyCastleProvider()).apply {
+                load(null, null)
+                setKeyEntry("imported", identity.keyPair.private, CharArray(0), identity.chain)
+                store(out, CharArray(0))
+            }
+        }.toByteArray()
+
+        val exported = Pkcs12Certificates.exportWithoutPassword(stored)
+
+        assertIsUnencryptedKeyBagShape(exported)
+        val store = Pkcs12Certificates.load(exported, null)
+        val alias = store.aliases().toList().single { store.isKeyEntry(it) }
+        assertThat(alias).isEqualTo("imported")
+        assertThat(store.getKey(alias, CharArray(0)).encoded).isEqualTo(identity.keyPair.private.encoded)
+        assertThat(store.getCertificateChain(alias).map { it.encoded.toList() })
+            .containsExactlyElementsIn(identity.chain.map { it.encoded.toList() }).inOrder()
     }
 
     @Test

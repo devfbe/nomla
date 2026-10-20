@@ -76,38 +76,19 @@ public object Pkcs12Certificates {
     private const val EXPORT_ITERATIONS = 100_000
 
     /**
+     * MAC iterations for an export without a password: with an empty password the MAC proves
+     * nothing to an attacker, so this only has to match what Mumble and OpenSSL write (2048).
+     */
+    private const val UNPROTECTED_MAC_ITERATIONS = 2048
+
+    /**
      * Re-encrypts a stored (empty-password) PKCS#12 under [password]: private keys as PBES2
      * AES-256-CBC shrouded key bags, certificates in PBES2 AES-256-CBC encrypted data, and a
      * SHA-256 MAC, the layout OpenSSL 3 writes by default.
      */
     public fun exportWithPassword(stored: ByteArray, password: CharArray): ByteArray {
         require(password.isNotEmpty()) { "an export needs a password" }
-        val source = load(stored, null)
-        val keyBags = mutableListOf<PKCS12SafeBag>()
-        val certBags = mutableListOf<PKCS12SafeBag>()
-        for (alias in source.aliases().toList()) {
-            val chain = source.getCertificateChain(alias)?.map { it as X509Certificate }
-                ?: listOfNotNull(source.getCertificate(alias) as? X509Certificate)
-            val key = if (source.isKeyEntry(alias)) source.getKey(alias, CharArray(0)) as? PrivateKey else null
-            val friendlyName = DERBMPString(alias)
-            val localKeyId = chain.firstOrNull()?.let {
-                DEROctetString(MessageDigest.getInstance("SHA-1").digest(it.publicKey.encoded))
-            }
-            if (key != null) {
-                val bag = JcaPKCS12SafeBagBuilder(key, aesEncryptor(password))
-                    .addBagAttribute(PKCS12SafeBag.friendlyNameAttribute, friendlyName)
-                if (localKeyId != null) bag.addBagAttribute(PKCS12SafeBag.localKeyIdAttribute, localKeyId)
-                keyBags += bag.build()
-            }
-            chain.forEachIndexed { index, certificate ->
-                val bag = JcaPKCS12SafeBagBuilder(certificate)
-                if (index == 0) {
-                    bag.addBagAttribute(PKCS12SafeBag.friendlyNameAttribute, friendlyName)
-                    if (localKeyId != null) bag.addBagAttribute(PKCS12SafeBag.localKeyIdAttribute, localKeyId)
-                }
-                certBags += bag.build()
-            }
-        }
+        val (keyBags, certBags) = safeBags(stored) { JcaPKCS12SafeBagBuilder(it, aesEncryptor(password)) }
         val builder = PKCS12PfxPduBuilder()
         if (certBags.isNotEmpty()) builder.addEncryptedData(aesEncryptor(password), certBags.toTypedArray())
         keyBags.forEach { builder.addData(it) }
@@ -121,6 +102,64 @@ public object Pkcs12Certificates {
             throw KeyStoreException(e)
         }
         return pfx.getEncoded(ASN1Encoding.DL)
+    }
+
+    /**
+     * Rewrites a stored PKCS#12 in the unprotected layout Mumble writes: unencrypted keyBags and
+     * certBags in plain `data` ContentInfos and a SHA-1 MAC over the empty password. Anyone who
+     * has the file can use the identity. The stored bytes are not passed through unchanged because
+     * an imported certificate is kept in whatever layout `KeyStore.store` produced, not this one.
+     */
+    public fun exportWithoutPassword(stored: ByteArray): ByteArray {
+        val (keyBags, certBags) = safeBags(stored) { JcaPKCS12SafeBagBuilder(it) }
+        val builder = PKCS12PfxPduBuilder()
+        keyBags.forEach { builder.addData(it) }
+        certBags.forEach { builder.addData(it) }
+        val pfx = try {
+            builder.build(
+                JcePKCS12MacCalculatorBuilder().setProvider(PROVIDER).setIterationCount(UNPROTECTED_MAC_ITERATIONS),
+                CharArray(0),
+            )
+        } catch (e: org.bouncycastle.pkcs.PKCSException) {
+            throw KeyStoreException(e)
+        }
+        return pfx.getEncoded(ASN1Encoding.DL)
+    }
+
+    /**
+     * The key bags (built by [keyBag]) and certificate bags of every entry in [stored], the key
+     * and the chain's leaf tagged with the alias and the leaf's public-key hash, as Mumble does.
+     */
+    private fun safeBags(
+        stored: ByteArray,
+        keyBag: (PrivateKey) -> JcaPKCS12SafeBagBuilder,
+    ): Pair<List<PKCS12SafeBag>, List<PKCS12SafeBag>> {
+        val source = load(stored, null)
+        val keyBags = mutableListOf<PKCS12SafeBag>()
+        val certBags = mutableListOf<PKCS12SafeBag>()
+        for (alias in source.aliases().toList()) {
+            val chain = source.getCertificateChain(alias)?.map { it as X509Certificate }
+                ?: listOfNotNull(source.getCertificate(alias) as? X509Certificate)
+            val key = if (source.isKeyEntry(alias)) source.getKey(alias, CharArray(0)) as? PrivateKey else null
+            val friendlyName = DERBMPString(alias)
+            val localKeyId = chain.firstOrNull()?.let {
+                DEROctetString(MessageDigest.getInstance("SHA-1").digest(it.publicKey.encoded))
+            }
+            if (key != null) {
+                val bag = keyBag(key).addBagAttribute(PKCS12SafeBag.friendlyNameAttribute, friendlyName)
+                if (localKeyId != null) bag.addBagAttribute(PKCS12SafeBag.localKeyIdAttribute, localKeyId)
+                keyBags += bag.build()
+            }
+            chain.forEachIndexed { index, certificate ->
+                val bag = JcaPKCS12SafeBagBuilder(certificate)
+                if (index == 0) {
+                    bag.addBagAttribute(PKCS12SafeBag.friendlyNameAttribute, friendlyName)
+                    if (localKeyId != null) bag.addBagAttribute(PKCS12SafeBag.localKeyIdAttribute, localKeyId)
+                }
+                certBags += bag.build()
+            }
+        }
+        return keyBags to certBags
     }
 
     /** A fresh encryptor per use, so no two encryptions share a salt and IV. */
