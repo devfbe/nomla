@@ -1,0 +1,282 @@
+/*
+ * Copyright (C) 2026 The Nomla Authors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package koeln.becker.nomla.service
+
+import android.app.Notification
+import android.app.NotificationManager
+import android.os.Looper
+import androidx.test.core.app.ApplicationProvider
+import com.google.common.truth.Truth.assertThat
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
+import org.robolectric.android.controller.ServiceController
+import se.lublin.humla.model.Server
+import se.lublin.humla.session.ConnectionConfig
+import se.lublin.humla.session.SessionConfig
+import se.lublin.humla.session.SessionState
+import se.lublin.humla.testutil.ScriptedConnections
+import se.lublin.humla.testutil.awaitUntil
+import koeln.becker.nomla.R
+import koeln.becker.nomla.app.AppContainer
+import koeln.becker.nomla.app.MumlaApplication
+import koeln.becker.nomla.session.SessionManager
+import koeln.becker.nomla.testing.createMumlaService
+import koeln.becker.nomla.testing.refuseForegroundStarts
+import java.time.Duration
+
+/**
+ * The foreground service over a real session and its reconnect policy, with the connections
+ * mocked: a loss that will be retried keeps the foreground, which Android would refuse to start
+ * again from the background, and only the end of the session leaves it.
+ */
+@RunWith(RobolectricTestRunner::class)
+class MumlaServiceForegroundTest {
+    private val app = ApplicationProvider.getApplicationContext<MumlaApplication>()
+    private lateinit var controller: ServiceController<MumlaService>
+    private lateinit var service: MumlaService
+    private lateinit var sessions: SessionManager
+    private val mainLooper = shadowOf(Looper.getMainLooper())
+    private val server = ScriptedConnections(reconnectBaseDelayMillis = 2_000L, reconnectAttempts = 2)
+
+    @Before
+    fun setUp() {
+        shadowOf(app).grantPermissions(android.Manifest.permission.POST_NOTIFICATIONS)
+        app.installContainer(
+            AppContainer(app, app.scope) { config -> server.session(app, config) },
+        )
+        sessions = SessionManager.get(app)
+        sessions.connect(
+            SessionConfig(
+                ConnectionConfig(server = Server(-1, "test", "127.0.0.1", 64738, "me", "")),
+                autoReconnect = true,
+            ),
+        )
+        controller = createMumlaService()
+        service = controller.get()
+        mainLooper.idle()
+    }
+
+    @After
+    fun tearDown() {
+        controller.destroy()
+        sessions.session.value?.close()
+        mainLooper.idle()
+    }
+
+    private val state: SessionState get() = sessions.currentState
+
+    /** The current connection reports its end, as a dropped socket does. */
+    private fun loseConnection() {
+        server.loseLatest("socket reset")
+        mainLooper.idle()
+    }
+
+    private fun synchronize() {
+        server.synchronizeLatest()
+        mainLooper.idle()
+    }
+
+    private val notificationManager get() = app.getSystemService(NotificationManager::class.java)
+
+    private fun foregroundText(): String? =
+        shadowOf(notificationManager).getNotification(1)?.extras?.getString(Notification.EXTRA_TEXT)
+
+    private fun foregroundActions(): List<String> =
+        shadowOf(notificationManager).getNotification(1)?.actions.orEmpty().map { it.title.toString() }
+
+    private fun reconnectPrompt(): Notification? = shadowOf(notificationManager).getNotification(3)
+
+    private fun log() = sessions.chat.messages.value.map { it.body }
+
+    /** Drains the main looper until [condition] holds; for what the audio thread posts to it. */
+    private fun drainUntil(description: String, condition: () -> Boolean) = awaitUntil(description = description) {
+        mainLooper.idle()
+        condition()
+    }
+
+    private fun pressCancelReconnect() {
+        shadowOf(notificationManager).getNotification(1)!!.actions
+            .single { it.title.toString() == app.getString(R.string.cancel_reconnect) }
+            .actionIntent.send()
+        mainLooper.idle()
+    }
+
+    @Test
+    fun aConnectionLossThatWillBeRetriedKeepsTheServiceInTheForeground() {
+        synchronize()
+        assertThat(shadowOf(service).isForegroundStopped).isFalse()
+        service.refuseForegroundStarts()
+
+        loseConnection()
+
+        assertThat(state).isInstanceOf(SessionState.ConnectionLost::class.java)
+        assertThat(shadowOf(service).isForegroundStopped).isFalse()
+        assertThat(foregroundText()).isEqualTo(app.getString(R.string.connection_lost_reconnecting))
+        assertThat(foregroundActions()).containsExactly(app.getString(R.string.cancel_reconnect))
+    }
+
+    @Test
+    fun theReconnectAttemptItselfStaysInTheForegroundWithoutStartingItAgain() {
+        service.refuseForegroundStarts()
+        loseConnection()
+
+        mainLooper.idleFor(Duration.ofMillis(2_000))
+
+        assertThat(server.attempts).isEqualTo(2) // the backoff timer fired and a new attempt started
+        assertThat(shadowOf(service).isForegroundStopped).isFalse()
+        assertThat(log()).doesNotContain(app.getString(R.string.foreground_start_failed))
+    }
+
+    /**
+     * The whole automatic reconnect with the screen off, through to the new ServerSync: the
+     * microphone service stays in the foreground and is never started again. With every start
+     * refused, a second startForeground would show as the warning.
+     */
+    @Test
+    fun aReconnectThatSynchronizesAgainNeverCallsStartForegroundAgain() {
+        synchronize()
+        service.refuseForegroundStarts()
+        loseConnection()
+        mainLooper.idleFor(Duration.ofMillis(2_000))
+
+        synchronize()
+
+        assertThat(server.attempts).isEqualTo(2)
+        assertThat(state).isEqualTo(SessionState.Connected)
+        assertThat(shadowOf(service).isForegroundStopped).isFalse()
+        assertThat(foregroundText()).isNotEqualTo(app.getString(R.string.connection_lost_reconnecting))
+        assertThat(foregroundActions()).doesNotContain(app.getString(R.string.cancel_reconnect))
+        assertThat(log()).doesNotContain(app.getString(R.string.foreground_start_failed))
+        assertThat(reconnectPrompt()).isNull()
+    }
+
+    /**
+     * Android can still silence the microphone of a session in the foreground (another app takes
+     * it, the privacy toggle, a background start without while-in-use access); it then reads
+     * zeros and nothing is transmitted. The notification says so while it lasts, the chat once.
+     */
+    @Test
+    fun aMicrophoneSilencedByAndroidIsReportedUntilItIsHeardAgain() {
+        synchronize()
+        drainUntil("the pipeline") { server.pipelinesBuilt == 1 }
+        val connectedText = foregroundText()
+        val blocked = app.getString(R.string.microphone_blocked)
+
+        server.silenceCapture(true)
+
+        drainUntil("the notification says the microphone is blocked") { foregroundText() == blocked }
+        assertThat(log()).contains(blocked)
+        assertThat(shadowOf(service).isForegroundStopped).isFalse()
+
+        server.silenceCapture(false)
+        drainUntil("the notification is back to the connected text") { foregroundText() == connectedText }
+        server.silenceCapture(true)
+        drainUntil("blocked again") { foregroundText() == blocked }
+        server.silenceCapture(false)
+        drainUntil("audible again") { foregroundText() == connectedText }
+
+        assertThat(log().count { it == blocked }).isEqualTo(1)
+    }
+
+    @Test
+    fun aDisconnectTheUserAskedForLeavesTheForegroundAndStopsTheService() {
+        sessions.disconnect()
+        mainLooper.idle()
+
+        assertThat(shadowOf(service).isForegroundStopped).isTrue()
+        assertThat(shadowOf(service).isStoppedBySelf).isTrue()
+    }
+
+    @Test
+    fun theForegroundFallsOnlyWhenThePolicyGivesUp() {
+        service.refuseForegroundStarts()
+        loseConnection() // attempt 1 of 2: retried
+        mainLooper.idleFor(Duration.ofMillis(2_000))
+        loseConnection() // attempt 2 of 2: retried
+        assertThat(shadowOf(service).isForegroundStopped).isFalse()
+        mainLooper.idleFor(Duration.ofMillis(4_000))
+
+        loseConnection() // spent: Disconnected
+
+        assertThat(state).isInstanceOf(SessionState.Disconnected::class.java)
+        assertThat(shadowOf(service).isForegroundStopped).isTrue()
+    }
+
+    @Test
+    fun whenThePolicyGivesUpThePromptOffersAReconnectAndTheLogKeepsOnlyTheGiveUpLine() {
+        synchronize()
+        sessions.chat.warnOnce("before")
+        for (delay in listOf(2_000L, 4_000L)) {
+            loseConnection()
+            mainLooper.idleFor(Duration.ofMillis(delay))
+        }
+        assertThat(log()).contains("before") // a loss is not the end
+
+        loseConnection()
+
+        val prompt = reconnectPrompt()!!
+        assertThat(prompt.extras.getString(Notification.EXTRA_TEXT)).isEqualTo("socket reset")
+        assertThat(prompt.actions.single().title.toString()).isEqualTo(app.getString(R.string.reconnect))
+        assertThat(log()).containsExactly(app.getString(se.lublin.humla.R.string.reconnect_gave_up))
+    }
+
+    @Test
+    fun theCancelActionEndsAWaitingReconnectAndLeavesTheForeground() {
+        service.refuseForegroundStarts()
+        loseConnection()
+
+        pressCancelReconnect()
+
+        assertThat(state).isInstanceOf(SessionState.Disconnected::class.java)
+        assertThat(shadowOf(service).isForegroundStopped).isTrue()
+        assertThat(reconnectPrompt()).isNull() // the user asked for this; nothing to report
+        mainLooper.idleFor(Duration.ofMillis(10_000))
+        assertThat(server.attempts).isEqualTo(1) // the backoff timer no longer retries
+    }
+
+    @Test
+    fun theCancelActionDuringAnAttemptInFlightDisconnectsIt() {
+        service.refuseForegroundStarts()
+        loseConnection()
+        mainLooper.idleFor(Duration.ofMillis(2_000)) // Reconnecting: attempt 2 is in flight
+        assertThat(server.attempts).isEqualTo(2)
+        assertThat(foregroundActions()).containsExactly(app.getString(R.string.cancel_reconnect))
+
+        pressCancelReconnect()
+
+        assertThat(server.disconnectCalls(1)).isEqualTo(1)
+        assertThat(state).isInstanceOf(SessionState.Disconnected::class.java)
+        assertThat(shadowOf(service).isForegroundStopped).isTrue()
+    }
+
+    @Test
+    fun aDestroyedServiceNoLongerRendersTheSession() {
+        controller.destroy()
+        mainLooper.idle()
+        val before = shadowOf(notificationManager).getNotification(1)
+
+        sessions.connect(SessionConfig(ConnectionConfig(server = Server(-1, "t", "127.0.0.1", 1, "me", ""))))
+        mainLooper.idle()
+
+        assertThat(shadowOf(notificationManager).getNotification(1)).isSameInstanceAs(before)
+    }
+}

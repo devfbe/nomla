@@ -126,7 +126,7 @@
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textColor="?attr/colorOnSurfaceVariant" />
 
-        <se.lublin.mumla.preference.LevelMeterView
+        <koeln.becker.nomla.preference.LevelMeterView
             android:id="@+id/audio_panel_meter"
             android:layout_width="match_parent"
             android:layout_height="20dp"

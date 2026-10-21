@@ -1,0 +1,217 @@
+/*
+ * Copyright (C) 2026 The Nomla Authors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package koeln.becker.nomla.preference
+
+import android.Manifest
+import android.app.Application
+import android.content.Context
+import android.media.AudioManager
+import androidx.preference.ListPreference
+import androidx.preference.Preference
+import androidx.preference.PreferenceManager
+import androidx.preference.SwitchPreferenceCompat
+import androidx.test.core.app.ApplicationProvider
+import com.google.common.truth.Truth.assertThat
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.Robolectric
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
+import se.lublin.humla.audio.routing.AudioDeviceCategory
+import se.lublin.humla.testutil.TestCaptureSource
+import se.lublin.humla.testutil.TestPlaybackSink
+import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.R
+import koeln.becker.nomla.Settings
+import koeln.becker.nomla.audio.MicCheck
+import koeln.becker.nomla.testing.openScreen
+
+/** The live meter only takes the microphone, and the audio mode, while the user asks for it. */
+@RunWith(RobolectricTestRunner::class)
+class AudioSettingsFragmentTest {
+    private val app = ApplicationProvider.getApplicationContext<Application>()
+    private val audioManager = app.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    private val source = TestCaptureSource(emptyList())
+    private val capture = TestCaptureSource.Factory(source)
+    private val sink = TestPlaybackSink.Factory(TestPlaybackSink())
+
+    @Before
+    fun seams() {
+        MicCheck.captureFactory = capture
+        MicCheck.sinkFactory = sink
+        shadowOf(app).grantPermissions(Manifest.permission.RECORD_AUDIO)
+    }
+
+    @After
+    fun resetSeams() {
+        MicCheck.resetFactories()
+    }
+
+    private val activity by lazy { Robolectric.buildActivity(SettingsActivity::class.java).setup().get() }
+
+    private fun openAudio() = activity.openScreen(AudioSettingsFragment::class.java)
+
+    private fun AudioSettingsFragment.switch(key: String) = requireNotNull(findPreference<SwitchPreferenceCompat>(key))
+    private fun AudioSettingsFragment.testSwitch() = switch("audio_test_microphone")
+    private fun AudioSettingsFragment.loopbackSwitch() = switch("audio_loopback_test")
+    private fun AudioSettingsFragment.meter() =
+        requireNotNull(findPreference<InputLevelMeterPreference>("input_level_meter"))
+
+    @Test
+    fun `opening the screen leaves the microphone and the audio mode alone`() {
+        val audio = openAudio()
+
+        assertThat(capture.request).isNull()
+        assertThat(audioManager.mode).isEqualTo(AudioManager.MODE_NORMAL)
+        assertThat(audio.testSwitch().isChecked).isFalse()
+        assertThat(audio.loopbackSwitch().isEnabled).isFalse()
+        assertThat(audio.meter().message).isEqualTo(app.getString(R.string.inputLevelMeterIdle))
+    }
+
+    @Test
+    fun `turning the test on starts the meter in communication mode when echo cancellation is on`() {
+        Settings.getInstance(app).setEchoCancellationOverride(AudioDeviceCategory.SPEAKER, true)
+        val audio = openAudio()
+
+        audio.testSwitch().performClick()
+        idleMainLooper()
+
+        assertThat(capture.request).isNotNull()
+        assertThat(source.events).contains("start")
+        assertThat(audioManager.mode).isEqualTo(AudioManager.MODE_IN_COMMUNICATION)
+        assertThat(audio.loopbackSwitch().isEnabled).isTrue()
+    }
+
+    @Test
+    fun `turning the test off stops the meter, the monitor and communication mode`() {
+        Settings.getInstance(app).setEchoCancellationOverride(AudioDeviceCategory.SPEAKER, true)
+        val audio = openAudio()
+        audio.testSwitch().performClick()
+        audio.loopbackSwitch().performClick()
+        idleMainLooper()
+        assertThat(sink.openedWith).isNotNull()
+
+        audio.testSwitch().performClick()
+        idleMainLooper()
+
+        assertThat(source.events.last()).isEqualTo("release")
+        assertThat(audioManager.mode).isEqualTo(AudioManager.MODE_NORMAL)
+        assertThat(audio.loopbackSwitch().isChecked).isFalse()
+        assertThat(audio.loopbackSwitch().isEnabled).isFalse()
+        assertThat(audio.meter().message).isEqualTo(app.getString(R.string.inputLevelMeterIdle))
+    }
+
+    @Test
+    fun `leaving the screen stops the test and resets both switches`() {
+        Settings.getInstance(app).setEchoCancellationOverride(AudioDeviceCategory.SPEAKER, true)
+        val audio = openAudio()
+        audio.testSwitch().performClick()
+        audio.loopbackSwitch().performClick()
+        idleMainLooper()
+
+        audio.onPause()
+
+        assertThat(source.events.last()).isEqualTo("release")
+        assertThat(audioManager.mode).isEqualTo(AudioManager.MODE_NORMAL)
+        assertThat(audio.testSwitch().isChecked).isFalse()
+        assertThat(audio.loopbackSwitch().isChecked).isFalse()
+    }
+
+    @Test
+    fun `an audio setting changed while not testing does not start the meter`() {
+        openAudio()
+
+        PreferenceManager.getDefaultSharedPreferences(app).edit()
+            .putString(Settings.VAD_MODE.key, "amplitude").commit()
+        idleMainLooper()
+
+        assertThat(capture.request).isNull()
+        assertThat(audioManager.mode).isEqualTo(AudioManager.MODE_NORMAL)
+    }
+
+    @Test
+    fun `an audio setting changed while testing restarts the meter`() {
+        val audio = openAudio()
+        audio.testSwitch().performClick()
+        idleMainLooper()
+        val first = capture.request
+
+        PreferenceManager.getDefaultSharedPreferences(app).edit()
+            .putString(Settings.VAD_MODE.key, "amplitude").commit()
+        idleMainLooper()
+
+        assertThat(capture.request).isNotSameInstanceAs(first)
+        assertThat(audio.testSwitch().isChecked).isTrue()
+    }
+
+    @Test
+    fun `without the microphone permission the test says the meter is unavailable`() {
+        shadowOf(app).denyPermissions(Manifest.permission.RECORD_AUDIO)
+        val audio = openAudio()
+
+        audio.testSwitch().performClick()
+        idleMainLooper()
+
+        assertThat(capture.request).isNull()
+        assertThat(audio.meter().message).isEqualTo(app.getString(R.string.inputLevelMeterUnavailable))
+    }
+
+    private fun AudioSettingsFragment.strength() =
+        requireNotNull(findPreference<SliderPreference>(Settings.RNNOISE_ATTENUATION_LIMIT_DB.key))
+
+    private fun AudioSettingsFragment.reset() =
+        requireNotNull(findPreference<Preference>("rnnoise_strength_reset"))
+
+    @Test
+    fun `the noise reduction strength and its reset are shown only with rnnoise`() {
+        Settings.getInstance(app).noiseSuppressionMethod = "speex"
+        val audio = openAudio()
+        assertThat(audio.strength().isVisible).isFalse()
+        assertThat(audio.reset().isVisible).isFalse()
+
+        val method = requireNotNull(audio.findPreference<ListPreference>(Settings.NOISE_SUPPRESSION_METHOD.key))
+        method.callChangeListener("rnnoise")
+
+        assertThat(audio.strength().isVisible).isTrue()
+        assertThat(audio.reset().isVisible).isTrue()
+    }
+
+    @Test
+    fun `the reset is greyed out at the default and puts a changed strength back to 18 dB`() {
+        val audio = openAudio()
+        assertThat(audio.strength().value).isEqualTo(18)
+        assertThat(audio.reset().isEnabled).isFalse()
+
+        Settings.getInstance(app).rnnoiseStrength = Settings.RNNOISE_LIMIT_UNLIMITED
+        idleMainLooper()
+        assertThat(audio.strength().value).isEqualTo(Settings.RNNOISE_LIMIT_UNLIMITED)
+        assertThat(audio.strength().formatted(audio.strength().value))
+            .isEqualTo(app.getString(R.string.rnnoise_strength_unlimited))
+        assertThat(audio.reset().isEnabled).isTrue()
+
+        audio.reset().performClick()
+        idleMainLooper()
+
+        assertThat(Settings.getInstance(app).rnnoiseStrength).isEqualTo(18)
+        assertThat(Settings.getInstance(app).rnnoiseAttenuationLimitDb).isEqualTo(18f)
+        assertThat(audio.strength().value).isEqualTo(18)
+        assertThat(audio.reset().isEnabled).isFalse()
+    }
+}

@@ -1,0 +1,50 @@
+/*
+ * Copyright (C) 2026 The Nomla Authors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package koeln.becker.nomla.preference
+
+import se.lublin.humla.audio.capture.NoiseSuppressionMode
+import se.lublin.humla.audio.capture.VadMode
+
+/** Which group of voice-gate controls the screen shows. Exactly one is true. */
+data class VadDependents(val adaptive: Boolean, val amplitude: Boolean, val probability: Boolean)
+
+/** The decisions behind `AudioSettingsFragment`, testable without a Fragment. */
+object AudioSettingsPolicy {
+    /**
+     * Hidden, not disabled: the modes' quantities (dBFS, probability, gap fraction) are not
+     * comparable, so a visible control of another mode invites calibrating the wrong one.
+     */
+    fun vadDependents(mode: VadMode): VadDependents = when (mode) {
+        VadMode.ADAPTIVE -> VadDependents(adaptive = true, amplitude = false, probability = false)
+        VadMode.AMPLITUDE -> VadDependents(adaptive = false, amplitude = true, probability = false)
+        VadMode.PROBABILITY -> VadDependents(adaptive = false, amplitude = false, probability = true)
+    }
+
+    /** The hand-set background level only means anything while the tracking is switched off. */
+    fun manualFloorVisible(mode: VadMode, adaptiveFloor: Boolean): Boolean =
+        vadDependents(mode).adaptive && !adaptiveFloor
+
+    /** The Speex depth only matters when Speex is the denoiser in the chain. */
+    fun speexDepthVisible(mode: NoiseSuppressionMode): Boolean = mode == NoiseSuppressionMode.SPEEX
+
+    /** RNNoise's strength, and its reset, only matter when RNNoise is the denoiser in the chain. */
+    fun rnnoiseStrengthVisible(mode: NoiseSuppressionMode): Boolean = mode == NoiseSuppressionMode.RNNOISE
+
+    /** A reset that would change nothing is shown, but greyed out, like the platform's own. */
+    fun rnnoiseResetEnabled(strength: Int, default: Int): Boolean = strength != default
+}

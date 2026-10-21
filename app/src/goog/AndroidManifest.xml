@@ -22,7 +22,7 @@
     <uses-permission android:name="com.android.vending.BILLING" />
     <application>
         <provider
-            android:name="se.lublin.mumla.channel.ChannelSearchProvider"
+            android:name="koeln.becker.nomla.channel.ChannelSearchProvider"
             android:authorities="se.lublin.mumla.channel.ChannelSearchProvider"
             android:exported="false" />
     </application>

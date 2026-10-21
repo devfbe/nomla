@@ -1,0 +1,1220 @@
+/*
+ * Copyright (C) 2026 The Nomla Authors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package koeln.becker.nomla.channel
+
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
+import android.view.Gravity
+import android.view.KeyEvent
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.view.inputmethod.EditorInfo
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.PopupMenu
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.view.menu.MenuBuilder
+import androidx.appcompat.view.menu.MenuItemImpl
+import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.test.core.app.ApplicationProvider
+import com.google.common.truth.Truth.assertThat
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
+import kotlinx.coroutines.Dispatchers
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.Robolectric
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
+import org.robolectric.Shadows.shadowOf
+import org.robolectric.android.controller.ActivityController
+import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
+import org.robolectric.shadows.ShadowDialog
+import org.robolectric.shadows.ShadowPopupMenu
+import se.lublin.humla.IHumlaSession
+import se.lublin.humla.model.ChannelState
+import se.lublin.humla.model.ServerSettings
+import se.lublin.humla.model.ServerState
+import se.lublin.humla.model.UserState
+import se.lublin.humla.session.HumlaEvent
+import se.lublin.humla.session.SessionState
+import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.R
+import koeln.becker.nomla.Settings
+import koeln.becker.nomla.chat.ChatAdapter
+import koeln.becker.nomla.chat.ChatImageLoader
+import koeln.becker.nomla.chat.ChatImageLoaders
+import koeln.becker.nomla.chat.FailingOutputStream
+import koeln.becker.nomla.chat.FixedRowMediaProvider
+import koeln.becker.nomla.chat.IChatMessage
+import koeln.becker.nomla.chat.ImageError
+import koeln.becker.nomla.chat.ImageFetchException
+import koeln.becker.nomla.chat.ImageGallerySaver
+import koeln.becker.nomla.chat.ImageResult
+import koeln.becker.nomla.chat.ImageViewerDialogFragment
+import koeln.becker.nomla.chat.OutgoingImagePreparer
+import koeln.becker.nomla.chat.TestImages
+import koeln.becker.nomla.session.SessionManager
+import koeln.becker.nomla.testing.FileProviderCache
+import koeln.becker.nomla.testing.QueueingDispatcher
+import koeln.becker.nomla.testing.snackbarAction
+import koeln.becker.nomla.testing.resetSnackbars
+import koeln.becker.nomla.testing.snackbarText
+import koeln.becker.nomla.testing.ChatTargetParentFragment
+import koeln.becker.nomla.testing.ServiceHostActivity
+import koeln.becker.nomla.testing.addUnderChatParent
+import koeln.becker.nomla.testing.drainMainUntil
+import koeln.becker.nomla.testing.info
+import koeln.becker.nomla.testing.installSession
+import koeln.becker.nomla.testing.layOut
+import koeln.becker.nomla.testing.stubActions
+import koeln.becker.nomla.testing.stubConnected
+import koeln.becker.nomla.testing.stubModel
+import koeln.becker.nomla.testing.stubDisconnected
+import koeln.becker.nomla.testing.stubEvents
+import koeln.becker.nomla.testing.tapThrough
+import koeln.becker.nomla.testing.textMessage
+import koeln.becker.nomla.testing.stubState
+import java.io.ByteArrayOutputStream
+
+/**
+ * Driven through a real host: the app's session manager holds the session, whose events feed the
+ * chat log, and a parent `Fragment` holds the chat target.
+ */
+@RunWith(RobolectricTestRunner::class)
+class ChannelChatFragmentTest {
+
+    private val session: IHumlaSession = mockk(relaxed = true)
+    private val actions = session.stubActions()
+    private val model = session.stubModel(model())
+    private val chat get() = SessionManager.get(ApplicationProvider.getApplicationContext<Context>()).chat
+
+    private lateinit var controller: ActivityController<ServiceHostActivity>
+    private lateinit var activity: ServiceHostActivity
+    private lateinit var parent: ChatTargetParentFragment
+    private lateinit var fragment: ChannelChatFragment
+
+    @Before
+    fun setUp() {
+        resetSnackbars()
+        FileProviderCache.clear()
+        installSession(session.stubConnected())
+        every { actions.sendChannelTextMessage(any(), any(), any()) } returns textMessage("out")
+    }
+
+    @After
+    fun tearDown() {
+        if (this::controller.isInitialized) controller.close()
+        ChatImageLoaders.setForTests(null)
+    }
+
+    /** Delivered at once: the fragment collects on the immediate main dispatcher. */
+    private fun selectTarget(target: ChatTarget) {
+        parent.chat.select(target)
+    }
+
+    /** Adds a line to the chat log the way the session's events do. */
+    private fun add(message: IChatMessage) {
+        val event = when (message) {
+            is IChatMessage.TextMessage -> HumlaEvent.TextMessage(message.message)
+            is IChatMessage.InfoMessage -> HumlaEvent.LogMessage(HumlaEvent.Level.INFO, message.body)
+            else -> error("not a chat line: $message")
+        }
+        session.stubEvents().tryEmit(event)
+        idleMainLooper()
+    }
+
+    /** Makes a session that has ended the current one, as if there were none. */
+    private fun unbind() = installSession(mockk<IHumlaSession>(relaxed = true).stubDisconnected())
+
+    /** Brings the host up, without a connected session unless [withSession], then attaches the fragment. */
+    private fun launch(withSession: Boolean = true) {
+        controller = Robolectric.buildActivity(ServiceHostActivity::class.java)
+        activity = controller.create().get()
+        if (!withSession) unbind()
+        fragment = ChannelChatFragment()
+        parent = activity.addUnderChatParent(fragment, "chat", inContent = true)
+        controller.start().resume().visible()
+        idleMainLooper()
+    }
+
+    private fun itemCount(): Int = list.adapter!!.itemCount
+
+    private val list: RecyclerView get() = fragment.requireView().findViewById(R.id.chat_list)
+    private val editor: EditText get() = fragment.requireView().findViewById(R.id.chatTextEdit)
+    private val sendButton: ImageButton get() = fragment.requireView().findViewById(R.id.chatTextSend)
+
+    /** Us (session 7) in [selfIn] (1 is [channel], 2 the lounge), and Ann (42) in [annIn]. */
+    private fun model(
+        channel: String? = "Root",
+        settings: ServerSettings? = null,
+        self: Boolean = true,
+        selfIn: Int = 1,
+        annIn: Int? = 1,
+    ): ServerState = ServerState.of(
+        listOf(ChannelState(0, "Server"), ChannelState(1, channel, 0), ChannelState(2, "Lounge", 0)),
+        listOfNotNull(UserState(7, "Me", selfIn).takeIf { self }, annIn?.let { UserState(42, "Ann", it) }),
+        selfSession = 7,
+        serverSettings = settings,
+    )
+
+    /** We move into the lounge (id 2). */
+    private fun moveToTheLounge() {
+        model.value = model(selfIn = 2, annIn = null)
+        idleMainLooper()
+    }
+
+    private fun send(text: String) {
+        editor.setText(text)
+        sendButton.performClick()
+    }
+
+    @Test
+    fun theSessionsChatLogIsWhatTheListShows() {
+        add(info("older"))
+        add(info("newer"))
+        launch()
+        drainMainUntil { itemCount() == 2 }
+        assertThat(itemCount()).isEqualTo(2)
+    }
+
+    @Test
+    fun anArrivingLogLineIsAppended() {
+        launch()
+        add(info("hello"))
+        drainMainUntil { itemCount() == 1 }
+        assertThat(itemCount()).isEqualTo(1)
+    }
+
+    @Test
+    fun clearEmptiesTheListAndTheSessionLog() {
+        add(info("older"))
+        launch()
+        fragment.clear()
+        drainMainUntil { itemCount() == 0 }
+        assertThat(itemCount()).isEqualTo(0)
+        assertThat(chat.messages.value).isEmpty()
+    }
+
+    @Test
+    fun aMessageArrivingAfterTheViewIsGoneIsNotACrash() {
+        launch()
+        activity.supportFragmentManager.beginTransaction().remove(parent).commitNow()
+        idleMainLooper()
+        add(info("late"))
+        idleMainLooper()
+    }
+
+    @Test
+    fun theHintNamesTheSessionChannelWithNoTarget() {
+        launch()
+        assertThat(editor.hint.toString()).isEqualTo(activity.getString(R.string.messageToChannel, "Root"))
+    }
+
+    @Test
+    fun theHintNamesTheTargetUser() {
+        launch()
+        selectTarget(ChatTarget.User(42, "Ann"))
+        assertThat(editor.hint.toString()).isEqualTo(activity.getString(R.string.messageToUser, "Ann"))
+    }
+
+    @Test
+    fun theHintNamesTheTargetChannel() {
+        launch()
+        selectTarget(ChatTarget.Channel(1, "Lounge"))
+        assertThat(editor.hint.toString()).isEqualTo(activity.getString(R.string.messageToChannel, "Lounge"))
+    }
+
+    /** No target and no session channel: nothing to name. */
+    @Test
+    fun theHintIsClearedWhenThereIsNothingToName() {
+        model.value = model(self = false)
+        launch()
+        assertThat(editor.hint).isNull()
+    }
+
+    /** The session usually synchronizes after the view exists, so the hint must be set then too. */
+    @Test
+    fun theHintIsSetWhenTheSessionSynchronizesAfterTheView() {
+        launch(withSession = false)
+        assertThat(editor.hint.toString()).isEqualTo(activity.getString(R.string.send_message))
+        activity.bind(session)
+        drainMainUntil { editor.hint.toString() != activity.getString(R.string.send_message) }
+        assertThat(editor.hint.toString()).isEqualTo(activity.getString(R.string.messageToChannel, "Root"))
+    }
+
+    /** The local user moved, and no target overrides the hint. */
+    @Test
+    fun theHintFollowsTheLocalUserIntoANewChannel() {
+        launch()
+        moveToTheLounge()
+        assertThat(editor.hint.toString()).isEqualTo(activity.getString(R.string.messageToChannel, "Lounge"))
+    }
+
+    @Test
+    fun theHintDoesNotFollowSomebodyElseIntoANewChannel() {
+        launch()
+        model.value = model(annIn = 2)
+        idleMainLooper()
+        assertThat(editor.hint.toString()).isEqualTo(activity.getString(R.string.messageToChannel, "Root"))
+    }
+
+    @Test
+    fun theHintDoesNotFollowTheLocalUserWhileATargetIsSet() {
+        launch()
+        selectTarget(ChatTarget.User(42, "Ann"))
+        moveToTheLounge()
+        assertThat(editor.hint.toString()).isEqualTo(activity.getString(R.string.messageToUser, "Ann"))
+    }
+
+    /**
+     * `android:enabled="false"` on an `ImageButton` is inert (see `ChatLayoutTest`), and the text
+     * watcher only fires on a change, so the initial state has to be set in code.
+     */
+    @Test
+    fun theSendButtonStartsDisabledAndFollowsTheEditor() {
+        launch()
+        assertThat(sendButton.isEnabled).isFalse()
+        editor.setText("hi")
+        assertThat(sendButton.isEnabled).isTrue()
+        editor.setText("")
+        assertThat(sendButton.isEnabled).isFalse()
+    }
+
+    @Test
+    fun sendingTextMarksItUpAndGoesToTheSessionChannel() {
+        launch()
+        send("see http://x.example/ ok")
+        verify {
+            actions.sendChannelTextMessage(
+                1,
+                "see <a href=\"http://x.example/\">http://x.example/</a> ok",
+                false,
+            )
+        }
+        assertThat(editor.text.toString()).isEmpty()
+    }
+
+    @Test
+    fun typedMarkdownIsSentAsHtmlAndTypedHtmlIsEscaped() {
+        launch()
+        send("**hi** <b>there</b>")
+        verify { actions.sendChannelTextMessage(1, "<b>hi</b> &lt;b&gt;there&lt;/b&gt;", false) }
+    }
+
+    @Test
+    fun withoutMarkdownTheTextIsSentAsBefore() {
+        PreferenceManager.getDefaultSharedPreferences(ApplicationProvider.getApplicationContext())
+            .edit().putBoolean(Settings.MARKDOWN.key, false).commit()
+        launch()
+        send("**hi** <b>there</b>")
+        verify { actions.sendChannelTextMessage(1, "**hi** <b>there</b>", false) }
+    }
+
+    @Test
+    fun sendingWithATargetGoesToThatUserOrChannel() {
+        every { actions.sendUserTextMessage(any(), any()) } returns textMessage("out")
+        launch()
+        selectTarget(ChatTarget.User(42, "Ann"))
+        send("hi")
+        selectTarget(ChatTarget.Channel(9, "Lounge"))
+        send("ho")
+        verify { actions.sendUserTextMessage(42, "hi") }
+        verify { actions.sendChannelTextMessage(9, "ho", false) }
+    }
+
+    @Test
+    fun anEmptyEditorSendsNothing() {
+        launch()
+        sendButton.performClick()
+        verify(exactly = 0) { actions.sendChannelTextMessage(any(), any(), any()) }
+    }
+
+    @Test
+    fun aDisconnectWhileSendingIsSwallowed() {
+        launch()
+        session.stubState(SessionState.Disconnected())
+        send("hi")
+        assertThat(editor.text.toString()).isEqualTo("hi")
+    }
+
+    private fun openViewers(): Int =
+        fragment.parentFragmentManager.fragments.count { it is ImageViewerDialogFragment }
+
+    /**
+     * `show(fm, tag)` does not deduplicate by tag, so two quick taps would open two viewers
+     * exporting to one share path.
+     */
+    @Test
+    fun aSecondTapWhileTheViewerIsOpenDoesNotOpenASecond() {
+        launch()
+        fragment.openImageViewer("data:image/png;base64,AAAA")
+        fragment.openImageViewer("data:image/png;base64,AAAA")
+        idleMainLooper()
+        assertThat(openViewers()).isEqualTo(1)
+    }
+
+    @Test
+    fun theViewerOpensAgainAfterItIsDismissed() {
+        launch()
+        fragment.openImageViewer("data:image/png;base64,AAAA")
+        idleMainLooper()
+        (fragment.parentFragmentManager.findFragmentByTag(ImageViewerDialogFragment.TAG)
+            as ImageViewerDialogFragment).dismissNow()
+        idleMainLooper()
+        assertThat(openViewers()).isEqualTo(0)
+        fragment.openImageViewer("data:image/png;base64,AAAA")
+        idleMainLooper()
+        assertThat(openViewers()).isEqualTo(1)
+    }
+
+    @Test
+    fun theSessionIdIsTheLiveOneWhileConnected() {
+        launch()
+        assertThat(fragment.sessionId()).isEqualTo(7)
+    }
+
+    /** Asked on every bind, and a disconnect with the log on screen is ordinary. */
+    @Test
+    fun theSessionIdSurvivesADisconnect() {
+        launch()
+        session.stubState(SessionState.Disconnected())
+        assertThat(fragment.sessionId()).isNotEqualTo(7)
+    }
+
+    @Test
+    fun theSessionIdIsAbsentWithNoSessionAndWhenNotConnected() {
+        launch(withSession = false)
+        val noSession = fragment.sessionId()
+        activity.bind(session)
+        session.stubState(SessionState.Reconnecting(null))
+        assertThat(fragment.sessionId()).isEqualTo(noSession)
+    }
+
+    /**
+     * "No session" must be a value no actor can take: a message without a sender has the actor -1,
+     * so -1 would render actorless messages as the local user's.
+     */
+    @Test
+    fun theAbsentSessionIdCannotCollideWithAMessageActor() {
+        launch(withSession = false)
+        assertThat(fragment.sessionId()).isNotEqualTo(-1)
+    }
+
+    private val progress: View get() = fragment.requireView().findViewById(R.id.chat_image_progress)
+
+    private fun smallBitmap(): Bitmap = Bitmap.createBitmap(8, 8, Bitmap.Config.ARGB_8888)
+
+    @Test
+    fun aConfirmedImageIsSentAsADataUriAndTheSpinnerGoesAway() {
+        model.value = model(settings = settings(0))
+        launch()
+        fragment.sendImage(smallBitmap())
+        val sent = slot<String>()
+        drainMainUntil {
+            runCatching { verify { actions.sendChannelTextMessage(any(), capture(sent), any()) } }.isSuccess
+        }
+        assertThat(sent.captured).startsWith("<img src=\"data:image/jpeg;base64,")
+        assertThat(progress.visibility).isEqualTo(View.GONE)
+    }
+
+    /** A dialog stands between picking and confirming, so the session is fetched again at send. */
+    @Test
+    fun anImageConfirmedAfterTheSessionWentAwaySendsNothing() {
+        launch()
+        unbind()
+        fragment.sendImage(smallBitmap())
+        idleMainLooper()
+        verify(exactly = 0) { actions.sendChannelTextMessage(any(), any(), any()) }
+        assertThat(progress.visibility).isEqualTo(View.GONE)
+    }
+
+    /** Connected at the tap, gone by the time the encoder asks. */
+    @Test
+    fun aDisconnectWhileEncodingAnImageSendsNothing() {
+        launch()
+        model.value = model()
+        fragment.sendImage(smallBitmap())
+        drainMainUntil { progress.visibility == View.GONE }
+        verify(exactly = 0) { actions.sendChannelTextMessage(any(), any(), any()) }
+    }
+
+    /** An image no quality rung can squeeze under the server's limit is reported, not sent. */
+    @Test
+    fun anImageThatCannotBeMadeToFitIsNotSent() {
+        model.value = model(settings = settings(10))
+        launch()
+        fragment.sendImage(smallBitmap())
+        drainMainUntil { progress.visibility == View.GONE }
+        verify(exactly = 0) { actions.sendChannelTextMessage(any(), any(), any()) }
+    }
+
+    private fun settings(imageMessageLength: Int): ServerSettings =
+        mockk(relaxed = true) { every { this@mockk.imageMessageLength } returns imageMessageLength }
+
+    private fun disconnect() {
+        session.stubState(SessionState.Disconnected())
+    }
+
+    @Test
+    fun theHintIsLeftAloneWhileDisconnected() {
+        launch()
+        val before = editor.hint.toString()
+        disconnect()
+        selectTarget(ChatTarget.User(42, "Ann"))
+        assertThat(editor.hint.toString()).isEqualTo(before)
+    }
+
+    @Test
+    fun aChannelJoinArrivingAfterTheDisconnectIsIgnored() {
+        launch()
+        val before = editor.hint.toString()
+        disconnect()
+        moveToTheLounge()
+        assertThat(editor.hint.toString()).isEqualTo(before)
+    }
+
+    @Test
+    fun aTargetSelectedWhilePausedIsShownOnResumption() {
+        launch()
+        controller.pause()
+        selectTarget(ChatTarget.User(42, "Ann"))
+        assertThat(editor.hint.toString()).isEqualTo(activity.getString(R.string.messageToChannel, "Root"))
+        controller.resume()
+        idleMainLooper()
+        assertThat(editor.hint.toString()).isEqualTo(activity.getString(R.string.messageToUser, "Ann"))
+    }
+
+    @Test
+    fun clearingOffersToUndoIt() {
+        add(info("older"))
+        launch()
+
+        fragment.clear()
+        drainMainUntil { itemCount() == 0 }
+        assertThat(activity.snackbarText()).isEqualTo(activity.getString(R.string.chat_cleared))
+        snackbarAction(fragment.requireView()).performClick()
+        drainMainUntil { itemCount() == 1 }
+
+        assertThat(chat.messages.value.map { it.body }).containsExactly("older")
+    }
+
+    @Test
+    fun theClearItemIsInTheOverflow() {
+        launch()
+        val menu = MenuBuilder(activity)
+        activity.onCreatePanelMenu(Window.FEATURE_OPTIONS_PANEL, menu)
+
+        assertThat((menu.findItem(R.id.menu_clear_chat) as MenuItemImpl).requiresOverflow()).isTrue()
+    }
+
+    @Test
+    fun theClearMenuItemClearsTheLog() {
+        add(info("older"))
+        launch()
+        val item: MenuItem = mockk(relaxed = true) { every { itemId } returns R.id.menu_clear_chat }
+        assertThat(fragment.onMenuItemSelected(item)).isTrue()
+        drainMainUntil { itemCount() == 0 }
+        assertThat(chat.messages.value).isEmpty()
+    }
+
+    private fun tapUpload() {
+        val button = fragment.requireView().findViewById<ImageButton>(R.id.chatImageSend)
+        // performClick ignores isEnabled and visibility, so the state is asserted explicitly.
+        assertThat(button.isEnabled).isTrue()
+        assertThat(button.visibility).isEqualTo(View.VISIBLE)
+        button.performClick()
+        idleMainLooper()
+    }
+
+    private fun startedAction(): String? =
+        shadowOf(activity).nextStartedActivityForResult?.intent?.action
+
+    @Test
+    @Config(sdk = [31])
+    fun onAndroid12TheUploadButtonAsksForStoragePermissionFirst() {
+        launch()
+        tapUpload()
+        assertThat(startedAction()).isEqualTo("android.content.pm.action.REQUEST_PERMISSIONS")
+    }
+
+    @Test
+    @Config(sdk = [33])
+    fun fromAndroid13OnTheUploadButtonOpensThePickerDirectly() {
+        launch()
+        tapUpload()
+        assertThat(startedAction()).isEqualTo(Intent.ACTION_GET_CONTENT)
+    }
+
+    @Test
+    @Config(sdk = [31])
+    fun onAndroid12AGrantedStoragePermissionGoesStraightToThePicker() {
+        shadowOf(RuntimeEnvironment.getApplication())
+            .grantPermissions(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+        launch()
+        tapUpload()
+        assertThat(startedAction()).isEqualTo(Intent.ACTION_GET_CONTENT)
+    }
+
+    private fun latestDialog(): AlertDialog = ShadowDialog.getLatestDialog() as AlertDialog
+
+    @Test
+    fun theConfirmationShowsThePickedImageAndSendsOnlyOnOk() {
+        model.value = model(settings = settings(0))
+        launch()
+        val bitmap = smallBitmap()
+        fragment.confirmImage(bitmap)
+        idleMainLooper()
+        val dialog = latestDialog()
+        assertThat(dialog.isShowing).isTrue()
+        val preview = dialog.window!!.decorView.firstImageView()
+        assertThat(preview).isNotNull()
+        assertThat((preview!!.drawable as BitmapDrawable).bitmap).isSameInstanceAs(bitmap)
+        assertThat(preview.contentDescription.toString())
+            .isEqualTo(activity.getString(R.string.image_confirm_send))
+        assertThat(preview.adjustViewBounds).isTrue()
+        assertThat(preview.scaleType).isEqualTo(ImageView.ScaleType.FIT_CENTER)
+        assertThat(preview.maxHeight).isEqualTo(activity.resources.displayMetrics.heightPixels / 3)
+
+        dialog.getButton(DialogInterface.BUTTON_NEGATIVE).performClick()
+        idleMainLooper()
+        verify(exactly = 0) { actions.sendChannelTextMessage(any(), any(), any()) }
+    }
+
+    @Test
+    fun theConfirmationSendsOnOk() {
+        model.value = model(settings = settings(0))
+        launch()
+        fragment.confirmImage(smallBitmap())
+        idleMainLooper()
+        latestDialog().getButton(DialogInterface.BUTTON_POSITIVE).performClick()
+        drainMainUntil { runCatching { verify { actions.sendChannelTextMessage(any(), any(), any()) } }.isSuccess }
+    }
+
+    private fun View.firstImageView(): ImageView? {
+        if (this is ImageView && contentDescription != null) return this
+        if (this is ViewGroup) {
+            for (i in 0 until childCount) getChildAt(i).firstImageView()?.let { return it }
+        }
+        return null
+    }
+
+    /** The hint sets the compose box width, so a changed hint has to reach layout. */
+    @Test
+    fun changingTheHintAsksForAFreshLayout() {
+        launch()
+        layOutHost()
+        assertThat(editor.isLayoutRequested).isFalse()
+        selectTarget(ChatTarget.User(42, "Ann"))
+        assertThat(editor.isLayoutRequested).isTrue()
+    }
+
+    /**
+     * The server does not echo a message back to its sender, so this is what puts your own message
+     * into your log.
+     */
+    @Test
+    fun aSentMessageAppearsInTheListImmediately() {
+        every { actions.sendChannelTextMessage(any(), any(), any()) } answers {
+            textMessage("hi there").also { session.stubEvents().tryEmit(HumlaEvent.MessageSent(it)) }
+        }
+        launch()
+        send("hi there")
+        drainMainUntil { itemCount() == 1 }
+        assertThat(itemCount()).isEqualTo(1)
+    }
+
+    /** An automatic reconnect shows the log as it is rather than appending it again. */
+    @Test
+    fun aReconnectShowsTheLogWithoutDuplicatingIt() {
+        add(info("a"))
+        add(info("b"))
+        launch()
+        add(info("live"))
+        drainMainUntil { itemCount() == 3 }
+        session.stubState(SessionState.ConnectionLost(1L, 1, null))
+        session.stubState(SessionState.Reconnecting(null))
+        session.stubState(SessionState.Connected)
+        idleMainLooper()
+        assertThat(itemCount()).isEqualTo(3)
+    }
+
+    @Test
+    fun theListSticksToTheNewestMessage() {
+        launch()
+        assertThat((list.layoutManager as LinearLayoutManager).stackFromEnd).isTrue()
+    }
+
+    /**
+     * Detaching the adapter recycles the bound rows, which cancels their thumbnail coroutines.
+     */
+    @Test
+    fun theViewTeardownDetachesTheAdapter() {
+        launch()
+        val recycler = list
+        activity.supportFragmentManager.beginTransaction().remove(parent).commitNow()
+        idleMainLooper()
+        assertThat(recycler.adapter).isNull()
+    }
+
+    /**
+     * An exception escaping `lifecycleScope.launch` goes to the thread's uncaught-exception
+     * handler, so that is where the encode's catch is checked.
+     */
+    @Test
+    fun aDisconnectWhileEncodingDoesNotEscapeTheCoroutine() {
+        val escaped = mutableListOf<Throwable>()
+        val previous = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { _, e -> escaped += e }
+        try {
+            model.value = model(settings = settings(0))
+            launch()
+            model.value = model()
+            fragment.sendImage(smallBitmap())
+            drainMainUntil { progress.visibility == View.GONE }
+        } finally {
+            Thread.setDefaultUncaughtExceptionHandler(previous)
+        }
+        assertThat(escaped).isEmpty()
+    }
+
+    /**
+     * `lifecycleScope` is `Dispatchers.Main.immediate`, so with a loader that does not suspend the
+     * bitmap is on the view before `bindViewHolder` returns.
+     */
+    @Test
+    fun theAdapterIsGivenAScopeThatDispatchesOnTheMainThread() {
+        installThumbnailLoader(smallBitmap())
+        add(info("<img src=\"data:image/png;base64,AAAA\"/>"))
+        launch()
+        drainMainUntil { itemCount() == 1 }
+        val adapter = list.adapter as ChatAdapter
+        assertThat(adapter.getItemViewType(0)).isEqualTo(ChatAdapter.TYPE_IMAGE)
+        val holder = adapter.createViewHolder(list, ChatAdapter.TYPE_IMAGE) as ChatAdapter.ImageHolder
+        adapter.bindViewHolder(holder, 0)
+        assertThat(holder.image.drawable).isNotNull()
+    }
+
+    // ---- seams: what the fragment hands the adapter, driven through a real row ---------------
+
+    /**
+     * Lays the host out for real: `performClick()` ignores `isEnabled`, a touch sent straight to a
+     * child ignores its visibility, and an unattached view queues its click, so row tests enter at
+     * the `RecyclerView` of a laid-out window.
+     */
+    private fun layOutHost() = activity.findViewById<View>(android.R.id.content).layOut()
+
+    /** A loader that answers `Ready` without suspending, so a bound row really has a bitmap. */
+    private fun installThumbnailLoader(bitmap: Bitmap = Bitmap.createBitmap(64, 64, Bitmap.Config.ARGB_8888)):
+        Pair<ChatImageLoader, MutableList<Triple<String, Int, Int>>> {
+        val asked = mutableListOf<Triple<String, Int, Int>>()
+        val loader = mockk<ChatImageLoader>()
+        coEvery { loader.loadThumbnail(any(), any(), any()) } answers {
+            asked += Triple(firstArg(), secondArg(), thirdArg())
+            ImageResult.Ready(bitmap)
+        }
+        ChatImageLoaders.setForTests(loader)
+        return loader to asked
+    }
+
+    private fun imageMessage(src: String = "data:image/png;base64,AAAA", trailing: String = "") =
+        info("<img src=\"$src\"/>$trailing")
+
+    /** Tapping an image row opens the viewer through the `onImageClicked` wire. */
+    @Test
+    fun tappingAPictureInTheLogOpensTheViewerOnIt() {
+        val (loader, _) = installThumbnailLoader()
+        // The viewer fetches the full image; this test is only about opening it.
+        coEvery { loader.fetchBytes(any()) } throws ImageFetchException(ImageError.NETWORK)
+        add(imageMessage("data:image/png;base64,TAPPED"))
+        launch()
+        drainMainUntil { itemCount() == 1 }
+        layOutHost()
+        val row = list.getChildAt(0)
+        assertThat(row).isNotNull()
+        val image = row.findViewById<ImageView>(R.id.list_chat_item_image)
+        assertThat(image.visibility).isEqualTo(View.VISIBLE)
+        assertThat(image.width).isGreaterThan(0)
+
+        tapThrough(list, image)
+
+        val viewer = fragment.parentFragmentManager
+            .findFragmentByTag(ImageViewerDialogFragment.TAG) as ImageViewerDialogFragment
+        assertThat(viewer.requireArguments().getString("source"))
+            .isEqualTo("data:image/png;base64,TAPPED")
+    }
+
+    /**
+     * The fragment supplies its session id to the adapter, so your own messages align right. The
+     * fixture carries both actors to tell the two apart.
+     */
+    @Test
+    fun yourOwnMessagesAreAlignedToYourSideAndOtherPeoplesAreNot() {
+        add(IChatMessage.TextMessage(textMessage("mine", actor = 7, actorName = "Me")))
+        add(IChatMessage.TextMessage(textMessage("theirs", actor = 9, actorName = "Ann")))
+        launch()
+        drainMainUntil { itemCount() == 2 }
+        layOutHost()
+        val adapter = list.adapter as ChatAdapter
+        val mine = adapter.createViewHolder(list, ChatAdapter.TYPE_TEXT)
+        adapter.bindViewHolder(mine, 0)
+        val theirs = adapter.createViewHolder(list, ChatAdapter.TYPE_TEXT)
+        adapter.bindViewHolder(theirs, 1)
+        // Masked: LinearLayout.setGravity ORs a vertical gravity in, so the raw int carries bits
+        // this claim is not about.
+        assertThat(mine.box.gravity and Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(Gravity.RIGHT)
+        assertThat(theirs.box.gravity and Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(Gravity.LEFT)
+    }
+
+    // ---- the long-press menu: save or share a picture from the log ---------------------------
+
+    private val png = TestImages.png(4, 4)
+    private val picture = "data:image/png;base64,PICTURE"
+
+    /** The log shows one picture whose full bytes are [png]; the actions run without leaving the thread. */
+    private fun launchWithAPicture(): ChatImageLoader {
+        val (loader, _) = installThumbnailLoader()
+        coEvery { loader.fetchBytes(any()) } returns png
+        add(imageMessage(picture))
+        launch()
+        drainMainUntil { itemCount() == 1 }
+        fragment.imageIoDispatcher = Dispatchers.Unconfined
+        return loader
+    }
+
+    /** Long-presses the laid-out picture row, as a finger would, and returns the menu it opened. */
+    private fun longPressThePicture(): PopupMenu {
+        layOutHost()
+        val image = list.getChildAt(0).findViewById<ImageView>(R.id.list_chat_item_image)
+        assertThat(image.performLongClick()).isTrue()
+        return ShadowPopupMenu.getLatestPopupMenu()
+    }
+
+    private fun PopupMenu.choose(id: Int) {
+        assertThat(shadowOf(this).onMenuItemClickListener.onMenuItemClick(menu.findItem(id))).isTrue()
+        idleMainLooper()
+    }
+
+    private fun inserts() = FixedRowMediaProvider.calls.filter { it.op == FixedRowMediaProvider.Op.INSERT }
+
+    @Test
+    fun longPressingAPictureOffersSaveAndShare() {
+        launchWithAPicture()
+
+        val popup = longPressThePicture()
+
+        assertThat(shadowOf(popup).isShowing).isTrue()
+        val ids = (0 until popup.menu.size()).map { popup.menu.getItem(it).itemId }
+        assertThat(ids).containsExactly(R.id.menu_chat_image_save, R.id.menu_chat_image_share).inOrder()
+    }
+
+    @Test
+    fun savingFromTheLogStoresTheFetchedBytesAndOffersToViewThem() {
+        launchWithAPicture()
+        val written = ByteArrayOutputStream()
+        FixedRowMediaProvider.install(into = written)
+
+        longPressThePicture().choose(R.id.menu_chat_image_save)
+
+        assertThat(inserts().single().values!!.getAsString(android.provider.MediaStore.MediaColumns.RELATIVE_PATH))
+            .isEqualTo(ImageGallerySaver.RELATIVE_PATH)
+        assertThat(written.toByteArray()).isEqualTo(png)
+        assertThat(activity.snackbarText()).isEqualTo(activity.getString(R.string.chat_image_saved))
+        val action = snackbarAction(fragment.requireView())
+        assertThat(action.text.toString()).isEqualTo(activity.getString(R.string.chat_image_view))
+        action.performClick()
+        val view = shadowOf(activity).nextStartedActivity
+        assertThat(view.action).isEqualTo(Intent.ACTION_VIEW)
+        assertThat(view.data).isEqualTo(FixedRowMediaProvider.ROW)
+        assertThat(view.type).isEqualTo("image/png")
+    }
+
+    @Test
+    fun sharingFromTheLogStartsAChooserForTheFetchedBytes() {
+        launchWithAPicture()
+
+        longPressThePicture().choose(R.id.menu_chat_image_share)
+
+        val chooser = shadowOf(activity).nextStartedActivity
+        assertThat(chooser.action).isEqualTo(Intent.ACTION_CHOOSER)
+        val send = chooser.getParcelableExtra(Intent.EXTRA_INTENT, Intent::class.java)!!
+        assertThat(send.action).isEqualTo(Intent.ACTION_SEND)
+        assertThat(send.type).isEqualTo("image/png")
+        val uri = send.clipData!!.getItemAt(0).uri
+        assertThat(uri.authority).isEqualTo(activity.packageName + ".fileprovider")
+        assertThat(activity.contentResolver.openInputStream(uri)!!.use { it.readBytes() }).isEqualTo(png)
+    }
+
+    /**
+     * The log holds only scaled thumbnails, so each action on an inline picture decodes its source
+     * once, and never twice.
+     */
+    @Test
+    fun eachActionFromTheLogFetchesOnce() {
+        val loader = launchWithAPicture()
+        FixedRowMediaProvider.install(into = ByteArrayOutputStream())
+
+        longPressThePicture().choose(R.id.menu_chat_image_save)
+        coVerify(exactly = 1) { loader.fetchBytes(picture) }
+
+        longPressThePicture().choose(R.id.menu_chat_image_share)
+        coVerify(exactly = 2) { loader.fetchBytes(picture) }
+    }
+
+    /**
+     * One action at a time: a second save would store a second copy, and a share next to a running
+     * one would write the same staging file. The write is parked so the later choices land in it.
+     */
+    @Test
+    fun aSecondActionWhileTheFirstIsRunningIsRefused() {
+        launchWithAPicture()
+        FixedRowMediaProvider.install(into = ByteArrayOutputStream())
+        val parked = QueueingDispatcher()
+        fragment.imageIoDispatcher = parked
+
+        fragment.saveImage(picture)
+        fragment.saveImage(picture)
+        fragment.shareImage(picture)
+        parked.drain()
+        idleMainLooper()
+
+        assertThat(inserts()).hasSize(1)
+        assertThat(shadowOf(activity).nextStartedActivity).isNull()
+
+        // ...and once it is done, the next one runs.
+        fragment.saveImage(picture)
+        parked.drain()
+        idleMainLooper()
+        assertThat(inserts()).hasSize(2)
+    }
+
+    @Test
+    fun aPictureThatCannotBeFetchedIsNotSavedAndSaysSo() {
+        val loader = launchWithAPicture()
+        coEvery { loader.fetchBytes(any()) } throws ImageFetchException(ImageError.NETWORK)
+        FixedRowMediaProvider.install(into = ByteArrayOutputStream())
+
+        longPressThePicture().choose(R.id.menu_chat_image_save)
+
+        assertThat(activity.snackbarText()).isEqualTo(activity.getString(R.string.chat_image_save_failed))
+        assertThat(FixedRowMediaProvider.calls).isEmpty()
+    }
+
+    @Test
+    fun aPictureThatCannotBeFetchedIsNotSharedAndSaysSo() {
+        val loader = launchWithAPicture()
+        coEvery { loader.fetchBytes(any()) } throws ImageFetchException(ImageError.NETWORK)
+
+        longPressThePicture().choose(R.id.menu_chat_image_share)
+
+        assertThat(activity.snackbarText()).isEqualTo(activity.getString(R.string.chat_image_load_failed))
+        assertThat(shadowOf(activity).nextStartedActivity).isNull()
+    }
+
+    /** A full disk after a good fetch: the row goes again, the user is told, nothing is opened. */
+    @Test
+    fun aSaveFromTheLogThatCannotBeWrittenSaysSoAndLeavesNoRow() {
+        launchWithAPicture()
+        FixedRowMediaProvider.install(into = FailingOutputStream())
+
+        longPressThePicture().choose(R.id.menu_chat_image_save)
+
+        assertThat(activity.snackbarText()).isEqualTo(activity.getString(R.string.chat_image_save_failed))
+        assertThat(FixedRowMediaProvider.calls.map { it.op }).contains(FixedRowMediaProvider.Op.DELETE)
+        assertThat(shadowOf(activity).nextStartedActivity).isNull()
+    }
+
+    /**
+     * The menu is a window of the activity, so replacing the fragment (a disconnect does) would
+     * leave it on screen with listeners into a fragment that is gone.
+     */
+    @Test
+    fun theMenuGoesAwayWithTheView() {
+        launchWithAPicture()
+        val popup = longPressThePicture()
+
+        activity.supportFragmentManager.beginTransaction().remove(parent).commitNow()
+        idleMainLooper()
+
+        assertThat(shadowOf(popup).isShowing).isFalse()
+    }
+
+    /** A choice already on its way when the view went is dropped, not a crash. */
+    @Test
+    fun aChoiceFromAMenuThatOutlivedTheViewIsIgnored() {
+        launchWithAPicture()
+        FixedRowMediaProvider.install(into = ByteArrayOutputStream())
+        val popup = longPressThePicture()
+        activity.supportFragmentManager.beginTransaction().remove(parent).commitNow()
+        idleMainLooper()
+
+        popup.choose(R.id.menu_chat_image_save)
+        popup.choose(R.id.menu_chat_image_share)
+
+        assertThat(FixedRowMediaProvider.calls).isEmpty()
+        assertThat(shadowOf(activity).nextStartedActivity).isNull()
+    }
+
+    private val remote = "https://x.org/a.png"
+
+    /**
+     * A remote picture is saved from the viewer, on the bytes it shows: a fetch of its own behind
+     * the thumbnail would let the host answer it with a picture nobody saw. The viewer's fetch is
+     * the only one.
+     */
+    @Test
+    fun savingARemotePictureFromTheLogGoesThroughTheViewer() {
+        val loader = launchWithAPicture()
+        coEvery { loader.decodeFull(any(), any(), any()) } returns ImageResult.Failed(ImageError.NETWORK)
+        FixedRowMediaProvider.install(into = ByteArrayOutputStream())
+
+        fragment.saveImage(remote)
+        idleMainLooper()
+
+        val viewer = fragment.parentFragmentManager
+            .findFragmentByTag(ImageViewerDialogFragment.TAG) as ImageViewerDialogFragment
+        assertThat(viewer.requireArguments().getString(ImageViewerDialogFragment.ARG_SOURCE)).isEqualTo(remote)
+        assertThat(viewer.requireArguments().getString(ImageViewerDialogFragment.ARG_ACTION))
+            .isEqualTo(ImageViewerDialogFragment.Action.SAVE.name)
+        coVerify(exactly = 1) { loader.fetchBytes(remote) }
+        assertThat(FixedRowMediaProvider.calls).isEmpty()
+    }
+
+    @Test
+    fun sharingARemotePictureFromTheLogGoesThroughTheViewer() {
+        val loader = launchWithAPicture()
+        coEvery { loader.decodeFull(any(), any(), any()) } returns ImageResult.Failed(ImageError.NETWORK)
+
+        fragment.shareImage(remote)
+        idleMainLooper()
+
+        val viewer = fragment.parentFragmentManager
+            .findFragmentByTag(ImageViewerDialogFragment.TAG) as ImageViewerDialogFragment
+        assertThat(viewer.requireArguments().getString(ImageViewerDialogFragment.ARG_ACTION))
+            .isEqualTo(ImageViewerDialogFragment.Action.SHARE.name)
+        coVerify(exactly = 1) { loader.fetchBytes(remote) }
+        assertThat(shadowOf(activity).nextStartedActivity).isNull()
+    }
+
+    /** The bounds the fragment measures out of `chat_thumbnail_max` are what the loader is asked for. */
+    @Test
+    fun theThumbnailIsAskedForAtTheDimensionResourcesBound() {
+        val (_, asked) = installThumbnailLoader()
+        add(imageMessage())
+        launch()
+        drainMainUntil { itemCount() == 1 }
+        layOutHost()
+        val expected = activity.resources.getDimensionPixelSize(R.dimen.chat_thumbnail_max)
+        assertThat(expected).isGreaterThan(0)
+        assertThat(asked).isNotEmpty()
+        assertThat(asked.first().second).isEqualTo(expected)
+        assertThat(asked.first().third).isEqualTo(expected)
+    }
+
+    /** The parser the fragment builds carries the localised stand-in for a second picture. */
+    @Test
+    fun aSecondPictureInOneMessageIsWrittenOutAsThePlaceholder() {
+        installThumbnailLoader()
+        add(info("<img src=\"data:image/png;base64,AAAA\"/>tail<img src=\"data:image/png;base64,BBBB\"/>"))
+        launch()
+        drainMainUntil { itemCount() == 1 }
+        layOutHost()
+        val adapter = list.adapter as ChatAdapter
+        val holder = adapter.createViewHolder(list, ChatAdapter.TYPE_IMAGE) as ChatAdapter.ImageHolder
+        adapter.bindViewHolder(holder, 0)
+        assertThat(holder.textAfter.text.toString())
+            .contains(activity.getString(R.string.chat_image_placeholder))
+    }
+
+    private fun registerImage(uri: Uri, bytes: ByteArray) {
+        shadowOf(activity.contentResolver).registerInputStreamSupplier(uri) {
+            java.io.ByteArrayInputStream(bytes)
+        }
+    }
+
+    /** Granting the storage permission opens the picker. */
+    @Test
+    @Config(sdk = [31])
+    fun grantingTheStoragePermissionOpensThePicker() {
+        launch()
+        fragment.onReadPermissionResult(true)
+        idleMainLooper()
+        assertThat(startedAction()).isEqualTo(Intent.ACTION_GET_CONTENT)
+        assertThat(activity.snackbarText()).isNull()
+    }
+
+    @Test
+    @Config(sdk = [31])
+    fun refusingTheStoragePermissionSaysSoAndOpensNothing() {
+        launch()
+        fragment.onReadPermissionResult(false)
+        idleMainLooper()
+        assertThat(activity.snackbarText()).isEqualTo(activity.getString(R.string.permission_denied_storage))
+        assertThat(startedAction()).isNull()
+    }
+
+    @Test
+    fun cancellingThePickerDoesNothing() {
+        launch()
+        fragment.onImagePickResult(null)
+        idleMainLooper()
+        assertThat(progress.visibility).isEqualTo(View.GONE)
+        assertThat(ShadowDialog.getLatestDialog()).isNull()
+        assertThat(activity.snackbarText()).isNull()
+    }
+
+    /**
+     * The outgoing path end to end over the real `OutgoingImagePreparer` and a real JPEG.
+     * `@GraphicsMode(NATIVE)` here only: `ImageDecoder` needs it, and it is slower.
+     */
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    fun aPickedPhotoIsPreparedAndShownForConfirmation() {
+        launch()
+        val uri = Uri.parse("content://se.lublin.mumla.test/photo.jpg")
+        registerImage(uri, TestImages.jpeg(1200, 900))
+        fragment.onImagePickResult(uri)
+        assertThat(progress.visibility).isEqualTo(View.VISIBLE)
+        drainMainUntil { ShadowDialog.getLatestDialog() != null }
+        idleMainLooper()
+        assertThat(progress.visibility).isEqualTo(View.GONE)
+
+        val preview = latestDialog().window!!.decorView.firstImageView()!!
+        val shown = (preview.drawable as BitmapDrawable).bitmap
+        // Bounded by height: 1200 x 900 -> 533 x 400.
+        assertThat(shown.width).isEqualTo(533)
+        assertThat(shown.height).isEqualTo(OutgoingImagePreparer.MAX_HEIGHT)
+    }
+
+    /** A uri that is not an image is reported rather than shown. */
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    fun aPickedFileThatIsNotAnImageIsReportedAndOpensNoDialog() {
+        launch()
+        val uri = Uri.parse("content://se.lublin.mumla.test/notes.txt")
+        registerImage(uri, "definitely not an image".toByteArray())
+        fragment.onImagePickResult(uri)
+        drainMainUntil { activity.snackbarText() != null }
+        assertThat(activity.snackbarText()).isEqualTo(activity.getString(R.string.image_decode_failed))
+        assertThat(ShadowDialog.getLatestDialog()).isNull()
+        assertThat(progress.visibility).isEqualTo(View.GONE)
+    }
+
+    @Test
+    fun aPickedImageWithNoSessionIsDroppedBeforeAnythingIsDecoded() {
+        launch()
+        unbind()
+        fragment.onImagePickResult(Uri.parse("content://se.lublin.mumla.test/x.jpg"))
+        idleMainLooper()
+        assertThat(progress.visibility).isEqualTo(View.GONE)
+        assertThat(ShadowDialog.getLatestDialog()).isNull()
+    }
+
+    @Test
+    fun aPickedImageWhileDisconnectedIsDroppedBeforeAnythingIsDecoded() {
+        launch()
+        disconnect()
+        fragment.onImagePickResult(Uri.parse("content://se.lublin.mumla.test/x.jpg"))
+        idleMainLooper()
+        assertThat(progress.visibility).isEqualTo(View.GONE)
+        assertThat(ShadowDialog.getLatestDialog()).isNull()
+    }
+
+    @Test
+    fun theSpinnerIsUpWhileAnImageIsBeingEncoded() {
+        model.value = model(settings = settings(0))
+        launch()
+        assertThat(progress.visibility).isEqualTo(View.GONE)
+        fragment.sendImage(smallBitmap())
+        assertThat(progress.visibility).isEqualTo(View.VISIBLE)
+        drainMainUntil { progress.visibility == View.GONE }
+    }
+
+    @Test
+    fun anImageThatCannotBeMadeToFitSaysSo() {
+        model.value = model(settings = settings(10))
+        launch()
+        fragment.sendImage(smallBitmap())
+        drainMainUntil { activity.snackbarText() != null }
+        assertThat(activity.snackbarText()).isEqualTo(activity.getString(R.string.image_too_large))
+    }
+
+    @Test
+    fun theListIsScrolledToTheNewestMessage() {
+        repeat(40) { add(info("m$it")) }
+        launch()
+        drainMainUntil { itemCount() == 40 }
+        layOutHost()
+        idleMainLooper()
+        val lm = list.layoutManager as LinearLayoutManager
+        assertThat(lm.findLastVisibleItemPosition()).isEqualTo(39)
+    }
+
+    /** The clear-chat item reaches the activity's menu while the chat is shown. */
+    @Test
+    fun theFragmentAddsItsOwnMenu() {
+        launch()
+        val menu = MenuBuilder(activity)
+        activity.onCreatePanelMenu(Window.FEATURE_OPTIONS_PANEL, menu)
+        assertThat(menu.findItem(R.id.menu_clear_chat)).isNotNull()
+    }
+
+    /**
+     * A hardware Enter sends. `TextView.doKeyDown` offers `KEYCODE_ENTER` to the listener as
+     * `IME_NULL` with the key event, so this uses a real key event; `onEditorAction(id)` would
+     * pass a null event and take the other branch.
+     */
+    @Test
+    fun aHardwareEnterInTheEditorSendsTheMessage() {
+        launch()
+        layOutHost()
+        editor.requestFocus()
+        editor.setText("typed")
+        editor.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER))
+        idleMainLooper()
+        verify { actions.sendChannelTextMessage(any(), eq("typed"), any()) }
+        assertThat(editor.text.toString()).isEmpty()
+    }
+
+    /** A soft action that is not Enter does not send. */
+    @Test
+    fun aSoftImeActionWithoutAKeyEventDoesNotSend() {
+        launch()
+        editor.setText("typed")
+        editor.onEditorAction(EditorInfo.IME_ACTION_SEND)
+        idleMainLooper()
+        verify(exactly = 0) { actions.sendChannelTextMessage(any(), any(), any()) }
+        assertThat(editor.text.toString()).isEqualTo("typed")
+    }
+}

@@ -74,7 +74,7 @@
             android:importantForAccessibility="no"
             android:textAppearance="?attr/textAppearanceTitleMedium" />
 
-        <se.lublin.mumla.preference.LevelMeterView
+        <koeln.becker.nomla.preference.LevelMeterView
             android:id="@+id/double_talk_meter"
             android:layout_width="match_parent"
             android:layout_height="20dp"

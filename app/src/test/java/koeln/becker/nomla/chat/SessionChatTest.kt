@@ -1,0 +1,219 @@
+/*
+ * Copyright (C) 2026 The Nomla Authors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package koeln.becker.nomla.chat
+
+import com.google.common.truth.Truth.assertThat
+import io.mockk.mockk
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.MutableSharedFlow
+import org.junit.Assert.assertThrows
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
+import se.lublin.humla.IHumlaSession
+import se.lublin.humla.model.Message
+import se.lublin.humla.session.HumlaEvent
+import se.lublin.humla.session.SessionState
+import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.testing.textMessage
+import koeln.becker.nomla.testing.stubEvents
+import koeln.becker.nomla.testing.stubState
+
+/** What of a session's events lands in its chat log, and how. */
+@RunWith(RobolectricTestRunner::class)
+class SessionChatTest {
+    private val app = RuntimeEnvironment.getApplication()
+    private val chat = SessionChat(NoticeFormatter(app), MainScope(), capacity = 3)
+    private val session = mockk<IHumlaSession>(relaxed = true)
+    private val state = session.stubState(SessionState.Connected)
+    private val events: MutableSharedFlow<HumlaEvent> = session.stubEvents()
+
+    init {
+        chat.follow(session)
+    }
+
+    private fun emit(vararg emitted: HumlaEvent) {
+        emitted.forEach { events.tryEmit(it) }
+        idleMainLooper()
+    }
+
+    private fun message(body: String): Message = textMessage(body, actor = 1, actorName = "alice")
+
+    @Test
+    fun itStartsEmpty() {
+        assertThat(chat.messages.value).isEmpty()
+    }
+
+    @Test
+    fun noticesLandPhrasedAndWithTheirLevel() {
+        val kick = HumlaEvent.UserKicked("Ann", "Mod", "spam", ban = false)
+
+        emit(
+            HumlaEvent.LogMessage(HumlaEvent.Level.WARNING, "careful"),
+            HumlaEvent.LogMessage(HumlaEvent.Level.ERROR, "broken"),
+            kick,
+        )
+
+        assertThat(chat.messages.value.map { (it as IChatMessage.InfoMessage).type to it.body }).containsExactly(
+            IChatMessage.InfoMessage.Type.WARNING to "careful",
+            IChatMessage.InfoMessage.Type.ERROR to "broken",
+            IChatMessage.InfoMessage.Type.WARNING to NoticeFormatter(app).format(kick),
+        ).inOrder()
+    }
+
+    @Test
+    fun receivedAndSentMessagesLandAsTheSameMessages() {
+        val received = message("hi there")
+        val sent = message("hello")
+
+        emit(HumlaEvent.TextMessage(received), HumlaEvent.MessageSent(sent))
+
+        assertThat(chat.messages.value.map { (it as IChatMessage.TextMessage).message })
+            .containsExactly(received, sent).inOrder()
+    }
+
+    @Test
+    fun theOtherEventsLeaveNoLine() {
+        emit(HumlaEvent.PermissionDenied(HumlaEvent.DenyType.OTHER, "no"))
+
+        assertThat(chat.messages.value).isEmpty()
+    }
+
+    @Test
+    fun theLogIsBoundedAndDropsTheOldestFirst() {
+        emit(*Array(4) { HumlaEvent.LogMessage(HumlaEvent.Level.WARNING, "m$it") })
+
+        assertThat(chat.messages.value.map { it.body }).containsExactly("m1", "m2", "m3").inOrder()
+    }
+
+    @Test
+    fun theReturnedLogCannotBeWrittenThrough() {
+        emit(HumlaEvent.LogMessage(HumlaEvent.Level.WARNING, "one"))
+
+        @Suppress("UNCHECKED_CAST")
+        val log = chat.messages.value as MutableList<IChatMessage>
+        assertThrows(UnsupportedOperationException::class.java) {
+            log.add(IChatMessage.InfoMessage(IChatMessage.InfoMessage.Type.INFO, "sneaked in"))
+        }
+    }
+
+    @Test
+    fun clearEmptiesIt() {
+        emit(HumlaEvent.LogMessage(HumlaEvent.Level.WARNING, "one"))
+
+        chat.clearWithUndo()
+
+        assertThat(chat.messages.value).isEmpty()
+    }
+
+    /** The log survives an automatic reconnect; the end of the session takes it along. */
+    @Test
+    fun onlyTheEndOfTheSessionClearsIt() {
+        emit(HumlaEvent.LogMessage(HumlaEvent.Level.WARNING, "kept"))
+
+        state.value = SessionState.ConnectionLost(1L, 1, null)
+        state.value = SessionState.Reconnecting(null)
+        idleMainLooper()
+        assertThat(chat.messages.value).hasSize(1)
+
+        state.value = SessionState.Disconnected()
+        idleMainLooper()
+        assertThat(chat.messages.value).isEmpty()
+    }
+
+    @Test
+    fun receivedMessagesCountAsUnreadWhileTheChatIsNotShown() {
+        emit(
+            HumlaEvent.TextMessage(message("one")),
+            HumlaEvent.MessageSent(message("mine")),
+            HumlaEvent.LogMessage(HumlaEvent.Level.WARNING, "a notice"),
+            HumlaEvent.TextMessage(message("two")),
+        )
+
+        assertThat(chat.unread.value).isEqualTo(2)
+    }
+
+    @Test
+    fun showingTheChatReadsEverythingAndNothingCountsWhileShown() {
+        emit(HumlaEvent.TextMessage(message("one")))
+
+        chat.setShown(true)
+        assertThat(chat.unread.value).isEqualTo(0)
+        emit(HumlaEvent.TextMessage(message("two")))
+        assertThat(chat.unread.value).isEqualTo(0)
+
+        chat.setShown(false)
+        emit(HumlaEvent.TextMessage(message("three")))
+        assertThat(chat.unread.value).isEqualTo(1)
+    }
+
+    @Test
+    fun theUnreadCountStartsOverWithTheLog() {
+        emit(HumlaEvent.TextMessage(message("one")))
+        chat.clearWithUndo()
+        assertThat(chat.unread.value).isEqualTo(0)
+
+        emit(HumlaEvent.TextMessage(message("two")))
+        chat.follow(mockk<IHumlaSession>(relaxed = true).also { it.stubState(SessionState.Connected); it.stubEvents() })
+        assertThat(chat.unread.value).isEqualTo(0)
+
+        chat.follow(session)
+        emit(HumlaEvent.TextMessage(message("three")))
+        state.value = SessionState.Disconnected()
+        idleMainLooper()
+        assertThat(chat.unread.value).isEqualTo(0)
+    }
+
+    private fun warning(body: String) = HumlaEvent.LogMessage(HumlaEvent.Level.WARNING, body)
+
+    @Test
+    fun undoingAClearPutsTheMessagesBackBeforeAnyNewerOnes() {
+        emit(warning("one"), warning("two"))
+
+        val undo = chat.clearWithUndo()
+        assertThat(chat.messages.value).isEmpty()
+        emit(HumlaEvent.LogMessage(HumlaEvent.Level.WARNING, "three"))
+        undo()
+
+        assertThat(chat.messages.value.map { it.body }).containsExactly("one", "two", "three").inOrder()
+    }
+
+    @Test
+    fun anUndoKeepsTheLogWithinItsCapacity() {
+        emit(warning("one"), warning("two"))
+        val undo = chat.clearWithUndo()
+        emit(warning("three"), warning("four"))
+
+        undo()
+
+        assertThat(chat.messages.value.map { it.body }).containsExactly("two", "three", "four").inOrder()
+    }
+
+    /** The cleared messages belong to a session that is over; they do not come back into the next. */
+    @Test
+    fun anUndoAfterTheLogStartedOverDoesNothing() {
+        emit(HumlaEvent.LogMessage(HumlaEvent.Level.WARNING, "one"))
+        val undo = chat.clearWithUndo()
+
+        state.value = SessionState.Disconnected()
+        idleMainLooper()
+        undo()
+
+        assertThat(chat.messages.value).isEmpty()
+    }
+}

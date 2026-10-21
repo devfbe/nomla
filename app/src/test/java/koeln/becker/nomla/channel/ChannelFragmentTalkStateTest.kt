@@ -1,0 +1,244 @@
+/*
+ * Copyright (C) 2026 The Nomla Authors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package koeln.becker.nomla.channel
+
+import android.content.Context
+import android.view.MotionEvent
+import android.view.View
+import androidx.core.content.edit
+import androidx.preference.PreferenceManager
+import androidx.test.core.app.ApplicationProvider
+import com.google.common.truth.Truth.assertThat
+import io.mockk.clearMocks
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.android.controller.ActivityController
+import se.lublin.humla.AudioControls
+import se.lublin.humla.IHumlaSession
+import se.lublin.humla.session.SessionState
+import koeln.becker.nomla.R
+import koeln.becker.nomla.Settings
+import koeln.becker.nomla.testing.ServiceHostActivity
+import koeln.becker.nomla.testing.addNow
+import koeln.becker.nomla.testing.hostWith
+import koeln.becker.nomla.testing.stubAudio
+import koeln.becker.nomla.testing.serverState
+import koeln.becker.nomla.testing.stubConnected
+import koeln.becker.nomla.testing.stubModel
+import koeln.becker.nomla.testing.stubState
+
+/**
+ * The fragment releases only what its own talk button is holding; transmission switched on
+ * elsewhere (e.g. by a headset media key) is left alone.
+ */
+@RunWith(RobolectricTestRunner::class)
+class ChannelFragmentTalkStateTest {
+
+    private lateinit var session: IHumlaSession
+    private lateinit var audio: AudioControls
+    private lateinit var controller: ActivityController<ServiceHostActivity>
+    private lateinit var fragment: ChannelFragment
+    private val preferences =
+        PreferenceManager.getDefaultSharedPreferences(ApplicationProvider.getApplicationContext<Context>())
+
+    @Before
+    fun setUp() {
+        // Voice activity (the default) hides the talk view, and `touch` dispatches straight at the
+        // view regardless, so push-to-talk must be set explicitly.
+        preferences.edit(commit = true) { putString(Settings.INPUT_METHOD.key, Settings.ARRAY_INPUT_METHOD_PTT) }
+        session = mockk(relaxed = true)
+        audio = session.stubAudio()
+        session.stubModel(serverState(self = 1) { channel(0, "Root"); user(1, "me") })
+        session.stubConnected()
+        every { audio.isTalking } returns true
+        controller = hostWith(session)
+        fragment = controller.get().addNow(ChannelFragment(), "channel")
+    }
+
+    private val talkButton: View get() = fragment.requireView().findViewById(R.id.pushtotalk)
+
+    /**
+     * Hold by default, toggle when on. In toggle mode the down does nothing and the up is the
+     * whole action.
+     */
+    private fun setPushToTalkToggle(toggle: Boolean) {
+        preferences.edit(commit = true) { putBoolean(Settings.PTT_TOGGLE.key, toggle) }
+    }
+
+    /** Forgets what the session was told so far, so what follows is checked on its own. */
+    private fun forgetCalls() = clearMocks(session, audio, answers = false)
+
+    private fun touch(action: Int) {
+        talkButton.dispatchTouchEvent(MotionEvent.obtain(0L, 0L, action, 0f, 0f, 0))
+    }
+
+    @Test
+    fun pausingDoesNotSilenceATalkStateTheButtonIsNotHolding() {
+        controller.pause()
+
+        verify(exactly = 0) { audio.setTalking(false) }
+    }
+
+    @Test
+    fun pausingWhileTheButtonIsHeldStillReleasesIt() {
+        touch(MotionEvent.ACTION_DOWN)
+
+        controller.pause()
+
+        verify(exactly = 1) { audio.setTalking(false) }
+    }
+
+    @Test
+    fun pausingAfterTheButtonWasReleasedSilencesNothing() {
+        touch(MotionEvent.ACTION_DOWN)
+        touch(MotionEvent.ACTION_UP)
+        forgetCalls()
+
+        controller.pause()
+
+        verify(exactly = 0) { audio.setTalking(false) }
+    }
+
+    /**
+     * No ACTION_UP arrives for a press the fragment paused on, so the hold must not carry into the
+     * next pause.
+     */
+    @Test
+    fun aPressThatWasAlreadyReleasedOnPauseIsNotReleasedTwice() {
+        touch(MotionEvent.ACTION_DOWN)
+        controller.pause()
+        verify(exactly = 1) { audio.setTalking(false) }
+
+        controller.resume()
+        controller.pause()
+
+        verify(exactly = 1) { audio.setTalking(false) }
+    }
+
+    /**
+     * A parent that takes the gesture over (e.g. the drawer being dragged open) sends ACTION_CANCEL
+     * instead of ACTION_UP, which must release the press.
+     */
+    @Test
+    fun aCanceledPressReleasesTheButtonLikeAnUp() {
+        touch(MotionEvent.ACTION_DOWN)
+
+        touch(MotionEvent.ACTION_CANCEL)
+
+        verify(exactly = 1) { audio.setTalking(false) }
+        forgetCalls()
+        controller.pause()
+        verify(exactly = 0) { audio.setTalking(false) }
+    }
+
+    @Test
+    fun theButtonStillDrivesPushToTalk() {
+        touch(MotionEvent.ACTION_DOWN)
+        verify(exactly = 1) { audio.setTalking(true) }
+
+        touch(MotionEvent.ACTION_UP)
+        verify(exactly = 1) { audio.setTalking(false) }
+    }
+
+    @Test
+    fun hostingTheFragmentReallyBuildsTheButton() {
+        assertThat(talkButton).isNotNull()
+    }
+
+    /**
+     * The other tests dispatch touches past hit testing and visibility, so this asserts the talk
+     * view is actually visible. Checked on `pushtotalk_view`, the view `setTalkButtonHidden`
+     * writes to; the button itself stays VISIBLE inside a GONE parent.
+     */
+    @Test
+    fun theTalkButtonIsVisibleInPushToTalkMode() {
+        val talkView: View = fragment.requireView().findViewById(R.id.pushtotalk_view)
+
+        assertThat(talkView.visibility).isEqualTo(View.VISIBLE)
+    }
+
+    /**
+     * Hiding the button takes it away even in push-to-talk mode; set after setup so the preference
+     * listener's re-layout is covered too.
+     */
+    @Test
+    fun hidingTheTalkButtonTakesItAwayInPushToTalkMode() {
+        val talkView: View = fragment.requireView().findViewById(R.id.pushtotalk_view)
+
+        preferences.edit(commit = true) { putBoolean(Settings.PUSH_BUTTON_HIDE.key, true) }
+
+        assertThat(talkView.visibility).isEqualTo(View.GONE)
+    }
+
+    /**
+     * In toggle mode the release is the action itself, so a cancel must not be treated as an
+     * up or it would switch the microphone on after the user aborted. The drawer drag zone and the
+     * system back gesture both synthesize this cancel.
+     */
+    @Test
+    fun aCanceledPressInToggleModeDoesNotPerformTheToggle() {
+        setPushToTalkToggle(true)
+        touch(MotionEvent.ACTION_DOWN)
+
+        touch(MotionEvent.ACTION_CANCEL)
+
+        verify(exactly = 0) { audio.setTalking(any()) }
+    }
+
+    /** `onPause` does not release in toggle mode either. */
+    @Test
+    fun aCanceledPressInToggleModeIsNotTurnedOnByTheFollowingPause() {
+        setPushToTalkToggle(true)
+        touch(MotionEvent.ACTION_DOWN)
+        touch(MotionEvent.ACTION_CANCEL)
+
+        controller.pause()
+
+        verify(exactly = 0) { audio.setTalking(any()) }
+    }
+
+    /**
+     * In toggle mode a held button holds nothing, so a pause must not switch off a state somebody
+     * else set.
+     */
+    @Test
+    fun pausingOnAHeldButtonInToggleModeSilencesNothing() {
+        setPushToTalkToggle(true)
+        touch(MotionEvent.ACTION_DOWN)
+
+        controller.pause()
+
+        verify(exactly = 0) { audio.setTalking(false) }
+    }
+
+    /** Without a connection there is nothing a pause could release. */
+    @Test
+    fun pausingOnAHeldButtonWhileDisconnectedReleasesNothing() {
+        session.stubState(SessionState.Disconnected())
+        touch(MotionEvent.ACTION_DOWN)
+
+        controller.pause()
+
+        verify(exactly = 0) { audio.setTalking(false) }
+    }
+}

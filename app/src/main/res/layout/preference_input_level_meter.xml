@@ -37,7 +37,7 @@
         android:textAppearance="?android:attr/textAppearanceListItemSecondary"
         android:textColor="?android:attr/textColorSecondary"/>
 
-    <se.lublin.mumla.preference.LevelMeterView
+    <koeln.becker.nomla.preference.LevelMeterView
         android:id="@+id/level_meter"
         android:layout_width="match_parent"
         android:layout_height="20dp"

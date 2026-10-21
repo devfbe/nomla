@@ -45,7 +45,7 @@
         android:title="@string/bluetoothSco"
         app:iconSpaceReserved="false"/>
 
-    <se.lublin.mumla.preference.SliderPreference
+    <koeln.becker.nomla.preference.SliderPreference
         android:title="@string/audioInputVolume"
         android:summary="@string/audioInputVolumeSum"
         android:key="inputVolume"
@@ -65,7 +65,7 @@
 
     <!-- Strong (RNNoise) only: its attenuation limit in dB; the last position is no limit. Must
          stay in lockstep with Settings.RNNOISE_LIMIT_*. -->
-    <se.lublin.mumla.preference.SliderPreference
+    <koeln.becker.nomla.preference.SliderPreference
         android:key="rnnoise_attenuation_limit_db"
         android:defaultValue="18"
         app:min="6"
@@ -113,7 +113,7 @@
             android:summary="@string/audioTestMicrophoneSum"
             app:iconSpaceReserved="false"/>
 
-        <se.lublin.mumla.preference.InputLevelMeterPreference
+        <koeln.becker.nomla.preference.InputLevelMeterPreference
             android:key="input_level_meter"
             android:persistent="false"
             android:title="@string/inputLevelMeter"
@@ -130,7 +130,7 @@
             app:iconSpaceReserved="false"/>
 
         <!-- Adaptive mode: a fraction of the measured speech-to-floor gap, not a loudness. -->
-        <se.lublin.mumla.preference.SliderPreference
+        <koeln.becker.nomla.preference.SliderPreference
             android:defaultValue="65"
             android:key="vad_sensitivity"
             app:min="0"
@@ -141,7 +141,7 @@
             app:iconSpaceReserved="false"/>
 
         <!-- Classic mode: the legacy level slider, left on disk so switching back restores it. -->
-        <se.lublin.mumla.preference.SliderPreference
+        <koeln.becker.nomla.preference.SliderPreference
             android:defaultValue="50"
             android:key="vadThreshold"
             app:max="100"
@@ -151,7 +151,7 @@
             app:iconSpaceReserved="false"/>
 
         <!-- Speech-model mode. -->
-        <se.lublin.mumla.preference.SliderPreference
+        <koeln.becker.nomla.preference.SliderPreference
             android:defaultValue="60"
             android:key="vad_start"
             app:max="100"
@@ -160,7 +160,7 @@
             android:title="@string/vadStart"
             app:iconSpaceReserved="false"/>
 
-        <se.lublin.mumla.preference.SliderPreference
+        <koeln.becker.nomla.preference.SliderPreference
             android:defaultValue="30"
             android:key="vad_stop"
             app:max="100"
@@ -194,7 +194,7 @@
             android:entryValues="@array/audioSampleRateValues"
             app:iconSpaceReserved="false"/>
 
-        <se.lublin.mumla.preference.SliderPreference
+        <koeln.becker.nomla.preference.SliderPreference
             android:key="input_bitrate"
             android:title="@string/inputQuality"
             android:summary="@string/inputQualitySum"
@@ -252,7 +252,7 @@
             android:summary="@string/vadAdaptiveFloorSum"
             app:iconSpaceReserved="false"/>
 
-        <se.lublin.mumla.preference.SliderPreference
+        <koeln.becker.nomla.preference.SliderPreference
             android:defaultValue="45"
             android:key="vad_floor_db"
             app:min="20"
@@ -271,7 +271,7 @@
             android:summary="@string/vadOnsetSum"
             app:iconSpaceReserved="false"/>
 
-        <se.lublin.mumla.preference.SliderPreference
+        <koeln.becker.nomla.preference.SliderPreference
             android:defaultValue="250"
             android:key="vad_hold_ms"
             app:min="0"

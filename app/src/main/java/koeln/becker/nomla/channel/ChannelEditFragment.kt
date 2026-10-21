@@ -1,0 +1,87 @@
+/*
+ * Copyright (C) 2014 Andrew Comminos
+ * Copyright (C) 2016 Andrew Comminos <andrew@comminos.com>
+ * Copyright (C) 2026 The Nomla Authors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package koeln.becker.nomla.channel
+
+import android.app.Dialog
+import android.os.Bundle
+import androidx.core.os.bundleOf
+import androidx.fragment.app.DialogFragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import se.lublin.humla.net.Permissions
+import koeln.becker.nomla.R
+import koeln.becker.nomla.databinding.FragmentChannelEditBinding
+import koeln.becker.nomla.session.SessionManager
+
+/**
+ * Creates a channel under the given one when adding. Editing an
+ * existing channel is not implemented.
+ */
+class ChannelEditFragment : DialogFragment() {
+
+
+    private val isAdding get() = requireArguments().getBoolean(ARG_ADDING)
+    private val parent get() = requireArguments().getInt(ARG_CHANNEL)
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val binding = FragmentChannelEditBinding.inflate(layoutInflater)
+        val nameField = binding.channelEditName
+        val descriptionField = binding.channelEditDescription
+        val positionField = binding.channelEditPosition
+        val temporaryBox = binding.channelEditTemporary
+
+        // If we can only make temporary channels, remove the option.
+        SessionManager.get(requireContext()).connected?.model?.value?.let { model ->
+            val combined = model.permissions or (model.channel(parent)?.permissions ?: 0)
+            val canMakeChannel = (combined and Permissions.MAKE_CHANNEL) != 0
+            val canMakeTempChannel = (combined and Permissions.MAKE_TEMP_CHANNEL) != 0
+            val onlyTemp = canMakeTempChannel && !canMakeChannel
+            temporaryBox.isChecked = onlyTemp
+            temporaryBox.isEnabled = !onlyTemp
+        }
+
+        return MaterialAlertDialogBuilder(requireContext())
+            .setTitle(if (isAdding) R.string.channel_add else R.string.channel_edit)
+            .setView(binding.root)
+            .setPositiveButton(if (isAdding) R.string.add else R.string.save) { _, _ ->
+                val session = SessionManager.get(requireContext()).connected
+                if (isAdding && session != null) {
+                    session.actions.createChannel(
+                        parent,
+                        nameField.text.toString(),
+                        descriptionField.text.toString(),
+                        positionField.text.toString().toIntOrNull() ?: 0,
+                        temporaryBox.isChecked,
+                    )
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .create()
+    }
+
+    companion object {
+        private const val ARG_CHANNEL = "channel"
+        private const val ARG_ADDING = "adding"
+
+        /** Adds a channel under [channelId] if [adding], else edits [channelId]. */
+        fun newInstance(channelId: Int, adding: Boolean) = ChannelEditFragment().apply {
+            arguments = bundleOf(ARG_CHANNEL to channelId, ARG_ADDING to adding)
+        }
+    }
+}

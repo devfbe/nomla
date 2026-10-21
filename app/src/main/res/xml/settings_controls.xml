@@ -40,7 +40,7 @@
         android:title="@string/controlBarPosition"
         app:iconSpaceReserved="false"/>
 
-    <se.lublin.mumla.preference.SliderPreference
+    <koeln.becker.nomla.preference.SliderPreference
         android:key="pttButtonHeight"
         android:title="@string/pttButtonHeight"
         android:summary="@string/pttButtonHeightSum"
@@ -55,7 +55,7 @@
     <PreferenceCategory android:title="@string/pttSettings"
         android:key="ptt_settings"
         app:iconSpaceReserved="false">
-        <se.lublin.mumla.preference.KeySelectDialogPreference
+        <koeln.becker.nomla.preference.KeySelectDialogPreference
             android:key="talkKey"
             android:summary="@string/pttKeySum"
             android:title="@string/pttKey"

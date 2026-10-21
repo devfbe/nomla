@@ -11,7 +11,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <se.lublin.mumla.chat.ZoomImageView
+    <koeln.becker.nomla.chat.ZoomImageView
         android:id="@+id/image_viewer_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
