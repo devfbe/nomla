@@ -18,6 +18,7 @@
 
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.LibraryExtension
+import org.gradle.plugins.ide.idea.model.IdeaModel
 
 // AGP 9 compiles Kotlin itself; never apply org.jetbrains.kotlin.android. KGP on the classpath
 // raises the Kotlin version AGP's built-in Kotlin uses and provides org.jetbrains.kotlin.jvm for
@@ -30,10 +31,19 @@ buildscript {
 
 // The Android plugins are loaded here, once, so that build-logic and protobuf share them.
 plugins {
+    idea
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.protobuf) apply false
     alias(libs.plugins.detekt) apply false
+}
+
+// direnv keeps copies of the flake inputs, a full source tree, in .direnv. The IDE's Gradle import
+// reads these excludes, so the copies stay out of its index and its search results.
+configure<IdeaModel> {
+    module {
+        excludeDirs.add(file(".direnv"))
+    }
 }
 
 // Both modules must read the toolchain versions from gradle.properties: a drifted ndkVersion does
