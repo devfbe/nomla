@@ -51,7 +51,7 @@
     <string name="server_match_not_found">サーバーが見つかりませんでした</string>
     <string name="server_match_expand_country">あなたの国で最適なサーバーを見つけることができませんでした。ワールドワイドに検索を展開しますか?</string>
     <string name="server_match_info">名前: %1$s\nホスト: %2$s:%3$d\nユーザー: %4$d / %5$d\nバージョン: %6$s \n国: %7$s \n遅延時間: %8$d ms</string>
-    <string name="server_match_description">Mumla は、サーバの場所、バージョン、および遅延時間に基づいて最適な空のサーバーを自動的に見つけることができます。</string>
+    <string name="server_match_description">Nomla は、サーバの場所、バージョン、および遅延時間に基づいて最適な空のサーバーを自動的に見つけることができます。</string>
     <!--Common-->
     <string name="server_password">パスワード</string>
     <string name="server_username">ユーザー名</string>
@@ -91,15 +91,15 @@
     <string name="offline">オフライン</string>
     <string name="clearChat">チャットをクリア</string>
     <string name="connected">接続されました</string>
-    <string name="mumlaConnecting">Mumla 接続中</string>
-    <string name="mumlaDisconnected">Mumla から切断されました</string>
+    <string name="nomlaConnecting">Nomla 接続中</string>
+    <string name="nomlaDisconnected">Nomla から切断されました</string>
     <string name="channel">チャンネル</string>
     <string name="user">ユーザー</string>
     <string name="unknown">不明</string>
     <string name="name">名前</string>
     <string name="share">共有</string>
     <string name="description">説明</string>
-    <string name="shareMessage">Mumla で、この Mumble サーバーに参加してください! %s</string>
+    <string name="shareMessage">Nomla で、この Mumble サーバーに参加してください! %s</string>
     <string name="close">閉じる</string>
     <string name="information">情報</string>
     <string name="error_fetching_servers">サーバーの取得中にエラー!\nインターネット接続を確認してください。</string>
@@ -117,7 +117,7 @@
     <string name="channel_add">チャンネルを追加</string>
     <string name="tts_failed">TTS が初期化に失敗しました</string>
     <string name="mumble_url_parse_failed">Mumble URL の解析に失敗しました</string>
-    <string name="first_run_generate_certificate_title">Mumla にようこそ</string>
+    <string name="first_run_generate_certificate_title">Nomla にようこそ</string>
     <string name="first_run_generate_certificate">証明書を生成することが非常に推奨されます。いくつかのサーバへ接続するために必要です。</string>
     <string name="generate">生成</string>
     <string name="send_message">メッセージを送信</string>
@@ -137,7 +137,7 @@
         <item quantity="other">%d ユーザー</item>
     </plurals>
     <string name="connection_lost_reconnecting">接続が切れました – 再接続中…</string>
-    <string name="foreground_start_failed">Mumla をバックグラウンドで実行し続けることができませんでした。画面がオフになると音声が停止する場合があります。</string>
+    <string name="foreground_start_failed">Nomla をバックグラウンドで実行し続けることができませんでした。画面がオフになると音声が停止する場合があります。</string>
     <string name="bluetooth_perm_denied">Bluetooth ヘッドセットはオンのままです。「付近のデバイス」の権限がない場合、一部のデバイスではヘッドセットに音声がルーティングされません。</string>
     <string name="chat_image_share">画像を共有</string>
     <string name="chat_image_close">閉じる</string>

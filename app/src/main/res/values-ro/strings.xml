@@ -2,7 +2,7 @@
 <resources>
     <string name="perm_denied">Interzis.</string>
     <string name="connection_lost_reconnecting">Conexiune pierdută – se reconectează…</string>
-    <string name="foreground_start_failed">Mumla nu a putut fi menținută activă în fundal. Vocea se poate opri când ecranul se stinge.</string>
+    <string name="foreground_start_failed">Nomla nu a putut fi menținută activă în fundal. Vocea se poate opri când ecranul se stinge.</string>
     <string name="bluetooth_perm_denied">Căștile Bluetooth rămân activate. Fără permisiunea Dispozitive din apropiere, unele dispozitive vor refuza să direcționeze sunetul către ele.</string>
     <string name="chat_image_share">Distribuie imaginea</string>
     <string name="chat_image_close">Închide</string>

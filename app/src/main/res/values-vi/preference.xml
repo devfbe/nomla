@@ -11,7 +11,6 @@
     <string name="hot_corner_top_right">phải trên cùng ↗</string>
     <string name="hot_corner_bottom_right">phải dưới cùng ↘</string>
     <string name="about">Thông tin</string>
-    <string name="acknowledgements">Người đóng góp</string>
     <string name="licenses">Giấy phép</string>
     <string name="audioInputMethodSum">Cách đường truyền âm thanh được kích hoạt.</string>
     <string name="audioInputVolume">Âm lượng Micro</string>
@@ -50,7 +49,7 @@
     <string name="halfDuplexSum">Tắt tiếng phát lại khác trong khi nhấn để nói để tránh vòng lặp/vang âm thanh.</string>
     <string name="pttSound">Âm báo nhấn để nói</string>
     <string name="pttSoundSum">Phát âm báo khi bấm nút để nói.</string>
-    <string name="stay_awake_sum">không tắt màn hình khi Mumla đang mở.</string>
+    <string name="stay_awake_sum">không tắt màn hình khi Nomla đang mở.</string>
     <string name="pref_import_certificate_title">Nhập chứng chỉ</string>
     <string name="pref_import_certificate_summary">Nhập từ bộ nhớ ngoài.</string>
     <string name="pref_export_certificate_title">Xuất chứng chỉ</string>
@@ -59,7 +58,6 @@
     <string name="theme_dark">Tối</string>
     <string name="hot_corner_top_left">↖ trái trên cùng</string>
     <string name="hot_corner_bottom_left">↙ trái dưới cùng</string>
-    <string name="acknowledgementsSum">Xem ai đã đóng góp cho Mumla</string>
     <string name="pttKey">Phím bấm để nói</string>
     <string name="general">Chung</string>
     <string name="chatNotificationsSum">Hiển thị đối với tin nhắn mới.</string>
@@ -70,7 +68,7 @@
     <string name="togglePtt">Nút bấm để nói bắt dính</string>
     <string name="pttButtonHeight">Chiều cao nuuts bấm để nói</string>
     <string name="clearServerCertificates">Xóa chứng chỉ của server</string>
-    <string name="clearServerCertificatesSum">Xóa tất cả chứng chỉ server đáng tin cậy khỏi Mumla.</string>
+    <string name="clearServerCertificatesSum">Xóa tất cả chứng chỉ server đáng tin cậy khỏi Nomla.</string>
     <string name="version">Phiên bản</string>
     <string name="halfDuplex">Thoại một chiều</string>
     <string name="audio_per_packet">Âm thanh trên mỗi gói tin</string>
@@ -137,4 +135,13 @@
     <string name="mediaButtonActionMute">Bật/tắt tiếng</string>
     <string name="bluetoothSco">Tự động dùng tai nghe Bluetooth</string>
     <string name="bluetoothScoSum">Gửi và nhận giọng nói qua tai nghe Bluetooth đã kết nối khi bạn đang kết nối với máy chủ, và chuyển sang tai nghe được kết nối trong cuộc gọi. Có thể đổi thiết bị âm thanh cho cuộc gọi từ menu kênh. Cần quyền Thiết bị ở gần; một số thiết bị sẽ không chuyển âm thanh sang tai nghe nếu thiếu quyền này.</string>
+    <string name="about_description">Nomla là ứng dụng khách Mumble cho Android. Nomla được chuyển từ Mumla và viết lại gần như hoàn toàn.</string>
+    <string name="about_credits">Ghi công</string>
+    <string name="about_credits_lublin">Daniel Lublin và những người đóng góp</string>
+    <string name="about_credits_comminos">Andrew Comminos và những người đóng góp</string>
+    <string name="about_license_summary">Nomla là phần mềm tự do theo giấy phép này</string>
+    <string name="about_source_code">Mã nguồn</string>
+    <string name="about_third_party_notices">Thông báo của bên thứ ba</string>
+    <string name="about_third_party_notices_summary">Giấy phép của các thư viện đi kèm (liên kết web)</string>
+    <string name="about_memorial">Tưởng nhớ Andreas Mandalka (Natenom), người mà những hướng dẫn, máy chủ và sự kiên nhẫn đã giúp biết bao người tìm đến với Mumble.</string>
 </resources>

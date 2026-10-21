@@ -57,7 +57,7 @@
 \n版本：%6$s
 \n区域：%7$s
 \n延迟：%8$d 毫秒</string>
-    <string name="server_match_description">Mumla 可以根据区域、版本与延迟自动为您寻找最佳的空服务器。</string>
+    <string name="server_match_description">Nomla 可以根据区域、版本与延迟自动为您寻找最佳的空服务器。</string>
     <!-- Common -->
     <string name="server_password">密码</string>
     <string name="server_username">用户名</string>
@@ -97,15 +97,15 @@
     <string name="offline">离线</string>
     <string name="clearChat">清除聊天记录</string>
     <string name="connected">已连接</string>
-    <string name="mumlaConnecting">Mumla 正在连接…</string>
-    <string name="mumlaDisconnected">Mumla 已断开连接</string>
+    <string name="nomlaConnecting">Nomla 正在连接…</string>
+    <string name="nomlaDisconnected">Nomla 已断开连接</string>
     <string name="channel">频道</string>
     <string name="user">用户</string>
     <string name="unknown">未知</string>
     <string name="name">名称</string>
     <string name="share">分享</string>
     <string name="description">描述</string>
-    <string name="shareMessage">用 Mumla 加入这个 Mumble 服务器。%s</string>
+    <string name="shareMessage">用 Nomla 加入这个 Mumble 服务器。%s</string>
     <string name="close">关闭</string>
     <string name="information">信息</string>
     <string name="error_fetching_servers">无法获取服务器。\n您确定已连接互联网吗？</string>
@@ -123,7 +123,7 @@
     <string name="channel_add">添加频道</string>
     <string name="tts_failed">无法启用文字转语音</string>
     <string name="mumble_url_parse_failed">Mumble URL 无效。</string>
-    <string name="first_run_generate_certificate_title">欢迎使用 Mumla</string>
+    <string name="first_run_generate_certificate_title">欢迎使用 Nomla</string>
     <string name="first_run_generate_certificate">强烈推荐您生成证书，部分服务器要求您必须有证书。</string>
     <string name="generate">生成</string>
     <string name="send_message">发送消息</string>
@@ -176,18 +176,17 @@
 • 主题功能已更新，支持系统明亮/黑暗模式。\n
 • 设置界面已适配新 API。\n
 • 添加了应用内语言偏好设置。\n</string>
-    <string name="donate_dialog_title_goog">喜欢 Mumla？</string>
-    <string name="donate_dialog_message_goog">感谢您使用 Mumla！请考虑进行小额捐款以帮助维持 Mumla 的运营——并且移除这条消息。</string>
-    <string name="donate_dialog_positivebutton_goog">支持 Mumla</string>
+    <string name="donate_dialog_title_goog">喜欢 Nomla？</string>
+    <string name="donate_dialog_message_goog">感谢您使用 Nomla！请考虑进行小额捐款以帮助维持 Nomla 的运营——并且移除这条消息。</string>
+    <string name="donate_dialog_positivebutton_goog">支持 Nomla</string>
     <string name="donate_dialog_negativebutton_goog">稍后</string>
     <string name="donate_purchase_pending_goog">您的捐赠正在处理中，可能会在重启后生效。非常感谢！</string>
     <string name="donate_thanks_goog">感谢您的支持！</string>
-    <string name="donate_foss">捐赠</string>
     <string name="app_news_items_v3_7_1">• 这个小版本主要是翻译更新，感谢所有翻译者！\n</string>
     <string name="app_news_items_v3_7_2">• 修复在启动时可能的崩溃。\n • 添加一些翻译，感谢所有翻译者！\n</string>
     <string name="app_news_items_v3_7_3">• 使按键发言触发角在 Android 12 和更高版本，以及暗黑和明亮背景上可见\n • 使返回按钮在 Android 16+ 上再次询问是否从服务器断开连接\n</string>
     <string name="connection_lost_reconnecting">连接已断开——正在重新连接…</string>
-    <string name="foreground_start_failed">无法让 Mumla 在后台保持运行。屏幕关闭后语音可能会中断。</string>
+    <string name="foreground_start_failed">无法让 Nomla 在后台保持运行。屏幕关闭后语音可能会中断。</string>
     <string name="bluetooth_perm_denied">蓝牙耳机保持开启。没有“附近的设备”权限时，部分设备会拒绝将音频切换到耳机。</string>
     <string name="chat_image_share">分享图片</string>
     <string name="chat_image_close">关闭</string>

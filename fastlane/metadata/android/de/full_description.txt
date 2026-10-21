@@ -1,19 +1,26 @@
-Ein Client für das Mumble Audiochatsystem. Hosten oder verbinden Sie sich mit einem der vielen von der Gemeinschaft ausgeführten öffentlichen Server (siehe https://www.mumble.info). Mumla ist eine aktualisierte und gewartete Version (eine Gabelung) der Anwendung Plumble.
+Nomla ist ein Client für das Sprachchat-System Mumble. Betreiben Sie Ihren eigenen Server oder verbinden Sie sich mit einem der vielen öffentlichen Server der Gemeinschaft (siehe https://www.mumble.info).
+
+Nomla wurde aus Mumla portiert und fast vollständig neu geschrieben. Mumla und seine Protokollbibliothek Humla stammen von Daniel Lublin und Mitwirkenden; sie führen Plumble und Jumble von Andrew Comminos und Mitwirkenden fort.
 
 Einige der Funktionen:
 
-* Zertifikatserstellung, Import und Export
-* Durchsuchen Sie öffentliche Server
-* Sprachaktivierte Übertragung (Standardeinstellung) oder verschiedene "Zum Sprechen drücken" (Push-to-Talk) Tasten
-* Unterstützung für Bluetooth-Headsets
+* Zertifikate erzeugen, importieren und exportieren
+* Öffentliche Server durchsuchen
+* Sprachaktivierte Übertragung (Standard) oder verschiedene Push-to-Talk-Tasten
+* Adaptive Sprecherkennungsschwelle mit Live-Pegelanzeige in den Einstellungen
+* Rauschunterdrückung mit RNNoise, während eines Gesprächs umschaltbar
+* Echokompensation (WebRTC AEC3), die dem Audiogerät folgt und je Gerätetyp umgeschaltet werden kann
+* Audiogeräteauswahl wie in der Telefon-App: Bluetooth, Lautsprecher, Hörmuschel (der Bildschirm geht am Ohr aus), kabelgebundenes oder USB-Headset
+* Bluetooth-Headsets werden automatisch verwendet
 * Selbstregistrierung auf dem Server
 * Zugriffstoken
-* Automatische Wiederverbindung
+* Unterstützung für den Opus-Codec
+* Automatische Wiederverbindung, bei der das Mikrofon auch mit ausgeschaltetem Bildschirm funktioniert
+* Bilder im Chat verkleinert angezeigt, Antippen für Vollbild
 * Tor-Unterstützung über die Orbot-App
-* Sprachsynthese für Nachrichten (standardmäßig aktiviert)
-* Helles und dunkles Thema
+* Sprachausgabe für Nachrichten (standardmäßig eingeschaltet)
+* Helles und dunkles Design
 
-Die sprachaktivierte Übertragung funktioniert derzeit am besten, wenn Sie ein Headset verwenden. Echokompensation und Rauschunterdrückung erfordern Arbeit.
-Das Ändern des Erkennungsschwellenwerts in den Einstellungen hilft.
+Nomla ist freie Software unter der GNU GPL v3 oder neuer. Quellcode: https://github.com/devfbe/nomla
 
-Mumla ist eine freie Software mit Copyleft. Weitere Informationen finden Sie unter: https://mumla-app.gitlab.io/
+In Gedenken an Andreas Mandalka (Natenom), dessen Anleitungen, Server und Geduld so vielen Menschen den Weg zu Mumble gezeigt haben.

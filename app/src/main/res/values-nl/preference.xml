@@ -14,8 +14,6 @@
     <string name="hot_corner_bottom_right">Onderaan rechts ↘</string>
     <!--About-->
     <string name="about">Over</string>
-    <string name="acknowledgements">Bijdragers</string>
-    <string name="acknowledgementsSum">Bekijk wie tot Mumla heeft bijgedragen</string>
     <string name="licenses">Licenties</string>
     <string name="audioInputMethodSum">De methode van audio invoer.</string>
     <string name="audioInputMethod">Doorstuur methode</string>
@@ -38,9 +36,9 @@
     <string name="chatNotificationsSum">Weergegeven voor nieuwe chat berichten.</string>
     <string name="defaultUsername">Standaard gebruikersnaam</string>
     <string name="defaultUsernameSum">De standaard gebruikersnaam te gebruiken bij verbinding met servers.</string>
-    <string name="defaultUsernameDefault">Mumla_Gebruiker</string>
+    <string name="defaultUsernameDefault">Nomla_Gebruiker</string>
     <string name="certificateGenerate">Genereer certificaat</string>
-    <string name="certificateGenerateSum">Genereert een nieuw self-signed Mumla certificaat. Annbevolen voor beginners.</string>
+    <string name="certificateGenerateSum">Genereert een nieuw self-signed Nomla certificaat. Annbevolen voor beginners.</string>
     <string name="pttSettings">Push-to-talk instellingen</string>
     <string name="voiceActivitySettings">Stem Activatie Instellingen</string>
     <string name="hidePtt">Verberg Push to Talk Knop</string>
@@ -60,7 +58,7 @@
     <string name="loadImagesSum">Al dan niet externe afbeeldingen laden in chat.</string>
     <string name="loadImages">Externe Afbeeldingen Laden</string>
     <string name="clearServerCertificates">Wis Server Certificaten</string>
-    <string name="clearServerCertificatesSum">Wis alle toegestane certificaten uit de Mumla database.</string>
+    <string name="clearServerCertificatesSum">Wis alle toegestane certificaten uit de Nomla database.</string>
     <string name="version">Versie</string>
     <string name="halfDuplex">Half Duplex Modus</string>
     <string name="halfDuplexSum">Dempt het geluid van het toestel bij push to talk om feedback te voorkomen.</string>
@@ -124,4 +122,13 @@
     <string name="mediaButtonActionMute">Dempen aan/uit</string>
     <string name="bluetoothSco">Bluetooth-headset automatisch gebruiken</string>
     <string name="bluetoothScoSum">Verstuur en ontvang spraak via een verbonden Bluetooth-headset terwijl je met een server verbonden bent, en schakel over naar een headset die tijdens het gesprek verbinding maakt. Het audioapparaat voor het gesprek kan worden gewijzigd in het kanaalmenu. Vraagt de toestemming Apparaten in de buurt; sommige toestellen sturen zonder die toestemming geen audio naar een headset.</string>
+    <string name="about_description">Nomla is een Mumble-client voor Android. Het is overgezet vanuit Mumla en vrijwel volledig herschreven.</string>
+    <string name="about_credits">Dankwoord</string>
+    <string name="about_credits_lublin">Daniel Lublin en bijdragers</string>
+    <string name="about_credits_comminos">Andrew Comminos en bijdragers</string>
+    <string name="about_license_summary">Nomla is vrije software onder deze licentie</string>
+    <string name="about_source_code">Broncode</string>
+    <string name="about_third_party_notices">Kennisgevingen van derden</string>
+    <string name="about_third_party_notices_summary">Licenties van de meegeleverde bibliotheken (weblink)</string>
+    <string name="about_memorial">Ter nagedachtenis aan Andreas Mandalka (Natenom), wiens handleidingen, servers en geduld zoveel mensen hebben geholpen hun weg naar Mumble te vinden.</string>
 </resources>

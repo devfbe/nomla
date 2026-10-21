@@ -14,8 +14,6 @@
     <string name="hot_corner_bottom_right">En bas à droite ↘</string>
     <!--About-->
     <string name="about">À propos</string>
-    <string name="acknowledgements">Contributeurs</string>
-    <string name="acknowledgementsSum">Voir qui a contribué à Mumla (lien web)</string>
     <string name="licenses">Licences</string>
     <string name="audioInputMethodSum">Comment la transmission audio est activée.</string>
     <string name="audioInputMethod">Mode de transmission</string>
@@ -38,9 +36,9 @@
     <string name="chatNotificationsSum">S\'affiche pour les nouveaux messages.</string>
     <string name="defaultUsername">Nom d\'utilisateur par défaut</string>
     <string name="defaultUsernameSum">Nom prérempli utilisé lors de l\'ajout d\'un serveur ou de la connexion à un serveur public.</string>
-    <string name="defaultUsernameDefault">Utilisateur_Mumla</string>
+    <string name="defaultUsernameDefault">Utilisateur_Nomla</string>
     <string name="certificateGenerate">Générer un certificat</string>
-    <string name="certificateGenerateSum">Générer un nouveau certificat Mumla auto-signé. Recommendé pour les débutants.</string>
+    <string name="certificateGenerateSum">Générer un nouveau certificat Nomla auto-signé. Recommendé pour les débutants.</string>
     <string name="pttSettings">Paramètres de « appuyer pour parler »</string>
     <string name="voiceActivitySettings">Paramètres d\'activité vocale</string>
     <string name="hidePtt">Masquer le bouton « Appuyer pour parler »</string>
@@ -60,7 +58,7 @@
     <string name="loadImagesSum">Télécharge et affiche les photos dans la discussion.</string>
     <string name="loadImages">Images externes</string>
     <string name="clearServerCertificates">Effacer les certificats du serveur</string>
-    <string name="clearServerCertificatesSum">Supprimer tous les certificats de serveur de confiance de Mumla.</string>
+    <string name="clearServerCertificatesSum">Supprimer tous les certificats de serveur de confiance de Nomla.</string>
     <string name="version">Version</string>
     <string name="halfDuplex">Audio unidirectionnel</string>
     <string name="halfDuplexSum">Met en sourdine les autres lectures pendant que vous appuyez pour parler pour éviter les boucles audio et les retours.</string>
@@ -69,7 +67,7 @@
     <string name="audio_per_packet"> Trames audio par paquet</string>
     <string name="audio_per_packet_sum">Durée de la trame audio par paquet.</string>
     <string name="stay_awake">Rester activé</string>
-    <string name="stay_awake_sum">Maintient l\'écran allumé lorsque Mumla est ouvert.</string>
+    <string name="stay_awake_sum">Maintient l\'écran allumé lorsque Nomla est ouvert.</string>
     <string name="pref_certificate_title">Certificat</string>
     <string name="pref_export_certificate_title">Exporter un certificat</string>
     <string name="pref_show_user_count">Afficher le nombre d\'utilisateurs du canal</string>
@@ -140,4 +138,13 @@
     <string name="mediaButtonActionMute">Basculer le mode muet</string>
     <string name="bluetoothSco">Utiliser automatiquement le casque Bluetooth</string>
     <string name="bluetoothScoSum">Envoyer et recevoir la voix via un casque Bluetooth connecté lorsque vous êtes connecté à un serveur, et basculer vers un casque qui se connecte pendant l\'appel. L\'appareil audio de l\'appel peut être changé depuis le menu du salon. Demande l\'autorisation « Appareils à proximité » ; sans elle, certains appareils n\'acheminent pas le son vers un casque.</string>
+    <string name="about_description">Nomla est un client Mumble pour Android. Il a été porté depuis Mumla et presque entièrement réécrit.</string>
+    <string name="about_credits">Remerciements</string>
+    <string name="about_credits_lublin">Daniel Lublin et les contributeurs</string>
+    <string name="about_credits_comminos">Andrew Comminos et les contributeurs</string>
+    <string name="about_license_summary">Nomla est un logiciel libre sous cette licence</string>
+    <string name="about_source_code">Code source</string>
+    <string name="about_third_party_notices">Mentions des tiers</string>
+    <string name="about_third_party_notices_summary">Licences des bibliothèques incluses (lien web)</string>
+    <string name="about_memorial">En mémoire d\'Andreas Mandalka (Natenom), dont les guides, les serveurs et la patience ont aidé tant de personnes à trouver le chemin de Mumble.</string>
 </resources>

@@ -56,4 +56,13 @@
     <string name="mediaButtonActionMute">بدّل الكتم</string>
     <string name="bluetoothSco">استخدام سماعة رأس بلوتوث تلقائيًا</string>
     <string name="bluetoothScoSum">يرسل الصوت ويستقبله عبر سماعة رأس بلوتوث متصلة أثناء اتصالك بخادم، وينتقل إلى سماعة رأس تتصل أثناء المكالمة. يمكن تغيير جهاز الصوت للمكالمة من قائمة القناة. يطلب إذن «الأجهزة المجاورة»؛ بعض الأجهزة لا توجّه الصوت إلى سماعة الرأس دونه.</string>
+    <string name="about_description">نوملا هو عميل Mumble لنظام Android. نُقل من Mumla وأُعيدت كتابته بالكامل تقريبًا.</string>
+    <string name="about_credits">شكر وتقدير</string>
+    <string name="about_credits_lublin">Daniel Lublin والمساهمون</string>
+    <string name="about_credits_comminos">Andrew Comminos والمساهمون</string>
+    <string name="about_license_summary">نوملا برنامج حر بموجب هذا الترخيص</string>
+    <string name="about_source_code">الشفرة المصدرية</string>
+    <string name="about_third_party_notices">إشعارات الأطراف الثالثة</string>
+    <string name="about_third_party_notices_summary">تراخيص المكتبات المضمّنة (رابط ويب)</string>
+    <string name="about_memorial">في ذكرى أندرياس ماندالكا (Natenom)، الذي ساعدت أدلته وخوادمه وصبره الكثيرين على إيجاد طريقهم إلى Mumble.</string>
 </resources>

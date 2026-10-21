@@ -14,8 +14,6 @@
     <string name="hot_corner_bottom_left">↙ 左下角</string>
     <string name="hot_corner_top_right">右上角 ↗</string>
     <string name="hot_corner_bottom_right">右下角 ↘</string>
-    <string name="acknowledgements">貢獻者</string>
-    <string name="acknowledgementsSum">看看誰為 Mumla 作出了貢獻（網頁連結）</string>
     <string name="licenses">許可證</string>
     <string name="audioInputVolume">麥克風音量</string>
     <string name="forceTcp">僅 TCP</string>
@@ -41,8 +39,8 @@
     <string name="audioInputVolumeSum">音量調整目標。</string>
     <string name="detectionThresholdSum">最小啟動發話音量 (當發話模式為音量偵測時)。</string>
     <string name="defaultUsernameSum">新增伺服器時或連上公共伺服器時預填的名稱。</string>
-    <string name="defaultUsernameDefault">Mumla_User</string>
-    <string name="certificateGenerateSum">產生新的 Mumla 自簽憑證。推薦新手使用。</string>
+    <string name="defaultUsernameDefault">Nomla_User</string>
+    <string name="certificateGenerateSum">產生新的 Nomla 自簽憑證。推薦新手使用。</string>
     <string name="pttSettings">按鍵發話設定</string>
     <string name="hidePttSum">只有在使用按鍵發話熱點或實體鍵時有用處。</string>
     <string name="hidePtt">隱藏發話按鍵</string>
@@ -65,7 +63,7 @@
     <string name="loadImagesSum">在聊天中下載並顯示圖片。</string>
     <string name="loadImages">外部圖片</string>
     <string name="clearServerCertificates">清除伺服器憑證</string>
-    <string name="clearServerCertificatesSum">自 Mumla 清除所有已信任的伺服器憑證。</string>
+    <string name="clearServerCertificatesSum">自 Nomla 清除所有已信任的伺服器憑證。</string>
     <string name="halfDuplex">單向語音</string>
     <string name="halfDuplexSum">於按鈕發話時靜音其他播放中的聲音以避免音訊回授。</string>
     <string name="pttSound">發話按鍵音效</string>
@@ -73,7 +71,7 @@
     <string name="audio_per_packet">封包音訊長度</string>
     <string name="audio_per_packet_sum">每個封包的音訊長度。</string>
     <string name="stay_awake">螢幕恆亮</string>
-    <string name="stay_awake_sum">當使用 Mumla 時保持螢幕亮起。</string>
+    <string name="stay_awake_sum">當使用 Nomla 時保持螢幕亮起。</string>
     <string name="pref_certificate_title">憑證</string>
     <string name="pref_certificate_summary">連線至伺服器時預設使用的憑證。</string>
     <string name="pref_import_certificate_title">匯入憑證</string>
@@ -140,4 +138,13 @@
     <string name="mediaButtonActionMute">切換靜音</string>
     <string name="bluetoothSco">自動使用藍牙耳機</string>
     <string name="bluetoothScoSum">連線到伺服器時，透過已連接的藍牙耳機收發語音，並在通話期間切換到新連接的耳機。可在頻道選單中變更通話的音訊裝置。需要「鄰近裝置」權限；沒有此權限時，部分裝置不會將音訊切換到耳機。</string>
+    <string name="about_description">Nomla 是適用於 Android 的 Mumble 用戶端。它移植自 Mumla，並幾乎完全重寫。</string>
+    <string name="about_credits">致謝</string>
+    <string name="about_credits_lublin">Daniel Lublin 與貢獻者</string>
+    <string name="about_credits_comminos">Andrew Comminos 與貢獻者</string>
+    <string name="about_license_summary">Nomla 是依此授權條款發布的自由軟體</string>
+    <string name="about_source_code">原始碼</string>
+    <string name="about_third_party_notices">第三方聲明</string>
+    <string name="about_third_party_notices_summary">內含函式庫的授權條款（網頁連結）</string>
+    <string name="about_memorial">謹以此紀念 Andreas Mandalka（Natenom），他的指南、伺服器與耐心幫助許多人找到通往 Mumble 的道路。</string>
 </resources>

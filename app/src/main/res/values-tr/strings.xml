@@ -65,7 +65,7 @@
     <string name="send_message">Mesaj gönder</string>
     <string name="generate">Oluştur</string>
     <string name="first_run_generate_certificate">Sertifika oluşturulması şiddetle tavsiye edilir ve bazı sunuculara bağlanmak için gereklidir.</string>
-    <string name="first_run_generate_certificate_title">Mumla\'ya hoş geldiniz</string>
+    <string name="first_run_generate_certificate_title">Nomla\'ya hoş geldiniz</string>
     <string name="mumble_url_parse_failed">Mumble URL\'si geçerli değil.</string>
     <string name="tts_failed">TTS başlatılamadı</string>
     <string name="channel_add">Kanal Ekle</string>
@@ -83,15 +83,15 @@
 \nİnternete bağlı mısınız\?</string>
     <string name="information">Bilgi</string>
     <string name="close">Kapat</string>
-    <string name="shareMessage">Bu Mumble sunucusuna Mumla ile katılın. %s</string>
+    <string name="shareMessage">Bu Mumble sunucusuna Nomla ile katılın. %s</string>
     <string name="description">Açıklama</string>
     <string name="share">Paylaş</string>
     <string name="name">Ad</string>
     <string name="unknown">Bilinmeyen</string>
     <string name="user">Kullanıcı</string>
     <string name="channel">Kanal</string>
-    <string name="mumlaDisconnected">Mumla bağlantısı kesildi</string>
-    <string name="mumlaConnecting">Mumla bağlanıyor…</string>
+    <string name="nomlaDisconnected">Nomla bağlantısı kesildi</string>
+    <string name="nomlaConnecting">Nomla bağlanıyor…</string>
     <string name="connected">Bağlandı</string>
     <string name="clearChat">Sohbeti Temizle</string>
     <string name="offline">Çevrim dışı</string>
@@ -129,7 +129,7 @@
     <string name="server_port">Bağlantı Noktası</string>
     <string name="server_username">Kullanıcı Adı</string>
     <string name="server_password">Parola</string>
-    <string name="server_match_description">Mumla konuma, sürüme ve gecikmeye göre sizin için en iyi boş sunucuyu otomatik olarak bulabilir.</string>
+    <string name="server_match_description">Nomla konuma, sürüme ve gecikmeye göre sizin için en iyi boş sunucuyu otomatik olarak bulabilir.</string>
     <string name="chat_message_tts_short_link">(%1$s için bağlantı)</string>
     <string name="perm_denied">İzin reddedildi.</string>
     <string name="server_match_info">Ad: %1$s
@@ -185,18 +185,17 @@
 • Tema, sistemin açık/koyu modlarını destekleyecek şekilde yenilendi.\n
 • Ayarlar ekranının yeni API\'lere uyarlanması gerekiyordu.\n
 • Uygulama içi dil tercihi eklendi.\n</string>
-    <string name="donate_dialog_title_goog">Mumla\'yı beğendiniz mi?</string>
-    <string name="donate_dialog_message_goog">Mumla\'yı kullandığınız için teşekkür ederiz! Mumla\'nın devamlılığı ve bu mesajın kaldırılması için lütfen küçük bir bağış yapmayı düşünün.</string>
-    <string name="donate_dialog_positivebutton_goog">Mumla\'yı destekleyin</string>
+    <string name="donate_dialog_title_goog">Nomla\'yı beğendiniz mi?</string>
+    <string name="donate_dialog_message_goog">Nomla\'yı kullandığınız için teşekkür ederiz! Nomla\'nın devamlılığı ve bu mesajın kaldırılması için lütfen küçük bir bağış yapmayı düşünün.</string>
+    <string name="donate_dialog_positivebutton_goog">Nomla\'yı destekleyin</string>
     <string name="donate_dialog_negativebutton_goog">Daha sonra</string>
     <string name="donate_purchase_pending_goog">Bağışınız beklemede ve daha sonra yeniden başlatıldığında hazır olabilir. Teşekkür ederiz!</string>
     <string name="donate_thanks_goog">Desteğiniz için teşekkür ederiz!</string>
-    <string name="donate_foss">Bağış yap</string>
     <string name="app_news_items_v3_7_1">• Çoğunlukla çeviri güncellemeleri içeren küçük bir sürüm, tüm çevirmenlere teşekkürler!\n</string>
     <string name="app_news_items_v3_7_2">• Başlangıçta meydana gelebilecek çökme sorunu giderildi.\n • Bazı çeviriler eklendi, tüm çevirmenlere teşekkürler!\n</string>
     <string name="app_news_items_v3_7_3">• Android 12 ve sonraki sürümlerde, ayrıca koyu ve açık arka planlarda PTT kısayol köşesi görünür hale getirildi\n • Android 16 ve sonraki sürümlerde, Geri düğmesine basıldığında sunucuyla bağlantının kesilip kesilmeyeceği sorulur hale getirildi\n</string>
     <string name="connection_lost_reconnecting">Bağlantı koptu – yeniden bağlanılıyor…</string>
-    <string name="foreground_start_failed">Mumla arka planda çalışır durumda tutulamadı. Ekran kapandığında ses kesilebilir.</string>
+    <string name="foreground_start_failed">Nomla arka planda çalışır durumda tutulamadı. Ekran kapandığında ses kesilebilir.</string>
     <string name="bluetooth_perm_denied">Bluetooth kulaklık açık kalır. Yakındaki cihazlar izni olmadan bazı cihazlar sesi ona yönlendirmeyi reddeder.</string>
     <string name="chat_image_share">Resmi paylaş</string>
     <string name="chat_image_close">Kapat</string>

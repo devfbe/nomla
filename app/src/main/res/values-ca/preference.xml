@@ -13,7 +13,6 @@
     <string name="pref_certificate_title">Certificat</string>
     <string name="inputMethodPtt">PTT</string>
     <string name="togglePttSum">El botó PTT activa i desactiva la transmissió. No cal aguantar-lo.</string>
-    <string name="acknowledgements">Col·laboradors</string>
     <string name="audioInputMethod">Mode de transmissió</string>
     <string name="audioInputVolume">Volum del micròfon</string>
     <string name="detectionThreshold">Llindar de detecció</string>
@@ -44,18 +43,17 @@
     <string name="inputMethodVoice">Activitat de veu</string>
     <string name="detectionThresholdSum">Nivell de volum mínim per detectar la veu (quan el mode de transmissió és \"Activitat de veu\").</string>
     <string name="forceTcpSum">Desactiva UDP per a la comunicació.</string>
-    <string name="defaultUsernameDefault">Usuari_Mumla</string>
-    <string name="certificateGenerateSum">Genera un nou certificat de Mumla autofirmat. Recomanat per a principiants.</string>
+    <string name="defaultUsernameDefault">Usuari_Nomla</string>
+    <string name="certificateGenerateSum">Genera un nou certificat de Nomla autofirmat. Recomanat per a principiants.</string>
     <string name="voiceActivitySettings">Configuració de l\'activitat de veu</string>
     <string name="pttSoundSum">Reprodueix l\'efecte de so en prémer el botó PTT.</string>
-    <string name="stay_awake_sum">Manté la pantalla encesa quan Mumla està obert.</string>
+    <string name="stay_awake_sum">Manté la pantalla encesa quan Nomla està obert.</string>
     <string name="pref_import_certificate_summary">Importa\'n un des del emmagatzematge extern.</string>
     <string name="pref_start_upIn_pinned_mode_sum">Activa el mode \"Canals fixats\" després de connectar-se (amaga els canals que no estan fixats).</string>
     <string name="hot_corner_none">Desactivat</string>
     <string name="hot_corner_top_left">↖ a dalt a l\'esquerra</string>
     <string name="hot_corner_bottom_left">↙ a sota a l\'esquerra</string>
     <string name="hot_corner_top_right">A dalt a la dreta ↗</string>
-    <string name="acknowledgementsSum">Veieu qui ha contribuït a Mumla (enllaç web)</string>
     <string name="licenses">Llicències</string>
     <string name="audioInputMethodSum">Com s\'activa la transmissió d\'àudio.</string>
     <string name="audioInputVolumeSum">Nivell per normalitzar l\'àudio.</string>
@@ -74,7 +72,7 @@
     <string name="loadImagesSum">Baixa i mostra imatges al xat.</string>
     <string name="loadImages">Imatges externes</string>
     <string name="clearServerCertificates">Esborra els certificats del servidor</string>
-    <string name="clearServerCertificatesSum">Elimina tots els certificats de confiança del servidor de Mumla.</string>
+    <string name="clearServerCertificatesSum">Elimina tots els certificats de confiança del servidor de Nomla.</string>
     <string name="halfDuplex">Àudio unidireccional</string>
     <string name="halfDuplexSum">Silencia la resta de reproduccions durant la transmissió per evitar acoplaments d\'àudio.</string>
     <string name="pttSound">So del PTT</string>
@@ -137,4 +135,13 @@
     <string name="mediaButtonActionMute">Commuta el silenci</string>
     <string name="bluetoothSco">Utilitza automàticament els auriculars Bluetooth</string>
     <string name="bluetoothScoSum">Envia i rep la veu a través d\'uns auriculars Bluetooth connectats mentre esteu connectat a un servidor, i canvia a uns auriculars que es connectin durant la trucada. El dispositiu d\'àudio de la trucada es pot canviar des del menú del canal. Demana el permís «Dispositius propers»; alguns dispositius no envien l\'àudio als auriculars sense aquest permís.</string>
+    <string name="about_description">El Nomla és un client de Mumble per a Android. Es va portar del Mumla i s\'ha reescrit gairebé del tot.</string>
+    <string name="about_credits">Crèdits</string>
+    <string name="about_credits_lublin">Daniel Lublin i col·laboradors</string>
+    <string name="about_credits_comminos">Andrew Comminos i col·laboradors</string>
+    <string name="about_license_summary">El Nomla és programari lliure sota aquesta llicència</string>
+    <string name="about_source_code">Codi font</string>
+    <string name="about_third_party_notices">Avisos de tercers</string>
+    <string name="about_third_party_notices_summary">Llicències de les biblioteques incloses (enllaç web)</string>
+    <string name="about_memorial">En memòria d\'Andreas Mandalka (Natenom), les guies, els servidors i la paciència del qual van ajudar tantes persones a trobar el camí cap al Mumble.</string>
 </resources>

@@ -27,8 +27,6 @@
     <string name="hot_corner_top_right">Справа зверху ↗</string>
     <string name="hot_corner_bottom_right">Справа знизу ↘</string>
     <string name="about">Про додаток</string>
-    <string name="acknowledgements">Розробники</string>
-    <string name="acknowledgementsSum">Переглянути, хто вніс вклад в розвиток Mumla (посилання)</string>
     <string name="licenses">Ліцензії</string>
     <string name="detectionThreshold">Рівень виявлення</string>
     <string name="pttKey">Кнопка Push-to-talk</string>
@@ -54,16 +52,16 @@
     <string name="audioSampleRateSum">Бажана частота дискретизації аудіо. Деякі пристрої підтримують лише менші частоти.</string>
     <string name="chatNotifications">Сповіщення чату</string>
     <string name="defaultUsername">Ім\'я за замовчуванням</string>
-    <string name="defaultUsernameDefault">Користувач_Mumla</string>
+    <string name="defaultUsernameDefault">Користувач_Nomla</string>
     <string name="certificateGenerate">Згенерувати сертифікат</string>
-    <string name="certificateGenerateSum">Створює новий самопідписаний сертифікат Mumla. Рекомендовано новачкам.</string>
+    <string name="certificateGenerateSum">Створює новий самопідписаний сертифікат Nomla. Рекомендовано новачкам.</string>
     <string name="pttSettings">Налаштування Натисни-щоб-говорити</string>
     <string name="voiceActivitySettings">Налаштування порогу гучності</string>
     <string name="pressKeyInfo">Для використання кнопки додаток має бути відкритим (через обмеження Android).</string>
     <string name="loadImagesSum">Завантажувати і показувати зображення в чаті.</string>
     <string name="loadImages">Зовнішні зображення</string>
-    <string name="clearServerCertificatesSum">Видалити всі довірені серверні сертифікати з Mumla.</string>
-    <string name="stay_awake_sum">Тримати дисплей увімкненим, коли Mumla відкрита.</string>
+    <string name="clearServerCertificatesSum">Видалити всі довірені серверні сертифікати з Nomla.</string>
+    <string name="stay_awake_sum">Тримати дисплей увімкненим, коли Nomla відкрита.</string>
     <string name="pref_import_certificate_summary">Імпортувати із зовнішнього сховища.</string>
     <string name="pref_show_user_count_summary">Показувати кількість користувачів у дереві каналів.</string>
     <string name="pref_start_upIn_pinned_mode_sum">Показувати тільки закріплені канали після підключення до сервера (приховує інші канали).</string>
@@ -137,4 +135,13 @@
     <string name="mediaButtonActionMute">Вмикати/вимикати мікрофон</string>
     <string name="bluetoothSco">Автоматично використовувати Bluetooth-гарнітуру</string>
     <string name="bluetoothScoSum">Передавати й приймати голос через під’єднану Bluetooth-гарнітуру, поки ви під’єднані до сервера, і перемикатися на гарнітуру, під’єднану під час дзвінка. Аудіопристрій для дзвінка можна змінити в меню каналу. Запитує дозвіл «Пристрої поблизу»; без нього деякі пристрої не спрямовують звук на гарнітуру.</string>
+    <string name="about_description">Nomla — клієнт Mumble для Android. Її портовано з Mumla та майже повністю переписано.</string>
+    <string name="about_credits">Подяки</string>
+    <string name="about_credits_lublin">Daniel Lublin і учасники</string>
+    <string name="about_credits_comminos">Andrew Comminos і учасники</string>
+    <string name="about_license_summary">Nomla — вільне ПЗ за цією ліцензією</string>
+    <string name="about_source_code">Вихідний код</string>
+    <string name="about_third_party_notices">Повідомлення про сторонні компоненти</string>
+    <string name="about_third_party_notices_summary">Ліцензії вбудованих бібліотек (посилання)</string>
+    <string name="about_memorial">Пам\'яті Андреаса Мандалки (Natenom), чиї посібники, сервери й терпіння допомогли стільком людям знайти шлях до Mumble.</string>
 </resources>

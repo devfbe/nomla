@@ -2,8 +2,8 @@
 <resources>
     <string name="user">Usuário</string>
     <string name="channel">Canal</string>
-    <string name="mumlaConnecting">Mumla está conectando…</string>
-    <string name="mumlaDisconnected">Mumla desconectado</string>
+    <string name="nomlaConnecting">Nomla está conectando…</string>
+    <string name="nomlaDisconnected">Nomla desconectado</string>
     <string name="offline">Offline</string>
     <string name="online">Online</string>
     <string name="connected">Conectado</string>
@@ -42,7 +42,7 @@
     <string name="server_port">Porta</string>
     <string name="server_username">Nome de usuário</string>
     <string name="server_password">Senha</string>
-    <string name="server_match_description">Mumla pode procurar automaticamente um servidor vazio, otimizado para sua localização, versão e latência.</string>
+    <string name="server_match_description">Nomla pode procurar automaticamente um servidor vazio, otimizado para sua localização, versão e latência.</string>
     <string name="server_match_info">Nome: %1$s
 \nHost: %2$s:%3$d
 \nUsuários: %4$d / %5$d
@@ -150,7 +150,7 @@
     <string name="send_message">Enviar mensagem</string>
     <string name="generate">Gerar</string>
     <string name="first_run_generate_certificate">Gerar um certificado é altamente recomendado e necessário para se conectar em alguns servidores.</string>
-    <string name="first_run_generate_certificate_title">Bem-vindo(a) ao Mumla</string>
+    <string name="first_run_generate_certificate_title">Bem-vindo(a) ao Nomla</string>
     <string name="mumble_url_parse_failed">URL Mumble inválida.</string>
     <string name="tts_failed">Não foi possível iniciar o Texto-para-voz</string>
     <string name="channel_add">Adicionar canal</string>
@@ -169,14 +169,14 @@
 \nVocê está conectado à internet\?</string>
     <string name="information">Informação</string>
     <string name="close">Fechar</string>
-    <string name="shareMessage">Entre nesse servidor Mumble com o Mumla. %s</string>
+    <string name="shareMessage">Entre nesse servidor Mumble com o Nomla. %s</string>
     <string name="description">Descrição</string>
     <string name="share">Compartilhar</string>
     <string name="name">Nome</string>
     <string name="unknown">Desconhecido</string>
     <string name="image_confirm_send">Enviar esta imagem\?</string>
     <string name="connection_lost_reconnecting">Conexão perdida – reconectando…</string>
-    <string name="foreground_start_failed">Não foi possível manter o Mumla em execução em segundo plano. A voz pode parar quando a tela desligar.</string>
+    <string name="foreground_start_failed">Não foi possível manter o Nomla em execução em segundo plano. A voz pode parar quando a tela desligar.</string>
     <string name="bluetooth_perm_denied">O fone de ouvido Bluetooth continua ativado. Sem a permissão Dispositivos próximos, alguns dispositivos se recusam a direcionar o áudio para ele.</string>
     <string name="chat_image_share">Compartilhar imagem</string>
     <string name="chat_image_close">Fechar</string>

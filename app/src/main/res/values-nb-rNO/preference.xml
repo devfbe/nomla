@@ -19,7 +19,7 @@
     <string name="pressKey">Trykk på en maskinvaretast for å bruke den til å snakke.</string>
     <string name="loadImages">Eksterne bilder</string>
     <string name="clearServerCertificates">Tøm tjenersertifikater</string>
-    <string name="clearServerCertificatesSum">Fjerner alle betrodde tjenersertifikat fra Mumla.</string>
+    <string name="clearServerCertificatesSum">Fjerner alle betrodde tjenersertifikat fra Nomla.</string>
     <string name="pressKeyInfo">Programmet må være åpent for å bruke dette (som følge av begrensninger i Android).</string>
     <string name="loadImagesSum">Laster ned og viser bilder i sludringen.</string>
     <string name="version">Versjon</string>
@@ -27,7 +27,7 @@
     <string name="audio_per_packet">Lyd per pakke</string>
     <string name="pttSound">Trykk-for-å-snakke -lyd</string>
     <string name="audio_per_packet_sum">Lengden for lyd per stemmepakke.</string>
-    <string name="stay_awake_sum">Beholder skjermen påslått når Mumla er åpent.</string>
+    <string name="stay_awake_sum">Beholder skjermen påslått når Nomla er åpent.</string>
     <string name="pref_certificate_summary">Forvalget å bruke ved tilkobling til en tjener.</string>
     <string name="stay_awake">Forbli påslått</string>
     <string name="pref_export_certificate_title">Eksporter sertifikat</string>
@@ -46,11 +46,9 @@
     <string name="certificateGenerate">Generer sertifikat</string>
     <string name="pref_import_certificate_title">Importer sertifikat</string>
     <string name="inputMethodPtt">Trykk-for-å-snakke</string>
-    <string name="defaultUsernameDefault">Mumla_bruker</string>
+    <string name="defaultUsernameDefault">Nomla_bruker</string>
     <string name="theme_dark">Mørk</string>
     <string name="hot_corner_top_right">Øverst til høyre ↗</string>
-    <string name="acknowledgements">Bidragsytere</string>
-    <string name="acknowledgementsSum">Sjekk hvem som har bidratt til Mumla</string>
     <string name="detectionThreshold">Oppdagelsesterskel</string>
     <string name="general">Generelt</string>
     <string name="theme">Drakt</string>
@@ -63,7 +61,7 @@
     <string name="pttKeySum">Maskinvaretast å overføre lyd.</string>
     <string name="audioSampleRateSum">Foretrukket takt for måling av lyd. Noen enheter støtter færre takter.</string>
     <string name="pttSoundSum">Spill lydeffekt når trykk-for-å-snakke trykkes.</string>
-    <string name="certificateGenerateSum">Genererer et nytt selv-signert Mumla-sertifikat. Anbefales for nybegynnere.</string>
+    <string name="certificateGenerateSum">Genererer et nytt selv-signert Nomla-sertifikat. Anbefales for nybegynnere.</string>
     <string name="shortTtsMessages">Forkortede tekst-til-tale -meldinger</string>
     <string name="useTtsSum">Les meldinger til deg høyr med talesyntese.</string>
     <string name="pttButtonHeight">Knappehøyde for trykk-for-å-snakke.</string>
@@ -137,4 +135,13 @@
     <string name="mediaButtonActionMute">Veksle forstumming</string>
     <string name="bluetoothSco">Bruk Bluetooth-hodesett automatisk</string>
     <string name="bluetoothScoSum">Send og motta tale gjennom et tilkoblet Bluetooth-hodesett mens du er koblet til en tjener, og bytt til et hodesett som kobles til under samtalen. Lydenheten for samtalen kan endres i kanalmenyen. Ber om tilgangen Enheter i nærheten; noen enheter sender ikke lyd til et hodesett uten den.</string>
+    <string name="about_description">Nomla er en Mumble-klient for Android. Den ble overført fra Mumla og nesten fullstendig skrevet om.</string>
+    <string name="about_credits">Takk til</string>
+    <string name="about_credits_lublin">Daniel Lublin og bidragsytere</string>
+    <string name="about_credits_comminos">Andrew Comminos og bidragsytere</string>
+    <string name="about_license_summary">Nomla er fri programvare under denne lisensen</string>
+    <string name="about_source_code">Kildekode</string>
+    <string name="about_third_party_notices">Merknader fra tredjeparter</string>
+    <string name="about_third_party_notices_summary">Lisenser for de medfølgende bibliotekene (nettlenke)</string>
+    <string name="about_memorial">Til minne om Andreas Mandalka (Natenom), hvis veiledninger, tjenere og tålmodighet hjalp så mange med å finne veien til Mumble.</string>
 </resources>

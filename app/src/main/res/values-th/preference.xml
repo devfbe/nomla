@@ -8,14 +8,12 @@
     <string name="theme_system">ค่าเริ่มต้นของระบบ</string>
     <string name="inputMethodContinuous">ต่อเนื่อง</string>
     <string name="about">เกี่ยวกับ</string>
-    <string name="acknowledgements">ผู้มีส่วนร่วม</string>
     <string name="theme">ธีม</string>
     <string name="language">ภาษา</string>
     <string name="hot_corner_top_left">↖ บนซ้าย</string>
     <string name="hot_corner_bottom_left">↙ ล่างซ้าย</string>
     <string name="hot_corner_top_right">บนขวา ↗</string>
     <string name="hot_corner_bottom_right">ล่างขวา ↘</string>
-    <string name="acknowledgementsSum">ดูรายชื่อผู้มีส่วนร่วมในการพัฒนา Mumla (ลิงก์เว็บไซต์)</string>
     <string name="licenses">ใบอนุญาต</string>
     <string name="audioInputMethodSum">วิธีการเปิดใช้งานการส่งสัญญาณเสียง.</string>
     <string name="audioInputMethod">โหมดการส่ง</string>
@@ -37,7 +35,7 @@
     <string name="defaultUsernameSum">ชื่อที่กรอกไว้ล่วงหน้าซึ่งจะใช้เมื่อเพิ่มเซิร์ฟเวอร์หรือเชื่อมต่อกับเซิร์ฟเวอร์สาธารณะ</string>
     <string name="defaultUsernameDefault">Poc_User</string>
     <string name="certificateGenerate">สร้างใบรับรอง</string>
-    <string name="certificateGenerateSum">สร้างใบรับรอง Mumla ที่ลงนามด้วยตนเองใหม่. เหมาะสำหรับผู้เริ่มต้น.</string>
+    <string name="certificateGenerateSum">สร้างใบรับรอง Nomla ที่ลงนามด้วยตนเองใหม่. เหมาะสำหรับผู้เริ่มต้น.</string>
     <string name="pttSettings">ตั้งค่ากดเพื่อพูด</string>
     <string name="voiceActivitySettings">ตั้งค่าสั่งงานด้วยเสียง</string>
     <string name="hidePtt">ซ่อนแถบปุ่มกดเพื่อพูด</string>
@@ -58,13 +56,13 @@
     <string name="loadImagesSum">ดาวน์โหลดและแสดงรูปภาพในแชท</string>
     <string name="loadImages">ภาพภายนอก</string>
     <string name="clearServerCertificates">ล้างใบรับรองเซิร์ฟเวอร์</string>
-    <string name="clearServerCertificatesSum">ลบใบรับรองเซิร์ฟเวอร์ที่เชื่อถือได้ทั้งหมดออกจาก Mumla.</string>
+    <string name="clearServerCertificatesSum">ลบใบรับรองเซิร์ฟเวอร์ที่เชื่อถือได้ทั้งหมดออกจาก Nomla.</string>
     <string name="version">เวอร์ชั่น</string>
     <string name="halfDuplex">เสียงทางเดียว</string>
     <string name="pttSound">เสียงกดเพื่อพูด</string>
     <string name="pttSoundSum">เล่นเอฟเฟ็กต์เสียงเมื่อกดปุ่มกดเพื่อพูด.</string>
     <string name="audio_per_packet_sum">ความยาวของไฟล์เสียงต่อแพ็กเก็ตเสียง</string>
-    <string name="stay_awake_sum">ตั้งค่าให้หน้าจอยังคงเปิดอยู่เมื่อเปิด Mumla.</string>
+    <string name="stay_awake_sum">ตั้งค่าให้หน้าจอยังคงเปิดอยู่เมื่อเปิด Nomla.</string>
     <string name="pref_certificate_title">ใบรับรอง</string>
     <string name="pref_certificate_summary">ค่าเริ่มต้นที่จะใช้เมื่อเชื่อมต่อกับเซิร์ฟเวอร์</string>
     <string name="pref_import_certificate_title">นำเข้าใบรับรอง</string>
@@ -140,4 +138,13 @@
     <string name="mediaButtonActionMute">สลับปิดไมค์</string>
     <string name="bluetoothSco">ใช้ชุดหูฟังบลูทูธโดยอัตโนมัติ</string>
     <string name="bluetoothScoSum">ส่งและรับเสียงผ่านชุดหูฟังบลูทูธที่เชื่อมต่ออยู่ขณะที่คุณเชื่อมต่อกับเซิฟเวอร์ และสลับไปยังชุดหูฟังที่เชื่อมต่อระหว่างการโทร เปลี่ยนอุปกรณ์เสียงของการโทรได้จากเมนูแชนเนล ต้องขอสิทธิ์อุปกรณ์ที่อยู่ใกล้เคียง อุปกรณ์บางรุ่นจะไม่ส่งเสียงไปยังชุดหูฟังหากไม่มีสิทธิ์นี้</string>
+    <string name="about_description">Nomla เป็นไคลเอนต์ Mumble สำหรับ Android ซึ่งพอร์ตมาจาก Mumla และเขียนใหม่เกือบทั้งหมด</string>
+    <string name="about_credits">เครดิต</string>
+    <string name="about_credits_lublin">Daniel Lublin และผู้มีส่วนร่วม</string>
+    <string name="about_credits_comminos">Andrew Comminos และผู้มีส่วนร่วม</string>
+    <string name="about_license_summary">Nomla เป็นซอฟต์แวร์เสรีภายใต้สัญญาอนุญาตนี้</string>
+    <string name="about_source_code">ซอร์สโค้ด</string>
+    <string name="about_third_party_notices">ประกาศของบุคคลที่สาม</string>
+    <string name="about_third_party_notices_summary">สัญญาอนุญาตของไลบรารีที่รวมมา (ลิงก์เว็บไซต์)</string>
+    <string name="about_memorial">เพื่อรำลึกถึง Andreas Mandalka (Natenom) ผู้ซึ่งคู่มือ เซิร์ฟเวอร์ และความอดทนของเขาช่วยให้ผู้คนมากมายได้พบหนทางสู่ Mumble</string>
 </resources>

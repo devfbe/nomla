@@ -52,7 +52,7 @@
     <string name="server_match_not_found">Nie udało się znaleźć serwera</string>
     <string name="server_match_expand_country">Nie udało się znaleźć optymalnych serwerów w Twoim kraju. Szukać na całym świecie\?</string>
     <string name="server_match_info">Nazwa: %1$s\nHost: %2$s:%3$d\nUżytkownicy: %4$d / %5$d\nWersja: %6$s \nKraj: %7$s \nOpóźnienie: %8$d ms</string>
-    <string name="server_match_description">Mumla może automatycznie znaleźć Ci pusty serwer, optymalizując lokalizację, wersję i opóźnienie.</string>
+    <string name="server_match_description">Nomla może automatycznie znaleźć Ci pusty serwer, optymalizując lokalizację, wersję i opóźnienie.</string>
     <!-- Common -->
     <string name="server_password">Hasło</string>
     <string name="server_username">Nazwa użytkownika</string>
@@ -92,15 +92,15 @@
     <string name="offline">Offline</string>
     <string name="clearChat">Wyczyść czat</string>
     <string name="connected">Połączono</string>
-    <string name="mumlaConnecting">Mumla łączy się…</string>
-    <string name="mumlaDisconnected">Mumla rozłączona</string>
+    <string name="nomlaConnecting">Nomla łączy się…</string>
+    <string name="nomlaDisconnected">Nomla rozłączona</string>
     <string name="channel">Kanał</string>
     <string name="user">Użytkownik</string>
     <string name="unknown">Nieznany</string>
     <string name="name">Nazwa</string>
     <string name="share">Udostępnij</string>
     <string name="description">Opis</string>
-    <string name="shareMessage">Dołącz do tego serwera Mumble za pomocą Mumli. %s</string>
+    <string name="shareMessage">Dołącz do tego serwera Mumble za pomocą Nomli. %s</string>
     <string name="close">Zamknij</string>
     <string name="information">Informacje</string>
     <string name="error_fetching_servers">Nie udało się pobrać serwerów.
@@ -119,7 +119,7 @@
     <string name="channel_add">Dodaj kanał</string>
     <string name="tts_failed">Nie udało się uruchomić TTS</string>
     <string name="mumble_url_parse_failed">Adres URL Mumble jest nieprawidłowy.</string>
-    <string name="first_run_generate_certificate_title">Witaj w Mumli</string>
+    <string name="first_run_generate_certificate_title">Witaj w Nomli</string>
     <string name="first_run_generate_certificate">Generowanie certyfikatu jest bardzo zalecane i konieczne do połączenia z niektórymi serwerami.</string>
     <string name="generate">Wygeneruj</string>
     <string name="send_message">Wyślij wiadomość</string>
@@ -172,13 +172,12 @@
     <string name="app_news">Co nowego</string>
     <string name="app_news_summary">Zobacz najnowsze aktualizacje</string>
     <string name="app_news_footer_on_startup">Wiadomości te można ponownie przejrzeć na stronie „O programie”.</string>
-    <string name="donate_dialog_title_goog">Podoba Ci się Mumla?</string>
-    <string name="donate_dialog_message_goog">Dziękujemy za korzystanie z Mumli! Prosimy o rozważenie przekazania niewielkiej darowizny, która pomoże utrzymać Mumlę przy życiu i usunąć ten komunikat.</string>
-    <string name="donate_dialog_positivebutton_goog">Wesprzyj Mumlę</string>
+    <string name="donate_dialog_title_goog">Podoba Ci się Nomla?</string>
+    <string name="donate_dialog_message_goog">Dziękujemy za korzystanie z Nomli! Prosimy o rozważenie przekazania niewielkiej darowizny, która pomoże utrzymać Nomlę przy życiu i usunąć ten komunikat.</string>
+    <string name="donate_dialog_positivebutton_goog">Wesprzyj Nomlę</string>
     <string name="donate_dialog_negativebutton_goog">Później</string>
     <string name="donate_purchase_pending_goog">Twoja darowizna jest w trakcie realizacji i może być gotowa po ponownym uruchomieniu. Dziękujemy!</string>
     <string name="donate_thanks_goog">Dziękujemy za wsparcie!</string>
-    <string name="donate_foss">Przekaż darowiznę</string>
     <string name="app_news_items_v3_7_0">• Dużo pracy włożono w aktualizację Mumli dla Androida 15 i 16 (API 35 i 36).\n
 • W związku z tym wymagany jest Android 5.0 (API 21) lub nowszy.\n
 • Zmodernizowano motyw, aby obsługiwał jasny/ciemny tryb systemu.\n
@@ -188,7 +187,7 @@
     <string name="app_news_items_v3_7_2">• Naprawiono potencjalny błąd powodujący awarię podczas uruchamiania.\n• Dodano kilka tłumaczeń, dziękujemy wszystkim tłumaczom!\n</string>
     <string name="app_news_items_v3_7_3">• Uwidoczniono narożnik PTT na urządzeniach z systemem Android 12 i nowszych, a także na ciemnym i jasnym tle.\n• Sprawiono, aby przycisk Wstecz ponownie prosił o rozłączenie z serwerem w systemie Android 16+.\n</string>
     <string name="connection_lost_reconnecting">Utracono połączenie – ponowne łączenie…</string>
-    <string name="foreground_start_failed">Nie udało się utrzymać Mumli w tle. Dźwięk może ustać po wyłączeniu ekranu.</string>
+    <string name="foreground_start_failed">Nie udało się utrzymać Nomli w tle. Dźwięk może ustać po wyłączeniu ekranu.</string>
     <string name="bluetooth_perm_denied">Zestaw słuchawkowy Bluetooth pozostaje włączony. Bez uprawnienia „Urządzenia w pobliżu” niektóre urządzenia odmówią przekierowania do niego dźwięku.</string>
     <string name="chat_image_share">Udostępnij obraz</string>
     <string name="chat_image_close">Zamknij</string>

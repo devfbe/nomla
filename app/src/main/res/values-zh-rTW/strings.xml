@@ -26,10 +26,9 @@
     <string name="user_menu_change_comment">變更註記</string>
     <string name="user_menu_view_comment">檢視註記</string>
     <string name="user_menu_reset_comment">重設註記</string>
-    <string name="donate_dialog_positivebutton_goog">支持 Mumla</string>
+    <string name="donate_dialog_positivebutton_goog">支持 Nomla</string>
     <string name="donate_thanks_goog">感謝你的支持！</string>
-    <string name="donate_dialog_message_goog">感謝你使用 Mumla！懇請考慮小額贊助使 Mumla 得以持續活躍並移除此訊息。</string>
-    <string name="donate_foss">贊助</string>
+    <string name="donate_dialog_message_goog">感謝你使用 Nomla！懇請考慮小額贊助使 Nomla 得以持續活躍並移除此訊息。</string>
     <string name="donation_thanks">感謝你的贊助。</string>
     <string name="server_match_info">名稱: %1$s\n主機: %2$s:%3$d\n使用者數: %4$d / %5$d\n版本: %6$s\n國家: %7$s\n延遲: %8$d ms</string>
     <string name="server_match_not_found">找不到伺服器</string>
@@ -45,7 +44,7 @@
     <string name="donate_purchase_pending_goog">你的贊助尚未完成，可能在下次重啟後就緒。謝謝！</string>
     <string name="donate_dialog_negativebutton_goog">下次再說</string>
     <string name="image_confirm_send">送出這則訊息？</string>
-    <string name="donate_dialog_title_goog">喜歡使用 Mumla 嗎？</string>
+    <string name="donate_dialog_title_goog">喜歡使用 Nomla 嗎？</string>
     <string name="default_">預設</string>
     <string name="app_news_summary">檢視最近的更新內容</string>
     <string name="app_news">最近更新</string>
@@ -61,8 +60,8 @@
     <string name="change_requires_reconnect">重新連線以套用新的設定。</string>
     <string name="first_run_generate_certificate">強烈建議產生憑證，部份伺服器需要憑證才能進行連線。</string>
     <string name="reconnect_dialog_message">你已連線至伺服器。確定要改為連線至這個伺服器嗎？</string>
-    <string name="mumlaConnecting">Mumla 正在連線中…</string>
-    <string name="mumlaDisconnected">Mumla 已離線</string>
+    <string name="nomlaConnecting">Nomla 正在連線中…</string>
+    <string name="nomlaDisconnected">Nomla 已離線</string>
     <string name="connectionRefused">連線被拒</string>
     <string name="error_fetching_servers">無法接通伺服器\n請確認網際網路連線是否正常？</string>
     <string name="drawer_favorites">收藏</string>
@@ -76,7 +75,7 @@
     <string name="tcp_encryption_mode">使用 256 bit AES-256-SHA 加密</string>
     <string name="udp_encryption_mode">使用 128 bit OCB-AES-128 加密</string>
     <string name="server_match_expand_country">無法在你的國家內找到最合適的伺服器。改為全球搜尋嗎？</string>
-    <string name="server_match_description">Mumla 可以自動依據所在地區、版本、延遲為你尋找最適合的空伺服器。</string>
+    <string name="server_match_description">Nomla 可以自動依據所在地區、版本、延遲為你尋找最適合的空伺服器。</string>
     <string name="chat">聊天</string>
     <string name="addFavorite">新增收藏</string>
     <string name="search">搜尋</string>
@@ -101,7 +100,7 @@
     <string name="messageToChannel">輸入發送到頻道 \'%s\' 的訊息</string>
     <string name="share">分享</string>
     <string name="description">描述</string>
-    <string name="shareMessage">使用 Mumla 加入這個 Mumble 伺服器。 %s</string>
+    <string name="shareMessage">使用 Nomla 加入這個 Mumble 伺服器。 %s</string>
     <string name="close">關閉</string>
     <string name="information">資訊</string>
     <string name="hint_reason">原因</string>
@@ -114,7 +113,7 @@
     <string name="channel_edit">編輯頻道</string>
     <string name="tts_failed">無法啟動文字轉語音功能</string>
     <string name="mumble_url_parse_failed">Mumble URL 無效。</string>
-    <string name="first_run_generate_certificate_title">歡迎來到 Mumla</string>
+    <string name="first_run_generate_certificate_title">歡迎來到 Nomla</string>
     <string name="generate">產生</string>
     <string name="send_message">傳送訊息</string>
     <string name="channel_menu_view_description">檢視描述</string>
@@ -170,7 +169,7 @@
     <string name="drawer_open">開啟側邊欄</string>
     <string name="drawer_close">關閉側邊欄</string>
     <string name="connection_lost_reconnecting">連線中斷——正在重新連線…</string>
-    <string name="foreground_start_failed">無法讓 Mumla 在背景持續執行。螢幕關閉後語音可能會中斷。</string>
+    <string name="foreground_start_failed">無法讓 Nomla 在背景持續執行。螢幕關閉後語音可能會中斷。</string>
     <string name="bluetooth_perm_denied">藍牙耳機保持開啟。沒有「鄰近裝置」權限時，部分裝置會拒絕將音訊切換到耳機。</string>
     <string name="chat_image_share">分享圖片</string>
     <string name="chat_image_close">關閉</string>

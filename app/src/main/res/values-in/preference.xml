@@ -13,9 +13,9 @@
     <string name="about">Tentang</string>
     <string name="chatNotificationsSum">Notifikasi ditampilkan untuk pesan masuk baru.</string>
     <string name="defaultUsername">Username default</string>
-    <string name="defaultUsernameDefault">Mumla_User</string>
+    <string name="defaultUsernameDefault">Nomla_User</string>
     <string name="pttButtonHeightSum">Mengganti ukuran vertikal tombol push-to-talk.</string>
-    <string name="certificateGenerateSum">Membuat sertifikat keamanan self-signed Mumla baru. Direkomendasikan bagi pemula.</string>
+    <string name="certificateGenerateSum">Membuat sertifikat keamanan self-signed Nomla baru. Direkomendasikan bagi pemula.</string>
     <string name="useTor">Sambung via Tor</string>
     <string name="inputQualitySum">Rate transmisi data yang diinginkan (dalam bits per second).</string>
     <string name="pttButtonHeight">Ukuran tombol push-to-talk</string>
@@ -25,8 +25,6 @@
     <string name="audio_per_packet">Audio per packet</string>
     <string name="halfDuplexSum">Mematikan playback audio lainnya saat fungsi push-to-talk berjalan (untuk menghindari audio loop/feedback).</string>
     <string name="pref_show_user_count">Tampilkan jumlah user pada channel</string>
-    <string name="acknowledgements">Kontributor</string>
-    <string name="acknowledgementsSum">Lihat kontributor Mumla (link web)</string>
     <string name="licenses">Lisensi</string>
     <string name="audioInputMethodSum">Metode aktivasi transmisi audio.</string>
     <string name="audioInputMethod">Mode transmisi</string>
@@ -71,7 +69,7 @@
     <string name="pttSoundSum">Memutar efek suara saat menekan tombol push-to-talk.</string>
     <string name="audio_per_packet_sum">Lama audio per voice packet.</string>
     <string name="stay_awake">Layar tetap menyala</string>
-    <string name="stay_awake_sum">Memastikan layar device tetap menyala selama aplikasi Mumla dibuka.</string>
+    <string name="stay_awake_sum">Memastikan layar device tetap menyala selama aplikasi Nomla dibuka.</string>
     <string name="pref_certificate_title">Sertifikat Keamanan</string>
     <string name="pref_certificate_summary">Sertifikat keamanan default yang digunakan ketika menyambung ke server.</string>
     <string name="pref_import_certificate_title">Impor sertifikat keamanan</string>
@@ -138,4 +136,13 @@
     <string name="mediaButtonActionMute">Toggle matikan mikrofon</string>
     <string name="bluetoothSco">Gunakan headset Bluetooth secara otomatis</string>
     <string name="bluetoothScoSum">Mengirim dan menerima suara melalui headset Bluetooth yang terhubung selama tersambung ke server, dan beralih ke headset yang terhubung selama panggilan. Perangkat audio untuk panggilan dapat diubah dari menu channel. Meminta izin Perangkat di sekitar; beberapa perangkat tidak akan mengalihkan audio ke headset tanpa izin ini.</string>
+    <string name="about_description">Nomla adalah klien Mumble untuk Android. Nomla di-porting dari Mumla dan ditulis ulang hampir seluruhnya.</string>
+    <string name="about_credits">Kredit</string>
+    <string name="about_credits_lublin">Daniel Lublin dan para kontributor</string>
+    <string name="about_credits_comminos">Andrew Comminos dan para kontributor</string>
+    <string name="about_license_summary">Nomla adalah perangkat lunak bebas di bawah lisensi ini</string>
+    <string name="about_source_code">Kode sumber</string>
+    <string name="about_third_party_notices">Pemberitahuan pihak ketiga</string>
+    <string name="about_third_party_notices_summary">Lisensi pustaka yang disertakan (link web)</string>
+    <string name="about_memorial">Untuk mengenang Andreas Mandalka (Natenom), yang panduan, server, dan kesabarannya telah membantu begitu banyak orang menemukan jalan ke Mumble.</string>
 </resources>

@@ -14,8 +14,6 @@
     <string name="hot_corner_bottom_right">右下</string>
     <!--About-->
     <string name="about">アプリについて</string>
-    <string name="acknowledgements">謝辞</string>
-    <string name="acknowledgementsSum">Mumla の貢献者を参照</string>
     <string name="licenses">ライセンス</string>
     <string name="audioInputMethodSum">音声入力の方法。</string>
     <string name="audioInputMethod">送信モード</string>
@@ -38,9 +36,9 @@
     <string name="chatNotificationsSum">ユーザーがチャットに投稿した時に、通知を表示します。</string>
     <string name="defaultUsername">デフォルトのユーザー名</string>
     <string name="defaultUsernameSum">サーバへ接続する時に使用するデフォルトのユーザー名。</string>
-    <string name="defaultUsernameDefault">Mumla_User</string>
+    <string name="defaultUsernameDefault">Nomla_User</string>
     <string name="certificateGenerate">証明書を生成</string>
-    <string name="certificateGenerateSum">新しい自己署名の Mumla 証明書を生成します。初心者におすすめです。</string>
+    <string name="certificateGenerateSum">新しい自己署名の Nomla 証明書を生成します。初心者におすすめです。</string>
     <string name="pttSettings">プッシュツートーク設定</string>
     <string name="voiceActivitySettings">音声機能設定</string>
     <string name="hidePtt">プッシュツートークボタンを非表示</string>
@@ -60,7 +58,7 @@
     <string name="loadImagesSum">チャットで外部の画像をロードするかどうか。</string>
     <string name="loadImages">外部の画像をロード</string>
     <string name="clearServerCertificates">サーバー証明書をクリア</string>
-    <string name="clearServerCertificatesSum">Mumla トラストデータベースから、許可されたサーバ証明書をすべてクリアします。</string>
+    <string name="clearServerCertificatesSum">Nomla トラストデータベースから、許可されたサーバ証明書をすべてクリアします。</string>
     <string name="version">バージョン</string>
     <string name="halfDuplex">半二重モード</string>
     <string name="halfDuplexSum">プッシュツートークを使用する時に、デバイスのサウンドをミュートします。チャンネルのユーザーに対して音声フィードバックを除去します。</string>
@@ -69,7 +67,7 @@
     <string name="audio_per_packet">パケット当たりの音声</string>
     <string name="audio_per_packet_sum">音声パケットあたりの音声の長さ。</string>
     <string name="stay_awake">画面をオフにしない</string>
-    <string name="stay_awake_sum">Mumla が開かれているときは、画面をオフにしません。</string>
+    <string name="stay_awake_sum">Nomla が開かれているときは、画面をオフにしません。</string>
     <string name="noiseSuppression">ノイズ抑制</string>
     <string name="noiseSuppressionSum">送信前にマイクの背景ノイズを除去します。</string>
     <string name="noiseSuppressionNone">オフ</string>
@@ -126,4 +124,13 @@
     <string name="mediaButtonActionMute">ミュートを切り替え</string>
     <string name="bluetoothSco">Bluetooth ヘッドセットを自動的に使用</string>
     <string name="bluetoothScoSum">サーバーに接続中、接続された Bluetooth ヘッドセットで音声を送受信し、通話中に接続されたヘッドセットに切り替えます。通話のオーディオデバイスはチャンネルメニューから変更できます。「付近のデバイス」の権限を要求します。一部のデバイスでは、この権限がないとヘッドセットに音声がルーティングされません。</string>
+    <string name="about_description">Nomla は Android 用の Mumble クライアントです。Mumla から移植され、ほぼ全面的に書き直されました。</string>
+    <string name="about_credits">クレジット</string>
+    <string name="about_credits_lublin">Daniel Lublin と貢献者</string>
+    <string name="about_credits_comminos">Andrew Comminos と貢献者</string>
+    <string name="about_license_summary">Nomla はこのライセンスのもとで自由ソフトウェアです</string>
+    <string name="about_source_code">ソースコード</string>
+    <string name="about_third_party_notices">サードパーティーに関する通知</string>
+    <string name="about_third_party_notices_summary">同梱ライブラリのライセンス（ウェブリンク）</string>
+    <string name="about_memorial">Andreas Mandalka（Natenom）を偲んで。彼のガイド、サーバー、そして忍耐は、多くの人々が Mumble への道を見つける助けとなりました。</string>
 </resources>

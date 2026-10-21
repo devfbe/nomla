@@ -57,7 +57,7 @@
 \nВерсия: %6$s
 \nСтрана: %7$s
 \nЗадержка: %8$d мс</string>
-    <string name="server_match_description">Mumla может автоматически найти пустой сервер, основываясь на местоположении, версии, и задержке.</string>
+    <string name="server_match_description">Nomla может автоматически найти пустой сервер, основываясь на местоположении, версии, и задержке.</string>
     <!-- Common -->
     <string name="server_password">Пароль</string>
     <string name="server_username">Имя пользователя</string>
@@ -97,15 +97,15 @@
     <string name="offline">Не в сети</string>
     <string name="clearChat">Очистить чат</string>
     <string name="connected">Подключено</string>
-    <string name="mumlaConnecting">Mumla подключается…</string>
-    <string name="mumlaDisconnected">Mumla отключена</string>
+    <string name="nomlaConnecting">Nomla подключается…</string>
+    <string name="nomlaDisconnected">Nomla отключена</string>
     <string name="channel">Канал</string>
     <string name="user">Пользователь</string>
     <string name="unknown">Неизвестный</string>
     <string name="name">Название</string>
     <string name="share">Поделиться</string>
     <string name="description">Описание</string>
-    <string name="shareMessage">Присоединяйся к этому Mumble-серверу с помощью Mumla. %s</string>
+    <string name="shareMessage">Присоединяйся к этому Mumble-серверу с помощью Nomla. %s</string>
     <string name="close">Закрыть</string>
     <string name="information">Информация</string>
     <string name="error_fetching_servers">Не удалось получить список.\nВы подключены к интернету?</string>
@@ -123,7 +123,7 @@
     <string name="channel_add">Добавить канал</string>
     <string name="tts_failed">Не удалось запустить TTS</string>
     <string name="mumble_url_parse_failed">Неверная Mumble-ссылка.</string>
-    <string name="first_run_generate_certificate_title">Добро пожаловать в Mumla</string>
+    <string name="first_run_generate_certificate_title">Добро пожаловать в Nomla</string>
     <string name="first_run_generate_certificate">Мы рекомендуем создать сертификат. К тому же, он необходим для подключения к некоторым серверам.</string>
     <string name="generate">Создать</string>
     <string name="send_message">Отправить сообщение</string>
@@ -176,19 +176,18 @@
     <string name="app_news">Что нового</string>
     <string name="app_news_summary">Посмотреть последние изменения</string>
     <string name="app_news_footer_on_startup">Эти новости можно посмотреть еще раз на странице \"О программе\".</string>
-    <string name="donate_dialog_title_goog">Нравится Mumla?</string>
-    <string name="donate_dialog_message_goog">Спасибо, что используете Mumla! Пожалуйста, рассмотрите возможность сделать небольшое пожертвование, чтобы помочь Mumla продолжить свою работу и скрыть данное сообщение.</string>
-    <string name="donate_dialog_positivebutton_goog">Поддержите Mumla</string>
+    <string name="donate_dialog_title_goog">Нравится Nomla?</string>
+    <string name="donate_dialog_message_goog">Спасибо, что используете Nomla! Пожалуйста, рассмотрите возможность сделать небольшое пожертвование, чтобы помочь Nomla продолжить свою работу и скрыть данное сообщение.</string>
+    <string name="donate_dialog_positivebutton_goog">Поддержите Nomla</string>
     <string name="donate_dialog_negativebutton_goog">Позже</string>
     <string name="donate_purchase_pending_goog">Ваше пожертвование обрабатывается и может вступить в силу после перезапуска приложения. Спасибо!</string>
     <string name="donate_thanks_goog">Спасибо за вашу поддержку!</string>
-    <string name="donate_foss">Поддержать</string>
     <string name="app_news_items_v3_7_0">• Была проделана большая работа по обновлению Mumla для Android 15 и 16 (API 35 и 36).\n• В связи с этим теперь требуется Android 5.0 (API 21) или выше.\n• Оформление было модернизировано для поддержки системной светлой и тёмной тем.\n• Экран настроек пришлось адаптировать под новые API.\n• Добавлена настройка языка внутри приложения.\n</string>
     <string name="app_news_items_v3_7_1">• Незначительное обновление, в основном касающееся переводов. Спасибо всем переводчикам!\n</string>
     <string name="app_news_items_v3_7_2">• Исправление возможного сбоя при запуске.\n• Добавлены новые переводы, спасибо всем переводчикам!\n</string>
     <string name="app_news_items_v3_7_3">• Активный угол PTT теперь отображается на Android 12 и выше, а также на светлом и темном фоне\n• На Android 16 и выше кнопка \"Назад\" снова запрашивает подтверждение перед отключением от сервера\n</string>
     <string name="connection_lost_reconnecting">Соединение потеряно – переподключение…</string>
-    <string name="foreground_start_failed">Не удалось оставить Mumla работать в фоне. Звук может пропасть при выключении экрана.</string>
+    <string name="foreground_start_failed">Не удалось оставить Nomla работать в фоне. Звук может пропасть при выключении экрана.</string>
     <string name="bluetooth_perm_denied">Bluetooth-гарнитура остаётся включённой. Без разрешения «Устройства поблизости» некоторые устройства откажутся направлять на неё звук.</string>
     <string name="chat_image_share">Поделиться изображением</string>
     <string name="chat_image_close">Закрыть</string>

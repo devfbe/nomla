@@ -51,7 +51,7 @@
     <string name="server_match_not_found">Server niet gevonden</string>
     <string name="server_match_expand_country">Kon geen optimale servers in uw land vinden. Zoekopdracht wereldwijd uitbreiden?</string>
     <string name="server_match_info">Naam: %1$s\nHost: %2$s:%3$d\nGebruikers: %4$d / %5$d\nVersie: %6$s \nLand: %7$s \nLatency: %8$d ms</string>
-    <string name="server_match_description">Mumla kan automatisch een lege server zoeken, geoptimaliseerd aan de hand van locatie, versie en latency.</string>
+    <string name="server_match_description">Nomla kan automatisch een lege server zoeken, geoptimaliseerd aan de hand van locatie, versie en latency.</string>
     <!--Common-->
     <string name="server_password">Wachtwoord</string>
     <string name="server_username">Gebruikersnaam</string>
@@ -91,15 +91,15 @@
     <string name="offline">Offline</string>
     <string name="clearChat">Chat Legen</string>
     <string name="connected">Verbonden</string>
-    <string name="mumlaConnecting">Mumla verbindt…</string>
-    <string name="mumlaDisconnected">Mumla Verbinding Verbroken</string>
+    <string name="nomlaConnecting">Nomla verbindt…</string>
+    <string name="nomlaDisconnected">Nomla Verbinding Verbroken</string>
     <string name="channel">Kanaal</string>
     <string name="user">Gebruiker</string>
     <string name="unknown">Ongekend</string>
     <string name="name">Naam</string>
     <string name="share">Delen</string>
     <string name="description">Beschrijving</string>
-    <string name="shareMessage">Verbind met deze Mumble server met Mumla. %s</string>
+    <string name="shareMessage">Verbind met deze Mumble server met Nomla. %s</string>
     <string name="close">Sluit</string>
     <string name="information">Informatie</string>
     <string name="error_fetching_servers">Error servers ophalen.
@@ -118,7 +118,7 @@
     <string name="channel_add">Kanaal Toevoegen</string>
     <string name="tts_failed">TTS initialiseren mislukt</string>
     <string name="mumble_url_parse_failed">Mumble URL kon niet worden ontleed.</string>
-    <string name="first_run_generate_certificate_title">Welkom bij Mumla</string>
+    <string name="first_run_generate_certificate_title">Welkom bij Nomla</string>
     <string name="first_run_generate_certificate">Certificaat generen is ten zeerste aangeraden en nodig voor verbinden met bepaalde servers.</string>
     <string name="generate">Genereer</string>
     <string name="send_message">Verstuur bericht</string>
@@ -165,7 +165,7 @@
     <string name="change_requires_reconnect">Maak opnieuw verbinding om de nieuwe instellingen te gebruiken.</string>
     <string name="chat_message_tts_short_link">(Link naar %1$s)</string>
     <string name="connection_lost_reconnecting">Verbinding verbroken – opnieuw verbinden…</string>
-    <string name="foreground_start_failed">Mumla kon niet actief blijven op de achtergrond. De spraak kan stoppen wanneer het scherm uitgaat.</string>
+    <string name="foreground_start_failed">Nomla kon niet actief blijven op de achtergrond. De spraak kan stoppen wanneer het scherm uitgaat.</string>
     <string name="bluetooth_perm_denied">De Bluetooth-headset blijft ingeschakeld. Zonder de toestemming Apparaten in de buurt weigeren sommige toestellen audio ernaartoe te sturen.</string>
     <string name="chat_image_share">Afbeelding delen</string>
     <string name="chat_image_close">Sluiten</string>

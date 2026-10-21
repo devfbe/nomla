@@ -12,8 +12,8 @@
     <string name="unknown">Desconegut</string>
     <string name="user">Usuari</string>
     <string name="channel">Canal</string>
-    <string name="mumlaDisconnected">El Mumla està desconnectat</string>
-    <string name="mumlaConnecting">El Mumla està connectant…</string>
+    <string name="nomlaDisconnected">El Nomla està desconnectat</string>
+    <string name="nomlaConnecting">El Nomla està connectant…</string>
     <string name="connected">Connectat</string>
     <string name="clearChat">Neteja el xat</string>
     <string name="online">En línia</string>
@@ -36,7 +36,7 @@
     <string name="server_label">Etiqueta</string>
     <string name="server_host">Adreça</string>
     <string name="server_username">Nom d\'usuari</string>
-    <string name="server_match_description">El Mumla pot cercar automàticament un servidor buit, optimitzant ubicació, versió i latència.</string>
+    <string name="server_match_description">El Nomla pot cercar automàticament un servidor buit, optimitzant ubicació, versió i latència.</string>
     <string name="server_match_expand_country">No s\'ha pogut trobar cap servidor òptim al vostre país. Busquem arreu del món\?</string>
     <string name="server_match_not_found">No s\'ha trobat el servidor</string>
     <string name="server_match_found">S\'ha trobat el servidor</string>
@@ -105,7 +105,7 @@
     <string name="disconnectSure">Segur que voleu desconnectar-vos de %s?</string>
     <string name="error_fetching_servers">Error a l\'accedir al servidor.
 \nEsteu connectat a Internet\?</string>
-    <string name="shareMessage">Accediu a aquest servidor amb el Mumla. %s</string>
+    <string name="shareMessage">Accediu a aquest servidor amb el Nomla. %s</string>
     <string name="share">Comparteix</string>
     <string name="generateCertSuccess">El vostre certificat s\'ha generat y s\'ha guardar com a %s!</string>
     <string name="trust_cleared">S\'ha buidat la Base de dades de confiança</string>
@@ -116,7 +116,7 @@
     <string name="send_message">Envia un missatge</string>
     <string name="generate">Genera</string>
     <string name="first_run_generate_certificate">Es recomana generar un certificat. Alguns servidors demanen un certificat.</string>
-    <string name="first_run_generate_certificate_title">Benvinguts al Mumla</string>
+    <string name="first_run_generate_certificate_title">Benvinguts al Nomla</string>
     <string name="mumble_url_parse_failed">No s\'ha pogut processar la URL de Mumble.</string>
     <string name="tts_failed">No s\'ha pogut iniciar TTS</string>
     <string name="channel_add">Afegeix un canal</string>
@@ -178,7 +178,7 @@
     <string name="grant_perm_notifications">Doneu permís per enviar les notificacions, si us plau.</string>
     <string name="no_ptt_key">Cap Clau</string>
     <string name="connection_lost_reconnecting">S\'ha perdut la connexió – s\'està reconnectant…</string>
-    <string name="foreground_start_failed">No s\'ha pogut mantenir Mumla en segon pla. La veu es pot aturar quan s\'apagui la pantalla.</string>
+    <string name="foreground_start_failed">No s\'ha pogut mantenir Nomla en segon pla. La veu es pot aturar quan s\'apagui la pantalla.</string>
     <string name="bluetooth_perm_denied">Els auriculars Bluetooth continuen activats. Sense el permís «Dispositius propers», alguns dispositius es negaran a enviar-hi l\'àudio.</string>
     <string name="chat_image_share">Comparteix la imatge</string>
     <string name="chat_image_close">Tanca</string>

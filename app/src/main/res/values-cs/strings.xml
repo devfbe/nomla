@@ -60,7 +60,7 @@
     <string name="send_message">Odeslat zprávu</string>
     <string name="generate">Vygenerovat</string>
     <string name="first_run_generate_certificate">Generování certifikátu se důrazně doporučuje a je nezbytné pro připojení k některým serverům.</string>
-    <string name="first_run_generate_certificate_title">Vítejte v Mumla</string>
+    <string name="first_run_generate_certificate_title">Vítejte v Nomle</string>
     <string name="mumble_url_parse_failed">Adresa URL služby Mumble není platná.</string>
     <string name="tts_failed">Nelze spustit převodník textu na řeč</string>
     <string name="channel_add">Přidat kanál</string>
@@ -79,15 +79,15 @@
 \nJste připojeni k internetu\?</string>
     <string name="information">Informace</string>
     <string name="close">Zavřít</string>
-    <string name="shareMessage">Připojte se k tomuto Mumble serveru pomocí Mumla. %s</string>
+    <string name="shareMessage">Připojte se k tomuto Mumble serveru pomocí Nomly. %s</string>
     <string name="description">Popis</string>
     <string name="share">Sdílet</string>
     <string name="name">Název</string>
     <string name="unknown">Neznámé</string>
     <string name="user">Uživatel</string>
     <string name="channel">Kanál</string>
-    <string name="mumlaDisconnected">Mumla odpojen</string>
-    <string name="mumlaConnecting">Mumla se připojuje…</string>
+    <string name="nomlaDisconnected">Nomla odpojena</string>
+    <string name="nomlaConnecting">Nomla se připojuje…</string>
     <string name="connected">Připojeno</string>
     <string name="clearChat">Vyčistit chat</string>
     <string name="offline">Offline</string>
@@ -126,7 +126,7 @@
     <string name="server_port">Port</string>
     <string name="server_username">Uživatelské jméno</string>
     <string name="server_password">Heslo</string>
-    <string name="server_match_description">Mumla pro vás automaticky může najít prázdný server s optimální lokací, verzí a latencí.</string>
+    <string name="server_match_description">Nomla pro vás automaticky může najít prázdný server s optimální lokací, verzí a latencí.</string>
     <string name="server_match_info">Jméno: %1$s
 \nHost: %2$s:%3$d
 \nUživatelé: %4$d / %5$d
@@ -177,7 +177,7 @@
     <string name="drawer_public">Veřejné servery</string>
     <string name="image_confirm_send">Poslat obrázek\?</string>
     <string name="connection_lost_reconnecting">Spojení ztraceno – znovu se připojuje…</string>
-    <string name="foreground_start_failed">Mumla nemohla zůstat spuštěná na pozadí. Hlas se může po vypnutí obrazovky zastavit.</string>
+    <string name="foreground_start_failed">Nomla nemohla zůstat spuštěná na pozadí. Hlas se může po vypnutí obrazovky zastavit.</string>
     <string name="bluetooth_perm_denied">Bluetooth headset zůstává zapnutý. Bez oprávnění „Zařízení v okolí“ některá zařízení odmítnou do něj přesměrovat zvuk.</string>
     <string name="chat_image_share">Sdílet obrázek</string>
     <string name="chat_image_close">Zavřít</string>

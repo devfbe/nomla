@@ -2,7 +2,7 @@
 <resources>
     <string name="user_menu_reset_comment">Redefinir Comentário</string>
     <string name="change_requires_reconnect">Reconecte para usar as novas configurações.</string>
-    <string name="first_run_generate_certificate_title">Bem-vindo ao Mumla</string>
+    <string name="first_run_generate_certificate_title">Bem-vindo ao Nomla</string>
     <string name="mumble_url_parse_failed">A URL do Mumble não é válida.</string>
     <string name="confirm_reset_comment">Tem certeza de que deseja redefinir o comentário do usuário %s\?</string>
     <string name="reconnect_dialog_message">Você já está conectado a um servidor. Em vez disso, conectar-se a este servidor\?</string>
@@ -76,15 +76,15 @@
     <string name="hint_reason">Motivo</string>
     <string name="information">Informação</string>
     <string name="close">Fechar</string>
-    <string name="shareMessage">Junte-se a este servidor Mumble com o Mumla. %s</string>
+    <string name="shareMessage">Junte-se a este servidor Mumble com o Nomla. %s</string>
     <string name="description">Descrição</string>
     <string name="share">Compartilhar</string>
     <string name="name">Nome</string>
     <string name="unknown">Desconhecido</string>
     <string name="user">Usuário</string>
     <string name="channel">Canal</string>
-    <string name="mumlaDisconnected">Mumla desconectou</string>
-    <string name="mumlaConnecting">Mumla conectando…</string>
+    <string name="nomlaDisconnected">Nomla desconectou</string>
+    <string name="nomlaConnecting">Nomla conectando…</string>
     <string name="connected">Conectado</string>
     <string name="online">Disponível</string>
     <string name="messageToChannel">Digite a mensagem para o canal \'%s\'</string>
@@ -111,7 +111,7 @@
     <string name="server_port">Porta</string>
     <string name="server_username">Nome de usuário</string>
     <string name="server_password">Senha</string>
-    <string name="server_match_description">O Mumla pode encontrar automaticamente um servidor vazio para você, otimizando por localização, versão e latência.</string>
+    <string name="server_match_description">O Nomla pode encontrar automaticamente um servidor vazio para você, otimizando por localização, versão e latência.</string>
     <string name="server_match_expand_country">Não foi possível encontrar nenhum servidor ideal em seu país. Pesquisar em todo o mundo\?</string>
     <string name="server_match_not_found">Servidor não encontrado</string>
     <string name="server_match_found">Servidor encontrado</string>
@@ -146,7 +146,7 @@
     <string name="image_confirm_send">Enviar esta imagem?</string>
     <string name="shout_include_linked">Gritar para canais vinculados</string>
     <string name="connection_lost_reconnecting">Conexão perdida – reconectando…</string>
-    <string name="foreground_start_failed">Não foi possível manter o Mumla em execução em segundo plano. A voz pode parar quando a tela desligar.</string>
+    <string name="foreground_start_failed">Não foi possível manter o Nomla em execução em segundo plano. A voz pode parar quando a tela desligar.</string>
     <string name="bluetooth_perm_denied">O fone de ouvido Bluetooth continua ativado. Sem a permissão Dispositivos próximos, alguns dispositivos se recusam a direcionar o áudio para ele.</string>
     <string name="chat_image_share">Compartilhar imagem</string>
     <string name="chat_image_close">Fechar</string>

@@ -4,7 +4,6 @@
     <!--Hot corner-->
     <!--About-->
     <string name="about">Info su</string>
-    <string name="acknowledgementsSum">Vedi chi ha contribuito a Mumla (collegamento web)</string>
     <string name="licenses">Licenze</string>
     <string name="audioInputVolume">Volume microfono</string>
     <string name="general">Generale</string>
@@ -30,7 +29,6 @@
     <string name="hot_corner_none">Spento</string>
     <string name="hot_corner_bottom_left">↙ in basso a sinistra</string>
     <string name="inputMethodContinuous">Continuo</string>
-    <string name="acknowledgements">Contributori</string>
     <string name="theme_dark">Scuro</string>
     <string name="pttKey">Tasto push-to-talk</string>
     <string name="inputMethodPtt">Push-to-talk</string>
@@ -41,7 +39,7 @@
     <string name="pressKey">Usa un tasto fisico per il push-to-talk.</string>
     <string name="forceTcpSum">Disattiva UDP per la comunicazione.</string>
     <string name="audioInputVolumeSum">Livello a cui normalizzare l\'audio.</string>
-    <string name="certificateGenerateSum">Genera un certificato Mumla autofirmato. Raccomandato per i principianti.</string>
+    <string name="certificateGenerateSum">Genera un certificato Nomla autofirmato. Raccomandato per i principianti.</string>
     <string name="useTtsSum">Leggere ad alta voce i messaggi in arrivo utilizzando la sintesi vocale.</string>
     <string name="detectionThresholdSum">Livello minimo del volume per il rilevamento della voce (quando la modalità di trasmissione è \"Attività vocale\").</string>
     <string name="detectionThreshold">Soglia di rilevamento</string>
@@ -51,7 +49,7 @@
     <string name="defaultUsername">Nome utente predefinito</string>
     <string name="audioSampleRateSum">Frequenza di campionamento audio preferita. Alcuni dispositivi supportano meno frequenze.</string>
     <string name="defaultUsernameSum">Nome precompilato usato quando si aggiunge un server o ci si connette a un server pubblico.</string>
-    <string name="defaultUsernameDefault">Mumla_User</string>
+    <string name="defaultUsernameDefault">Nomla_User</string>
     <string name="chatNotificationsSum">Mostrate per nuovi messaggi.</string>
     <string name="voiceActivitySettings">Impostazioni attività vocale</string>
     <string name="shortTtsMessages">Messaggi sintesi vocale abbreviati</string>
@@ -60,7 +58,7 @@
     <string name="useTorSum">Richiede l\'app Orbot.</string>
     <string name="loadImagesSum">Scarica e mostra le immagini in chat.</string>
     <string name="halfDuplex">Audio a senso unico</string>
-    <string name="clearServerCertificatesSum">Rimuovere tutti i certificati server attendibili da Mumla.</string>
+    <string name="clearServerCertificatesSum">Rimuovere tutti i certificati server attendibili da Nomla.</string>
     <string name="halfDuplexSum">Disattiva altre riproduzioni durante il push-to-talk, per evitare loop/feedback audio.</string>
     <string name="pressKeyInfo">L\'app deve essere aperta (a causa di restrizioni Android).</string>
     <string name="pttSoundSum">Riprodurre un suono alla pressione del pulsante push-to-talk.</string>
@@ -72,7 +70,7 @@
     <string name="audio_per_packet">Audio per pacchetto</string>
     <string name="audio_per_packet_sum">Lunghezza dell\'audio per pacchetto vocale.</string>
     <string name="stay_awake">Resta sveglio</string>
-    <string name="stay_awake_sum">Mantiene lo schermo acceso quando Mumla è aperto.</string>
+    <string name="stay_awake_sum">Mantiene lo schermo acceso quando Nomla è aperto.</string>
     <string name="pref_certificate_summary">Valore predefinito da utilizzare per la connessione a un server.</string>
     <string name="pref_show_user_count_summary">Mostra il numero di utenti nelle stanze del canale.</string>
     <string name="pref_show_user_count">Mostra numero utenti del canale</string>
@@ -143,4 +141,13 @@
     <string name="mediaButtonActionMute">Attiva/disattiva muto</string>
     <string name="bluetoothSco">Usa automaticamente le cuffie Bluetooth</string>
     <string name="bluetoothScoSum">Invia e ricevi la voce tramite cuffie Bluetooth collegate mentre sei connesso a un server e passa a cuffie che si collegano durante la chiamata. Il dispositivo audio della chiamata si può cambiare dal menu del canale. Richiede il permesso Dispositivi nelle vicinanze; alcuni dispositivi non instradano l\'audio alle cuffie senza di esso.</string>
+    <string name="about_description">Nomla è un client Mumble per Android. È stato portato da Mumla e riscritto quasi completamente.</string>
+    <string name="about_credits">Riconoscimenti</string>
+    <string name="about_credits_lublin">Daniel Lublin e i contributori</string>
+    <string name="about_credits_comminos">Andrew Comminos e i contributori</string>
+    <string name="about_license_summary">Nomla è software libero con questa licenza</string>
+    <string name="about_source_code">Codice sorgente</string>
+    <string name="about_third_party_notices">Avvisi di terze parti</string>
+    <string name="about_third_party_notices_summary">Licenze delle librerie incluse (collegamento web)</string>
+    <string name="about_memorial">In memoria di Andreas Mandalka (Natenom), le cui guide, i cui server e la cui pazienza hanno aiutato tante persone a trovare la strada verso Mumble.</string>
 </resources>

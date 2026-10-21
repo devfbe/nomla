@@ -14,8 +14,6 @@
     <string name="hot_corner_bottom_right">Справа снизу ↘</string>
     <!--About-->
     <string name="about">О программе</string>
-    <string name="acknowledgements">Разработчики</string>
-    <string name="acknowledgementsSum">Посмотреть, кто внес вклад в развитие Mumla (ссылка)</string>
     <string name="licenses">Лицензии</string>
     <string name="audioInputMethodSum">Условие для начала вещания.</string>
     <string name="audioInputMethod">Режим передачи</string>
@@ -38,9 +36,9 @@
     <string name="chatNotificationsSum">Показываются при новых сообщениях в чате.</string>
     <string name="defaultUsername">Имя по умолчанию</string>
     <string name="defaultUsernameSum">Имя пользователя по умолчанию, используемое при подключении к серверам.</string>
-    <string name="defaultUsernameDefault">Пользователь_Mumla</string>
+    <string name="defaultUsernameDefault">Пользователь_Nomla</string>
     <string name="certificateGenerate">Создать сертификат</string>
-    <string name="certificateGenerateSum">Создать новый самоподписанный сертификат Mumla. Рекомендуется для начинающих.</string>
+    <string name="certificateGenerateSum">Создать новый самоподписанный сертификат Nomla. Рекомендуется для начинающих.</string>
     <string name="pttSettings">Настройки Push-to-talk</string>
     <string name="voiceActivitySettings">Настройки порога громкости</string>
     <string name="hidePtt">Скрыть кнопку Push-to-talk</string>
@@ -64,7 +62,7 @@
     <string name="loadImagesSum">Загружать и показывать изображения в чате.</string>
     <string name="loadImages">Внешние изображения</string>
     <string name="clearServerCertificates">Очистить сертификаты серверов</string>
-    <string name="clearServerCertificatesSum">Удалить из Mumla все заверенные серверные сертификаты.</string>
+    <string name="clearServerCertificatesSum">Удалить из Nomla все заверенные серверные сертификаты.</string>
     <string name="version">Версия</string>
     <string name="halfDuplex">Звук в одну сторону</string>
     <string name="halfDuplexSum">Не принимать звук при передаче, чтобы избежать звуковых петель и эхо.</string>
@@ -73,7 +71,7 @@
     <string name="audio_per_packet">Звук на пакет</string>
     <string name="audio_per_packet_sum">Длина аудиозаписи в голосовом пакете.</string>
     <string name="stay_awake">Держать экран включенным</string>
-    <string name="stay_awake_sum">Не выключать экран, пока открыта Mumla.</string>
+    <string name="stay_awake_sum">Не выключать экран, пока открыта Nomla.</string>
     <string name="pref_certificate_title">Сертификат</string>
     <string name="pref_certificate_summary">Используется по умолчанию при подключении к серверу.</string>
     <string name="pref_import_certificate_title">Импортировать сертификат</string>
@@ -143,4 +141,13 @@
     <string name="mediaButtonActionMute">Включать/выключать микрофон</string>
     <string name="bluetoothSco">Автоматически использовать Bluetooth-гарнитуру</string>
     <string name="bluetoothScoSum">Передавать и принимать голос через подключённую Bluetooth-гарнитуру, пока вы подключены к серверу, и переключаться на гарнитуру, подключившуюся во время звонка. Аудиоустройство для звонка можно сменить в меню канала. Запрашивает разрешение «Устройства поблизости»; без него некоторые устройства не направляют звук на гарнитуру.</string>
+    <string name="about_description">Nomla — клиент Mumble для Android. Она была портирована с Mumla и почти полностью переписана.</string>
+    <string name="about_credits">Благодарности</string>
+    <string name="about_credits_lublin">Daniel Lublin и участники</string>
+    <string name="about_credits_comminos">Andrew Comminos и участники</string>
+    <string name="about_license_summary">Nomla — свободное ПО под этой лицензией</string>
+    <string name="about_source_code">Исходный код</string>
+    <string name="about_third_party_notices">Уведомления о сторонних компонентах</string>
+    <string name="about_third_party_notices_summary">Лицензии встроенных библиотек (ссылка)</string>
+    <string name="about_memorial">Памяти Андреаса Мандалки (Natenom), чьи руководства, серверы и терпение помогли столь многим людям найти путь к Mumble.</string>
 </resources>

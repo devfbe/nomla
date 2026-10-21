@@ -56,4 +56,13 @@
     <string name="mediaButtonActionMute">Vaihda mykistys</string>
     <string name="bluetoothSco">Käytä Bluetooth-kuulokkeita automaattisesti</string>
     <string name="bluetoothScoSum">Lähetä ja vastaanota puhetta yhdistettyjen Bluetooth-kuulokkeiden kautta, kun olet yhteydessä palvelimeen, ja vaihda kuulokkeisiin, jotka yhdistetään puhelun aikana. Puhelun äänilaitteen voi vaihtaa kanavavalikosta. Pyytää Lähellä olevat laitteet -lupaa; jotkin laitteet eivät ohjaa ääntä kuulokkeisiin ilman sitä.</string>
+    <string name="about_description">Nomla on Mumble-asiakasohjelma Androidille. Se siirrettiin Mumlasta ja kirjoitettiin lähes kokonaan uudelleen.</string>
+    <string name="about_credits">Kiitokset</string>
+    <string name="about_credits_lublin">Daniel Lublin ja avustajat</string>
+    <string name="about_credits_comminos">Andrew Comminos ja avustajat</string>
+    <string name="about_license_summary">Nomla on vapaata ohjelmistoa tällä lisenssillä</string>
+    <string name="about_source_code">Lähdekoodi</string>
+    <string name="about_third_party_notices">Kolmansien osapuolten ilmoitukset</string>
+    <string name="about_third_party_notices_summary">Mukana olevien kirjastojen lisenssit (verkkolinkki)</string>
+    <string name="about_memorial">Andreas Mandalkan (Natenom) muistolle. Hänen oppaansa, palvelimensa ja kärsivällisyytensä auttoivat niin monia löytämään tiensä Mumbleen.</string>
 </resources>

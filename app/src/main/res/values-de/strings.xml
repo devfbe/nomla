@@ -51,7 +51,7 @@
     <string name="server_match_not_found">Server nicht gefunden</string>
     <string name="server_match_expand_country">Konnte keinen optimalen Server in Ihrem Land finden. Suche auf die ganze Welt ausweiten?</string>
     <string name="server_match_info">Name: %1$s\nHost: %2$s:%3$d\nBenutzer: %4$d / %5$d\nVersion: %6$s \nLand: %7$s \nLatenz: %8$d ms</string>
-    <string name="server_match_description">Mumla kann automatisch nach einem leeren Server suchen, optimiert nach Serverstandort, Version und Latenz.</string>
+    <string name="server_match_description">Nomla kann automatisch nach einem leeren Server suchen, optimiert nach Serverstandort, Version und Latenz.</string>
     <!--Common-->
     <string name="server_password">Passwort</string>
     <string name="server_username">Benutzername</string>
@@ -99,15 +99,15 @@
     <string name="offline">Offline</string>
     <string name="clearChat">Chat leeren</string>
     <string name="connected">Verbunden</string>
-    <string name="mumlaConnecting">Mumla verbindet …</string>
-    <string name="mumlaDisconnected">Mumla wurde getrennt</string>
+    <string name="nomlaConnecting">Nomla verbindet …</string>
+    <string name="nomlaDisconnected">Nomla wurde getrennt</string>
     <string name="channel">Kanal</string>
     <string name="user">Benutzer</string>
     <string name="unknown">Unbekannt</string>
     <string name="name">Name</string>
     <string name="share">Teilen</string>
     <string name="description">Beschreibung</string>
-    <string name="shareMessage">Treten Sie diesem Server mit Mumla bei. %s</string>
+    <string name="shareMessage">Treten Sie diesem Server mit Nomla bei. %s</string>
     <string name="close">Schließen</string>
     <string name="information">Informationen</string>
     <string name="error_fetching_servers">Server konnten nicht abgerufen werden.\nBitte prüfen Sie Ihre Internetverbindung.</string>
@@ -125,7 +125,7 @@
     <string name="channel_add">Kanal hinzufügen</string>
     <string name="tts_failed">Sprachausgabe konnte nicht gestartet werden</string>
     <string name="mumble_url_parse_failed">Die Mumble-URL konnte nicht verarbeitet werden.</string>
-    <string name="first_run_generate_certificate_title">Willkommen in Mumla</string>
+    <string name="first_run_generate_certificate_title">Willkommen in Nomla</string>
     <string name="first_run_generate_certificate">Es wird dringend empfohlen, ein Zertifikat zu erzeugen. Manche Server setzen eines voraus.</string>
     <string name="generate">Erzeugen</string>
     <string name="send_message">Nachricht senden</string>
@@ -154,7 +154,7 @@
     <string name="donation_thanks">Danke für die Spende.</string>
     <string name="orbot_tor_failed">Keine Verbindung zum lokalen Tor-Proxy auf SOCKS-Port %d.\n\nBitte stellen Sie sicher, dass die Orbot-App läuft.</string>
     <string name="orbot_not_installed">Die Orbot-App ist nicht installiert. Tor wird nicht benutzt.</string>
-    <string name="grant_perm_draw_over_apps">Bitte erlauben Sie Mumla, über anderen Apps angezeigt zu werden.</string>
+    <string name="grant_perm_draw_over_apps">Bitte erlauben Sie Nomla, über anderen Apps angezeigt zu werden.</string>
     <string name="grant_perm_microphone">Bitte erlauben Sie den Zugriff auf das Mikrofon.</string>
     <string name="export_success">Zertifikat exportiert nach %s.</string>
     <string name="certificate_import_success">Zertifikat %s importiert.</string>
@@ -170,9 +170,9 @@
     <string name="shout_include_subchannels">Auch an Unterkanäle</string>
     <string name="context_channel_shout">Sprachziel festlegen</string>
     <string name="image_confirm_send">Dieses Bild senden?</string>
-    <string name="grant_perm_notifications">Bitte erlauben Sie Mumla, Benachrichtigungen zu senden.</string>
+    <string name="grant_perm_notifications">Bitte erlauben Sie Nomla, Benachrichtigungen zu senden.</string>
     <string name="connection_lost_reconnecting">Verbindung verloren – verbinde erneut…</string>
-    <string name="foreground_start_failed">Mumla konnte nicht im Hintergrund weiterlaufen. Die Sprachübertragung kann stoppen, wenn sich der Bildschirm ausschaltet.</string>
+    <string name="foreground_start_failed">Nomla konnte nicht im Hintergrund weiterlaufen. Die Sprachübertragung kann stoppen, wenn sich der Bildschirm ausschaltet.</string>
     <string name="bluetooth_perm_denied">Das Bluetooth-Headset bleibt eingeschaltet. Ohne die Berechtigung „Geräte in der Nähe“ verweigern manche Geräte, Ton dorthin zu leiten.</string>
     <string name="chat_image_share">Bild teilen</string>
     <string name="chat_image_close">Schließen</string>
@@ -243,8 +243,8 @@
     <string name="export_unprotected_confirm">Ungeschützt exportieren</string>
     <string name="allowExternalPtt">Anderen Apps Push-to-Talk erlauben</string>
     <string name="allowExternalPttSum">Andere Apps, z. B. Tasker, dürfen das Senden steuern</string>
-    <string name="microphone_permission_rationale">Mumla braucht das Mikrofon, damit andere auf dem Server Sie hören können.</string>
-    <string name="microphone_permission_settings">Der Mikrofonzugriff ist für Mumla ausgeschaltet. Um sich mit einem Server zu verbinden, erlauben Sie ihn in den App-Einstellungen.</string>
+    <string name="microphone_permission_rationale">Nomla braucht das Mikrofon, damit andere auf dem Server Sie hören können.</string>
+    <string name="microphone_permission_settings">Der Mikrofonzugriff ist für Nomla ausgeschaltet. Um sich mit einem Server zu verbinden, erlauben Sie ihn in den App-Einstellungen.</string>
     <string name="open_settings">Einstellungen öffnen</string>
     <string name="app_news">Neuigkeiten</string>
     <string name="app_news_summary">Die letzten Änderungen ansehen</string>
@@ -256,13 +256,12 @@
     <string name="app_news_items_v3_7_1">• Kleines Release mit vor allem aktualisierten Übersetzungen – danke an alle, die übersetzen!\n</string>
     <string name="app_news_items_v3_7_2">• Möglichen Absturz beim Start behoben.\n • Übersetzungen ergänzt – danke an alle, die übersetzen!\n</string>
     <string name="app_news_items_v3_7_3">• Push-to-Talk-Ecke unter Android 12 und neuer sowie auf dunklem und hellem Hintergrund sichtbar\n • Die Zurück-Taste fragt unter Android 16+ wieder, ob die Verbindung getrennt werden soll\n</string>
-    <string name="donate_dialog_title_goog">Gefällt Ihnen Mumla?</string>
-    <string name="donate_dialog_message_goog">Danke, dass Sie Mumla nutzen! Bitte denken Sie über eine kleine Spende nach, damit Mumla weiterlebt – und diese Nachricht verschwindet.</string>
-    <string name="donate_dialog_positivebutton_goog">Mumla unterstützen</string>
+    <string name="donate_dialog_title_goog">Gefällt Ihnen Nomla?</string>
+    <string name="donate_dialog_message_goog">Danke, dass Sie Nomla nutzen! Bitte denken Sie über eine kleine Spende nach, damit Nomla weiterlebt – und diese Nachricht verschwindet.</string>
+    <string name="donate_dialog_positivebutton_goog">Nomla unterstützen</string>
     <string name="donate_dialog_negativebutton_goog">Später</string>
     <string name="donate_purchase_pending_goog">Ihre Spende ist noch ausstehend und wird eventuell nach einem späteren Neustart wirksam. Danke!</string>
     <string name="donate_thanks_goog">Danke für Ihre Unterstützung!</string>
-    <string name="donate_foss">Spenden</string>
     <string name="deny_reason_channel_count">Maximale Anzahl an Kanälen erreicht.</string>
     <string name="deny_reason_channel_listener_limit">In diesem Kanal sind keine weiteren Zuhörer erlaubt.</string>
     <string name="deny_reason_user_listener_limit">Sie können keinen weiteren Kanälen zuhören.</string>
@@ -317,7 +316,7 @@
     <string name="a11y_state_suppressed">Unterdrückt</string>
     <string name="a11y_transmitting">Sendet</string>
     <string name="a11y_not_transmitting">Sendet nicht</string>
-    <string name="tile_mute_label">Mumla stumm</string>
+    <string name="tile_mute_label">Nomla stumm</string>
     <string name="notification_you">Sie</string>
     <string name="notification_reply">Antworten</string>
     <string name="notification_group_server">Serververbindung</string>
@@ -332,8 +331,8 @@
     <string name="battery_optimization_title">Verbindung im Hintergrund</string>
     <string name="battery_optimization_unrestricted">Nicht eingeschränkt</string>
     <string name="battery_optimization_optimized">Optimiert – tippen, um Hintergrundnutzung zu erlauben</string>
-    <string name="battery_optimization_prompt_title">Mumla im Hintergrund verbunden halten?</string>
-    <string name="battery_optimization_prompt_message">Die Akkuoptimierung kann Mumla bei ausgeschaltetem Bildschirm beenden, wodurch Sie vom Server getrennt werden. Erlauben Sie Mumla, im Hintergrund zu laufen, um verbunden zu bleiben. Sie können das später unter Einstellungen › Allgemein › Verbindung im Hintergrund ändern.</string>
+    <string name="battery_optimization_prompt_title">Nomla im Hintergrund verbunden halten?</string>
+    <string name="battery_optimization_prompt_message">Die Akkuoptimierung kann Nomla bei ausgeschaltetem Bildschirm beenden, wodurch Sie vom Server getrennt werden. Erlauben Sie Nomla, im Hintergrund zu laufen, um verbunden zu bleiben. Sie können das später unter Einstellungen › Allgemein › Verbindung im Hintergrund ändern.</string>
     <string name="battery_optimization_prompt_decline">Nicht jetzt</string>
     <plurals name="unread_messages">
         <item quantity="one">%d ungelesene Nachricht</item>

@@ -74,8 +74,8 @@
     <string name="online">Online</string>
     <string name="offline">Offline</string>
     <string name="clearChat">Bersihkan Chat</string>
-    <string name="mumlaConnecting">Mumla sedang menyambungkan…</string>
-    <string name="mumlaDisconnected">Mumla terputus</string>
+    <string name="nomlaConnecting">Nomla sedang menyambungkan…</string>
+    <string name="nomlaDisconnected">Nomla terputus</string>
     <string name="channel">Channel</string>
     <string name="user">User</string>
     <string name="description">Deskripsi</string>
@@ -87,7 +87,7 @@
     <string name="channel_add">Tambah Channel</string>
     <string name="tts_failed">Tidak dapat memulai TTS</string>
     <string name="mumble_url_parse_failed">URL Mumble tidak valid.</string>
-    <string name="first_run_generate_certificate_title">Selamat datang di Mumla</string>
+    <string name="first_run_generate_certificate_title">Selamat datang di Nomla</string>
     <string name="generate">Buat</string>
     <string name="send_message">Kirim pesan</string>
     <string name="channel_menu_view_description">Lihat Deskripsi</string>
@@ -127,7 +127,7 @@
     <string name="server_match_found">Server berhasil ditemukan</string>
     <string name="server_match_expand_country">Tidak dapat menemukan server optimal di negara anda. Cari server di luar negeri?</string>
     <string name="confirm_delete_server">Apakah anda yakin ingin menghapus server ini?</string>
-    <string name="server_match_description">Mumla dapat secara otomatis mencarikan anda server kosong yang teroptimisasi sesuai dengan lokasi, versi, dan latensi.</string>
+    <string name="server_match_description">Nomla dapat secara otomatis mencarikan anda server kosong yang teroptimisasi sesuai dengan lokasi, versi, dan latensi.</string>
     <string name="no_ptt_key">Tidak ada tombol</string>
     <string name="accessAdd">Tambah Token Akses</string>
     <string name="connect">Sambung</string>
@@ -137,7 +137,7 @@
     <string name="unknown">Tidak Diketahui</string>
     <string name="name">Nama</string>
     <string name="close">Tutup</string>
-    <string name="shareMessage">Bergabunglah ke server Mumble ini dengan Mumla. %s</string>
+    <string name="shareMessage">Bergabunglah ke server Mumble ini dengan Nomla. %s</string>
     <string name="reconnect">Sambung Ulang</string>
     <string name="action_settings">Pengaturan</string>
     <string name="password">Password</string>
@@ -156,14 +156,13 @@
     <string name="context_channel_unlink_all">Unlink Semua</string>
     <string name="orbot_tor_failed">Tidak dapat menyambung ke proxy Tor lokal pada port %d (SOCKS).\n\nMohon pastikan aplikasi Orbot sedang berjalan.</string>
     <string name="donate_thanks_goog">Terima kasih atas dukungan Anda!</string>
-    <string name="donate_foss">Menyumbangkan</string>
     <string name="donate_dialog_negativebutton_goog">Nanti</string>
-    <string name="donate_dialog_positivebutton_goog">Mendukung Mumla</string>
-    <string name="donate_dialog_message_goog">Terima kasih untuk menggunakan Mumla! Harap mempertimbangkan untuk membuat donasi kecil untuk membantu menjaga hidup Mumla - dan menghapus pesan ini.</string>
-    <string name="donate_dialog_title_goog">Apakah kamu suka Mumla?</string>
+    <string name="donate_dialog_positivebutton_goog">Mendukung Nomla</string>
+    <string name="donate_dialog_message_goog">Terima kasih untuk menggunakan Nomla! Harap mempertimbangkan untuk membuat donasi kecil untuk membantu menjaga hidup Nomla - dan menghapus pesan ini.</string>
+    <string name="donate_dialog_title_goog">Apakah kamu suka Nomla?</string>
     <string name="app_news_items_v3_7_1">Rilis kecil dengan sebagian besar pembaruan terjemahan, terima kasih semua penerjemah!\n</string>
     <string name="connection_lost_reconnecting">Koneksi terputus – menyambungkan ulang…</string>
-    <string name="foreground_start_failed">Mumla tidak dapat tetap berjalan di latar belakang. Suara mungkin berhenti saat layar mati.</string>
+    <string name="foreground_start_failed">Nomla tidak dapat tetap berjalan di latar belakang. Suara mungkin berhenti saat layar mati.</string>
     <string name="bluetooth_perm_denied">Headset Bluetooth tetap aktif. Tanpa izin Perangkat di sekitar, beberapa perangkat akan menolak mengalihkan audio ke headset.</string>
     <string name="chat_image_share">Bagikan gambar</string>
     <string name="chat_image_close">Tutup</string>

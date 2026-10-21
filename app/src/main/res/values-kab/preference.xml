@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about">Ɣef</string>
-    <string name="acknowledgements">Imttekkiyen</string>
     <string name="licenses">Turagin</string>
     <string name="general">Amatu</string>
     <string name="appearance">Agrudem</string>
     <string name="theme">Asentel</string>
     <string name="language">Tutlayt</string>
-    <string name="defaultUsernameDefault">Aseqdac_n_Mumla</string>
+    <string name="defaultUsernameDefault">Aseqdac_n_Nomla</string>
     <string name="version">Lqem</string>
     <string name="pref_certificate_title">Aselkin</string>
     <string name="theme_light">Aceɛlal</string>
@@ -82,4 +81,13 @@
     <string name="mediaButtonActionMute">Beddel asgugem</string>
     <string name="bluetoothSco">Seqdec akask n Bluetooth s wudem awurman</string>
     <string name="bluetoothScoSum">Azen yerna rmes taɣect s ukask n Bluetooth yeqqnen mi ara tiliḍ teqqneḍ ɣer uqeddac, yerna ɛeddi ɣer ukask ara yeqqnen deg usiwel. Ibenk n imesli n usiwel yezmer ad yettwabeddel seg wumuɣ n ubadu. Yessutur tasiregt n yibenkan iqerben; kra n yibenkan ur ttaznen ara imesli ɣer ukask war-s.</string>
+    <string name="about_description">Nomla d amsaɣ n Mumble i Android. Yettwasiweḍ-d seg Mumla, yerna yettwaɛawed tira-s qrib meṛṛa.</string>
+    <string name="about_credits">Asnemmer</string>
+    <string name="about_credits_lublin">Daniel Lublin d yimttekkiyen</string>
+    <string name="about_credits_comminos">Andrew Comminos d yimttekkiyen</string>
+    <string name="about_license_summary">Nomla d aseɣzan ilelli s turagt-a</string>
+    <string name="about_source_code">Tangalt taɣbalut</string>
+    <string name="about_third_party_notices">Tilɣa n wis kraḍ</string>
+    <string name="about_third_party_notices_summary">Turagin n temkarḍiyin yeddan (aseɣwen web)</string>
+    <string name="about_memorial">I usmekti n Andreas Mandalka (Natenom), win akken imnirag-is, iqeddacen-is d ṣṣbeṛ-is ɛawnen aṭas n medden ad afen abrid ɣer Mumble.</string>
 </resources>

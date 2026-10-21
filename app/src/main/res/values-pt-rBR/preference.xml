@@ -56,4 +56,13 @@
     <string name="mediaButtonActionMute">Alternar silenciar</string>
     <string name="bluetoothSco">Usar fone de ouvido Bluetooth automaticamente</string>
     <string name="bluetoothScoSum">Envia e recebe voz por um fone de ouvido Bluetooth conectado enquanto você está conectado a um servidor e muda para um fone que se conectar durante a chamada. O dispositivo de áudio da chamada pode ser alterado no menu do canal. Pede a permissão Dispositivos próximos; alguns dispositivos não direcionam o áudio para o fone sem ela.</string>
+    <string name="about_description">O Nomla é um cliente Mumble para Android. Foi portado do Mumla e reescrito quase por completo.</string>
+    <string name="about_credits">Créditos</string>
+    <string name="about_credits_lublin">Daniel Lublin e colaboradores</string>
+    <string name="about_credits_comminos">Andrew Comminos e colaboradores</string>
+    <string name="about_license_summary">O Nomla é software livre sob esta licença</string>
+    <string name="about_source_code">Código-fonte</string>
+    <string name="about_third_party_notices">Avisos de terceiros</string>
+    <string name="about_third_party_notices_summary">Licenças das bibliotecas incluídas (link da web)</string>
+    <string name="about_memorial">Em memória de Andreas Mandalka (Natenom), cujos guias, servidores e paciência ajudaram tantas pessoas a encontrar o caminho até o Mumble.</string>
 </resources>

@@ -56,7 +56,7 @@
 \nVersion :%6$s
 \nPays : %7$s
 \nLatence : %8$d ms</string>
-    <string name="server_match_description">Mumla peut vous trouver automatiquement un serveur vide, en optimisant en se basant sur la position du serveur, sa version, et sa latence.</string>
+    <string name="server_match_description">Nomla peut vous trouver automatiquement un serveur vide, en optimisant en se basant sur la position du serveur, sa version, et sa latence.</string>
     <!--Common-->
     <string name="server_password">Mot de passe</string>
     <string name="server_username">Nom d\'utilisateur</string>
@@ -96,15 +96,15 @@
     <string name="offline">Hors ligne</string>
     <string name="clearChat">Effacer la discussion</string>
     <string name="connected">Connecté</string>
-    <string name="mumlaConnecting">Mumla en connexion…</string>
-    <string name="mumlaDisconnected">Mumla déconnecté</string>
+    <string name="nomlaConnecting">Nomla en connexion…</string>
+    <string name="nomlaDisconnected">Nomla déconnecté</string>
     <string name="channel">Salon</string>
     <string name="user">Utilisateur</string>
     <string name="unknown">Inconnu</string>
     <string name="name">Nom</string>
     <string name="share">Partager</string>
     <string name="description">Description</string>
-    <string name="shareMessage">Rejoindre ce serveur Mumble avec Mumla. %s</string>
+    <string name="shareMessage">Rejoindre ce serveur Mumble avec Nomla. %s</string>
     <string name="close">Fermer</string>
     <string name="information">Information</string>
     <string name="error_fetching_servers">Erreur du chargement des serveurs.
@@ -123,7 +123,7 @@
     <string name="channel_add">Ajouter un salon</string>
     <string name="tts_failed">Erreur de l\'initialisation de TTS</string>
     <string name="mumble_url_parse_failed">L\'URL Mumble n\'est pas valide.</string>
-    <string name="first_run_generate_certificate_title">Bienvenue dans Mumla</string>
+    <string name="first_run_generate_certificate_title">Bienvenue dans Nomla</string>
     <string name="first_run_generate_certificate">Générer un certificat est très recommandé, et nécessaire pour la connexion à certains serveurs.</string>
     <string name="generate">Générer</string>
     <string name="send_message">Envoyer un message</string>
@@ -187,7 +187,7 @@
     <string name="grant_perm_notifications">Veuillez accorder l\'autorisation d\'envoyer des notifications.</string>
     <string name="no_ptt_key">Aucun bouton</string>
     <string name="connection_lost_reconnecting">Connexion perdue – reconnexion…</string>
-    <string name="foreground_start_failed">Impossible de maintenir Mumla en arrière-plan. La voix peut s\'interrompre lorsque l\'écran s\'éteint.</string>
+    <string name="foreground_start_failed">Impossible de maintenir Nomla en arrière-plan. La voix peut s\'interrompre lorsque l\'écran s\'éteint.</string>
     <string name="bluetooth_perm_denied">Le casque Bluetooth reste activé. Sans l\'autorisation « Appareils à proximité », certains appareils refuseront d\'y acheminer le son.</string>
     <string name="chat_image_share">Partager l\'image</string>
     <string name="chat_image_close">Fermer</string>

@@ -56,4 +56,13 @@
     <string name="mediaButtonActionMute">Slå lyd fra/til</string>
     <string name="bluetoothSco">Brug Bluetooth-headset automatisk</string>
     <string name="bluetoothScoSum">Send og modtag tale gennem et forbundet Bluetooth-headset, mens du er forbundet til en server, og skift til et headset, der forbindes under opkaldet. Lydenheden for opkaldet kan ændres i kanalmenuen. Beder om tilladelsen \"Enheder i nærheden\"; nogle enheder sender ikke lyd til et headset uden den.</string>
+    <string name="about_description">Nomla er en Mumble-klient til Android. Den blev overført fra Mumla og næsten fuldstændig omskrevet.</string>
+    <string name="about_credits">Tak til</string>
+    <string name="about_credits_lublin">Daniel Lublin og bidragydere</string>
+    <string name="about_credits_comminos">Andrew Comminos og bidragydere</string>
+    <string name="about_license_summary">Nomla er fri software under denne licens</string>
+    <string name="about_source_code">Kildekode</string>
+    <string name="about_third_party_notices">Tredjepartsmeddelelser</string>
+    <string name="about_third_party_notices_summary">Licenser for de medfølgende biblioteker (weblink)</string>
+    <string name="about_memorial">Til minde om Andreas Mandalka (Natenom), hvis vejledninger, servere og tålmodighed hjalp så mange mennesker med at finde vej til Mumble.</string>
 </resources>

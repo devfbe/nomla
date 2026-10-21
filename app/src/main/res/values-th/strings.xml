@@ -9,7 +9,7 @@
 \n
 \nกรุณาตรวจสอบว่า Orbot กำลังทำงานอยู่หรือไม่.</string>
     <string name="orbot_not_installed">ไม่ได้ติดตั้งแอพ Orbot. ใช้ Tor ไม่ได้</string>
-    <string name="grant_perm_draw_over_apps">กรุณาอนุญาตให้แสดง Mumla เหนือแอพอื่นๆ</string>
+    <string name="grant_perm_draw_over_apps">กรุณาอนุญาตให้แสดง Nomla เหนือแอพอื่นๆ</string>
     <string name="grant_perm_microphone">กรุณาอนุญาตให้ใช้ไมโครโฟน</string>
     <string name="shout_configure">ปรับแต่งเป้าหมายการส่งเสียง</string>
     <string name="shout_target">ตะโกนไปยัง %s</string>
@@ -43,7 +43,7 @@
     <string name="send_message">ส่งข้อความ</string>
     <string name="generate">สร้าง</string>
     <string name="first_run_generate_certificate">ขอแนะนำให้สร้างใบรับรอง และมันจำเป็นสำหรับการเชื่อมต่อกับบางเซิร์ฟเวอร์</string>
-    <string name="first_run_generate_certificate_title">ยินดีต้อนรับสู่ Mumla</string>
+    <string name="first_run_generate_certificate_title">ยินดีต้อนรับสู่ Nomla</string>
     <string name="mumble_url_parse_failed">Mumble URL ไม่ถูกต้อง.</string>
     <string name="tts_failed">ไม่สามารถเริ่ม TTS</string>
     <string name="channel_add">เพิ่มแชนเนล</string>
@@ -62,15 +62,15 @@
 \nเชื่อมต่ออินเตอร์เน็ตแล้วหรือยัง\?</string>
     <string name="information">ข้อมูล</string>
     <string name="close">ปิด</string>
-    <string name="shareMessage">เข้าร่วมเซิฟเวอร์ Mumble ด้วย Mumla. %s</string>
+    <string name="shareMessage">เข้าร่วมเซิฟเวอร์ Mumble ด้วย Nomla. %s</string>
     <string name="description">รายละเอียด</string>
     <string name="share">แชร์</string>
     <string name="name">ชื่อ</string>
     <string name="unknown">ไม่ระบุ</string>
     <string name="user">ผู้ใช้</string>
     <string name="channel">แชทเนล</string>
-    <string name="mumlaDisconnected">Mumla ออกจากระบบ</string>
-    <string name="mumlaConnecting">Mumla กำลังเชื่อมต่อ…</string>
+    <string name="nomlaDisconnected">Nomla ออกจากระบบ</string>
+    <string name="nomlaConnecting">Nomla กำลังเชื่อมต่อ…</string>
     <string name="connected">เชื่อมต่อแล้ว</string>
     <string name="clearChat">ล้างแชท</string>
     <string name="offline">ออฟไลน์</string>
@@ -109,7 +109,7 @@
     <string name="server_port">พอร์ต</string>
     <string name="server_username">ชื่อผู้ใช้</string>
     <string name="server_password">รหัสผ่าน</string>
-    <string name="server_match_description">Mumla สามารถค้นหาเซิร์ฟเวอร์ที่ว่างให้คุณโดยอัตโนมัติ, ปรับแต่งตำแหน่ง, เวอร์ชัน, และเวลาในการตอบสนอง</string>
+    <string name="server_match_description">Nomla สามารถค้นหาเซิร์ฟเวอร์ที่ว่างให้คุณโดยอัตโนมัติ, ปรับแต่งตำแหน่ง, เวอร์ชัน, และเวลาในการตอบสนอง</string>
     <string name="server_match_info">ชื่อ: %1$s
 \nที่อยู่: %2$s:%3$d
 \nผู้ใช้: %4$d / %5$d
@@ -167,18 +167,17 @@
     <string name="app_news_summary">ดูข้อมูลอัปเดตล่าสุด</string>
     <string name="app_news_footer_on_startup">สามารถดูข่าวเหล่านี้ซ้ำได้อีกครั้งจากหน้า \"เกี่ยวกับเรา\".</string>
     <string name="app_news_items_v3_7_1">• อัปเดตเล็กน้อย ส่วนใหญ่เป็นการปรับปรุงคำแปล ขอขอบคุณนักแปลทุกท่าน!\n</string>
-    <string name="donate_dialog_message_goog">ขอบคุณที่ใช้ Mumla! พิจารณาบริจาคเล็กน้อยเพื่อช่วยให้ Mumla ยังคงอยู่ต่อไปและเพื่อลบข้อความนี้</string>
-    <string name="donate_dialog_positivebutton_goog">สนับสนุน Mumla</string>
+    <string name="donate_dialog_message_goog">ขอบคุณที่ใช้ Nomla! พิจารณาบริจาคเล็กน้อยเพื่อช่วยให้ Nomla ยังคงอยู่ต่อไปและเพื่อลบข้อความนี้</string>
+    <string name="donate_dialog_positivebutton_goog">สนับสนุน Nomla</string>
     <string name="donate_dialog_negativebutton_goog">ภายหลัง</string>
     <string name="donate_purchase_pending_goog">การบริจาคของคุณอยู่ในสถานะรอการดำเนินการ และอาจพร้อมใช้งานเมื่อมีการรีสตาร์ทครั้งต่อไป ขอบคุณ!</string>
     <string name="donate_thanks_goog">ขอบคุณสำหรับการสนับสนุนของคุณ!</string>
-    <string name="donate_foss">บริจาค</string>
-    <string name="donate_dialog_title_goog">มีความสุขกับ Mumla?</string>
+    <string name="donate_dialog_title_goog">มีความสุขกับ Nomla?</string>
     <string name="app_news_items_v3_7_0">• มีการปรับปรุงแอป Mumla สำหรับ Android 15 และ 16 (API 35 และ 36).\n• ด้วยเหตุนี้ จึงจำเป็นต้องใช้ Android 5.0 (API 21) หรือเวอร์ชันที่ใหม่กว่า.\n• ปรับปรุงธีมให้รองรับโหมดสว่าง/มืดของระบบ.\n• หน้าจอการตั้งค่าต้องปรับให้เข้ากับ API เวอร์ชันใหม่กว่า.\n• เพิ่มการตั้งค่าภาษาภายในแอป.\n</string>
     <string name="app_news_items_v3_7_2">• แก้ไขปัญหาที่อาจทำให้โปรแกรมหยุดทำงานขณะเริ่มต้นระบบ.\n• เพิ่มคำแปลบางส่วน, ขอขอบคุณนักแปลทุกท่าน!\n</string>
     <string name="app_news_items_v3_7_3">• ทำให้ปุ่ม PTT (ปุ่มลัดสำหรับใช้งานปุ่ม PTT) ปรากฏให้เห็นบน Android 12 และเวอร์ชันที่ใหม่กว่า รวมถึงบนพื้นหลังสีเข้มและสีอ่อนด้วย.\n• ทำให้ปุ่มย้อนกลับถามก่อนตัดการเชื่อมต่อจากเซิร์ฟเวอร์อีกครั้งบน Android 16 ขึ้นไป.\n</string>
     <string name="connection_lost_reconnecting">การเชื่อมต่อหลุด – กำลังเชื่อมต่อใหม่…</string>
-    <string name="foreground_start_failed">ไม่สามารถให้ Mumla ทำงานต่อในเบื้องหลังได้ เสียงอาจหยุดเมื่อปิดหน้าจอ</string>
+    <string name="foreground_start_failed">ไม่สามารถให้ Nomla ทำงานต่อในเบื้องหลังได้ เสียงอาจหยุดเมื่อปิดหน้าจอ</string>
     <string name="bluetooth_perm_denied">ชุดหูฟังบลูทูธยังเปิดอยู่ หากไม่มีสิทธิ์อุปกรณ์ที่อยู่ใกล้เคียง อุปกรณ์บางรุ่นจะไม่ยอมส่งเสียงไปยังชุดหูฟัง</string>
     <string name="chat_image_share">แชร์รูปภาพ</string>
     <string name="chat_image_close">ปิด</string>

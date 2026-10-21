@@ -34,7 +34,7 @@
     <string name="offline">Offline</string>
     <string name="clearChat">Ryd chat</string>
     <string name="connected">Forbundet</string>
-    <string name="mumlaConnecting">Mumla forbinder…</string>
+    <string name="nomlaConnecting">Nomla forbinder…</string>
     <string name="user">Bruger</string>
     <string name="name">Navn</string>
     <string name="share">Del</string>
@@ -46,7 +46,7 @@
     <string name="temporary">Midlertidigt</string>
     <string name="position">Position</string>
     <string name="channel_edit">Redigér kanal</string>
-    <string name="first_run_generate_certificate_title">Velkommen til Mumla</string>
+    <string name="first_run_generate_certificate_title">Velkommen til Nomla</string>
     <string name="generate">Generér</string>
     <string name="send_message">Send besked</string>
     <string name="allow">Tillad</string>
@@ -93,7 +93,7 @@
     <string name="certificate_import_success">Importérede certifikat %s.</string>
     <string name="comment_view">Se</string>
     <string name="connection_lost_reconnecting">Forbindelsen mistet – forbinder igen…</string>
-    <string name="foreground_start_failed">Mumla kunne ikke holdes kørende i baggrunden. Tale kan stoppe, når skærmen slukker.</string>
+    <string name="foreground_start_failed">Nomla kunne ikke holdes kørende i baggrunden. Tale kan stoppe, når skærmen slukker.</string>
     <string name="bluetooth_perm_denied">Bluetooth-headsettet forbliver slået til. Uden tilladelsen \"Enheder i nærheden\" vil nogle enheder nægte at sende lyd til det.</string>
     <string name="chat_image_share">Del billede</string>
     <string name="chat_image_close">Luk</string>

@@ -14,9 +14,7 @@
     <string name="hot_corner_bottom_left">↙ bal alsó</string>
     <string name="hot_corner_top_right">jobb felső ↗</string>
     <string name="hot_corner_bottom_right">jobb alsó ↘</string>
-    <string name="about">A Mumláról</string>
-    <string name="acknowledgements">Közreműködők</string>
-    <string name="acknowledgementsSum">A Mumla közreműködőinek megtekintése (webes link)</string>
+    <string name="about">A Nomláról</string>
     <string name="licenses">Licenszek</string>
     <string name="audioInputMethodSum">Hangátvitel aktiválása.</string>
     <string name="audioInputMethod">Átviteli mód</string>
@@ -39,7 +37,7 @@
     <string name="pref_certificate_summary">A kiszolgálóhoz való csatlakozáskor használandó alapértelmezett érték.</string>
     <string name="pref_import_certificate_title">Tanúsítvány importálása</string>
     <string name="pref_import_certificate_summary">Tanúsítvány importálása fájlból.</string>
-    <string name="defaultUsernameDefault">Mumla_Felhasznalo</string>
+    <string name="defaultUsernameDefault">Nomla_Felhasznalo</string>
     <string name="certificateGenerate">Tanúsítvány generálása</string>
     <string name="pttSettings">Nyomd-a-beszédhez beállítások</string>
     <string name="voiceActivitySettings">Hang aktivitás beállítások</string>
@@ -64,7 +62,7 @@
     <string name="loadImagesSum">Töltse le és mutassa a képeket a Chat-ben.</string>
     <string name="loadImages">Külső képek</string>
     <string name="clearServerCertificates">Szerver tanúsítványok törlése</string>
-    <string name="clearServerCertificatesSum">Az összes megbízhatónak jelölt szerver tanúsítvány eltávolítása a Mumlából.</string>
+    <string name="clearServerCertificatesSum">Az összes megbízhatónak jelölt szerver tanúsítvány eltávolítása a Nomlából.</string>
     <string name="version">Verzió</string>
     <string name="halfDuplex">Egyirányú hang</string>
     <string name="halfDuplexSum">Elnémítja a többi lejátszást a Nyomd-a-beszédhez ideje alatt a hanghurok / feedback elkerülése érdekében.</string>
@@ -73,7 +71,7 @@
     <string name="audio_per_packet">Hang csomagonként</string>
     <string name="audio_per_packet_sum">A hang hossza hangcsomagonként.</string>
     <string name="stay_awake">Maradjon ébren</string>
-    <string name="stay_awake_sum">Bekapcsolva tartja a képernyőt, amíg a Mumla nyitva van.</string>
+    <string name="stay_awake_sum">Bekapcsolva tartja a képernyőt, amíg a Nomla nyitva van.</string>
     <string name="pref_certificate_title">Tanúsítvány</string>
     <string name="pref_export_certificate_title">Tanúsítvány exportálása</string>
     <string name="pref_export_certificate_summary">Tanúsítvány exportálása fájlba.</string>
@@ -137,4 +135,13 @@
     <string name="mediaButtonActionMute">Némítás váltása</string>
     <string name="bluetoothSco">Bluetooth headset automatikus használata</string>
     <string name="bluetoothScoSum">Hang küldése és fogadása csatlakoztatott Bluetooth headseten keresztül, amíg szerverhez csatlakozol, és váltás a hívás közben csatlakozó headsetre. A hívás hangeszköze a csatorna menüjében módosítható. Kéri a „Közeli eszközök” engedélyt; egyes eszközök nélküle nem irányítják a hangot a headsetre.</string>
+    <string name="about_description">A Nomla egy Mumble-kliens Androidra. A Mumlából portolták, és szinte teljesen újraírták.</string>
+    <string name="about_credits">Köszönetnyilvánítás</string>
+    <string name="about_credits_lublin">Daniel Lublin és a közreműködők</string>
+    <string name="about_credits_comminos">Andrew Comminos és a közreműködők</string>
+    <string name="about_license_summary">A Nomla szabad szoftver e licenc alatt</string>
+    <string name="about_source_code">Forráskód</string>
+    <string name="about_third_party_notices">Harmadik felek közleményei</string>
+    <string name="about_third_party_notices_summary">A mellékelt könyvtárak licencei (webes link)</string>
+    <string name="about_memorial">Andreas Mandalka (Natenom) emlékére, akinek útmutatói, szerverei és türelme oly sok embernek segítettek megtalálni az utat a Mumble-hoz.</string>
 </resources>

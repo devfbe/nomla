@@ -56,8 +56,8 @@
     <string name="offline">Non in linea</string>
     <string name="clearChat">Pulisci chat</string>
     <string name="connected">Connesso</string>
-    <string name="mumlaConnecting">Mumla in connessione…</string>
-    <string name="mumlaDisconnected">Mumla disconnesso </string>
+    <string name="nomlaConnecting">Nomla in connessione…</string>
+    <string name="nomlaDisconnected">Nomla disconnesso </string>
     <string name="channel">Canale</string>
     <string name="user">Utente</string>
     <string name="unknown">Sconosciuto</string>
@@ -75,7 +75,7 @@
     <string name="position">Posizione</string>
     <string name="channel_edit">Modifica Canale</string>
     <string name="channel_add">Aggiungi Canale</string>
-    <string name="first_run_generate_certificate_title">Benvenuto in Mumla</string>
+    <string name="first_run_generate_certificate_title">Benvenuto in Nomla</string>
     <string name="generate">Genera</string>
     <string name="send_message">Invia messaggio</string>
     <string name="channel_menu_view_description">Mostra la descrizione</string>
@@ -144,7 +144,7 @@
     <string name="reconnect_dialog_message">Sei già connesso a un server. Connettersi a questo\?</string>
     <string name="error_fetching_servers">Impossibile recuperare i server.
 \nSei connesso a Internet\?</string>
-    <string name="shareMessage">Unisciti a questo server Mumble tramite Mumla. %s</string>
+    <string name="shareMessage">Unisciti a questo server Mumble tramite Nomla. %s</string>
     <string name="messageToChannel">Scrivi un messaggio al canale «%s»</string>
     <string name="messageToUser">Scrivi un messaggio all\'utente «%s»</string>
     <string name="reset_key">Ripristina tasto</string>
@@ -160,7 +160,7 @@
     <string name="externalStorageUnavailable">Archiviazione esterna non disponibile, impossibile caricare il certificato</string>
     <string name="ptt">Premi per parlare</string>
     <string name="server_label">Etichetta</string>
-    <string name="server_match_description">Mumla può trovare automaticamente un server vuoto, con posizione, versione e latenza ideali.</string>
+    <string name="server_match_description">Nomla può trovare automaticamente un server vuoto, con posizione, versione e latenza ideali.</string>
     <string name="server_match_info">Nome: %1$s
 \nHost: %2$s:%3$d
 \nUtenti: %4$d / %5$d
@@ -191,17 +191,16 @@
     <string name="app_news_footer_on_startup">Queste novità possono essere visualizzate di nuovo dalla pagina \"Info su\".</string>
     <string name="app_news_items_v3_7_0">• Molto lavoro è stato fatto per aggiornare Mumla per Android 15 e 16 (API 35 e 36).\n • Come conseguenza Android 5.0 (API 21) o successivo è ora richiesto.\n • Il tema è stato aggiornato per supportare le modalità chiaro/scuro di sistema.\n • La schermata impostazioni è stata adattata alle nuove API.\n • Aggiunte preferenza lingua in app.\n</string>
     <string name="app_news_items_v3_7_1">• Rilascio minore con al più aggiornamenti di traduzione, grazie a tutti i traduttori!\n</string>
-    <string name="donate_dialog_title_goog">Ti piace Mumla?</string>
-    <string name="donate_dialog_message_goog">Grazie per usare Mumla! Per favore considera di fare una piccola donazione per aiutare a mantenere Mumla in vita — e per rimuovere questo messaggio.</string>
-    <string name="donate_dialog_positivebutton_goog">Supporta Mumla</string>
+    <string name="donate_dialog_title_goog">Ti piace Nomla?</string>
+    <string name="donate_dialog_message_goog">Grazie per usare Nomla! Per favore considera di fare una piccola donazione per aiutare a mantenere Nomla in vita — e per rimuovere questo messaggio.</string>
+    <string name="donate_dialog_positivebutton_goog">Supporta Nomla</string>
     <string name="donate_dialog_negativebutton_goog">Più tardi</string>
     <string name="donate_purchase_pending_goog">La tua donazione è in sospeso e potrebbe essere pronta ad un riavvio successivo. Grazie!</string>
     <string name="donate_thanks_goog">Grazie per il tuo supporto!</string>
-    <string name="donate_foss">Dona</string>
     <string name="app_news_items_v3_7_2">• Corrette potenziali interruzioni all\'avvio\n • Aggiunte alcune traduzioni, grazie a tutti i traduttori!\n</string>
     <string name="app_news_items_v3_7_3">• L\'angolo PTT è visibile su Android 12 e successivi, e su sfondo chiaro e scuro\n • Il pulsante Indietro ora chiede nuovamente conferma di disconnessione dal server su Android 16+\n</string>
     <string name="connection_lost_reconnecting">Connessione persa – riconnessione in corso…</string>
-    <string name="foreground_start_failed">Impossibile mantenere Mumla attivo in background. La voce potrebbe interrompersi quando lo schermo si spegne.</string>
+    <string name="foreground_start_failed">Impossibile mantenere Nomla attivo in background. La voce potrebbe interrompersi quando lo schermo si spegne.</string>
     <string name="bluetooth_perm_denied">Le cuffie Bluetooth restano attive. Senza il permesso Dispositivi nelle vicinanze, alcuni dispositivi rifiutano di instradarvi l\'audio.</string>
     <string name="chat_image_share">Condividi immagine</string>
     <string name="chat_image_close">Chiudi</string>

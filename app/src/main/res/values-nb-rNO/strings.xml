@@ -32,7 +32,7 @@
     <string name="server_port">Port</string>
     <string name="server_username">Brukernavn</string>
     <string name="server_password">Passord</string>
-    <string name="server_match_description">Mumla kan automatisk finne deg en tom tjener, optimalisere for plassering, versjon, og latens.</string>
+    <string name="server_match_description">Nomla kan automatisk finne deg en tom tjener, optimalisere for plassering, versjon, og latens.</string>
     <string name="server_match_info">Navn: %1$s
 \nVert: %2$s:%3$d
 \nBrukere: %4$d / %5$d
@@ -125,15 +125,15 @@
 \nEr du koblet til Internett\?</string>
     <string name="information">Info</string>
     <string name="close">Lukk</string>
-    <string name="shareMessage">Ta del i denne Mumble-tjeneren med Mumla. %s</string>
+    <string name="shareMessage">Ta del i denne Mumble-tjeneren med Nomla. %s</string>
     <string name="description">Beskrivelse</string>
     <string name="share">Deling</string>
     <string name="name">Navn</string>
     <string name="unknown">Ukjent</string>
     <string name="user">Bruker</string>
     <string name="channel">Kanal</string>
-    <string name="mumlaDisconnected">Mumla er frakoblet</string>
-    <string name="mumlaConnecting">Mumla kobler til …</string>
+    <string name="nomlaDisconnected">Nomla er frakoblet</string>
+    <string name="nomlaConnecting">Nomla kobler til …</string>
     <string name="connected">Tilkoblet</string>
     <string name="clearChat">Tøm sludring</string>
     <string name="offline">Frakoblet</string>
@@ -177,7 +177,7 @@
     <string name="image_confirm_send">Send dette bildet\?</string>
     <string name="grant_perm_notifications">Innvilg tilgang til å sende merknader.</string>
     <string name="connection_lost_reconnecting">Tilkoblingen brutt – kobler til igjen…</string>
-    <string name="foreground_start_failed">Kunne ikke holde Mumla kjørende i bakgrunnen. Talen kan stoppe når skjermen slås av.</string>
+    <string name="foreground_start_failed">Kunne ikke holde Nomla kjørende i bakgrunnen. Talen kan stoppe når skjermen slås av.</string>
     <string name="bluetooth_perm_denied">Bluetooth-hodesettet forblir på. Uten tilgangen Enheter i nærheten nekter noen enheter å sende lyd til det.</string>
     <string name="chat_image_share">Del bilde</string>
     <string name="chat_image_close">Lukk</string>

@@ -11,9 +11,7 @@
     <string name="hot_corner_bottom_left">↙ Vlevo dole</string>
     <string name="hot_corner_top_right">Vpravo nahoře ↗</string>
     <string name="hot_corner_bottom_right">Vpravo dole ↘</string>
-    <string name="acknowledgements">Přispěvatelé</string>
     <string name="licenses">Licence</string>
-    <string name="acknowledgementsSum">Podívejte se, kdo přispěl do Mumly (webový odkaz)</string>
     <string name="noiseSuppression">Potlačení šumu</string>
     <string name="noiseSuppressionSum">Odstraní šum na pozadí z mikrofonu před odesláním.</string>
     <string name="noiseSuppressionNone">Vypnuto</string>
@@ -70,4 +68,13 @@
     <string name="mediaButtonActionMute">Přepnout ztlumení</string>
     <string name="bluetoothSco">Automaticky používat Bluetooth headset</string>
     <string name="bluetoothScoSum">Posílat a přijímat hlas přes připojený Bluetooth headset, když jste připojeni k serveru, a přepnout na headset, který se připojí během hovoru. Zvukové zařízení pro hovor lze změnit v nabídce kanálu. Žádá o oprávnění „Zařízení v okolí“; některá zařízení bez něj zvuk do headsetu nepřesměrují.</string>
+    <string name="about_description">Nomla je klient Mumble pro Android. Vznikla převedením z Mumly a byla téměř celá přepsána.</string>
+    <string name="about_credits">Poděkování</string>
+    <string name="about_credits_lublin">Daniel Lublin a přispěvatelé</string>
+    <string name="about_credits_comminos">Andrew Comminos a přispěvatelé</string>
+    <string name="about_license_summary">Nomla je svobodný software pod touto licencí</string>
+    <string name="about_source_code">Zdrojový kód</string>
+    <string name="about_third_party_notices">Oznámení třetích stran</string>
+    <string name="about_third_party_notices_summary">Licence přibalených knihoven (webový odkaz)</string>
+    <string name="about_memorial">Na památku Andrease Mandalky (Natenom), jehož návody, servery a trpělivost pomohly tolika lidem najít cestu k Mumble.</string>
 </resources>

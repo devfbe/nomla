@@ -37,7 +37,6 @@
     <string name="password">Awal n uɛeddi</string>
     <string name="default_">Amezwer</string>
     <string name="donate_dialog_negativebutton_goog">Ticki</string>
-    <string name="donate_foss">Mudd tawsa</string>
     <string name="drawer_not_connected">Ur yeqqin ara</string>
     <string name="drawer_server">Akk ibuda</string>
     <string name="drawer_tokens">Tiddas n wadduf</string>
@@ -52,7 +51,7 @@
     <string name="messageReceived">Izen amaynut</string>
     <string name="generateCertProgress">Asarew n uselkin…</string>
     <string name="clearChat">Sfeḍ adiwenni</string>
-    <string name="mumlaConnecting">Mumla iteqqen…</string>
+    <string name="nomlaConnecting">Nomla iteqqen…</string>
     <string name="channel_edit">Ẓreg abadu</string>
     <string name="channel_add">Rnu abadu</string>
     <string name="send_message">Azen izen</string>
@@ -65,7 +64,7 @@
     <string name="connecting_to_server">Tuqqna ɣer %s…</string>
     <string name="accessAdd">Rnu tiddest n wadduf</string>
     <string name="connectToServer">Tuqqna ɣer uqeddac</string>
-    <string name="first_run_generate_certificate_title">Ansuf ɣer Mumla</string>
+    <string name="first_run_generate_certificate_title">Ansuf ɣer Nomla</string>
     <string name="disconnect">Gzem tuqqna</string>
     <string name="drawer_header_servers">Iqeddacen</string>
     <string name="drawer_favorites">Imenyafen</string>
@@ -89,7 +88,7 @@
     <string name="udp_encryption_mode">Yettwagelhen s 128 n ibiten OCB-AES-128</string>
     <string name="server_info_current_bandwidth">Amiran %.1f kaṭ/tsn</string>
     <string name="no_ptt_key">Ula d yiwet n tqeffalt</string>
-    <string name="mumlaDisconnected">Tekkes-as tuqqna i Mumla</string>
+    <string name="nomlaDisconnected">Tekkes-as tuqqna i Nomla</string>
     <string name="addFavorite">Rnu amenyaf</string>
     <string name="certificate_import_success">Aselkin yettwakter-d %s.</string>
     <string name="searchHint">Nadi ibuda akked iseqdacen</string>
@@ -100,7 +99,7 @@
     <string name="messageToChannel">Aru izen deg ubadu \'%s\'</string>
     <string name="mumble_url_parse_failed">URL n Mumble d tarameɣtut.</string>
     <string name="change_requires_reconnect">Alles tuqqna akken ad tesqedceḍ iɣewwaren imaynuten.</string>
-    <string name="shareMessage">Kcem-d ɣer uqeddac-a n Mumble s Mumla. %s</string>
+    <string name="shareMessage">Kcem-d ɣer uqeddac-a n Mumble s Nomla. %s</string>
     <string name="disconnectSure">S tidet tebɣiḍ ad tgzemeḍ tuqqna seg %s?</string>
     <string name="confirm_delete_server">S tidet tebɣiḍ ad tekkseḍ aqeddac-a?</string>
     <string name="confirm_delete_channel">S tidet tebɣiḍ ad tekkseḍ abadu-a?</string>
@@ -114,7 +113,7 @@
     <string name="invalid_port_range">Tawwurt tarameɣtut (1-65535)</string>
     <string name="server_match_not_found">Ur nufi ara aqeddac-nni</string>
     <string name="connection_lost_reconnecting">Tuqqna tṛuḥ – allus n tuqqna…</string>
-    <string name="foreground_start_failed">Ulamek ad yeqqim Mumla yetteddu deg ugilal. Taɣect tezmer ad teḥbes mi ara yensi ugdil.</string>
+    <string name="foreground_start_failed">Ulamek ad yeqqim Nomla yetteddu deg ugilal. Taɣect tezmer ad teḥbes mi ara yensi ugdil.</string>
     <string name="bluetooth_perm_denied">Akask n Bluetooth yeqqim yermed. War tasiregt n yibenkan iqerben, kra n yibenkan ad agin ad d-aznen imesli ɣur-s.</string>
     <string name="chat_image_share">Bḍu tugna</string>
     <string name="chat_image_close">Mdel</string>

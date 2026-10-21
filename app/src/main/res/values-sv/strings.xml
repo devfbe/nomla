@@ -73,7 +73,7 @@
     <string name="position">Position</string>
     <string name="channel_add">Lägg till kanal</string>
     <string name="tts_failed">Kunde inte starta TTS</string>
-    <string name="first_run_generate_certificate_title">Välkommen till Mumla</string>
+    <string name="first_run_generate_certificate_title">Välkommen till Nomla</string>
     <string name="generate">Generera</string>
     <string name="channel_menu_view_description">Visa beskrivning</string>
     <string name="untrusted_certificate">Ej betrott certifikat</string>
@@ -88,7 +88,7 @@
     <string name="orbot_not_installed">Orbot-appen är inte installerad. Använder inte Tor.</string>
     <string name="default_">Standard</string>
     <string name="server_info_current_bandwidth">Nuvarande %.1f kbit/s</string>
-    <string name="server_match_description">Mumla kan automatiskt hitta en tom server, optimerad för plats, version och latens.</string>
+    <string name="server_match_description">Nomla kan automatiskt hitta en tom server, optimerad för plats, version och latens.</string>
     <string name="externalStorageUnavailable">Extern lagring otillgänglig, kan inte ladda certifikat</string>
     <string name="searchHint">Sök kanaler och användare</string>
     <string name="connectToServer">Anslut till server</string>
@@ -133,9 +133,9 @@
     <string name="messageToChannel">Skriv ett meddelande till kanalen \'%s\'</string>
     <string name="offline">Offline</string>
     <string name="connected">Ansluten</string>
-    <string name="mumlaConnecting">Mumla ansluter…</string>
-    <string name="mumlaDisconnected">Mumla nedkopplad</string>
-    <string name="shareMessage">Anslut till denna Mumble-server med Mumla. %s</string>
+    <string name="nomlaConnecting">Nomla ansluter…</string>
+    <string name="nomlaDisconnected">Nomla nedkopplad</string>
+    <string name="shareMessage">Anslut till denna Mumble-server med Nomla. %s</string>
     <string name="close">Stäng</string>
     <string name="error_fetching_servers">Kan inte hämta servrar.
 \nÄr du ansluten till Internet?</string>
@@ -179,15 +179,14 @@
     </plurals>
     <string name="app_news">Nyheter</string>
     <string name="app_news_summary">Visa de senaste uppdateringarna</string>
-    <string name="donate_foss">Donera</string>
-    <string name="donate_dialog_title_goog">Gillar du Mumla?</string>
-    <string name="donate_dialog_message_goog">Tack för att du använder Mumla! En liten donation kan hjälpa till att hålla Mumla levande — och tar bort detta meddelande.</string>
-    <string name="donate_dialog_positivebutton_goog">Stöd Mumla</string>
+    <string name="donate_dialog_title_goog">Gillar du Nomla?</string>
+    <string name="donate_dialog_message_goog">Tack för att du använder Nomla! En liten donation kan hjälpa till att hålla Nomla levande — och tar bort detta meddelande.</string>
+    <string name="donate_dialog_positivebutton_goog">Stöd Nomla</string>
     <string name="donate_dialog_negativebutton_goog">Senare</string>
     <string name="donate_purchase_pending_goog">Din donation behandlas och kan vara klar vid en senare omstart. Tack!</string>
     <string name="donate_thanks_goog">Tack för ditt stöd!</string>
     <string name="connection_lost_reconnecting">Anslutningen bröts – ansluter igen…</string>
-    <string name="foreground_start_failed">Det gick inte att hålla Mumla igång i bakgrunden. Ljudet kan sluta fungera när skärmen stängs av.</string>
+    <string name="foreground_start_failed">Det gick inte att hålla Nomla igång i bakgrunden. Ljudet kan sluta fungera när skärmen stängs av.</string>
     <string name="bluetooth_perm_denied">Bluetooth-headsetet förblir påslaget. Utan behörigheten Enheter i närheten vägrar vissa enheter att skicka ljud till det.</string>
     <string name="chat_image_share">Dela bild</string>
     <string name="chat_image_close">Stäng</string>

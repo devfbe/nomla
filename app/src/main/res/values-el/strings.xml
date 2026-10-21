@@ -34,7 +34,7 @@
 \nΈκδοση: %6$s
 \nΧώρα: %7$s
 \nΚαθυστέρηση: %8$d ms</string>
-    <string name="server_match_description">Το Mumla μπορεί να βρει αυτόματα έναν κενό διακομιστή, βελτιστοποιώντας την τοποθεσία, την έκδοση και την καθυστέρηση.</string>
+    <string name="server_match_description">Το Nomla μπορεί να βρει αυτόματα έναν κενό διακομιστή, βελτιστοποιώντας την τοποθεσία, την έκδοση και την καθυστέρηση.</string>
     <string name="server_password">Κωδικός πρόσβασης</string>
     <string name="server_username">Όνομα χρήστη</string>
     <string name="server_port">Θύρα</string>
@@ -63,8 +63,8 @@
     <string name="messageToChannel">Πληκτρολογήστε ένα μήνυμα στο κανάλι \'%s\'</string>
     <string name="online">Συνδεμένος</string>
     <string name="offline">Αποσυνδεμένος</string>
-    <string name="mumlaConnecting">Το Mumla συνδέεται…</string>
-    <string name="mumlaDisconnected">Το Mumla αποσυνδέθηκε</string>
+    <string name="nomlaConnecting">Το Nomla συνδέεται…</string>
+    <string name="nomlaDisconnected">Το Nomla αποσυνδέθηκε</string>
     <string name="unknown">Άγνωστο</string>
     <string name="name">Όνομα</string>
     <string name="share">Κοινοποίηση</string>
@@ -79,7 +79,7 @@
     <string name="tts_failed">Δεν μπόρεσε να γίνει εκκίνηση το TTS</string>
     <string name="mumble_url_parse_failed">Το Mumble URL δεν ισχύει.</string>
     <string name="overlay">Εμφάνιση πάνω από άλλες εφαρμογές</string>
-    <string name="first_run_generate_certificate_title">Καλώς ήλθατε στο Mumla</string>
+    <string name="first_run_generate_certificate_title">Καλώς ήλθατε στο Nomla</string>
     <string name="generate">Δημιουργία</string>
     <string name="channel_menu_view_description">Περιγραφή προβολής</string>
     <string name="untrusted_certificate">Μη αξιόπιστο πιστοποιητικό</string>
@@ -151,7 +151,7 @@
     <string name="user">Χρήστης</string>
     <string name="clearChat">Καθάρισμα συζήτησης</string>
     <string name="connected">Συνδέθηκε</string>
-    <string name="shareMessage">Εγγραφείτε σε αυτόν τον διακομιστή Mumble με το Mumla. %s</string>
+    <string name="shareMessage">Εγγραφείτε σε αυτόν τον διακομιστή Mumble με το Nomla. %s</string>
     <string name="error_fetching_servers">Δεν μπόρεσα να φέρω διακομιστές.
 \nΕίστε συνδεδεμένοι στο Διαδίκτυο;</string>
     <string name="position">Θέση</string>
@@ -176,7 +176,7 @@
     </plurals>
     <string name="chat_message_to">%1$s → %2$s</string>
     <string name="connection_lost_reconnecting">Η σύνδεση χάθηκε – επανασύνδεση…</string>
-    <string name="foreground_start_failed">Δεν ήταν δυνατή η διατήρηση του Mumla στο παρασκήνιο. Η φωνή μπορεί να σταματήσει όταν σβήσει η οθόνη.</string>
+    <string name="foreground_start_failed">Δεν ήταν δυνατή η διατήρηση του Nomla στο παρασκήνιο. Η φωνή μπορεί να σταματήσει όταν σβήσει η οθόνη.</string>
     <string name="bluetooth_perm_denied">Τα ακουστικά Bluetooth παραμένουν ενεργά. Χωρίς την άδεια «Συσκευές σε κοντινή απόσταση», ορισμένες συσκευές θα αρνηθούν να δρομολογήσουν ήχο σε αυτά.</string>
     <string name="chat_image_share">Κοινοποίηση εικόνας</string>
     <string name="chat_image_close">Κλείσιμο</string>

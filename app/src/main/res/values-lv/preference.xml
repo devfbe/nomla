@@ -4,12 +4,10 @@
     <string name="theme_light">Gaišs</string>
     <string name="theme_dark">Tumšs</string>
     <string name="about">Par lietotni</string>
-    <string name="acknowledgements">Līdzautori</string>
     <string name="licenses">Licences</string>
     <string name="general">Vispārīgie</string>
     <string name="appearance">Izskats</string>
     <string name="theme">Motīvs</string>
-    <string name="acknowledgementsSum">Skatīt, kuri veicināja Mumla attīstību, deva savu artavu (saite)</string>
     <string name="version">Versija</string>
     <string name="pref_show_user_count">Rādīt kanāla lietotāju skaitu</string>
     <string name="pref_show_user_count_summary">Rādīs lietotāju skaitu kanāla apakškokos.</string>
@@ -69,4 +67,13 @@
     <string name="mediaButtonActionMute">Pārslēgt skaņas izslēgšanu</string>
     <string name="bluetoothSco">Automātiski izmantot Bluetooth austiņas</string>
     <string name="bluetoothScoSum">Sūtīt un saņemt balsi caur pievienotām Bluetooth austiņām, kamēr esat savienots ar serveri, un pārslēgties uz austiņām, kas tiek pievienotas zvana laikā. Zvana audioierīci var mainīt kanāla izvēlnē. Pieprasa atļauju „Tuvumā esošās ierīces”; dažas ierīces bez tās nenovirza skaņu uz austiņām.</string>
+    <string name="about_description">Nomla ir Mumble klients Android ierīcēm. Tā tika pārnesta no Mumla un gandrīz pilnībā pārrakstīta.</string>
+    <string name="about_credits">Pateicības</string>
+    <string name="about_credits_lublin">Daniel Lublin un līdzautori</string>
+    <string name="about_credits_comminos">Andrew Comminos un līdzautori</string>
+    <string name="about_license_summary">Nomla ir brīva programmatūra ar šo licenci</string>
+    <string name="about_source_code">Pirmkods</string>
+    <string name="about_third_party_notices">Trešo pušu paziņojumi</string>
+    <string name="about_third_party_notices_summary">Iekļauto bibliotēku licences (saite)</string>
+    <string name="about_memorial">Piemiņai Andreasam Mandalkam (Natenom), kura ceļveži, serveri un pacietība palīdzēja tik daudziem cilvēkiem atrast ceļu uz Mumble.</string>
 </resources>

@@ -58,7 +58,7 @@
     <string name="send_message">Lähetä viesti</string>
     <string name="generate">Luo</string>
     <string name="first_run_generate_certificate">Sertifikaatin luominen on erittäin suositeltavaa ja välttämätöntä yhteyden muodostamiseksi joihinkin palvelimiin.</string>
-    <string name="first_run_generate_certificate_title">Tervetuloa Mumlaan</string>
+    <string name="first_run_generate_certificate_title">Tervetuloa Nomlaan</string>
     <string name="mumble_url_parse_failed">Mumblen URL-osoite ei kelpaa.</string>
     <string name="tts_failed">TTS: n käynnistäminen epäonnistui</string>
     <string name="channel_add">Lisää kanava</string>
@@ -77,15 +77,15 @@
 \nOletko yhteydessä Internetiin\?</string>
     <string name="information">Tiedot</string>
     <string name="close">Sulje</string>
-    <string name="shareMessage">Liity tähän Mumble-palvelimeen Mumlan kanssa. %s</string>
+    <string name="shareMessage">Liity tähän Mumble-palvelimeen Nomlan kanssa. %s</string>
     <string name="description">Kuvaus</string>
     <string name="share">Jaa</string>
     <string name="name">Nimi</string>
     <string name="unknown">Tuntematon</string>
     <string name="user">Käyttäjä</string>
     <string name="channel">Kanava</string>
-    <string name="mumlaDisconnected">Mumla katkaisi yhteyden</string>
-    <string name="mumlaConnecting">Mumla-yhteyden muodostaminen…</string>
+    <string name="nomlaDisconnected">Nomla katkaisi yhteyden</string>
+    <string name="nomlaConnecting">Nomla-yhteyden muodostaminen…</string>
     <string name="connected">Yhdistetty</string>
     <string name="clearChat">Tyhjennä chat</string>
     <string name="offline">Offline-tilassa</string>
@@ -123,7 +123,7 @@
     <string name="server_port">Portti</string>
     <string name="server_username">Käyttäjänimi</string>
     <string name="server_password">Salasana</string>
-    <string name="server_match_description">Mumla löytää automaattisesti tyhjän palvelimen, joka optimoi sijainnin, version ja viiveen.</string>
+    <string name="server_match_description">Nomla löytää automaattisesti tyhjän palvelimen, joka optimoi sijainnin, version ja viiveen.</string>
     <string name="server_match_info">Nimi: %1$s
 \nIsäntä: %2$s: %3$d
 \nKäyttäjät: %4$d / %5$d
@@ -176,7 +176,7 @@
     <string name="drawer_open">Avaa alasvetovalikko</string>
     <string name="image_confirm_send">Lähetä tämä kuva\?</string>
     <string name="connection_lost_reconnecting">Yhteys katkesi – yhdistetään uudelleen…</string>
-    <string name="foreground_start_failed">Mumlaa ei voitu pitää käynnissä taustalla. Ääni voi katketa, kun näyttö sammuu.</string>
+    <string name="foreground_start_failed">Nomlaa ei voitu pitää käynnissä taustalla. Ääni voi katketa, kun näyttö sammuu.</string>
     <string name="bluetooth_perm_denied">Bluetooth-kuulokkeet pysyvät päällä. Ilman Lähellä olevat laitteet -lupaa jotkin laitteet kieltäytyvät ohjaamasta ääntä niihin.</string>
     <string name="chat_image_share">Jaa kuva</string>
     <string name="chat_image_close">Sulje</string>

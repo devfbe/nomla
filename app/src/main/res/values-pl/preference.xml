@@ -14,8 +14,6 @@
     <string name="hot_corner_bottom_right">Prawy dolny ↘</string>
     <!-- About -->
     <string name="about">O programie</string>
-    <string name="acknowledgements">Współtwórcy</string>
-    <string name="acknowledgementsSum">Zobacz, kto przyczynił się do powstania Mumli (łącze internetowe)</string>
     <string name="licenses">Licencje</string>
     <string name="audioInputMethodSum">Sposób aktywacji przekazywania audio.</string>
     <string name="audioInputMethod">Tryb przekazywania</string>
@@ -38,9 +36,9 @@
     <string name="chatNotificationsSum">Wyświetlane dla nowych wiadomości czatu.</string>
     <string name="defaultUsername">Domyślna nazwa użytkownika</string>
     <string name="defaultUsernameSum">Wstępnie wypełniona nazwa używana podczas dodawania serwera lub łączenia się z serwerem publicznym.</string>
-    <string name="defaultUsernameDefault">Użytkownik_Mumli</string>
+    <string name="defaultUsernameDefault">Użytkownik_Nomli</string>
     <string name="certificateGenerate">Wygeneruj certyfikat</string>
-    <string name="certificateGenerateSum">Generuje nowy samopodpisany certyfikat Mumli. Zalecane dla początkujących.</string>
+    <string name="certificateGenerateSum">Generuje nowy samopodpisany certyfikat Nomli. Zalecane dla początkujących.</string>
     <string name="pttSettings">Ustawienia funkcji „Naciśnij i mów”</string>
     <string name="voiceActivitySettings">Ustawienia aktywności głosowej</string>
     <string name="hidePtt">Ukryj przycisk funkcji „Naciśnij i mów”</string>
@@ -64,7 +62,7 @@
     <string name="loadImagesSum">Pobiera i wyświetla obrazy na czacie.</string>
     <string name="loadImages">Obrazy zewnętrzne</string>
     <string name="clearServerCertificates">Wyczyść certyfikaty serwera</string>
-    <string name="clearServerCertificatesSum">Usuń wszystkie certyfikaty zaufanych serwerów z Mumli.</string>
+    <string name="clearServerCertificatesSum">Usuń wszystkie certyfikaty zaufanych serwerów z Nomli.</string>
     <string name="version">Wersja</string>
     <string name="halfDuplex">Jednokierunkowe audio</string>
     <string name="halfDuplexSum">Wycisza inne odtwarzanie podczas korzystania z funkcji „Naciśnij i mów”, aby uniknąć pętli audio/sprzężenia zwrotnego.</string>
@@ -73,7 +71,7 @@
     <string name="audio_per_packet">Audio na pakiet</string>
     <string name="audio_per_packet_sum">Długość audio na pakiet głosowy.</string>
     <string name="stay_awake">Nie usypiaj</string>
-    <string name="stay_awake_sum">Pozostawia ekran włączony, gdy Mumla jest otwarta.</string>
+    <string name="stay_awake_sum">Pozostawia ekran włączony, gdy Nomla jest otwarta.</string>
     <string name="pref_certificate_title">Certyfikat</string>
     <string name="pref_certificate_summary">Domyślny używany podczas łączenia się z serwerem.</string>
     <string name="pref_import_certificate_title">Importuj certyfikat</string>
@@ -143,4 +141,13 @@
     <string name="mediaButtonActionMute">Przełącz wyciszenie</string>
     <string name="bluetoothSco">Automatycznie używaj zestawu słuchawkowego Bluetooth</string>
     <string name="bluetoothScoSum">Wysyłaj i odbieraj głos przez połączony zestaw słuchawkowy Bluetooth, gdy jesteś połączony z serwerem, i przełączaj na zestaw, który połączy się w trakcie rozmowy. Urządzenie audio dla rozmowy można zmienić w menu kanału. Wymaga uprawnienia „Urządzenia w pobliżu”; niektóre urządzenia bez niego nie przekierują dźwięku do zestawu.</string>
+    <string name="about_description">Nomla to klient Mumble na Androida. Została przeniesiona z Mumli i niemal całkowicie napisana od nowa.</string>
+    <string name="about_credits">Podziękowania</string>
+    <string name="about_credits_lublin">Daniel Lublin i współtwórcy</string>
+    <string name="about_credits_comminos">Andrew Comminos i współtwórcy</string>
+    <string name="about_license_summary">Nomla jest wolnym oprogramowaniem na tej licencji</string>
+    <string name="about_source_code">Kod źródłowy</string>
+    <string name="about_third_party_notices">Informacje o komponentach zewnętrznych</string>
+    <string name="about_third_party_notices_summary">Licencje dołączonych bibliotek (łącze internetowe)</string>
+    <string name="about_memorial">Pamięci Andreasa Mandalki (Natenom), którego poradniki, serwery i cierpliwość pomogły tak wielu osobom odnaleźć drogę do Mumble.</string>
 </resources>

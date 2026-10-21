@@ -44,7 +44,7 @@
     <string name="server_match_not_found">சேவையகத்தைக் கண்டுபிடிக்க முடியவில்லை</string>
     <string name="server_match_expand_country">உங்கள் நாட்டில் எந்த உகந்த சேவையகங்களையும் கண்டுபிடிக்க முடியவில்லை. உலகளவில் தேடவா?</string>
     <string name="server_match_info">பெயர்: %1$s\nபுரவலன்: %2$s: %3$d\nபயனர்கள்: %4$d / %5$d\nபதிப்பு: %6$s\nநாடு: %7$s\nதாமதம்: %8$d மிநொ</string>
-    <string name="server_match_description">மும்லா தானாகவே ஒரு வெற்று சேவையகத்தைக் கண்டுபிடித்து, இருப்பிடம், பதிப்பு மற்றும் தாமதத்தை மேம்படுத்தலாம்.</string>
+    <string name="server_match_description">நோம்லா தானாகவே ஒரு வெற்று சேவையகத்தைக் கண்டுபிடித்து, இருப்பிடம், பதிப்பு மற்றும் தாமதத்தை மேம்படுத்தலாம்.</string>
     <string name="server_password">கடவுச்சொல்</string>
     <string name="server_username">பயனர்பெயர்</string>
     <string name="server_port">துறைமுகம்</string>
@@ -82,15 +82,15 @@
     <string name="offline">இணையம் இல்லாமல்</string>
     <string name="clearChat">அரட்டை அழி</string>
     <string name="connected">இணைக்கப்பட்டுள்ளது</string>
-    <string name="mumlaConnecting">மும்லா இணைத்தல்…</string>
-    <string name="mumlaDisconnected">மும்லா துண்டிக்கப்பட்டது</string>
+    <string name="nomlaConnecting">நோம்லா இணைத்தல்…</string>
+    <string name="nomlaDisconnected">நோம்லா துண்டிக்கப்பட்டது</string>
     <string name="channel">தடம்</string>
     <string name="user">பயனர்</string>
     <string name="unknown">தெரியவில்லை</string>
     <string name="name">பெயர்</string>
     <string name="share">பங்கு</string>
     <string name="description">விவரம்</string>
-    <string name="shareMessage">மும்லாவுடன் இந்த முணுமுணுப்பு சேவையகத்தில் சேரவும். %s</string>
+    <string name="shareMessage">நோம்லாவுடன் இந்த முணுமுணுப்பு சேவையகத்தில் சேரவும். %s</string>
     <string name="close">மூடு</string>
     <string name="information">தகவல்</string>
     <string name="error_fetching_servers">சேவையகங்களைப் பெற முடியவில்லை.\n நீங்கள் இணையத்துடன் இணைக்கப்பட்டுள்ளீர்களா?</string>
@@ -108,7 +108,7 @@
     <string name="channel_add">தடத்தைச் சேர்</string>
     <string name="tts_failed">உரைக்குபேச்சை தொடங்க முடியவில்லை</string>
     <string name="mumble_url_parse_failed">முணுமுணுப்பு முகவரி செல்லுபடியாகாது.</string>
-    <string name="first_run_generate_certificate_title">மும்லாவுக்கு வருக</string>
+    <string name="first_run_generate_certificate_title">நோம்லாவுக்கு வருக</string>
     <string name="first_run_generate_certificate">ஒரு சான்றிதழை உருவாக்குவது மிகவும் பரிந்துரைக்கப்படுகிறது, மேலும் சில சேவையகங்களுடனான இணைப்பிற்கு தேவை.</string>
     <string name="generate">உருவாக்கு</string>
     <string name="send_message">செய்தி அனுப்பவும்</string>
@@ -157,7 +157,7 @@
     <string name="drawer_open">அலமாரி திற</string>
     <string name="perm_denied">இசைவு மறுக்கப்பட்டது.</string>
     <string name="connection_lost_reconnecting">இணைப்பு துண்டிக்கப்பட்டது – மீண்டும் இணைக்கிறது…</string>
-    <string name="foreground_start_failed">Mumla வைப் பின்னணியில் இயங்க வைக்க முடியவில்லை. திரை அணையும்போது குரல் நின்றுவிடக்கூடும்.</string>
+    <string name="foreground_start_failed">நோம்லாவைப் பின்னணியில் இயங்க வைக்க முடியவில்லை. திரை அணையும்போது குரல் நின்றுவிடக்கூடும்.</string>
     <string name="bluetooth_perm_denied">Bluetooth தலையணி இயக்கத்திலேயே இருக்கும். அருகிலுள்ள சாதனங்கள் இசைவு இல்லாமல், சில சாதனங்கள் ஒலியை அதற்கு அனுப்ப மறுக்கும்.</string>
     <string name="chat_image_share">படத்தைப் பகிர்</string>
     <string name="chat_image_close">மூடு</string>

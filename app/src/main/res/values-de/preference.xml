@@ -14,8 +14,6 @@
     <string name="hot_corner_bottom_right">Unten rechts ↘</string>
     <!--About-->
     <string name="about">Über</string>
-    <string name="acknowledgements">Mitwirkende</string>
-    <string name="acknowledgementsSum">Wer zu Mumla beigetragen hat (Weblink)</string>
     <string name="licenses">Lizenzen</string>
     <string name="audioInputMethodSum">Wie die Audioübertragung aktiviert wird.</string>
     <string name="audioInputMethod">Sendemodus</string>
@@ -38,7 +36,7 @@
     <string name="chatNotificationsSum">Wird bei neuen Chat-Nachrichten angezeigt.</string>
     <string name="defaultUsername">Standard-Benutzername</string>
     <string name="defaultUsernameSum">Vorgabe beim Hinzufügen oder Betreten eines Servers</string>
-    <string name="defaultUsernameDefault">Mumla_Benutzer</string>
+    <string name="defaultUsernameDefault">Nomla_Benutzer</string>
     <string name="certificateGenerate">Zertifikat erzeugen</string>
     <string name="certificateGenerateSum">Neues selbst signiertes Zertifikat erzeugen (empfohlen)</string>
     <string name="pttSettings">Push-to-Talk-Einstellungen</string>
@@ -69,7 +67,7 @@
     <string name="audio_per_packet">Audio pro Paket</string>
     <string name="audio_per_packet_sum">Die Länge des Audios pro Sprachpaket.</string>
     <string name="stay_awake">Wach bleiben</string>
-    <string name="stay_awake_sum">Den Bildschirm aktiv lassen, wenn Mumla geöffnet ist.</string>
+    <string name="stay_awake_sum">Den Bildschirm aktiv lassen, wenn Nomla geöffnet ist.</string>
     <string name="pttButtonHeight">Höhe des Push-to-Talk-Knopfs</string>
     <string name="pttButtonHeightSum">Wie hoch der Push-to-Talk-Knopf ist</string>
     <string name="pref_start_upIn_pinned_mode_sum">Nach dem Verbinden nur angeheftete Kanäle zeigen</string>
@@ -145,4 +143,13 @@
     <string name="theme_system">Systemstandard</string>
     <string name="language_system">Systemstandard</string>
     <string name="language">Sprache</string>
+    <string name="about_description">Nomla ist ein Mumble-Client für Android. Es wurde aus Mumla portiert und fast vollständig neu geschrieben.</string>
+    <string name="about_credits">Danksagung</string>
+    <string name="about_credits_lublin">Daniel Lublin und Mitwirkende</string>
+    <string name="about_credits_comminos">Andrew Comminos und Mitwirkende</string>
+    <string name="about_license_summary">Nomla ist freie Software unter dieser Lizenz</string>
+    <string name="about_source_code">Quellcode</string>
+    <string name="about_third_party_notices">Hinweise zu Drittkomponenten</string>
+    <string name="about_third_party_notices_summary">Lizenzen der enthaltenen Bibliotheken (Weblink)</string>
+    <string name="about_memorial">In Gedenken an Andreas Mandalka (Natenom), dessen Anleitungen, Server und Geduld so vielen Menschen den Weg zu Mumble gezeigt haben.</string>
 </resources>

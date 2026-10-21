@@ -59,7 +59,7 @@
     <string name="server_info_current_bandwidth">Jelenlegi %.1f Kbit/s</string>
     <string name="server_match_not_found">Nem találom a kiszolgálót</string>
     <string name="server_match_expand_country">Nem található optimális szerver az országodban. Keressek világszinten?</string>
-    <string name="server_match_description">A Mumla képes automatikusan üres szervert találni, optimalizálva a helyet, a verziót és a késleltetést.</string>
+    <string name="server_match_description">A Nomla képes automatikusan üres szervert találni, optimalizálva a helyet, a verziót és a késleltetést.</string>
     <string name="server_password">Jelszó</string>
     <string name="server_username">Felhasználónév</string>
     <string name="server_port">Port</string>
@@ -91,13 +91,13 @@
     <string name="online">Elérhető</string>
     <string name="clearChat">Chat üzenetek törlése</string>
     <string name="connected">Csatlakoztatva</string>
-    <string name="mumlaConnecting">Mumla csatlakozás…</string>
-    <string name="mumlaDisconnected">Mumla leválasztva</string>
+    <string name="nomlaConnecting">Nomla csatlakozás…</string>
+    <string name="nomlaDisconnected">Nomla leválasztva</string>
     <string name="channel">Csatorna</string>
     <string name="name">Név</string>
     <string name="share">Megosztás</string>
     <string name="description">Leírás</string>
-    <string name="shareMessage">Csatlakozz Mumlával ehhez a Mumble szerverhez. %s</string>
+    <string name="shareMessage">Csatlakozz Nomlával ehhez a Mumble szerverhez. %s</string>
     <string name="close">Bezárás</string>
     <string name="information">Információ</string>
     <string name="overlay">Átfedés</string>
@@ -138,7 +138,7 @@
     <string name="channel_add">Csatorna hozzáadása</string>
     <string name="tts_failed">Nem sikerült a Text To Speech indítása</string>
     <string name="mumble_url_parse_failed">Ez a Mumble URL helytelen.</string>
-    <string name="first_run_generate_certificate_title">Üdvözöl a Mumla</string>
+    <string name="first_run_generate_certificate_title">Üdvözöl a Nomla</string>
     <string name="channel_join">Belépés</string>
     <string name="certificate_info">Tárgy:
 \n%1$s
@@ -178,7 +178,7 @@
     </plurals>
     <string name="no_ptt_key">Nincs kulcs</string>
     <string name="connection_lost_reconnecting">A kapcsolat megszakadt – újrakapcsolódás…</string>
-    <string name="foreground_start_failed">Nem sikerült a Mumlát a háttérben futtatni. A hang leállhat, amikor kikapcsol a képernyő.</string>
+    <string name="foreground_start_failed">Nem sikerült a Nomlát a háttérben futtatni. A hang leállhat, amikor kikapcsol a képernyő.</string>
     <string name="bluetooth_perm_denied">A Bluetooth headset bekapcsolva marad. A „Közeli eszközök” engedély nélkül egyes eszközök megtagadják, hogy a hangot rá irányítsák.</string>
     <string name="chat_image_share">Kép megosztása</string>
     <string name="chat_image_close">Bezárás</string>
