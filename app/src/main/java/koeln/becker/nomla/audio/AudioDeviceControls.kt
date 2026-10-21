@@ -19,11 +19,11 @@ package koeln.becker.nomla.audio
 
 import android.content.Context
 import android.media.AudioManager
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.audio.routing.AudioDeviceCategory
-import se.lublin.humla.audio.routing.CommunicationDevice
-import se.lublin.humla.audio.routing.PreferredAudioDevice
-import se.lublin.humla.audio.routing.listCommunicationDevices
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
+import koeln.becker.nomla.mumble.audio.routing.CommunicationDevice
+import koeln.becker.nomla.mumble.audio.routing.PreferredAudioDevice
+import koeln.becker.nomla.mumble.audio.routing.listCommunicationDevices
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 

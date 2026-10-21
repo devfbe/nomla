@@ -28,7 +28,7 @@ import org.junit.Assert.assertThrows
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import se.lublin.humla.audio.TransmitMode
+import koeln.becker.nomla.mumble.audio.TransmitMode
 
 @RunWith(RobolectricTestRunner::class)
 class SettingsTest {

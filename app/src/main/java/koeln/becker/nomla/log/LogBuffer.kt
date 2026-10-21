@@ -17,7 +17,7 @@
 
 package koeln.becker.nomla.log
 
-import se.lublin.humla.util.HumlaLog
+import koeln.becker.nomla.mumble.util.HumlaLog
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter

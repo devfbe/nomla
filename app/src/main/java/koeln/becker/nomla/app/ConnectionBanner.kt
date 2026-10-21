@@ -28,7 +28,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import se.lublin.humla.session.SessionState
+import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.databinding.ConnectionBannerBinding

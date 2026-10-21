@@ -29,12 +29,12 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.android.controller.ServiceController
-import se.lublin.humla.model.Server
-import se.lublin.humla.session.ConnectionConfig
-import se.lublin.humla.session.SessionConfig
-import se.lublin.humla.session.SessionState
-import se.lublin.humla.testutil.ScriptedConnections
-import se.lublin.humla.testutil.awaitUntil
+import koeln.becker.nomla.mumble.model.Server
+import koeln.becker.nomla.mumble.session.ConnectionConfig
+import koeln.becker.nomla.mumble.session.SessionConfig
+import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.ScriptedConnections
+import koeln.becker.nomla.mumble.testutil.awaitUntil
 import koeln.becker.nomla.R
 import koeln.becker.nomla.app.AppContainer
 import koeln.becker.nomla.app.MumlaApplication
@@ -236,7 +236,7 @@ class MumlaServiceForegroundTest {
         val prompt = reconnectPrompt()!!
         assertThat(prompt.extras.getString(Notification.EXTRA_TEXT)).isEqualTo("socket reset")
         assertThat(prompt.actions.single().title.toString()).isEqualTo(app.getString(R.string.reconnect))
-        assertThat(log()).containsExactly(app.getString(se.lublin.humla.R.string.reconnect_gave_up))
+        assertThat(log()).containsExactly(app.getString(koeln.becker.nomla.mumble.R.string.reconnect_gave_up))
     }
 
     @Test

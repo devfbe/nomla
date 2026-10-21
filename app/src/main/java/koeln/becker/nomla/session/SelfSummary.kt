@@ -18,8 +18,8 @@
 package koeln.becker.nomla.session
 
 import android.content.Context
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.model.ServerState
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.model.ServerState
 import koeln.becker.nomla.R
 
 /** Where we are and whether we muted or deafened ourselves, as the app bar and the notification show it. */

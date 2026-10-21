@@ -25,10 +25,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.session.HumlaEvent
-import se.lublin.humla.session.SessionState
-import se.lublin.humla.session.inMainThreadSlices
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.session.HumlaEvent
+import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.session.inMainThreadSlices
 
 /**
  * The chat history of the session [follow] was last given: its notices and its received and sent

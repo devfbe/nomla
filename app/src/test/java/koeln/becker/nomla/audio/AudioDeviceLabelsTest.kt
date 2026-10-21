@@ -24,7 +24,7 @@ import com.google.common.truth.Truth.assertWithMessage
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import se.lublin.humla.audio.routing.CommunicationDevice
+import koeln.becker.nomla.mumble.audio.routing.CommunicationDevice
 import koeln.becker.nomla.R
 
 /**

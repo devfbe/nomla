@@ -39,7 +39,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.android.controller.ServiceController
 import org.robolectric.annotation.Config
-import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.MainScreen
 import koeln.becker.nomla.R
 import koeln.becker.nomla.app.DrawerAdapter

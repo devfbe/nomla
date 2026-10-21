@@ -27,8 +27,8 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
-import se.lublin.humla.model.TalkState
-import se.lublin.humla.model.UserState
+import koeln.becker.nomla.mumble.model.TalkState
+import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.R
 import koeln.becker.nomla.testing.ThemedActivity
 

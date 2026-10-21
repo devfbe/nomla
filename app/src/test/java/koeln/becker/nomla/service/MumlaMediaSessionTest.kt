@@ -36,8 +36,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import se.lublin.humla.session.SessionState
-import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.testing.FakeMediaKeyTarget
 import koeln.becker.nomla.testing.setMediaButtonAction

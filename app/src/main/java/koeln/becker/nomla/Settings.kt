@@ -24,14 +24,14 @@ import android.media.AudioDeviceInfo
 import android.view.Gravity
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
-import se.lublin.humla.audio.PipelineSettings
-import se.lublin.humla.audio.TransmitMode
-import se.lublin.humla.audio.capture.AndroidAudioEffects
-import se.lublin.humla.audio.capture.NoiseSuppressionMode
-import se.lublin.humla.audio.capture.VadConfig
-import se.lublin.humla.audio.capture.VadMode
-import se.lublin.humla.audio.routing.AudioDeviceCategory
-import se.lublin.humla.audio.routing.PreferredAudioDevice
+import koeln.becker.nomla.mumble.audio.PipelineSettings
+import koeln.becker.nomla.mumble.audio.TransmitMode
+import koeln.becker.nomla.mumble.audio.capture.AndroidAudioEffects
+import koeln.becker.nomla.mumble.audio.capture.NoiseSuppressionMode
+import koeln.becker.nomla.mumble.audio.capture.VadConfig
+import koeln.becker.nomla.mumble.audio.capture.VadMode
+import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
+import koeln.becker.nomla.mumble.audio.routing.PreferredAudioDevice
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 

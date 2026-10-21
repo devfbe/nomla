@@ -34,11 +34,11 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.PreferenceManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
-import se.lublin.humla.audio.MeterReading
-import se.lublin.humla.audio.capture.NoiseSuppressionMode
-import se.lublin.humla.audio.capture.VadConfig
-import se.lublin.humla.audio.routing.AudioDeviceCategory
-import se.lublin.humla.session.SessionState
+import koeln.becker.nomla.mumble.audio.MeterReading
+import koeln.becker.nomla.mumble.audio.capture.NoiseSuppressionMode
+import koeln.becker.nomla.mumble.audio.capture.VadConfig
+import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
+import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.databinding.BottomSheetAudioPanelBinding

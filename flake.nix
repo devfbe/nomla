@@ -19,7 +19,7 @@
 
         # Single source for the Android toolchain version pins within this file: Nix cannot read
         # gradle.properties, so these literals and the ones in gradle.properties (read by
-        # build-logic and libraries/humla/build.gradle.kts) must be kept in sync by hand. Every
+        # build-logic and libraries/core/build.gradle.kts) must be kept in sync by hand. Every
         # other flake.nix reference to these versions goes through these bindings.
         ndkVersion = "29.0.14206865";
         buildToolsVersion = "37.0.0";
@@ -111,7 +111,7 @@
             "sha256-7+GcQXvtBV8taZCCSMa6ZQ+hNbyGiw5quz2hgdq2kKA="
         );
 
-        # Writes libraries/humla/src/testSpeech/speech/*.wav + MANIFEST.txt; run from the checkout's root.
+        # Writes libraries/core/src/testSpeech/speech/*.wav + MANIFEST.txt; run from the checkout's root.
         speechCorpus = pkgs.writeShellApplication {
           name = "mumla-speech-corpus";
           runtimeInputs = with pkgs; [ piper-tts sox coreutils gnused ];

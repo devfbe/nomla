@@ -33,7 +33,7 @@ import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import se.lublin.humla.util.HumlaLog
+import koeln.becker.nomla.mumble.util.HumlaLog
 import koeln.becker.nomla.MainScreen
 import koeln.becker.nomla.R
 

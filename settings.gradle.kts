@@ -34,4 +34,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "mumla"
-include(":libraries:humla-protocol", ":libraries:humla", ":app")
+include(":libraries:protocol", ":libraries:core", ":app")

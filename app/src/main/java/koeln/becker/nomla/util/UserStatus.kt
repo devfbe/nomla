@@ -18,8 +18,8 @@
 package koeln.becker.nomla.util
 
 import android.content.Context
-import se.lublin.humla.model.TalkState
-import se.lublin.humla.model.UserState
+import koeln.becker.nomla.mumble.model.TalkState
+import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.R
 
 /** The state a user's icon shows ahead of talking, by priority; [NONE] leaves it to the talk state. */

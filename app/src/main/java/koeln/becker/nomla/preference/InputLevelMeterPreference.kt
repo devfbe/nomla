@@ -22,8 +22,8 @@ import android.util.AttributeSet
 import android.widget.TextView
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
-import se.lublin.humla.audio.MeterReading
-import se.lublin.humla.audio.capture.VadConfig
+import koeln.becker.nomla.mumble.audio.MeterReading
+import koeln.becker.nomla.mumble.audio.capture.VadConfig
 import koeln.becker.nomla.R
 import kotlin.math.roundToInt
 

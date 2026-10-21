@@ -29,7 +29,7 @@ import androidx.fragment.app.setFragmentResult
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import se.lublin.humla.model.Server
+import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.databinding.DialogServerEditBinding

@@ -31,9 +31,9 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowDialog
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.model.Server
-import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.model.Server
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.testing.installSession

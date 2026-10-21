@@ -18,7 +18,7 @@
 package koeln.becker.nomla.service
 
 import android.view.KeyEvent
-import se.lublin.humla.audio.TransmitMode
+import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.MediaButtonAction
 import koeln.becker.nomla.Settings
 

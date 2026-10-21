@@ -27,7 +27,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import se.lublin.humla.net.Permissions
+import koeln.becker.nomla.mumble.net.Permissions
 import koeln.becker.nomla.R
 import koeln.becker.nomla.testing.ThemedActivity
 

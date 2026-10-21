@@ -19,7 +19,7 @@ package koeln.becker.nomla.util
 
 import android.os.Bundle
 import androidx.core.os.bundleOf
-import se.lublin.humla.model.Server
+import koeln.becker.nomla.mumble.model.Server
 
 private const val ID = "id"
 private const val LABEL = "label"

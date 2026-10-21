@@ -18,9 +18,9 @@ package koeln.becker.nomla.app
 
 import android.app.Application
 import kotlinx.coroutines.CoroutineScope
-import se.lublin.humla.HumlaSession
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.session.SessionConfig
+import koeln.becker.nomla.mumble.HumlaSession
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.session.SessionConfig
 import koeln.becker.nomla.chat.NoticeFormatter
 import koeln.becker.nomla.chat.SessionChat
 import koeln.becker.nomla.service.MumlaService

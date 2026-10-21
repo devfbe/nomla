@@ -29,8 +29,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.testing.ServiceHostActivity
 import koeln.becker.nomla.testing.drainMainUntil

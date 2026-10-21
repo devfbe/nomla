@@ -36,9 +36,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.slider.Slider
 import kotlinx.coroutines.launch
-import se.lublin.humla.audio.SelfTestPhase
-import se.lublin.humla.audio.capture.VadConfig
-import se.lublin.humla.session.SessionState
+import koeln.becker.nomla.mumble.audio.SelfTestPhase
+import koeln.becker.nomla.mumble.audio.capture.VadConfig
+import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.databinding.BottomSheetDoubleTalkTestBinding

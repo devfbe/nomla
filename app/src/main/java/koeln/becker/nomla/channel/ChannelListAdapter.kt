@@ -36,8 +36,8 @@ import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import se.lublin.humla.model.Bytes
-import se.lublin.humla.model.TalkState
+import koeln.becker.nomla.mumble.model.Bytes
+import koeln.becker.nomla.mumble.model.TalkState
 import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.ChannelListenerRowBinding
 import koeln.becker.nomla.databinding.ChannelRowBinding

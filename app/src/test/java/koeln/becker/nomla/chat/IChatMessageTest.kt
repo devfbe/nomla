@@ -19,9 +19,9 @@ package koeln.becker.nomla.chat
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
-import se.lublin.humla.model.ChannelState
-import se.lublin.humla.model.Message
-import se.lublin.humla.model.UserState
+import koeln.becker.nomla.mumble.model.ChannelState
+import koeln.becker.nomla.mumble.model.Message
+import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.testing.textMessage
 
 class IChatMessageTest {

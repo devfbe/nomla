@@ -34,7 +34,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
-import se.lublin.humla.model.Server
+import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.FragmentServerListBinding
 import koeln.becker.nomla.util.appViewModels

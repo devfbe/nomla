@@ -25,7 +25,7 @@ import androidx.preference.Preference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import se.lublin.humla.util.HumlaLog
+import koeln.becker.nomla.mumble.util.HumlaLog
 import koeln.becker.nomla.BuildConfig
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings

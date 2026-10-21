@@ -32,7 +32,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import se.lublin.humla.model.Server
+import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.R
 
 /**

@@ -40,7 +40,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import se.lublin.humla.model.Server
+import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.db.MumlaRepository
 import koeln.becker.nomla.db.PublicServer

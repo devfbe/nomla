@@ -20,7 +20,7 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
-import se.lublin.humla.model.Server
+import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.db.PublicServer
 
 /** Carries the fragments' requests to connect to a server to the activity, which carries them out. */

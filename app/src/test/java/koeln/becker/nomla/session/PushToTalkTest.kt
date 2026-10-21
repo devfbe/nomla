@@ -25,8 +25,8 @@ import io.mockk.mockk
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.session.SessionState
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.testing.installSession
 import koeln.becker.nomla.testing.stubAudio

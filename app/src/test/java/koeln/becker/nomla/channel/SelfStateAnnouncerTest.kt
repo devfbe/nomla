@@ -21,7 +21,7 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import se.lublin.humla.testutil.idleMainLooperFor
+import koeln.becker.nomla.mumble.testutil.idleMainLooperFor
 import koeln.becker.nomla.R
 import java.time.Duration
 

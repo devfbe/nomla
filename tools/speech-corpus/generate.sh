@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Generates the speech clips the humla device tests use as talkers (see
-# libraries/humla/src/testSpeech/speech/MANIFEST.txt). Run it through the flake, which pins the
+# libraries/core/src/testSpeech/speech/MANIFEST.txt). Run it through the flake, which pins the
 # Piper voices and puts piper, sox and coreutils on PATH:
 #
 #   nix run .#speech-corpus
@@ -11,7 +11,7 @@
 set -euo pipefail
 
 : "${PIPER_VOICES:?run through 'nix run .#speech-corpus', which sets PIPER_VOICES}"
-out="${1:-libraries/humla/src/testSpeech/speech}"
+out="${1:-libraries/core/src/testSpeech/speech}"
 seconds=12
 mkdir -p "$out"
 work="$(mktemp -d)"

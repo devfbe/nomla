@@ -25,11 +25,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import se.lublin.humla.model.ChannelState
-import se.lublin.humla.model.ServerState
-import se.lublin.humla.model.TalkState
-import se.lublin.humla.model.UserState
-import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.model.ChannelState
+import koeln.becker.nomla.mumble.model.ServerState
+import koeln.becker.nomla.mumble.model.TalkState
+import koeln.becker.nomla.mumble.model.UserState
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.testing.ThemedActivity
 import koeln.becker.nomla.testing.channelListAdapter
 import koeln.becker.nomla.testing.layOut

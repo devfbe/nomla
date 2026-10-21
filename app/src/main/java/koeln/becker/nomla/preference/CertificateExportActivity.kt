@@ -34,8 +34,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import se.lublin.humla.net.Pkcs12Certificates
-import se.lublin.humla.util.HumlaLog
+import koeln.becker.nomla.mumble.net.Pkcs12Certificates
+import koeln.becker.nomla.mumble.util.HumlaLog
 import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.DialogExportPasswordBinding
 import koeln.becker.nomla.db.DatabaseCertificate

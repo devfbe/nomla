@@ -23,7 +23,7 @@ import androidx.appcompat.app.AlertDialog
 import io.mockk.mockk
 import org.robolectric.Robolectric
 import org.robolectric.shadows.ShadowDialog
-import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.app.MumlaActivity
 
 /** Starts [MumlaActivity] with [intent] on a relaxed mock database, past the first-run guide. */

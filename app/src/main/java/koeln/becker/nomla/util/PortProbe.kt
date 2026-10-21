@@ -19,7 +19,7 @@ package koeln.becker.nomla.util
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import se.lublin.humla.util.HumlaLog
+import koeln.becker.nomla.mumble.util.HumlaLog
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.Socket

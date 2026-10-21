@@ -18,12 +18,12 @@
 package koeln.becker.nomla.session
 
 import android.content.Context
-import se.lublin.humla.audio.AudioSettings
-import se.lublin.humla.audio.PipelineSettings
-import se.lublin.humla.model.Server
-import se.lublin.humla.session.ClientCertificate
-import se.lublin.humla.session.ConnectionConfig
-import se.lublin.humla.session.SessionConfig
+import koeln.becker.nomla.mumble.audio.AudioSettings
+import koeln.becker.nomla.mumble.audio.PipelineSettings
+import koeln.becker.nomla.mumble.model.Server
+import koeln.becker.nomla.mumble.session.ClientCertificate
+import koeln.becker.nomla.mumble.session.ConnectionConfig
+import koeln.becker.nomla.mumble.session.SessionConfig
 import koeln.becker.nomla.BuildConfig
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings

@@ -1,0 +1,90 @@
+/*
+ * Copyright (C) 2026 The Nomla Authors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package koeln.becker.nomla.mumble.testutil
+
+import koeln.becker.nomla.mumble.audio.AudioConfig
+import koeln.becker.nomla.mumble.audio.AudioHandlerFactory
+import koeln.becker.nomla.mumble.audio.AudioHost
+import koeln.becker.nomla.mumble.audio.AudioSessionParams
+import koeln.becker.nomla.mumble.audio.ManagedAudio
+import koeln.becker.nomla.mumble.audio.capture.CaptureState
+import koeln.becker.nomla.mumble.net.TcpMessageHandler
+import koeln.becker.nomla.mumble.net.VoicePacketHandler
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
+
+internal const val FAKE_BANDWIDTH = 12_345
+
+/** How long [FakeAudio.shutdown] waits at most for its gate. */
+internal const val GATE_TIMEOUT_SECONDS = 5L
+
+/**
+ * A pipeline that opens no device; shared by the service tests. [reportCapture] plays its capture:
+ * the platform silencing it, or capture failing.
+ */
+internal class FakeAudio(private val onCaptureState: (CaptureState) -> Unit = {}) : ManagedAudio {
+    val shutdownCalls = AtomicInteger()
+    @Volatile var shutdownThread: String? = null
+
+    /**
+     * Held shut, [shutdown] parks in it - the only way to observe an asynchronous teardown. Bounded
+     * so a regression fails instead of hanging.
+     */
+    @Volatile var shutdownGate: CountDownLatch? = null
+
+    val targetIds = CopyOnWriteArrayList<Byte>()
+
+    override val tcpHandler = TcpMessageHandler {}
+    override val voiceHandler = VoicePacketHandler { }
+    override val currentBandwidth: Int = FAKE_BANDWIDTH
+    override fun setVoiceTargetId(id: Byte) { targetIds += id }
+
+    /** Reports [state] as the real capture does, from whichever thread calls this. */
+    fun reportCapture(state: CaptureState) = onCaptureState(state)
+
+    override fun shutdown() {
+        shutdownThread = Thread.currentThread().name
+        shutdownGate?.await(GATE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        shutdownCalls.incrementAndGet()
+    }
+}
+
+internal class FakeAudioFactory : AudioHandlerFactory {
+    val created = CopyOnWriteArrayList<FakeAudio>()
+    val configs = CopyOnWriteArrayList<AudioConfig>()
+    val sessionParams = CopyOnWriteArrayList<AudioSessionParams>()
+    val hosts = CopyOnWriteArrayList<AudioHost>()
+    val createThreads = CopyOnWriteArrayList<String>()
+    @Volatile var failWith: Exception? = null
+
+    override fun create(
+        host: AudioHost,
+        config: AudioConfig,
+        params: AudioSessionParams,
+        onCaptureState: (CaptureState) -> Unit,
+    ): ManagedAudio {
+        createThreads += Thread.currentThread().name
+        configs += config
+        sessionParams += params
+        hosts += host
+        failWith?.let { throw it }
+        return FakeAudio(onCaptureState).also { created += it }
+    }
+}

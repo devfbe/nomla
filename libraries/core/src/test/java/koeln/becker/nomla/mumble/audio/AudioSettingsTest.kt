@@ -1,0 +1,84 @@
+/*
+ * Copyright (C) 2026 The Nomla Authors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package koeln.becker.nomla.mumble.audio
+
+import android.media.AudioDeviceInfo
+import com.google.common.truth.Truth.assertThat
+import org.junit.Test
+import koeln.becker.nomla.mumble.audio.capture.EchoCancellationMode
+import koeln.becker.nomla.mumble.audio.capture.VadConfig
+import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
+import koeln.becker.nomla.mumble.audio.routing.PreferredAudioDevice
+
+class AudioSettingsTest {
+    private fun halfDuplex(requested: Boolean, mode: TransmitMode) =
+        AudioSettings(transmitMode = mode, halfDuplex = requested).toAudioConfig(null).halfDuplex
+
+    /** All six corners of {requested} x {the three transmit modes}. */
+    @Test
+    fun halfDuplexHoldsOnlyWhenItWasRequestedAndTheModeIsPushToTalk() {
+        assertThat(halfDuplex(true, TransmitMode.PUSH_TO_TALK)).isTrue()
+        assertThat(halfDuplex(true, TransmitMode.VOICE_ACTIVITY)).isFalse()
+        assertThat(halfDuplex(true, TransmitMode.CONTINUOUS)).isFalse()
+        assertThat(halfDuplex(false, TransmitMode.PUSH_TO_TALK)).isFalse()
+        assertThat(halfDuplex(false, TransmitMode.VOICE_ACTIVITY)).isFalse()
+        assertThat(halfDuplex(false, TransmitMode.CONTINUOUS)).isFalse()
+    }
+
+    @Test
+    fun withoutARouteThereIsNoEchoCanceller() {
+        val settings = AudioSettings(echoCancellationOverrides = mapOf(AudioDeviceCategory.SPEAKER to true))
+        assertThat(settings.toAudioConfig(null).echoCancellation).isEqualTo(EchoCancellationMode.NONE)
+    }
+
+    /** A kind of device without an override keeps its default; an override wins for its kind only. */
+    @Test
+    fun theEchoCancellerFollowsTheOverrideElseTheDefaultOfTheRoutedKind() {
+        val speaker = AudioDeviceInfo.TYPE_BUILTIN_SPEAKER
+        val earpiece = AudioDeviceInfo.TYPE_BUILTIN_EARPIECE
+        val sco = AudioDeviceInfo.TYPE_BLUETOOTH_SCO
+        val defaults = AudioSettings()
+        val overridden = AudioSettings(
+            echoCancellationOverrides = mapOf(
+                AudioDeviceCategory.SPEAKER to false,
+                AudioDeviceCategory.BLUETOOTH to true,
+            ),
+        )
+
+        assertThat(defaults.toAudioConfig(speaker).echoCancellation).isEqualTo(EchoCancellationMode.WEBRTC)
+        assertThat(defaults.toAudioConfig(sco).echoCancellation).isEqualTo(EchoCancellationMode.NONE)
+        assertThat(overridden.toAudioConfig(speaker).echoCancellation).isEqualTo(EchoCancellationMode.NONE)
+        assertThat(overridden.toAudioConfig(sco).echoCancellation).isEqualTo(EchoCancellationMode.WEBRTC)
+        assertThat(overridden.toAudioConfig(earpiece).echoCancellation).isEqualTo(EchoCancellationMode.WEBRTC)
+    }
+
+    /** Only what a pipeline is built from ends up in the config; the rest changes nothing there. */
+    @Test
+    fun theLiveSettingsDoNotReachTheAudioConfig() {
+        val base = AudioSettings()
+        val live = base.copy(
+            vad = VadConfig.amplitude(0.2f),
+            preferredDevice = PreferredAudioDevice(AudioDeviceInfo.TYPE_BUILTIN_EARPIECE),
+            halfDuplex = true,
+            echoCancellationOverrides = mapOf(AudioDeviceCategory.WIRED to true),
+        )
+        assertThat(live.toAudioConfig(null)).isEqualTo(base.toAudioConfig(null))
+        assertThat(live.toAudioConfig(AudioDeviceInfo.TYPE_BUILTIN_SPEAKER))
+            .isEqualTo(base.toAudioConfig(AudioDeviceInfo.TYPE_BUILTIN_SPEAKER))
+    }
+}

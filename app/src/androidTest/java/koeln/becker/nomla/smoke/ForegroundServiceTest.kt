@@ -28,10 +28,10 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import se.lublin.humla.model.Server
-import se.lublin.humla.session.ConnectionConfig
-import se.lublin.humla.session.SessionConfig
-import se.lublin.humla.session.SessionState
+import koeln.becker.nomla.mumble.model.Server
+import koeln.becker.nomla.mumble.session.ConnectionConfig
+import koeln.becker.nomla.mumble.session.SessionConfig
+import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.app.MumlaActivity
 import koeln.becker.nomla.service.MumlaService
 import koeln.becker.nomla.session.SessionManager

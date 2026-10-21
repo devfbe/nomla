@@ -30,7 +30,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import se.lublin.humla.IHumlaSession
+import koeln.becker.nomla.mumble.IHumlaSession
 import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.FragmentServerInfoBinding
 import koeln.becker.nomla.session.SessionManager

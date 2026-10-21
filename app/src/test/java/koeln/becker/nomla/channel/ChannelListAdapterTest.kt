@@ -36,9 +36,9 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.GraphicsMode
-import se.lublin.humla.model.Bytes
-import se.lublin.humla.model.TalkState
-import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.model.Bytes
+import koeln.becker.nomla.mumble.model.TalkState
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.drawable.CircleDrawable
 import koeln.becker.nomla.testing.ThemedActivity

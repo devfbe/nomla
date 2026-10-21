@@ -32,7 +32,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
-import se.lublin.humla.util.HumlaLog
+import koeln.becker.nomla.mumble.util.HumlaLog
 import koeln.becker.nomla.databinding.FragmentTokensBinding
 import koeln.becker.nomla.databinding.TokenRowBinding
 import koeln.becker.nomla.db.MumlaRepository

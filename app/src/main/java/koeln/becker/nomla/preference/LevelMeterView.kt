@@ -24,7 +24,7 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
-import se.lublin.humla.audio.MeterReading
+import koeln.becker.nomla.mumble.audio.MeterReading
 import koeln.becker.nomla.R
 
 private const val MARK_WIDTH_PX = 4f

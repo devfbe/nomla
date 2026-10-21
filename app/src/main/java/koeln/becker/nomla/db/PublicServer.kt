@@ -17,7 +17,7 @@
  */
 package koeln.becker.nomla.db
 
-import se.lublin.humla.model.Server
+import koeln.becker.nomla.mumble.model.Server
 
 /** An entry of the public server list: the [server] to connect to and where it is. */
 data class PublicServer(

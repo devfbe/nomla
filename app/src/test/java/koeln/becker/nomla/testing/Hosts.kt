@@ -29,8 +29,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import io.mockk.mockk
 import org.robolectric.Robolectric
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.channel.ChatViewModel
 import koeln.becker.nomla.db.MumlaDatabase

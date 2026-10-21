@@ -18,9 +18,9 @@
 
 package koeln.becker.nomla.servers
 
-import se.lublin.humla.model.Server
-import se.lublin.humla.net.ServerResolver
-import se.lublin.humla.util.HumlaLog
+import koeln.becker.nomla.mumble.model.Server
+import koeln.becker.nomla.mumble.net.ServerResolver
+import koeln.becker.nomla.mumble.util.HumlaLog
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress

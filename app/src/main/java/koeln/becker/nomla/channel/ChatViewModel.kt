@@ -43,8 +43,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.session.SessionState
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.chat.IChatMessage
 import koeln.becker.nomla.chat.OutgoingImageEncoder

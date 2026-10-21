@@ -19,10 +19,10 @@ package koeln.becker.nomla.channel
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
-import se.lublin.humla.model.Bytes
-import se.lublin.humla.model.ChannelState
-import se.lublin.humla.model.ServerState
-import se.lublin.humla.model.UserState
+import koeln.becker.nomla.mumble.model.Bytes
+import koeln.becker.nomla.mumble.model.ChannelState
+import koeln.becker.nomla.mumble.model.ServerState
+import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.testing.serverState
 import koeln.becker.nomla.util.UserStatus
 

@@ -19,11 +19,11 @@ package koeln.becker.nomla.testing
 
 import io.mockk.every
 import kotlinx.coroutines.flow.MutableStateFlow
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.model.ChannelState
-import se.lublin.humla.model.ServerState
-import se.lublin.humla.model.TalkState
-import se.lublin.humla.model.UserState
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.model.ChannelState
+import koeln.becker.nomla.mumble.model.ServerState
+import koeln.becker.nomla.mumble.model.TalkState
+import koeln.becker.nomla.mumble.model.UserState
 import java.util.WeakHashMap
 
 /** Describes a server's channels and users for [serverState]. */

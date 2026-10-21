@@ -19,10 +19,10 @@ package koeln.becker.nomla.app
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
-import se.lublin.humla.model.Server
-import se.lublin.humla.session.DisconnectReason
-import se.lublin.humla.session.SessionState
-import se.lublin.humla.util.HumlaLog
+import koeln.becker.nomla.mumble.model.Server
+import koeln.becker.nomla.mumble.session.DisconnectReason
+import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.util.HumlaLog
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.app.ConnectionErrorDialogFragment.Action

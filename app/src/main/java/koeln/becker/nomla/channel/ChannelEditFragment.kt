@@ -24,7 +24,7 @@ import android.os.Bundle
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import se.lublin.humla.net.Permissions
+import koeln.becker.nomla.mumble.net.Permissions
 import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.FragmentChannelEditBinding
 import koeln.becker.nomla.session.SessionManager

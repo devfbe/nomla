@@ -17,8 +17,8 @@
 
 package koeln.becker.nomla.testing
 
-import se.lublin.humla.testutil.awaitUntil
-import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.testutil.awaitUntil
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 
 /**
  * Drains the main looper until [condition] holds, for work that hops to a background thread and

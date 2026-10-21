@@ -26,8 +26,8 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.shadows.ShadowDialog
-import se.lublin.humla.model.ChannelState
-import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.model.ChannelState
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.testing.ThemedActivity
 import koeln.becker.nomla.testing.drainMainUntil

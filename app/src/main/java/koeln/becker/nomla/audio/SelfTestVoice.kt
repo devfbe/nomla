@@ -22,10 +22,10 @@ import android.media.MediaCodec
 import android.media.MediaExtractor
 import android.media.MediaFormat
 import androidx.annotation.RawRes
-import se.lublin.humla.audio.DoubleTalkSelfTest
-import se.lublin.humla.audio.SelfTestReading
-import se.lublin.humla.audio.capture.EchoCancellationMode
-import se.lublin.humla.audio.routing.AudioDeviceCategory
+import koeln.becker.nomla.mumble.audio.DoubleTalkSelfTest
+import koeln.becker.nomla.mumble.audio.SelfTestReading
+import koeln.becker.nomla.mumble.audio.capture.EchoCancellationMode
+import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import java.io.IOException

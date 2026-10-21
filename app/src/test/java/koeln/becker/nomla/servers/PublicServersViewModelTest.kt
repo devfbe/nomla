@@ -30,8 +30,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
-import se.lublin.humla.model.Server
-import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.model.Server
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.db.MumlaDatabase
 import koeln.becker.nomla.db.MumlaRepository
 import koeln.becker.nomla.db.PublicServer

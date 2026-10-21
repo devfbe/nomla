@@ -1,0 +1,181 @@
+/*
+ * Copyright (C) 2026 The Nomla Authors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package koeln.becker.nomla.mumble.session
+
+import com.google.common.truth.Truth.assertThat
+import org.junit.Test
+
+class SessionStateMachineTest {
+    private val error = DisconnectReason.Network("socket closed", null)
+    private val machine = SessionStateMachine(jitterSource = { 0.0 })
+
+    private fun bringToConnected() {
+        assertThat(machine.connectRequested()).isTrue()
+        assertThat(machine.synchronized()).isTrue()
+    }
+
+    @Test
+    fun startsDisconnectedWithoutError() {
+        assertThat(machine.state.value).isEqualTo(SessionState.Disconnected(null))
+    }
+
+    @Test
+    fun connectThenSynchronizeReachesConnected() {
+        assertThat(machine.connectRequested()).isTrue()
+        assertThat(machine.current).isEqualTo(SessionState.Connecting)
+        assertThat(machine.synchronized()).isTrue()
+        assertThat(machine.current).isEqualTo(SessionState.Connected)
+    }
+
+    @Test
+    fun connectIsIgnoredWhileConnectingOrConnected() {
+        machine.connectRequested()
+        assertThat(machine.connectRequested()).isFalse()
+        machine.synchronized()
+        assertThat(machine.connectRequested()).isFalse()
+    }
+
+    @Test
+    fun lossWithAutoReconnectSchedulesFirstAttemptAfterTwoSeconds() {
+        bringToConnected()
+        val next = machine.lost(autoReconnect = true, reason = error)
+        assertThat(next).isEqualTo(SessionState.ConnectionLost(2_000L, 1, error))
+        assertThat(machine.state.value).isEqualTo(next)
+    }
+
+    @Test
+    fun lossWithoutAutoReconnectEndsDisconnectedWithTheError() {
+        bringToConnected()
+        assertThat(machine.lost(autoReconnect = false, reason = error)).isEqualTo(SessionState.Disconnected(error))
+    }
+
+    @Test
+    fun timerMovesToReconnectingAndAFurtherLossBacksOff() {
+        bringToConnected()
+        machine.lost(autoReconnect = true, reason = error)
+        assertThat(machine.reconnectTimerFired()).isTrue()
+        assertThat(machine.current).isEqualTo(SessionState.Reconnecting(error))
+        assertThat(machine.lost(autoReconnect = true, reason = error))
+            .isEqualTo(SessionState.ConnectionLost(4_000L, 2, error))
+    }
+
+    @Test
+    fun timerIsIgnoredOutsideConnectionLost() {
+        assertThat(machine.reconnectTimerFired()).isFalse()
+        bringToConnected()
+        assertThat(machine.reconnectTimerFired()).isFalse()
+    }
+
+    @Test
+    fun givesUpAfterTenAttempts() {
+        bringToConnected()
+        repeat(10) { attempt ->
+            val lost = machine.lost(autoReconnect = true, reason = error)
+            assertThat(lost).isInstanceOf(SessionState.ConnectionLost::class.java)
+            assertThat((lost as SessionState.ConnectionLost).attempt).isEqualTo(attempt + 1)
+            assertThat(machine.reconnectTimerFired()).isTrue()
+        }
+        assertThat(machine.lost(autoReconnect = true, reason = error)).isEqualTo(SessionState.Disconnected(error))
+        assertThat(machine.attempt).isEqualTo(0)
+    }
+
+    @Test
+    fun successfulSessionResetsTheAttemptCounter() {
+        bringToConnected()
+        repeat(3) {
+            machine.lost(autoReconnect = true, reason = error)
+            machine.reconnectTimerFired()
+        }
+        assertThat(machine.synchronized()).isTrue()
+        assertThat(machine.lost(autoReconnect = true, reason = error))
+            .isEqualTo(SessionState.ConnectionLost(2_000L, 1, error))
+    }
+
+    @Test
+    fun connectivityChangeResetsAttemptsAndAsksForAnImmediateRetry() {
+        bringToConnected()
+        repeat(4) {
+            machine.lost(autoReconnect = true, reason = error)
+            machine.reconnectTimerFired()
+        }
+        machine.lost(autoReconnect = true, reason = error)
+        assertThat(machine.connectivityRestored()).isTrue()
+        assertThat(machine.current).isEqualTo(SessionState.ConnectionLost(0L, 0, error))
+        machine.reconnectTimerFired()
+        assertThat(machine.lost(autoReconnect = true, reason = error))
+            .isEqualTo(SessionState.ConnectionLost(2_000L, 1, error))
+    }
+
+    @Test
+    fun connectivityChangeIsIgnoredWhenNotWaitingForReconnect() {
+        assertThat(machine.connectivityRestored()).isFalse()
+        bringToConnected()
+        assertThat(machine.connectivityRestored()).isFalse()
+    }
+
+    @Test
+    fun cancelReconnectKeepsTheErrorForTheUi() {
+        bringToConnected()
+        machine.lost(autoReconnect = true, reason = error)
+        assertThat(machine.cancelReconnect()).isTrue()
+        assertThat(machine.current).isEqualTo(SessionState.Disconnected(error))
+        assertThat(machine.cancelReconnect()).isFalse()
+    }
+
+    @Test
+    fun cancelReconnectFromReconnectingAlsoKeepsTheErrorForTheUi() {
+        bringToConnected()
+        machine.lost(autoReconnect = true, reason = error)
+        assertThat(machine.reconnectTimerFired()).isTrue()
+        assertThat(machine.cancelReconnect()).isTrue()
+        assertThat(machine.current).isEqualTo(SessionState.Disconnected(error))
+    }
+
+    @Test
+    fun manualConnectFromConnectionLostStartsAFreshSession() {
+        bringToConnected()
+        machine.lost(autoReconnect = true, reason = error)
+        assertThat(machine.connectRequested()).isTrue()
+        assertThat(machine.current).isEqualTo(SessionState.Connecting)
+        assertThat(machine.attempt).isEqualTo(0)
+    }
+
+    @Test
+    fun disconnectRequestClearsEverything() {
+        bringToConnected()
+        assertThat(machine.disconnectRequested()).isTrue()
+        assertThat(machine.current).isEqualTo(SessionState.Disconnected(null))
+        assertThat(machine.disconnectRequested()).isFalse()
+    }
+
+    @Test
+    fun lossWhileConnectingSharesTheSamePathAsLossWhileConnected() {
+        assertThat(machine.connectRequested()).isTrue()
+        assertThat(machine.current).isEqualTo(SessionState.Connecting)
+        assertThat(machine.lost(autoReconnect = true, reason = error))
+            .isEqualTo(SessionState.ConnectionLost(2_000L, 1, error))
+    }
+
+    @Test
+    fun lossWhileDisconnectedOrAlreadyLostIsANoOp() {
+        assertThat(machine.lost(autoReconnect = true, reason = error)).isEqualTo(SessionState.Disconnected(null))
+        bringToConnected()
+        val lost = machine.lost(autoReconnect = true, reason = error)
+        assertThat(machine.lost(autoReconnect = true, reason = error)).isEqualTo(lost)
+    }
+}

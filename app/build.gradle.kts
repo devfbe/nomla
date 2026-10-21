@@ -115,7 +115,7 @@ androidComponents {
 }
 
 dependencies {
-    implementation(project(":libraries:humla"))
+    implementation(project(":libraries:core"))
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity)
@@ -138,7 +138,7 @@ dependencies {
     "googImplementation"(libs.billing)
 
     testImplementation(libs.bundles.unit.test)
-    testImplementation(testFixtures(project(":libraries:humla")))
+    testImplementation(testFixtures(project(":libraries:core")))
     testImplementation(libs.androidx.fragment.testing)
     testImplementation(libs.okhttp.mockwebserver)
     androidTestImplementation(libs.bundles.android.test)

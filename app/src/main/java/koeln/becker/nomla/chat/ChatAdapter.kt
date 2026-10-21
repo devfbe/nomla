@@ -38,7 +38,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import se.lublin.humla.model.Message
+import koeln.becker.nomla.mumble.model.Message
 import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.ListChatItemBinding
 import koeln.becker.nomla.databinding.ListChatItemImageBinding

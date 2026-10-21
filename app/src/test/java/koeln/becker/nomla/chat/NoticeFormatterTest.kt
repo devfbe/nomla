@@ -22,8 +22,8 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import se.lublin.humla.session.HumlaEvent
-import se.lublin.humla.session.HumlaEvent.DenyType
+import koeln.becker.nomla.mumble.session.HumlaEvent
+import koeln.becker.nomla.mumble.session.HumlaEvent.DenyType
 import koeln.becker.nomla.testing.textMessage
 
 /** The exact English lines the chat log and the refusal dialog show. */

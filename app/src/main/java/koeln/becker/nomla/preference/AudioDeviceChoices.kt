@@ -17,8 +17,8 @@
 package koeln.becker.nomla.preference
 
 import android.content.res.Resources
-import se.lublin.humla.audio.routing.CommunicationDevice
-import se.lublin.humla.audio.routing.PreferredAudioDevice
+import koeln.becker.nomla.mumble.audio.routing.CommunicationDevice
+import koeln.becker.nomla.mumble.audio.routing.PreferredAudioDevice
 import koeln.becker.nomla.R
 import koeln.becker.nomla.audio.AudioDeviceLabels
 

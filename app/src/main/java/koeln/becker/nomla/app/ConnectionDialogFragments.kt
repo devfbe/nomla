@@ -26,8 +26,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import se.lublin.humla.model.Server
-import se.lublin.humla.util.HumlaLog
+import koeln.becker.nomla.mumble.model.Server
+import koeln.becker.nomla.mumble.util.HumlaLog
 import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.CertificateInfoBinding
 import koeln.becker.nomla.util.getServer

@@ -19,7 +19,7 @@ package koeln.becker.nomla.db
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import se.lublin.humla.util.HumlaLog
+import koeln.becker.nomla.mumble.util.HumlaLog
 import java.security.GeneralSecurityException
 import java.security.KeyStore
 import java.util.Base64

@@ -37,7 +37,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
-import se.lublin.humla.testutil.idleMainLooperFor
+import koeln.becker.nomla.mumble.testutil.idleMainLooperFor
 import java.time.Duration
 
 @RunWith(RobolectricTestRunner::class)

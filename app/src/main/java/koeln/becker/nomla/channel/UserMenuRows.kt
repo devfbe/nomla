@@ -19,7 +19,7 @@ package koeln.becker.nomla.channel
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import se.lublin.humla.net.Permissions
+import koeln.becker.nomla.mumble.net.Permissions
 import koeln.becker.nomla.R
 
 /** An action row of the user actions sheet; [checkable] ones show their state as a switch. */

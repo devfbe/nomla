@@ -24,8 +24,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
-import se.lublin.humla.net.HumlaCertificateGenerator
-import se.lublin.humla.util.HumlaLog
+import koeln.becker.nomla.mumble.net.HumlaCertificateGenerator
+import koeln.becker.nomla.mumble.util.HumlaLog
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.db.DatabaseCertificate

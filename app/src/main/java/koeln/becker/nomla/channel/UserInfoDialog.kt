@@ -28,7 +28,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import se.lublin.humla.model.UserStats
+import koeln.becker.nomla.mumble.model.UserStats
 import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.DialogUserInfoBinding
 import java.security.cert.X509Certificate

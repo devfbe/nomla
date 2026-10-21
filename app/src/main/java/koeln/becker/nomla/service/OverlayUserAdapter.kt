@@ -24,8 +24,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import androidx.core.view.ViewCompat
-import se.lublin.humla.model.TalkState
-import se.lublin.humla.model.UserState
+import koeln.becker.nomla.mumble.model.TalkState
+import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.OverlayUserRowBinding
 import koeln.becker.nomla.util.UserStatus

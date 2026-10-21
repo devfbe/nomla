@@ -24,9 +24,9 @@ import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
 import androidx.annotation.VisibleForTesting
-import se.lublin.humla.model.ChannelState
-import se.lublin.humla.model.ServerState
-import se.lublin.humla.model.UserState
+import koeln.becker.nomla.mumble.model.ChannelState
+import koeln.becker.nomla.mumble.model.ServerState
+import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.R
 import koeln.becker.nomla.session.SessionManager
 import java.util.Locale

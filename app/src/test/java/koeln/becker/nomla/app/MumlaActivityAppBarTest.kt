@@ -24,11 +24,11 @@ import io.mockk.mockk
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.model.Server
-import se.lublin.humla.model.UserState
-import se.lublin.humla.session.SessionState
-import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.model.Server
+import koeln.becker.nomla.mumble.model.UserState
+import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.MainScreen
 import koeln.becker.nomla.R
 import koeln.becker.nomla.testing.installSession

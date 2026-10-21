@@ -20,7 +20,7 @@ package koeln.becker.nomla
 import android.media.AudioManager
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
-import se.lublin.humla.audio.routing.AudioDeviceCategory
+import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 
 /**
  * The echo canceller is on by default on the speaker and the earpiece. Every canceller asks for

@@ -20,7 +20,7 @@ package koeln.becker.nomla.testing
 import android.os.SystemClock
 import android.view.MotionEvent
 import android.view.View
-import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 
 /**
  * A tap on [target]'s centre that enters at [root] and is hit-tested down, so disabled, `GONE` and

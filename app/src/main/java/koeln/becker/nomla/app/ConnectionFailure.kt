@@ -17,8 +17,8 @@
 package koeln.becker.nomla.app
 
 import androidx.annotation.StringRes
-import se.lublin.humla.session.DisconnectReason
-import se.lublin.humla.session.RejectType
+import koeln.becker.nomla.mumble.session.DisconnectReason
+import koeln.becker.nomla.mumble.session.RejectType
 import koeln.becker.nomla.R
 import java.net.SocketTimeoutException
 import java.security.GeneralSecurityException

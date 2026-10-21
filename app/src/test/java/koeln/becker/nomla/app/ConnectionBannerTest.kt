@@ -31,10 +31,10 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.android.controller.ActivityController
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.model.Server
-import se.lublin.humla.session.SessionState
-import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.model.Server
+import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.databinding.ConnectionBannerBinding

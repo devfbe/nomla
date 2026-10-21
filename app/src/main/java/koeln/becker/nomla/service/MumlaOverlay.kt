@@ -38,8 +38,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.util.HumlaLog
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.util.HumlaLog
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.databinding.OverlayBinding

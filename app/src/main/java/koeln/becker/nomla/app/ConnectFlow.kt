@@ -31,8 +31,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
-import se.lublin.humla.model.Server
-import se.lublin.humla.net.TorProxy
+import koeln.becker.nomla.mumble.model.Server
+import koeln.becker.nomla.mumble.net.TorProxy
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.db.PublicServer

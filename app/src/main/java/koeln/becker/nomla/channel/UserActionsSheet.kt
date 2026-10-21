@@ -36,8 +36,8 @@ import com.google.android.material.slider.Slider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
-import se.lublin.humla.model.ChannelState
-import se.lublin.humla.model.UserState
+import koeln.becker.nomla.mumble.model.ChannelState
+import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.BottomSheetUserActionsBinding
 import koeln.becker.nomla.databinding.ItemUserActionBinding

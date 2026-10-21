@@ -4,7 +4,7 @@ Copyright (C) 2026 The Nomla Authors (see AUTHORS)
 Nomla is a Mumble voice-chat client for Android. It is a port of Mumla
 (https://gitlab.com/quite/mumla, Daniel Lublin and contributors), which is a
 fork of Plumble (https://github.com/acomminos/Plumble, Andrew Comminos). Its
-protocol and audio library, Humla (libraries/humla, libraries/humla-protocol),
+protocol and audio library, Humla (libraries/core, libraries/protocol),
 comes from Humla (https://gitlab.com/quite/humla, Daniel Lublin and
 contributors), a fork of Jumble (https://github.com/acomminos/Jumble, Andrew
 Comminos). Nomla has been almost completely rewritten, from Java to Kotlin;
@@ -19,7 +19,7 @@ version. See LICENSE.
 Bundled third-party code
 ------------------------
 
-The native sources under libraries/humla/src/main/cpp/third_party/ are git
+The native sources under libraries/core/src/main/cpp/third_party/ are git
 submodules of their upstream projects and keep their own license files and
 headers:
 
@@ -37,11 +37,11 @@ headers:
                                            spl_sqrt_floor and RNNoise VAD weights)
   abseil-cpp                Apache-2.0     The Abseil Authors (Google Inc.)
 
-libraries/humla/src/main/cpp/rnnoise/model/ holds the RNNoise model data
+libraries/core/src/main/cpp/rnnoise/model/ holds the RNNoise model data
 (rnnoise_data.h, rnnoise_data_init.c, weights_blob.bin), copied from the RNNoise
 model release and covered by RNNoise's BSD-3-Clause license.
 
-libraries/humla-protocol/src/Mumble.proto and MumbleUDP.proto are the Mumble
+libraries/protocol/src/Mumble.proto and MumbleUDP.proto are the Mumble
 protocol definitions, Copyright The Mumble Developers, under Mumble's BSD-style
 license (see the header of each file).
 

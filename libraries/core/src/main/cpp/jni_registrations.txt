@@ -1,0 +1,36 @@
+# Every native method JNI_OnLoad registers: <class> <method> <JNI signature>.
+# Checked against the C++ bridges by tests/test_jni_registration.cpp and against the Kotlin
+# declarations by JniRegistrationsTest.kt; change all three together.
+koeln/becker/nomla/mumble/audio/native/OpusDecoderNative create (II[I)J
+koeln/becker/nomla/mumble/audio/native/OpusDecoderNative decodeFloat (J[BII[FII)I
+koeln/becker/nomla/mumble/audio/native/OpusDecoderNative destroy (J)V
+koeln/becker/nomla/mumble/audio/native/OpusDecoderNative packetGetNbFrames ([BI)I
+koeln/becker/nomla/mumble/audio/native/OpusDecoderNative packetGetSamplesPerFrame ([BI)I
+koeln/becker/nomla/mumble/audio/native/OpusEncoderNative create (III[I)J
+koeln/becker/nomla/mumble/audio/native/OpusEncoderNative ctlSetInt (JII)I
+koeln/becker/nomla/mumble/audio/native/OpusEncoderNative destroy (J)V
+koeln/becker/nomla/mumble/audio/native/OpusEncoderNative encode (J[SI[BI)I
+koeln/becker/nomla/mumble/audio/native/RnnoiseNative create ()J
+koeln/becker/nomla/mumble/audio/native/RnnoiseNative destroy (J)V
+koeln/becker/nomla/mumble/audio/native/RnnoiseNative processFrame (J[S)F
+koeln/becker/nomla/mumble/audio/native/SpeexJitterNative ctl (JI[I)I
+koeln/becker/nomla/mumble/audio/native/SpeexJitterNative destroy (J)V
+koeln/becker/nomla/mumble/audio/native/SpeexJitterNative get (J[BI[I)I
+koeln/becker/nomla/mumble/audio/native/SpeexJitterNative init (I)J
+koeln/becker/nomla/mumble/audio/native/SpeexJitterNative pointerTimestamp (J)I
+koeln/becker/nomla/mumble/audio/native/SpeexJitterNative put (J[BIIIII)V
+koeln/becker/nomla/mumble/audio/native/SpeexJitterNative tick (J)V
+koeln/becker/nomla/mumble/audio/native/SpeexJitterNative updateDelay (J)I
+koeln/becker/nomla/mumble/audio/native/SpeexPreprocessNative ctlInt (JI[I)I
+koeln/becker/nomla/mumble/audio/native/SpeexPreprocessNative destroy (J)V
+koeln/becker/nomla/mumble/audio/native/SpeexPreprocessNative init (II)J
+koeln/becker/nomla/mumble/audio/native/SpeexPreprocessNative run (J[S)I
+koeln/becker/nomla/mumble/audio/native/SpeexResamplerNative destroy (J)V
+koeln/becker/nomla/mumble/audio/native/SpeexResamplerNative init (IIII[I)J
+koeln/becker/nomla/mumble/audio/native/SpeexResamplerNative processInt (JI[S[I[S[I)I
+koeln/becker/nomla/mumble/audio/native/WebRtcApmNative create (IZZIZZ[F)J
+koeln/becker/nomla/mumble/audio/native/WebRtcApmNative destroy (J)V
+koeln/becker/nomla/mumble/audio/native/WebRtcApmNative frameSize (J)I
+koeln/becker/nomla/mumble/audio/native/WebRtcApmNative lastCaptureLevelDbfs (J)F
+koeln/becker/nomla/mumble/audio/native/WebRtcApmNative processCapture (J[S)I
+koeln/becker/nomla/mumble/audio/native/WebRtcApmNative processRender (J[S)I

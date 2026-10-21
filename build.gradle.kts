@@ -39,7 +39,7 @@ plugins {
 // Both modules must read the toolchain versions from gradle.properties: a drifted ndkVersion does
 // not fail the build, it only ships unstripped native libraries.
 gradle.projectsEvaluated {
-    val modules = listOf(":app", ":libraries:humla")
+    val modules = listOf(":app", ":libraries:core")
         .associateWith { project(it).extensions.getByType<CommonExtension>() }
     for ((name, resolve) in listOf<Pair<String, (CommonExtension) -> String?>>(
         "ndkVersion" to { it.ndkVersion },
@@ -55,10 +55,10 @@ gradle.projectsEvaluated {
     }
 
     val expectedCmake = providers.gradleProperty("cmakeVersion").get()
-    val resolvedCmake = project(":libraries:humla").extensions.getByType<LibraryExtension>()
+    val resolvedCmake = project(":libraries:core").extensions.getByType<LibraryExtension>()
         .externalNativeBuild.cmake.version
     check(resolvedCmake == expectedCmake) {
-        "Toolchain version drift: :libraries:humla resolves cmakeVersion '$resolvedCmake' but gradle.properties says '$expectedCmake'."
+        "Toolchain version drift: :libraries:core resolves cmakeVersion '$resolvedCmake' but gradle.properties says '$expectedCmake'."
     }
 }
 
@@ -76,10 +76,10 @@ tasks.register("verify") {
         ":app:assembleFossDebugAndroidTest",
         ":app:lintFossDebug",
         ":app:detekt",
-        ":libraries:humla:testDebugUnitTest",
-        ":libraries:humla:assembleDebugAndroidTest",
-        ":libraries:humla:detekt",
-        ":libraries:humla-protocol:test",
-        ":libraries:humla-protocol:detekt",
+        ":libraries:core:testDebugUnitTest",
+        ":libraries:core:assembleDebugAndroidTest",
+        ":libraries:core:detekt",
+        ":libraries:protocol:test",
+        ":libraries:protocol:detekt",
     )
 }

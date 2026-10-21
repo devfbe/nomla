@@ -19,7 +19,7 @@ package koeln.becker.nomla.log
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
-import se.lublin.humla.util.HumlaLog.Level
+import koeln.becker.nomla.mumble.util.HumlaLog.Level
 import java.time.ZoneOffset
 import java.util.concurrent.CountDownLatch
 import kotlin.concurrent.thread

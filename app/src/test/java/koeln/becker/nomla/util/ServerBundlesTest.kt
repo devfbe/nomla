@@ -22,7 +22,7 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import se.lublin.humla.model.Server
+import koeln.becker.nomla.mumble.model.Server
 
 @RunWith(RobolectricTestRunner::class)
 class ServerBundlesTest {

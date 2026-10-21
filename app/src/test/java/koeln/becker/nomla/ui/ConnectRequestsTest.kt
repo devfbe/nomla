@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
-import se.lublin.humla.model.Server
+import koeln.becker.nomla.mumble.model.Server
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ConnectRequestsTest {

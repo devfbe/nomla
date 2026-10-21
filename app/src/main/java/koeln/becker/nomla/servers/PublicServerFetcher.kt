@@ -24,7 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
-import se.lublin.humla.util.Constants
+import koeln.becker.nomla.mumble.util.Constants
 import koeln.becker.nomla.db.PublicServer
 import java.io.IOException
 import java.net.HttpURLConnection

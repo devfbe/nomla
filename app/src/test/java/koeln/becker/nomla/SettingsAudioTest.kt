@@ -25,12 +25,12 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import se.lublin.humla.audio.capture.NoiseSuppressionMode
-import se.lublin.humla.audio.capture.VadConfig
-import se.lublin.humla.audio.capture.VadMode
-import se.lublin.humla.audio.routing.AudioDeviceCategory
-import se.lublin.humla.audio.routing.PreferredAudioDevice
-import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.audio.capture.NoiseSuppressionMode
+import koeln.becker.nomla.mumble.audio.capture.VadConfig
+import koeln.becker.nomla.mumble.audio.capture.VadMode
+import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
+import koeln.becker.nomla.mumble.audio.routing.PreferredAudioDevice
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 
 @RunWith(RobolectricTestRunner::class)
 class SettingsAudioTest {

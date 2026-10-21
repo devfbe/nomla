@@ -26,14 +26,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import se.lublin.humla.audio.MeterReading
-import se.lublin.humla.audio.SelfTestPhase
-import se.lublin.humla.audio.SelfTestReading
-import se.lublin.humla.exception.AudioInitializationException
+import koeln.becker.nomla.mumble.audio.MeterReading
+import koeln.becker.nomla.mumble.audio.SelfTestPhase
+import koeln.becker.nomla.mumble.audio.SelfTestReading
+import koeln.becker.nomla.mumble.exception.AudioInitializationException
 import koeln.becker.nomla.Settings
 import java.io.IOException
 
-/** One run of the double-talk self-test; see `se.lublin.humla.audio.DoubleTalkSelfTest`. */
+/** One run of the double-talk self-test; see `koeln.becker.nomla.mumble.audio.DoubleTalkSelfTest`. */
 interface SelfTestEngine {
     /** Whether the echo canceller runs in this test. */
     val echoCancelled: Boolean

@@ -17,8 +17,8 @@
 
 package koeln.becker.nomla.preference
 
-import se.lublin.humla.audio.capture.NoiseSuppressionMode
-import se.lublin.humla.audio.capture.VadMode
+import koeln.becker.nomla.mumble.audio.capture.NoiseSuppressionMode
+import koeln.becker.nomla.mumble.audio.capture.VadMode
 
 /** Which group of voice-gate controls the screen shows. Exactly one is true. */
 data class VadDependents(val adaptive: Boolean, val amplitude: Boolean, val probability: Boolean)

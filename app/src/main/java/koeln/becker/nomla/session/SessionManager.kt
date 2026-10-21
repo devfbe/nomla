@@ -24,9 +24,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.session.SessionConfig
-import se.lublin.humla.session.SessionState
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.session.SessionConfig
+import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.chat.SessionChat
 
 /**

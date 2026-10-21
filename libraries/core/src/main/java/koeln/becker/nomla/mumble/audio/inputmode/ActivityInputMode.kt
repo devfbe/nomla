@@ -1,0 +1,35 @@
+/*
+ * Copyright (C) 2016 Andrew Comminos <andrew@comminos.com>
+ * Copyright (C) 2026 The Nomla Authors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package koeln.becker.nomla.mumble.audio.inputmode
+
+import koeln.becker.nomla.mumble.audio.capture.IInputMode
+import koeln.becker.nomla.mumble.audio.capture.VadConfig
+import koeln.becker.nomla.mumble.audio.capture.VoiceActivityDetector
+
+/** Voice-activity input mode: delegates to a [VoiceActivityDetector]. */
+internal class ActivityInputMode(private val detector: VoiceActivityDetector) : IInputMode {
+    val vadConfig: VadConfig get() = detector.config
+
+    fun setVadConfig(config: VadConfig) {
+        detector.config = config
+    }
+
+    override fun shouldTransmit(pcm: ShortArray, length: Int, vadProbability: Float?): Boolean =
+        detector.isVoice(pcm, length, vadProbability)
+}

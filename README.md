@@ -30,7 +30,7 @@ Mumla is a [Mumble](https://www.mumble.info/) voice-chat client for Android
 (GPLv3). It is a fork and continuation of
 [Plumble](https://github.com/acomminos/Plumble) by Andrew Comminos and ships
 its own protocol/audio library, Humla (a fork of Comminos's Jumble), in
-`libraries/humla`.
+`libraries/core`.
 
 Mumla runs on Android 12 (API 31) and later. It is available
 [on F-Droid](https://f-droid.org/packages/se.lublin.mumla/) and on Google
@@ -52,13 +52,13 @@ NDK 29.0.14206865, SDK CMake 4.1.2, meson/ninja and `git`. Inside it:
     ./gradlew assembleGoogDebug      # Google Play flavor (Play Billing)
     ./gradlew test                   # unit tests of every module (JVM, Robolectric)
     ./gradlew lintFossDebug lintGoogDebug lintDonationDebug lintBetaDebug \
-              :libraries:humla:lintDebug
+              :libraries:core:lintDebug
     ./gradlew detekt                 # Kotlin static analysis against each module's baseline
 
 If you cloned without `--recursive`, run `git submodule update --init --recursive`
-first. `libraries/humla` is an ordinary directory in this repository, not a
+first. `libraries/core` is an ordinary directory in this repository, not a
 submodule; the submodules are the third-party native sources under
-`libraries/humla/src/main/cpp/third_party/` — the Opus codec and the audio
+`libraries/core/src/main/cpp/third_party/` — the Opus codec and the audio
 processing libraries speexdsp, RNNoise, webrtc-audio-processing and its
 dependency abseil-cpp — built for
 `arm64-v8a`, `armeabi-v7a` and `x86_64` via CMake with hand-written JNI glue.
@@ -73,13 +73,13 @@ If you get an error running out of Java heap space, try raising the `-Xmx` in
 
 - `app/` — the Android application (`se.lublin.mumla`), product flavors
   `foss`, `goog`, `donation`, `beta`.
-- `libraries/humla-protocol/` — the platform-free half of Humla, a plain
+- `libraries/protocol/` — the platform-free half of Humla, a plain
   Kotlin/JVM module: the Mumble protocol (`src/Mumble.proto` and
   `src/MumbleUDP.proto` are compiled to Java at build time; nothing generated
   is checked in), TLS/UDP transports, OCB2 crypto (BouncyCastle), the model
   snapshots and the log facade. No `android.*` is on its classpath; its tests
   are plain JUnit.
-- `libraries/humla/` — the Android half (`se.lublin.humla`): the session, the
+- `libraries/core/` — the Android half (`koeln.becker.nomla.mumble`): the session, the
   audio pipeline and routing; `src/main/cpp/CMakeLists.txt` builds the native
   codecs and audio processing libraries and their JNI glue.
 - `build-logic/` — Gradle convention plugins with the Android and JVM
@@ -96,7 +96,7 @@ If you get an error running out of Java heap space, try raising the `-Xmx` in
   `kotlinx-coroutines-test`); native code stays a thin JNI pass-through and
   the Kotlin side is tested against fakes.
   `./gradlew assembleFossDebug assembleGoogDebug test lintFossDebug
-  lintGoogDebug lintDonationDebug lintBetaDebug :libraries:humla:lintDebug detekt`
+  lintGoogDebug lintDonationDebug lintBetaDebug :libraries:core:lintDebug detekt`
   (CI's acceptance command, verbatim: all four product flavors and both
   modules) must be green. The bare `lint` task only covers `betaDebug`, so
   every flavor is named.
@@ -107,7 +107,7 @@ If you get an error running out of Java heap space, try raising the `-Xmx` in
   imperative subject of at most 72 characters, no trailers.
 - **Strings**: only the base (English) texts are edited in the repository, in
   `app/src/main/res/values/` (`strings.xml`, `preference.xml`) or
-  `libraries/humla/src/main/res/values/strings.xml`; translations are
+  `libraries/core/src/main/res/values/strings.xml`; translations are
   handled on [Weblate](https://hosted.weblate.org/engage/mumla/) — please do
   not edit the translated resource files directly.
 

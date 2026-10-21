@@ -1,0 +1,226 @@
+/*
+ * Copyright (C) 2026 The Nomla Authors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package koeln.becker.nomla.mumble
+
+import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import org.junit.After
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import koeln.becker.nomla.mumble.model.ChannelState
+import koeln.becker.nomla.mumble.model.WhisperTargetChannel
+import koeln.becker.nomla.mumble.protobuf.Mumble
+import koeln.becker.nomla.mumble.session.HumlaEvent
+import koeln.becker.nomla.mumble.testutil.HumlaSessionHarness
+import koeln.becker.nomla.mumble.testutil.onEvents
+import koeln.becker.nomla.mumble.util.VoiceTargetMode
+
+/** The split session API: requests through [SessionActions], never an exception without a connection. */
+@RunWith(RobolectricTestRunner::class)
+class HumlaSessionActionsTest {
+
+    private val h = HumlaSessionHarness()
+
+    @After
+    fun tearDown() = h.close()
+
+    private fun connected() = h.connectAndSynchronize().also {
+        h.drainUntil("the synced snapshot") {
+            h.session.model.value?.self != null
+        }
+    }
+
+    @Test
+    fun withoutAConnectionEveryCallAnswersAndNothingIsSent() {
+        val actions = h.session.actions
+        val calls = listOf<() -> Any?>(
+            { actions.joinChannel(2) },
+            { actions.moveUser(1, 2) },
+            { actions.createChannel(0, "n", "d", 0, false) },
+            { actions.removeChannel(1) },
+            { actions.linkChannels(1, 2) },
+            { actions.unlinkChannels(1, 2) },
+            { actions.unlinkAllChannels(1) },
+            { actions.setListening(1, true) },
+            { actions.sendAccessTokens(listOf("t")) },
+            { actions.requestPermissions(0) },
+            { actions.requestComment(1) },
+            { actions.requestChannelDescription(0) },
+            { actions.requestUserStats(1) },
+            { actions.registerUser(1) },
+            { actions.kickBanUser(1, "r", false) },
+            { actions.setUserComment(1, "c") },
+            { actions.setPrioritySpeaker(1, true) },
+            { actions.setMuteDeafState(1, true, false) },
+            { actions.setSelfMuteDeafState(true, false) },
+            { actions.setLocalMuted(1, true) },
+            { actions.setLocalIgnored(1, true) },
+            { actions.setLocalVolume(1, 0.5f) },
+            { actions.setWhisperActive(true) },
+            { actions.stopWhispering() },
+            { h.session.audio.setTalking(false) },
+            { h.session.audio.selectAutomaticDevice() },
+        )
+
+        calls.forEach { it() }
+
+        assertThat(actions.sendUserTextMessage(1, "m")).isNull()
+        assertThat(actions.sendChannelTextMessage(1, "m", false)).isNull()
+        assertThat(actions.whisperTo(WhisperTargetChannel(ChannelState(1), false, false, null))).isFalse()
+        assertThat(actions.voiceTargetMode).isEqualTo(VoiceTargetMode.NORMAL)
+        assertThat(actions.isWhisperActive).isFalse()
+        assertThat(h.session.serverInfo).isNull()
+        assertThat(h.session.audio.devices).isEmpty()
+        assertThat(h.session.audio.currentBandwidth).isEqualTo(-1)
+        assertThat(h.transports.tcps).isEmpty()
+    }
+
+    @Test
+    fun joiningAChannelMovesTheOwnUser() {
+        val tcp = connected()
+
+        h.session.actions.joinChannel(3)
+
+        val move = tcp.sentMessages.filterIsInstance<Mumble.UserState>().last()
+        assertThat(move.session).isEqualTo(1)
+        assertThat(move.channelId).isEqualTo(3)
+    }
+
+    @Test
+    fun aSentMessageCarriesItsTargetsAsTheyWereAndIsPublished() {
+        connected()
+        val published = mutableListOf<HumlaEvent.MessageSent>()
+        h.session.onEvents { if (it is HumlaEvent.MessageSent) published += it }
+
+        val message = h.session.actions.sendChannelTextMessage(0, "hi", tree = true)!!
+        h.mainLooper.idle()
+
+        assertThat(message.actor).isEqualTo(1)
+        assertThat(message.actorName).isEqualTo("me")
+        assertThat(message.targetChannels.map { it.name }).containsExactly("Root")
+        assertThat(message.targetTrees.map { it.name }).containsExactly("Root")
+        assertThat(published.map { it.message }).containsExactly(message)
+    }
+
+    @Test
+    fun whisperingRegistersATargetAndStoppingFreesIt() {
+        val tcp = connected()
+        val target = WhisperTargetChannel(ChannelState(0, "Root"), false, true, null)
+
+        assertThat(h.session.actions.whisperTo(target)).isTrue()
+        assertThat(h.session.actions.voiceTargetMode).isEqualTo(VoiceTargetMode.WHISPER)
+        assertThat(h.session.actions.whisperTarget?.name).isEqualTo("Root")
+        assertThat(h.session.actions.isWhisperActive).isTrue()
+        assertThat(tcp.sentMessages.filterIsInstance<Mumble.VoiceTarget>()).hasSize(1)
+
+        h.session.actions.stopWhispering()
+
+        assertThat(h.session.actions.voiceTargetMode).isEqualTo(VoiceTargetMode.NORMAL)
+        assertThat(h.session.actions.whisperTarget).isNull()
+        assertThat(h.session.actions.isWhisperActive).isFalse()
+    }
+
+    /** Arming a target with `activate = false` registers it without sending voice there yet. */
+    @Test
+    fun aTargetCanBeArmedWithoutBecomingActive() {
+        connected()
+        val target = WhisperTargetChannel(ChannelState(0, "Root"), false, true, null)
+
+        assertThat(h.session.actions.whisperTo(target, activate = false)).isTrue()
+
+        assertThat(h.session.actions.voiceTargetMode).isEqualTo(VoiceTargetMode.NORMAL)
+        assertThat(h.session.actions.whisperTarget?.name).isEqualTo("Root")
+        assertThat(h.session.actions.isWhisperActive).isFalse()
+    }
+
+    /** [SessionActions.setWhisperActive] switches transmission to an armed target and back. */
+    @Test
+    fun setWhisperActiveSwitchesTransmissionToTheArmedTarget() {
+        connected()
+        val target = WhisperTargetChannel(ChannelState(0, "Root"), false, true, null)
+        h.session.actions.whisperTo(target, activate = false)
+
+        h.session.actions.setWhisperActive(true)
+        assertThat(h.session.actions.voiceTargetMode).isEqualTo(VoiceTargetMode.WHISPER)
+        assertThat(h.session.actions.isWhisperActive).isTrue()
+        assertThat(h.session.actions.whisperTarget?.name).isEqualTo("Root")
+
+        h.session.actions.setWhisperActive(false)
+        assertThat(h.session.actions.voiceTargetMode).isEqualTo(VoiceTargetMode.NORMAL)
+        assertThat(h.session.actions.isWhisperActive).isFalse()
+        // Still armed: the target stays registered, only inactive.
+        assertThat(h.session.actions.whisperTarget?.name).isEqualTo("Root")
+    }
+
+    /** Without a target armed, [SessionActions.setWhisperActive] is a no-op. */
+    @Test
+    fun setWhisperActiveWithoutAnArmedTargetIsANoOp() {
+        connected()
+
+        h.session.actions.setWhisperActive(true)
+
+        assertThat(h.session.actions.voiceTargetMode).isEqualTo(VoiceTargetMode.NORMAL)
+        assertThat(h.session.actions.whisperTarget).isNull()
+    }
+
+    /** Stopping frees an armed target's slot even while it was never made active. */
+    @Test
+    fun stoppingWhisperingFreesAnArmedButInactiveTarget() {
+        connected()
+        val target = WhisperTargetChannel(ChannelState(0, "Root"), false, true, null)
+        h.session.actions.whisperTo(target, activate = false)
+
+        h.session.actions.stopWhispering()
+
+        assertThat(h.session.actions.whisperTarget).isNull()
+    }
+
+    /**
+     * A collector that reads the target as the change is published (the app's view model runs on
+     * Main.immediate, so it does exactly that) sees the target gone, not the one just stopped.
+     */
+    @Test
+    fun theTargetIsGoneWhenItsStopIsPublished() {
+        connected()
+        h.session.actions.whisperTo(WhisperTargetChannel(ChannelState(0, "Root"), false, true, null))
+        val seen = mutableListOf<String?>()
+        val scope = CoroutineScope(Dispatchers.Unconfined)
+        scope.launch {
+            h.session.events.collect {
+                if (it is HumlaEvent.VoiceTargetChanged) seen += h.session.actions.whisperTarget?.name
+            }
+        }
+
+        h.session.actions.stopWhispering()
+        scope.cancel()
+
+        assertThat(seen).containsExactly(null)
+    }
+
+    @Test
+    fun theServerInfoIsReadWhileSynchronized() {
+        connected()
+
+        val info = h.session.serverInfo!!
+
+        assertThat(info.maxBandwidth).isEqualTo(72_000)
+    }
+}

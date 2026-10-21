@@ -26,13 +26,13 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import se.lublin.humla.audio.CapturePreview
-import se.lublin.humla.audio.MeterReading
-import se.lublin.humla.audio.capture.AndroidAudioEffects
-import se.lublin.humla.audio.capture.EchoCancellationMode
-import se.lublin.humla.audio.capture.NoiseSuppressionMode
-import se.lublin.humla.audio.capture.VadConfig
-import se.lublin.humla.audio.capture.VadMode
+import koeln.becker.nomla.mumble.audio.CapturePreview
+import koeln.becker.nomla.mumble.audio.MeterReading
+import koeln.becker.nomla.mumble.audio.capture.AndroidAudioEffects
+import koeln.becker.nomla.mumble.audio.capture.EchoCancellationMode
+import koeln.becker.nomla.mumble.audio.capture.NoiseSuppressionMode
+import koeln.becker.nomla.mumble.audio.capture.VadConfig
+import koeln.becker.nomla.mumble.audio.capture.VadMode
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 

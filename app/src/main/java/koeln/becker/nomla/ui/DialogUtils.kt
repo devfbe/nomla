@@ -24,7 +24,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.text.HtmlCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import se.lublin.humla.util.HumlaLog
+import koeln.becker.nomla.mumble.util.HumlaLog
 import koeln.becker.nomla.BuildConfig
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings

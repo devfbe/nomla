@@ -25,11 +25,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.model.UserStats
-import se.lublin.humla.session.HumlaEvent
-import se.lublin.humla.testutil.idleMainLooper
-import se.lublin.humla.testutil.idleMainLooperFor
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.model.UserStats
+import koeln.becker.nomla.mumble.session.HumlaEvent
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.testutil.idleMainLooperFor
 import koeln.becker.nomla.R
 import koeln.becker.nomla.testing.ThemedActivity
 import koeln.becker.nomla.testing.installSession

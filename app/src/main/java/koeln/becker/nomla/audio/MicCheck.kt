@@ -26,17 +26,17 @@ import android.os.Handler
 import android.os.Looper
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.ContextCompat
-import se.lublin.humla.audio.AndroidAudioTrackSink
-import se.lublin.humla.audio.CapturePreview
-import se.lublin.humla.audio.MeterReading
-import se.lublin.humla.audio.PcmPlaybackSinkFactory
-import se.lublin.humla.audio.capture.AndroidAudioRecordSource
-import se.lublin.humla.audio.capture.EchoCancellationMode
-import se.lublin.humla.audio.capture.PcmCaptureSourceFactory
-import se.lublin.humla.audio.capture.VadConfig
-import se.lublin.humla.audio.routing.AudioDeviceCategory
-import se.lublin.humla.exception.AudioInitializationException
-import se.lublin.humla.util.HumlaLog
+import koeln.becker.nomla.mumble.audio.AndroidAudioTrackSink
+import koeln.becker.nomla.mumble.audio.CapturePreview
+import koeln.becker.nomla.mumble.audio.MeterReading
+import koeln.becker.nomla.mumble.audio.PcmPlaybackSinkFactory
+import koeln.becker.nomla.mumble.audio.capture.AndroidAudioRecordSource
+import koeln.becker.nomla.mumble.audio.capture.EchoCancellationMode
+import koeln.becker.nomla.mumble.audio.capture.PcmCaptureSourceFactory
+import koeln.becker.nomla.mumble.audio.capture.VadConfig
+import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
+import koeln.becker.nomla.mumble.exception.AudioInitializationException
+import koeln.becker.nomla.mumble.util.HumlaLog
 import koeln.becker.nomla.Settings
 
 /**

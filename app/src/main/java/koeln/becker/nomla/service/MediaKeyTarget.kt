@@ -17,7 +17,7 @@
 
 package koeln.becker.nomla.service
 
-import se.lublin.humla.audio.TransmitMode
+import koeln.becker.nomla.mumble.audio.TransmitMode
 
 /** The part of a Mumla session a headset/media button may act on. */
 interface MediaKeyTarget {

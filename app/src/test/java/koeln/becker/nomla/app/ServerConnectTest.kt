@@ -26,10 +26,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.model.Server
-import se.lublin.humla.session.SessionConfig
-import se.lublin.humla.session.SessionState
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.model.Server
+import koeln.becker.nomla.mumble.session.SessionConfig
+import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.service.MumlaService
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.testing.drainMainUntil

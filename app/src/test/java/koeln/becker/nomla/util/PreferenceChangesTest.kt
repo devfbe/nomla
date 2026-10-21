@@ -30,7 +30,7 @@ import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 
 @RunWith(RobolectricTestRunner::class)
 class PreferenceChangesTest {

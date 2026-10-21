@@ -24,7 +24,7 @@ import com.google.common.truth.Truth.assertWithMessage
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import se.lublin.humla.audio.capture.VadConfig
+import koeln.becker.nomla.mumble.audio.capture.VadConfig
 
 @RunWith(RobolectricTestRunner::class)
 class LevelMeterViewTest {

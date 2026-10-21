@@ -44,13 +44,13 @@ import sys
 import time
 import wave
 
-NEAR_CLIP = "libraries/humla/src/testSpeech/speech/near_en_f.wav"
+NEAR_CLIP = "libraries/core/src/testSpeech/speech/near_en_f.wav"
 NEAR_B_OFFSET_SECONDS = 26  # RoomAcousticsDeviceTest.NEAR_B_OFFSET_SECONDS
 ENABLE_PROPERTY = "debug.mumla.roomtest"
 ONLY_PROPERTY = "debug.mumla.roomtest.only"
 PULLED_PROPERTY = "debug.mumla.roomtest.pulled"
 SELFTEST_PROPERTY = "debug.mumla.selftest"
-DEVICE_DIR = "/sdcard/Android/data/se.lublin.humla.test/files/room"
+DEVICE_DIR = "/sdcard/Android/data/koeln.becker.nomla.mumble.test/files/room"
 DEFAULT_SINK = "alsa_output.pci-0000_00_1f.3.analog-stereo"
 
 

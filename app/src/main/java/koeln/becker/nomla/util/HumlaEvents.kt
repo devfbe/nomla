@@ -21,9 +21,9 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.session.HumlaEvent
-import se.lublin.humla.session.inMainThreadSlices
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.session.HumlaEvent
+import koeln.becker.nomla.mumble.session.inMainThreadSlices
 
 /**
  * Collects [session]'s events in [scope] on the main thread until the returned job or [scope] is

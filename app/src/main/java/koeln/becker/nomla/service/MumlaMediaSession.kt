@@ -34,7 +34,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import se.lublin.humla.session.SessionState
+import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.MediaButtonAction
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.util.changes

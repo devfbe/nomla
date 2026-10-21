@@ -27,7 +27,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.android.controller.ActivityController
-import se.lublin.humla.IHumlaSession
+import koeln.becker.nomla.mumble.IHumlaSession
 import koeln.becker.nomla.R
 import koeln.becker.nomla.testing.ServiceHostActivity
 import koeln.becker.nomla.testing.addUnderChatParent

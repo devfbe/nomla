@@ -28,7 +28,7 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
-import se.lublin.humla.util.HumlaLog
+import koeln.becker.nomla.mumble.util.HumlaLog
 import koeln.becker.nomla.preference.AboutSettingsFragment
 import koeln.becker.nomla.testing.FileProviderCache
 import koeln.becker.nomla.testing.ThemedActivity

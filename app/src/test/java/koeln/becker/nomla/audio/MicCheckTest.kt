@@ -28,13 +28,13 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
-import se.lublin.humla.audio.MeterReading
-import se.lublin.humla.audio.capture.EchoCancellationMode
-import se.lublin.humla.audio.routing.AudioDeviceCategory
-import se.lublin.humla.testutil.TestCaptureSource
-import se.lublin.humla.testutil.TestPlaybackSink
-import se.lublin.humla.testutil.awaitUntil
-import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.audio.MeterReading
+import koeln.becker.nomla.mumble.audio.capture.EchoCancellationMode
+import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
+import koeln.becker.nomla.mumble.testutil.TestCaptureSource
+import koeln.becker.nomla.mumble.testutil.TestPlaybackSink
+import koeln.becker.nomla.mumble.testutil.awaitUntil
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.testing.drainMainUntil
 

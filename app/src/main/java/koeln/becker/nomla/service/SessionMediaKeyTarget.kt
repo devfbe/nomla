@@ -16,7 +16,7 @@
  */
 package koeln.becker.nomla.service
 
-import se.lublin.humla.audio.TransmitMode
+import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.session.SessionManager
 
 /** [MediaKeyTarget] backed by the connected session of [sessions]. */

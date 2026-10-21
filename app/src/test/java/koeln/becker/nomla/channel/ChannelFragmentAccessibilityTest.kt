@@ -35,10 +35,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.android.controller.ActivityController
-import se.lublin.humla.AudioControls
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.model.TalkState
-import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.AudioControls
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.model.TalkState
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.testing.ServiceHostActivity

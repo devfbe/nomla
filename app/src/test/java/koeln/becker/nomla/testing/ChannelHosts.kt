@@ -21,7 +21,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import org.robolectric.Robolectric
 import org.robolectric.android.controller.ActivityController
-import se.lublin.humla.IHumlaSession
+import koeln.becker.nomla.mumble.IHumlaSession
 
 /** A resumed [ServiceHostActivity] with [session] as the current session. */
 fun hostWith(session: IHumlaSession): ActivityController<ServiceHostActivity> =

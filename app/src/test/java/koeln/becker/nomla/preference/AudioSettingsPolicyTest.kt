@@ -19,8 +19,8 @@ package koeln.becker.nomla.preference
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
-import se.lublin.humla.audio.capture.NoiseSuppressionMode
-import se.lublin.humla.audio.capture.VadMode
+import koeln.becker.nomla.mumble.audio.capture.NoiseSuppressionMode
+import koeln.becker.nomla.mumble.audio.capture.VadMode
 
 class AudioSettingsPolicyTest {
     @Test

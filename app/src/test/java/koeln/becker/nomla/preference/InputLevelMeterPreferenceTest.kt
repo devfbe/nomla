@@ -27,7 +27,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import se.lublin.humla.audio.MeterReading
+import koeln.becker.nomla.mumble.audio.MeterReading
 import koeln.becker.nomla.R
 
 /** Every field of a [MeterReading] has to arrive on the bar, read back off the view. */

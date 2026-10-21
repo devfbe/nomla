@@ -17,7 +17,7 @@
 
 package koeln.becker.nomla.testing
 
-import se.lublin.humla.model.Message
+import koeln.becker.nomla.mumble.model.Message
 import koeln.becker.nomla.chat.IChatMessage
 
 /** A text message without targets. */

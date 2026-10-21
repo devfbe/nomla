@@ -18,7 +18,7 @@
 package koeln.becker.nomla.preference
 
 import androidx.preference.PreferenceCategory
-import se.lublin.humla.audio.TransmitMode
+import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 

@@ -10,7 +10,7 @@ count_strings() {
   code=$1
   [[ -n "$code" ]] && code="-$code"
   files=()
-  for f in "app/src/main/res/values$code/"{strings,preference}.xml "libraries/humla/src/main/res/values$code/strings.xml"; do
+  for f in "app/src/main/res/values$code/"{strings,preference}.xml "libraries/core/src/main/res/values$code/strings.xml"; do
     if [[ -e "$f" ]]; then
       files+=("$f")
     fi

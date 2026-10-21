@@ -25,8 +25,8 @@ import org.junit.Assume.assumeTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import se.lublin.humla.net.CertificatePins
-import se.lublin.humla.net.HumlaCertificateGenerator
+import koeln.becker.nomla.mumble.net.CertificatePins
+import koeln.becker.nomla.mumble.net.HumlaCertificateGenerator
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException

@@ -35,9 +35,9 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowDialog
-import se.lublin.humla.net.HumlaCertificateGenerator
-import se.lublin.humla.net.Pkcs12Certificates
-import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.net.HumlaCertificateGenerator
+import koeln.becker.nomla.mumble.net.Pkcs12Certificates
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.db.MumlaSQLiteDatabase
 import koeln.becker.nomla.testing.installDatabase

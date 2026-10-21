@@ -41,7 +41,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import se.lublin.humla.model.ChannelState
+import koeln.becker.nomla.mumble.model.ChannelState
 import koeln.becker.nomla.R
 import koeln.becker.nomla.channel.comment.ChannelDescriptionFragment
 import koeln.becker.nomla.channel.comment.UserCommentFragment

@@ -20,7 +20,7 @@ package koeln.becker.nomla.testing
 import android.content.Context
 import androidx.recyclerview.widget.AsyncDifferConfig
 import io.mockk.mockk
-import se.lublin.humla.model.Bytes
+import koeln.becker.nomla.mumble.model.Bytes
 import koeln.becker.nomla.channel.ChannelListAdapter
 import koeln.becker.nomla.channel.ChannelRow
 import koeln.becker.nomla.util.UserStatus

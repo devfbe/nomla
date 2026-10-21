@@ -19,7 +19,7 @@
 package koeln.becker.nomla.channel.comment
 
 import androidx.core.os.bundleOf
-import se.lublin.humla.IHumlaSession
+import koeln.becker.nomla.mumble.IHumlaSession
 
 class ChannelDescriptionFragment : AbstractCommentFragment() {
 

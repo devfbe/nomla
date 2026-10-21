@@ -1,0 +1,229 @@
+/*
+ * Copyright (C) 2026 The Nomla Authors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package koeln.becker.nomla.mumble.audio.capture
+
+import android.annotation.SuppressLint
+import android.media.AudioDeviceInfo
+import android.media.AudioFormat
+import android.media.AudioManager
+import android.media.AudioRecord
+import android.media.AudioRecordingConfiguration
+import android.media.audiofx.AudioEffect
+import android.media.audiofx.AutomaticGainControl
+import android.media.audiofx.NoiseSuppressor
+import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
+import koeln.becker.nomla.mumble.exception.AudioInitializationException
+import koeln.becker.nomla.mumble.util.HumlaLog
+import java.util.concurrent.Executor
+
+/** Blocking 16-bit mono PCM capture; the hardware edge of the capture path (fakeable for tests). */
+public interface PcmCaptureSource {
+    /** The rate the source actually opened at (may differ from the requested one). */
+    public val sampleRate: Int
+
+    /** The `AudioRecord` session the android audio effects are attached to. */
+    public val audioSessionId: Int
+
+    public fun start()
+
+    /**
+     * Blocking read of at most [length] samples into [buffer], starting at index 0.
+     *
+     * @return samples written (never more than [length]; callers rely on it), `0` when the source
+     *   produced nothing, or a negative error code.
+     */
+    public fun read(buffer: ShortArray, length: Int): Int
+
+    /** Stops capture so a blocked [read] returns. Idempotent, and safe after [release]. */
+    public fun stop()
+
+    /** Frees the native recorder. Idempotent. After it, [read] answers a negative code. */
+    public fun release()
+
+    /**
+     * @param listener called with `true` when the platform silences this client and `false` when it
+     *   becomes audible again; `null` unregisters. Delivered on a platform thread, not the capture
+     *   thread.
+     */
+    public fun setSilenceListener(listener: ((Boolean) -> Unit)?)
+}
+
+/** Everything needed to open a recorder. [AudioSourcePolicy] may override [audioSource]. */
+public data class CaptureRequest(
+    val audioSource: Int,
+    val targetSampleRate: Int,
+    val effects: AndroidAudioEffects = AndroidAudioEffects(),
+    val echo: EchoCancellationMode = EchoCancellationMode.NONE,
+    /** Routes capture to this device (e.g. the SCO headset) when set. */
+    val preferredDevice: AudioDeviceInfo? = null,
+    /** The kind of device the route goes to, null while it is the platform's; [AudioSourcePolicy] reads it. */
+    val route: AudioDeviceCategory? = null,
+    /** As in `PipelineSettings.echoCancellationVoiceCallSource`. */
+    val echoCancellationVoiceCallSource: Boolean = false,
+)
+
+public fun interface PcmCaptureSourceFactory {
+    public fun open(request: CaptureRequest): PcmCaptureSource
+}
+
+/** The real source: one `AudioRecord` plus the `android.media.audiofx` effects on its session. */
+public class AndroidAudioRecordSource internal constructor(
+    internal val record: AudioRecord,
+    internal val effects: List<AudioEffect>,
+) : PcmCaptureSource {
+    /** Cached so it still answers after [release]. */
+    override val sampleRate: Int = record.sampleRate
+    override val audioSessionId: Int = record.audioSessionId
+
+    private var recordingCallback: AudioManager.AudioRecordingCallback? = null
+
+    /**
+     * Makes reads after [release] return [ERROR_RELEASED] without touching the freed recorder. It
+     * cannot protect a read already inside `AudioRecord.read`; `AudioInput` joins the capture thread
+     * (with a timeout) before releasing for that.
+     */
+    @Volatile
+    private var released = false
+
+    override fun start(): Unit = record.startRecording()
+
+    override fun read(buffer: ShortArray, length: Int): Int {
+        if (released) return ERROR_RELEASED
+        return record.read(buffer, 0, length)
+    }
+
+    override fun stop() {
+        if (released) return
+        record.stop()
+    }
+
+    /**
+     * Idempotent without a guard: `AudioEffect.release()` and `AudioRecord.release()` are both safe to
+     * repeat. Unregisters the recording callback in case [release] is reached without
+     * `AudioInput.stopRecording`, so it can't outlive the recorder.
+     */
+    override fun release() {
+        released = true
+        setSilenceListener(null)
+        effects.forEach { it.release() }
+        record.release()
+    }
+
+    override fun setSilenceListener(listener: ((Boolean) -> Unit)?) {
+        recordingCallback?.let { record.unregisterAudioRecordingCallback(it) }
+        recordingCallback = null
+        if (listener == null) return
+        val callback = object : AudioManager.AudioRecordingCallback() {
+            override fun onRecordingConfigChanged(configs: MutableList<AudioRecordingConfiguration>) {
+                val mine = configs.firstOrNull { it.clientAudioSessionId == audioSessionId } ?: return
+                listener(mine.isClientSilenced)
+            }
+        }
+        record.registerAudioRecordingCallback(Executor { it.run() }, callback)
+        recordingCallback = callback
+    }
+
+    public class Factory : PcmCaptureSourceFactory {
+        // RECORD_AUDIO is requested by the app; AudioHandler's constructor checks it before this.
+        @SuppressLint("MissingPermission")
+        override fun open(request: CaptureRequest): PcmCaptureSource {
+            val source = AudioSourcePolicy.resolve(
+                request.audioSource, request.effects, request.echo, request.route,
+                request.echoCancellationVoiceCallSource,
+            )
+            val rates = listOf(request.targetSampleRate) + SAMPLE_RATES.filter { it != request.targetSampleRate }
+            val record = rates.firstNotNullOfOrNull { tryOpen(source, it) }
+                ?: throw AudioInitializationException("Unable to open AudioRecord at any of $rates Hz")
+            request.preferredDevice?.let { record.preferredDevice = it }
+            HumlaLog.i(TAG, "capturing from source $source at ${record.sampleRate} Hz")
+            return AndroidAudioRecordSource(record, attachEffects(record.audioSessionId, request))
+        }
+
+        @SuppressLint("MissingPermission")
+        private fun tryOpen(source: Int, rate: Int): AudioRecord? {
+            val minBufferSize =
+                AudioRecord.getMinBufferSize(rate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT)
+            if (minBufferSize <= 0) return null
+            val record = try {
+                AudioRecord.Builder()
+                    .setAudioSource(source)
+                    .setAudioFormat(
+                        AudioFormat.Builder()
+                            .setSampleRate(rate)
+                            .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
+                            .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                            .build(),
+                    )
+                    .setBufferSizeInBytes(minBufferSize)
+                    .build()
+            } catch (e: IllegalArgumentException) {
+                HumlaLog.w(TAG, "no AudioRecord at $rate Hz: ${e.message}")
+                return null
+            } catch (e: UnsupportedOperationException) {
+                HumlaLog.w(TAG, "no AudioRecord at $rate Hz: ${e.message}")
+                return null
+            }
+            if (record.state != AudioRecord.STATE_INITIALIZED) {
+                record.release()
+                return null
+            }
+            return record
+        }
+
+        /**
+         * Attaches the requested platform effects. No platform AEC: with WEBRTC our AEC3 runs in the
+         * chain, and a platform canceller in front of it would alter the echo it models.
+         */
+        private fun attachEffects(sessionId: Int, request: CaptureRequest): List<AudioEffect> {
+            val attached = mutableListOf<AudioEffect>()
+            fun attach(name: String, available: Boolean, create: () -> AudioEffect?) {
+                if (!available) {
+                    HumlaLog.w(TAG, "$name not available on this device")
+                    return
+                }
+                val effect = create()
+                if (effect == null) {
+                    HumlaLog.w(TAG, "$name creation failed")
+                    return
+                }
+                effect.enabled = true
+                attached += effect
+                HumlaLog.i(TAG, "$name enabled")
+            }
+            if (request.effects.noiseSuppressor) {
+                attach("NoiseSuppressor", NoiseSuppressor.isAvailable()) { NoiseSuppressor.create(sessionId) }
+            }
+            if (request.effects.automaticGainControl) {
+                attach("AutomaticGainControl", AutomaticGainControl.isAvailable()) {
+                    AutomaticGainControl.create(sessionId)
+                }
+            }
+            return attached
+        }
+    }
+
+    internal companion object {
+        private const val TAG = "AndroidAudioRecordSource"
+
+        /** What [read] answers after [release]; `AudioInput` maps it like any other negative read. */
+        internal const val ERROR_RELEASED: Int = -100
+
+        /** Probed in order after the requested rate, which is tried first. */
+        internal val SAMPLE_RATES: IntArray = intArrayOf(48000, 44100, 16000, 8000)
+    }
+}

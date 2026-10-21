@@ -20,8 +20,8 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import se.lublin.humla.model.UserState
-import se.lublin.humla.net.Permissions
+import koeln.becker.nomla.mumble.model.UserState
+import koeln.becker.nomla.mumble.net.Permissions
 
 /** [userMenuRows]: the rows the user actions sheet shows, in the order the old popup menu used. */
 @RunWith(RobolectricTestRunner::class)

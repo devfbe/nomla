@@ -23,8 +23,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import androidx.core.content.FileProvider
-import se.lublin.humla.util.AndroidLogSink
-import se.lublin.humla.util.HumlaLog
+import koeln.becker.nomla.mumble.util.AndroidLogSink
+import koeln.becker.nomla.mumble.util.HumlaLog
 import koeln.becker.nomla.BuildConfig
 import koeln.becker.nomla.chat.ImageShareExporter
 import java.io.File

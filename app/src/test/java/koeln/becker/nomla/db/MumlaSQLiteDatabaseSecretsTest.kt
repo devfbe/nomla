@@ -27,7 +27,7 @@ import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import se.lublin.humla.model.Server
+import koeln.becker.nomla.mumble.model.Server
 import java.security.GeneralSecurityException
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator

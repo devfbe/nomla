@@ -30,10 +30,10 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowDialog
 import org.robolectric.shadows.ShadowSettings
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.model.Server
-import se.lublin.humla.session.SessionState
-import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.model.Server
+import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.MainScreen
 import koeln.becker.nomla.R
 import koeln.becker.nomla.service.MumlaService

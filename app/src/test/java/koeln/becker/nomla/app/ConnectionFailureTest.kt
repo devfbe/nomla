@@ -18,8 +18,8 @@ package koeln.becker.nomla.app
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
-import se.lublin.humla.session.DisconnectReason
-import se.lublin.humla.session.RejectType
+import koeln.becker.nomla.mumble.session.DisconnectReason
+import koeln.becker.nomla.mumble.session.RejectType
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.security.cert.CertificateException

@@ -35,14 +35,14 @@ build:
     # HUMLA_REQUIRE_SANITIZERS makes a missing ASan/UBSan runtime a configure error instead of
     # silently skipping the sanitized tests; --no-tests=error fails an empty run.
     - nix develop "$DEVSHELL" --command env HUMLA_REQUIRE_SANITIZERS=1
-        cmake -S libraries/humla/src/main/cpp/tests -B build/native-tests -G Ninja
+        cmake -S libraries/core/src/main/cpp/tests -B build/native-tests -G Ninja
     - nix develop "$DEVSHELL" --command cmake --build build/native-tests
     - nix develop "$DEVSHELL" --command ctest --test-dir build/native-tests --output-on-failure --no-tests=error
     # Every lint variant is named: bare `lint` only covers betaDebug. detekt fails only on
     # findings missing from a module's detekt-baseline.xml.
     # assembleAndroidTest compiles the on-device smoke tests; running them needs a device.
     - nix develop "$DEVSHELL" --command ./gradlew --console=plain assembleFossDebug assembleGoogDebug test
-        assembleAndroidTest lintFossDebug lintGoogDebug lintDonationDebug lintBetaDebug :libraries:humla:lintDebug
+        assembleAndroidTest lintFossDebug lintGoogDebug lintDonationDebug lintBetaDebug :libraries:core:lintDebug
         detekt
   after_script:
     # Export the dev shell closure so the next pipeline does not rebuild the SDK/NDK.
@@ -52,9 +52,9 @@ build:
     paths:
       - app/build/outputs/apk/
       - app/build/reports/
-      - libraries/humla/build/reports/
-      - libraries/humla-protocol/build/reports/
+      - libraries/core/build/reports/
+      - libraries/protocol/build/reports/
       - app/build/test-results/
-      - libraries/humla/build/test-results/
-      - libraries/humla-protocol/build/test-results/
+      - libraries/core/build/test-results/
+      - libraries/protocol/build/test-results/
     expire_in: 3 months

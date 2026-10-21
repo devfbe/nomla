@@ -30,10 +30,10 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import se.lublin.humla.audio.MeterReading
-import se.lublin.humla.audio.SelfTestPhase
-import se.lublin.humla.audio.SelfTestReading
-import se.lublin.humla.exception.AudioInitializationException
+import koeln.becker.nomla.mumble.audio.MeterReading
+import koeln.becker.nomla.mumble.audio.SelfTestPhase
+import koeln.becker.nomla.mumble.audio.SelfTestReading
+import koeln.becker.nomla.mumble.exception.AudioInitializationException
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.audio.DoubleTalkTestUiState.Status
 import java.io.IOException

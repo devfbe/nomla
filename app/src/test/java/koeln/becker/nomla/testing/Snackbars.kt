@@ -23,7 +23,7 @@ import android.widget.TextView
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
-import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.ui.AppMessages
 import com.google.android.material.R as MaterialR
 

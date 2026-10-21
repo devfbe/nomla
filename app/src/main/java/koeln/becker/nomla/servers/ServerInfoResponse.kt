@@ -18,7 +18,7 @@
 
 package koeln.becker.nomla.servers
 
-import se.lublin.humla.model.Server
+import koeln.becker.nomla.mumble.model.Server
 import java.nio.ByteBuffer
 
 /* The ping reply: version, the request's identifier, users, maximum users, bandwidth. */

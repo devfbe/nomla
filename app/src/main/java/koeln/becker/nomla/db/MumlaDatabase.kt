@@ -17,7 +17,7 @@
  */
 package koeln.becker.nomla.db
 
-import se.lublin.humla.model.Server
+import koeln.becker.nomla.mumble.model.Server
 
 /** The app's persistent store. Every call blocks on disk I/O; see [MumlaRepository]. */
 @Suppress("TooManyFunctions") // One call per stored item kind and operation.

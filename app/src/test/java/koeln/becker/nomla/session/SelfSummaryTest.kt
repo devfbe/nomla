@@ -22,7 +22,7 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import se.lublin.humla.model.UserState
+import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.R
 import koeln.becker.nomla.testing.serverState
 

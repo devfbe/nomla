@@ -18,7 +18,7 @@
 
 package koeln.becker.nomla.chat
 
-import se.lublin.humla.model.Message
+import koeln.becker.nomla.mumble.model.Message
 
 /** A general chat message, either a text message from a user or an informational notice. */
 interface IChatMessage {

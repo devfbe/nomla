@@ -20,7 +20,7 @@ package koeln.becker.nomla.servers
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
-import se.lublin.humla.model.Server
+import koeln.becker.nomla.mumble.model.Server
 import java.io.IOException
 import java.net.DatagramPacket
 import java.net.DatagramSocket

@@ -25,7 +25,7 @@ import android.widget.CheckBox
 import android.widget.LinearLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.Flow
-import se.lublin.humla.net.Permissions
+import koeln.becker.nomla.mumble.net.Permissions
 import koeln.becker.nomla.R
 import koeln.becker.nomla.ui.showConfirmDialog
 

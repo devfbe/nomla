@@ -1,0 +1,39 @@
+/*
+ * Copyright (C) 2014 Andrew Comminos
+ * Copyright (C) 2026 The Nomla Authors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package koeln.becker.nomla.mumble.exception
+
+/** Audio could not be set up or processed. */
+public open class AudioException : Exception {
+    public constructor(message: String) : super(message)
+    public constructor(cause: Throwable) : super(cause)
+    public constructor(message: String, cause: Throwable) : super(message, cause)
+}
+
+/** The audio device or a native audio component could not be opened. */
+public class AudioInitializationException : AudioException {
+    public constructor(message: String) : super(message)
+    public constructor(cause: Throwable) : super(cause)
+    public constructor(message: String, cause: Throwable) : super(message, cause)
+}
+
+/** A native codec or processing call failed. */
+internal class NativeAudioException : AudioException {
+    constructor(message: String) : super(message)
+    constructor(cause: Throwable) : super(cause)
+    constructor(message: String, cause: Throwable) : super(message, cause)
+}

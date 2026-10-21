@@ -19,7 +19,7 @@ package koeln.becker.nomla.testing
 
 import android.content.Context
 import androidx.preference.PreferenceManager
-import se.lublin.humla.audio.TransmitMode
+import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.service.MediaKeyTarget
 

@@ -19,7 +19,7 @@ package koeln.becker.nomla.audio
 
 import android.content.res.Resources
 import android.media.AudioDeviceInfo
-import se.lublin.humla.audio.routing.CommunicationDevice
+import koeln.becker.nomla.mumble.audio.routing.CommunicationDevice
 import koeln.becker.nomla.R
 
 /**

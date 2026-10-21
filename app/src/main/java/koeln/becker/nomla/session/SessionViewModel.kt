@@ -30,10 +30,10 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.model.TalkState
-import se.lublin.humla.session.HumlaEvent
-import se.lublin.humla.session.SessionState
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.model.TalkState
+import koeln.becker.nomla.mumble.session.HumlaEvent
+import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.service.toggleSelfDeafen
 import koeln.becker.nomla.service.toggleSelfMute
 

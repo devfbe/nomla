@@ -28,8 +28,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.session.SessionState
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.R
 import koeln.becker.nomla.session.SessionManager
 

@@ -23,7 +23,7 @@ import android.net.Uri
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import se.lublin.humla.util.HumlaLog
+import koeln.becker.nomla.mumble.util.HumlaLog
 
 private const val TAG = "UntrustedHtmlWebView"
 private val EXTERNAL_SCHEMES = setOf("http", "https", "mailto", "mumble")

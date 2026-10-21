@@ -25,7 +25,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
-import se.lublin.humla.audio.routing.listCommunicationDevices
+import koeln.becker.nomla.mumble.audio.routing.listCommunicationDevices
 
 /** What the audio device menu shows without a session is read from the platform, not routed. */
 @RunWith(AndroidJUnit4::class)

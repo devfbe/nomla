@@ -19,7 +19,7 @@
 package koeln.becker.nomla.servers
 
 import android.view.MenuItem
-import se.lublin.humla.model.Server
+import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.R
 
 /** The favourite servers' cards, with edit, share and delete in their menu. */

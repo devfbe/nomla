@@ -34,8 +34,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.model.ServerState
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.model.ServerState
 import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.DialogCommentBinding
 import koeln.becker.nomla.session.SessionManager

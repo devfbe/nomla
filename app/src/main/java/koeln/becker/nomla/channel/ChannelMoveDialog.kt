@@ -27,7 +27,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import se.lublin.humla.model.ChannelState
+import koeln.becker.nomla.mumble.model.ChannelState
 import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.DialogChannelMoveBinding
 import koeln.becker.nomla.util.dp

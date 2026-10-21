@@ -34,11 +34,11 @@ import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceScreen
 import androidx.preference.SwitchPreferenceCompat
 import kotlinx.coroutines.launch
-import se.lublin.humla.audio.capture.NoiseSuppressionMode
-import se.lublin.humla.audio.capture.VadMode
-import se.lublin.humla.audio.routing.AudioDeviceCategory
-import se.lublin.humla.audio.routing.listCommunicationDevices
-import se.lublin.humla.session.SessionState
+import koeln.becker.nomla.mumble.audio.capture.NoiseSuppressionMode
+import koeln.becker.nomla.mumble.audio.capture.VadMode
+import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
+import koeln.becker.nomla.mumble.audio.routing.listCommunicationDevices
+import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.audio.DoubleTalkTestSheet

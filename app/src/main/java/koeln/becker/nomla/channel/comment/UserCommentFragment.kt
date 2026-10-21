@@ -19,7 +19,7 @@
 package koeln.becker.nomla.channel.comment
 
 import androidx.core.os.bundleOf
-import se.lublin.humla.IHumlaSession
+import koeln.becker.nomla.mumble.IHumlaSession
 
 /** Shows (and for the own user, edits) a user's comment. */
 class UserCommentFragment : AbstractCommentFragment() {

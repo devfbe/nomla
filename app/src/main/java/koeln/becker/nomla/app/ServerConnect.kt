@@ -20,7 +20,7 @@ package koeln.becker.nomla.app
 import android.content.Context
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import se.lublin.humla.model.Server
+import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.db.MumlaRepository
 import koeln.becker.nomla.session.SessionManager

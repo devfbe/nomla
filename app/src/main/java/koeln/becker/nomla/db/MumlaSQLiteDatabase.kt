@@ -23,8 +23,8 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import se.lublin.humla.model.Server
-import se.lublin.humla.util.HumlaLog
+import koeln.becker.nomla.mumble.model.Server
+import koeln.becker.nomla.mumble.util.HumlaLog
 
 /**
  * Server passwords, access tokens and certificate blobs are stored encrypted, see [SecretCodec].

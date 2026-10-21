@@ -18,7 +18,7 @@
 package koeln.becker.nomla.util
 
 import android.content.Context
-import se.lublin.humla.net.CertificatePins
+import koeln.becker.nomla.mumble.net.CertificatePins
 import java.io.File
 import java.io.FileNotFoundException
 import java.security.KeyStore

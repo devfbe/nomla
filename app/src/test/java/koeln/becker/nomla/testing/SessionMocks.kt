@@ -23,11 +23,11 @@ import io.mockk.every
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import io.mockk.mockk
-import se.lublin.humla.AudioControls
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.SessionActions
-import se.lublin.humla.session.HumlaEvent
-import se.lublin.humla.session.SessionState
+import koeln.becker.nomla.mumble.AudioControls
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.SessionActions
+import koeln.becker.nomla.mumble.session.HumlaEvent
+import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.session.SessionManager
 import java.util.WeakHashMap
 

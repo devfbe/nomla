@@ -18,9 +18,9 @@
 package koeln.becker.nomla.chat
 
 import android.content.Context
-import se.lublin.humla.model.Message
-import se.lublin.humla.session.DisconnectReason
-import se.lublin.humla.session.HumlaEvent
+import koeln.becker.nomla.mumble.model.Message
+import koeln.becker.nomla.mumble.session.DisconnectReason
+import koeln.becker.nomla.mumble.session.HumlaEvent
 import koeln.becker.nomla.R
 
 /**

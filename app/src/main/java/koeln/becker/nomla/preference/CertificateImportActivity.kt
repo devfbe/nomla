@@ -29,7 +29,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
-import se.lublin.humla.net.Pkcs12Certificates
+import koeln.becker.nomla.mumble.net.Pkcs12Certificates
 import koeln.becker.nomla.R
 import koeln.becker.nomla.db.MumlaRepository
 import java.io.ByteArrayInputStream

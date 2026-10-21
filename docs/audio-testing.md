@@ -17,8 +17,8 @@ remote users ─▶ mix ─▶ FarEndFrameChunker ─▶ AEC3 far-end reference 
 
 | Level | Where | What it proves |
 |---|---|---|
-| JVM (Robolectric, fakes for the native code) | `libraries/humla/src/test`, `app/src/test` | Wiring and logic: the chain's order, the settings reaching the pipeline, the attenuation limit's arithmetic, the self-test's state machine. Runs in `verify`. |
-| Device, simulated acoustics | `libraries/humla/src/androidTest/.../capture` | The real `libhumla_native.so` (AEC3, AGC2, RNNoise) on the phone's CPU, fed synthetic or Piper speech through a simulated echo path (`DoubleTalkRig`). Deterministic; no microphone. |
+| JVM (Robolectric, fakes for the native code) | `libraries/core/src/test`, `app/src/test` | Wiring and logic: the chain's order, the settings reaching the pipeline, the attenuation limit's arithmetic, the self-test's state machine. Runs in `verify`. |
+| Device, simulated acoustics | `libraries/core/src/androidTest/.../capture` | The real `libhumla_native.so` (AEC3, AGC2, RNNoise) on the phone's CPU, fed synthetic or Piper speech through a simulated echo path (`DoubleTalkRig`). Deterministic; no microphone. |
 | Device, real acoustics | `AcousticLoopbackDeviceTest` | The phone's own speaker and microphone: routing, what each capture source hears, latency. |
 | Room | `RoomAcousticsDeviceTest` + `tools/room-test/room_test.py` | A real room: the phone plays the far end, the PC speaker plays the near end, and every capture configuration is recorded and replayed through the app's chain. Manual, opt-in. |
 | In-app | the "Talk-over test" | The same chain, live, for the user to check and tune their own phone. `DoubleTalkSelfTestDeviceTest` runs its engine against the PC speaker. |
@@ -56,7 +56,7 @@ also use real, synthesized speech.
 - **Generator.** `nix run .#speech-corpus` runs `tools/speech-corpus/generate.sh` with Piper, sox
   and coreutils from the flake, and four Piper voices pinned by hash in `flake.nix`. It writes four
   12 s mono PCM16 clips and `MANIFEST.txt` (voice, model hash, text, clip hash, flags) to
-  `libraries/humla/src/testSpeech/speech/`.
+  `libraries/core/src/testSpeech/speech/`.
 - **Voices.** Far end (male): `de_DE-thorsten-medium` (`far_de_m.wav`), `en_US-ryan-medium`
   (`far_en_m.wav`). Near end (female): `de_DE-kerstin-low` (`near_de_f.wav`),
   `en_US-lessac-medium` (`near_en_f.wav`). The model weights are MIT (rhasspy/piper-voices); each
@@ -65,7 +65,7 @@ also use real, synthesized speech.
 - **Determinism.** Piper runs with `--noise-scale 0 --noise-w-scale 0`, sox with `-D` (no
   dither): a rerun is bit-identical for the same tool versions. The clips are committed; nothing is
   generated at build time.
-- **Wiring.** `libraries/humla/build.gradle.kts` adds `src/testSpeech` as assets of the device-test
+- **Wiring.** `libraries/core/build.gradle.kts` adds `src/testSpeech` as assets of the device-test
   APK and resources of the JVM tests only. No library or app APK packages them. `SpeechCorpus`
   loads a clip and resamples it to 48 kHz with the library's own Speex resampler.
 - **The app's own voice** is separate: `nix run .#selftest-clip` (`tools/selftest-clip/`) writes
@@ -76,7 +76,7 @@ also use real, synthesized speech.
 
 ## 3. AcousticLoopbackDeviceTest
 
-`libraries/humla/src/androidTest/java/se/lublin/humla/audio/routing/AcousticLoopbackDeviceTest.kt`
+`libraries/core/src/androidTest/java/koeln/becker/nomla/mumble/audio/routing/AcousticLoopbackDeviceTest.kt`
 
 **What it measures.** A 1 s log sweep (200 Hz-8 kHz) is played on the voice-call path the app uses
 (`USAGE_VOICE_COMMUNICATION` in `MODE_IN_COMMUNICATION`, routed with `AndroidCommunicationDevices`
@@ -94,7 +94,7 @@ activity), restoring both afterwards.
 
 **Read the output.** `adb logcat -s AcousticLoopback:I TestRunner:*` gives one line per route and source:
 peak dB, lag, loop gain, gain over silence, share of exact zeros. The WAVs are in
-`/sdcard/Android/data/se.lublin.humla.test/files/loopback` until Studio uninstalls the test APK.
+`/sdcard/Android/data/koeln.becker.nomla.mumble.test/files/loopback` until Studio uninstalls the test APK.
 
 **The platform's half duplex (SM-S938B, 2026-09-30, voice-call volume at maximum):**
 
@@ -169,7 +169,7 @@ and the limited mix of the shipped 18 dB has no comb notches.
 
 ## 5. RoomAcousticsDeviceTest and tools/room-test/room_test.py
 
-`libraries/humla/src/androidTest/java/se/lublin/humla/audio/capture/RoomAcousticsDeviceTest.kt`
+`libraries/core/src/androidTest/java/koeln/becker/nomla/mumble/audio/capture/RoomAcousticsDeviceTest.kt`
 
 **Question.** Which capture source and audio mode lets the near end break in on speakerphone
 without the far end hearing its own echo, and what does the app's chain make of it?
@@ -201,7 +201,7 @@ its MCP, so system properties stand in; the arguments `roomTest` / `roomTestOnly
 4. On every `ROOM_TRIGGER <configuration>` the script plays `near.wav` with `pw-play`. It logs the
    host-minus-device clock offset; the test does not rely on it (it finds the near end with a
    matched filter).
-5. At `ROOM_DONE` the script pulls `/sdcard/Android/data/se.lublin.humla.test/files/room` into
+5. At `ROOM_DONE` the script pulls `/sdcard/Android/data/koeln.becker.nomla.mumble.test/files/room` into
    `--out`, sets `...pulled`, and clears the properties.
 
 **Timeline per configuration** (from the start of recording, 10 ms frames, 42 s): 0-1 s recording

@@ -24,7 +24,7 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import se.lublin.humla.audio.TransmitMode
+import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.testing.FakeMediaKeyTarget
 import koeln.becker.nomla.testing.setMediaButtonAction

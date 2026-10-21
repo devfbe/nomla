@@ -23,7 +23,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.PowerManager
 import android.provider.Settings
-import se.lublin.humla.util.HumlaLog
+import koeln.becker.nomla.mumble.util.HumlaLog
 
 /**
  * Android's battery optimisation, which lets some vendors stop the connection service in the

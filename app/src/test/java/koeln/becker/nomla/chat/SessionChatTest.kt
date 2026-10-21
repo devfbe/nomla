@@ -25,11 +25,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
-import se.lublin.humla.IHumlaSession
-import se.lublin.humla.model.Message
-import se.lublin.humla.session.HumlaEvent
-import se.lublin.humla.session.SessionState
-import se.lublin.humla.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.model.Message
+import koeln.becker.nomla.mumble.session.HumlaEvent
+import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.testing.textMessage
 import koeln.becker.nomla.testing.stubEvents
 import koeln.becker.nomla.testing.stubState
