@@ -42,10 +42,10 @@ struct DecoderHandle {
     int channels;
 };
 
-humla::HandleTable& encoders() { return humla::handleTable<EncoderHandle>(); }
-humla::HandleTable& decoders() { return humla::handleTable<DecoderHandle>(); }
+nomla::HandleTable& encoders() { return nomla::handleTable<EncoderHandle>(); }
+nomla::HandleTable& decoders() { return nomla::handleTable<DecoderHandle>(); }
 
-using humla::writeInt;
+using nomla::writeInt;
 
 /* Stack capacity of the per-call copies; larger requests fall back to the heap. 120 ms of mono
  * 48 kHz audio, and libopus's recommended maximum packet size. */
@@ -108,8 +108,8 @@ jint encoderEncode(JNIEnv* env, jobject, jlong state, jshortArray pcm, jint fram
     if (maxBytes > outCapacity) maxBytes = static_cast<jint>(outCapacity);
     if (maxBytes <= 0) return OPUS_BUFFER_TOO_SMALL;
     jsize samples = frameSize * h->channels;
-    humla::RegionBuffer<jshort, kInlinePcm> input(samples);
-    humla::RegionBuffer<jbyte, kInlinePacket> packet(maxBytes);
+    nomla::RegionBuffer<jshort, kInlinePcm> input(samples);
+    nomla::RegionBuffer<jbyte, kInlinePacket> packet(maxBytes);
     if (input.data() == nullptr || packet.data() == nullptr) return OPUS_ALLOC_FAIL;
     input.read(env, pcm, 0, samples);
     int result = opus_encode(h->state, input.data(), frameSize,
@@ -154,8 +154,8 @@ jint decoderDecodeFloat(JNIEnv* env, jobject, jlong state, jbyteArray data, jint
     if (frameSize <= 0) return OPUS_BUFFER_TOO_SMALL;
     jsize packetBytes = data != nullptr ? len : 0;
     jsize samples = frameSize * h->channels;
-    humla::RegionBuffer<jbyte, kInlinePacket> packet(packetBytes);
-    humla::RegionBuffer<jfloat, kInlinePcm> pcm(samples);
+    nomla::RegionBuffer<jbyte, kInlinePacket> packet(packetBytes);
+    nomla::RegionBuffer<jfloat, kInlinePcm> pcm(samples);
     if (packet.data() == nullptr || pcm.data() == nullptr) return OPUS_ALLOC_FAIL;
     if (data != nullptr) packet.read(env, data, offset, packetBytes);
     int result = opus_decode_float(h->state,
@@ -174,7 +174,7 @@ void decoderDestroy(JNIEnv*, jobject, jlong state) noexcept {
 
 jint packetGetNbFrames(JNIEnv* env, jobject, jbyteArray packet, jint len) noexcept {
     if (packet == nullptr || len <= 0 || len > env->GetArrayLength(packet)) return OPUS_BAD_ARG;
-    humla::RegionBuffer<jbyte, kInlinePacket> bytes(len);
+    nomla::RegionBuffer<jbyte, kInlinePacket> bytes(len);
     if (bytes.data() == nullptr) return OPUS_ALLOC_FAIL;
     bytes.read(env, packet, 0, len);
     return opus_packet_get_nb_frames(reinterpret_cast<const unsigned char*>(bytes.data()), len);
@@ -190,20 +190,20 @@ jint packetGetSamplesPerFrame(JNIEnv* env, jobject, jbyteArray packet, jint samp
 
 }  // namespace
 
-bool humla::registerOpusNatives(JNIEnv* env) {
+bool nomla::registerOpusNatives(JNIEnv* env) {
     const std::array<JNINativeMethod, 4> encoder = {
-        humla::nativeMethod("create", encoderCreate),
-        humla::nativeMethod("encode", encoderEncode),
-        humla::nativeMethod("ctlSetInt", encoderCtlSetInt),
-        humla::nativeMethod("destroy", encoderDestroy),
+        nomla::nativeMethod("create", encoderCreate),
+        nomla::nativeMethod("encode", encoderEncode),
+        nomla::nativeMethod("ctlSetInt", encoderCtlSetInt),
+        nomla::nativeMethod("destroy", encoderDestroy),
     };
     const std::array<JNINativeMethod, 5> decoder = {
-        humla::nativeMethod("create", decoderCreate),
-        humla::nativeMethod("decodeFloat", decoderDecodeFloat),
-        humla::nativeMethod("destroy", decoderDestroy),
-        humla::nativeMethod("packetGetNbFrames", packetGetNbFrames),
-        humla::nativeMethod("packetGetSamplesPerFrame", packetGetSamplesPerFrame),
+        nomla::nativeMethod("create", decoderCreate),
+        nomla::nativeMethod("decodeFloat", decoderDecodeFloat),
+        nomla::nativeMethod("destroy", decoderDestroy),
+        nomla::nativeMethod("packetGetNbFrames", packetGetNbFrames),
+        nomla::nativeMethod("packetGetSamplesPerFrame", packetGetSamplesPerFrame),
     };
-    return humla::registerNatives(env, "koeln/becker/nomla/mumble/audio/native/OpusEncoderNative", encoder) &&
-           humla::registerNatives(env, "koeln/becker/nomla/mumble/audio/native/OpusDecoderNative", decoder);
+    return nomla::registerNatives(env, "koeln/becker/nomla/mumble/audio/native/OpusEncoderNative", encoder) &&
+           nomla::registerNatives(env, "koeln/becker/nomla/mumble/audio/native/OpusDecoderNative", decoder);
 }

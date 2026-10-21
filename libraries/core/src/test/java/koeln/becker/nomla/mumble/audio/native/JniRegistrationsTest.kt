@@ -39,7 +39,7 @@ class JniRegistrationsTest {
 
     /** Every native method in this package, as `<class> <method> <JNI signature>`. */
     private fun declaredExternalFunctions(): List<String> {
-        val anchor = HumlaNativeLibrary::class.java
+        val anchor = NomlaNativeLibrary::class.java
         val packagePath = anchor.packageName.replace('.', '/')
         // The main classes, a jar or a directory depending on the build; the test classes live
         // elsewhere.

@@ -17,7 +17,7 @@
 
 package koeln.becker.nomla.mumble.audio
 
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 
 private const val TAG = "PlaybackMix"
 
@@ -54,7 +54,7 @@ internal class PlaybackMix(private val mixer: IAudioMixer<FloatArray, ShortArray
                 // Skip this talker for one mix rather than stop the playback thread.
                 if (!decodeFailureLogged) {
                     decodeFailureLogged = true
-                    HumlaLog.e(TAG, "Decoding failed for session ${speech.session}", e)
+                    NomlaLog.e(TAG, "Decoding failed for session ${speech.session}", e)
                 }
                 continue
             }

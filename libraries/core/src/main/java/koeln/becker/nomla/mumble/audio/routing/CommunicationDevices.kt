@@ -21,7 +21,7 @@ import android.media.AudioDeviceCallback
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.os.Handler
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 import java.util.concurrent.Executor
 
 /**
@@ -39,7 +39,7 @@ public fun listCommunicationDevices(audioManager: AudioManager): List<Communicat
     try {
         audioManager.availableCommunicationDevices.map { it.toCommunicationDevice() }
     } catch (e: SecurityException) {
-        HumlaLog.w("CommunicationDevices", "The platform refused the communication device list", e)
+        NomlaLog.w("CommunicationDevices", "The platform refused the communication device list", e)
         emptyList()
     }
 
@@ -161,7 +161,7 @@ internal class AndroidCommunicationDevices(
             reportDenial(e)
             fallback
         } catch (e: RuntimeException) {
-            HumlaLog.w(TAG, warning, e)
+            NomlaLog.w(TAG, warning, e)
             fallback
         }
 
@@ -174,7 +174,7 @@ internal class AndroidCommunicationDevices(
         }
 
     private fun reportDenial(e: SecurityException) {
-        HumlaLog.w(TAG, "The platform refused a communication-device call", e)
+        NomlaLog.w(TAG, "The platform refused a communication-device call", e)
         if (denialReported) return
         denialReported = true
         onSecurityDenial(e)

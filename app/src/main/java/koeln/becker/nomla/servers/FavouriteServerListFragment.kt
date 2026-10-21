@@ -105,7 +105,7 @@ class FavouriteServerListFragment :
     }
 
     private fun showEditDialog(server: Server?, mode: ServerEditFragment.Mode) {
-        // Shown by the activity's fragment manager, where MumlaActivity takes the result.
+        // Shown by the activity's fragment manager, where NomlaActivity takes the result.
         ServerEditFragment.newInstance(server, mode).show(parentFragmentManager, "serverInfo")
     }
 

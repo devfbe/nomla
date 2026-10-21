@@ -24,7 +24,7 @@ import android.content.Intent
  * named rather than referenced, so that the service does not depend on the UI.
  */
 object MainScreen {
-    const val ACTIVITY_CLASS = "koeln.becker.nomla.app.MumlaActivity"
+    const val ACTIVITY_CLASS = "koeln.becker.nomla.app.NomlaActivity"
 
     /** The Int extra with the drawer id of the screen to show when the activity is created. */
     const val EXTRA_SCREEN = "drawer_fragment"

@@ -2,11 +2,11 @@
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
-    <ID>CyclomaticComplexMethod:MumlaSQLiteDatabase.kt$MumlaSQLiteDatabase$private fun sealPlainSecrets(db: SQLiteDatabase)</ID>
+    <ID>CyclomaticComplexMethod:NomlaSQLiteDatabase.kt$NomlaSQLiteDatabase$private fun sealPlainSecrets(db: SQLiteDatabase)</ID>
     <ID>EmptyFunctionBlock:ChannelChatFragment.kt$ChannelChatFragment.&lt;no name provided&gt;${}</ID>
     <ID>EmptyFunctionBlock:NotificationPostingTest.kt$NotificationPostingTest.NoopActions${}</ID>
     <ID>LargeClass:ChannelChatFragmentTest.kt$ChannelChatFragmentTest</ID>
-    <ID>LargeClass:MumlaServiceTest.kt$MumlaServiceTest</ID>
+    <ID>LargeClass:NomlaServiceTest.kt$NomlaServiceTest</ID>
     <ID>LongParameterList:ChatAdapterTest.kt$ChatAdapterTest$( actor: Int = 7, actorName: String? = "alice", channels: List&lt;ChannelState&gt; = emptyList(), trees: List&lt;ChannelState&gt; = emptyList(), users: List&lt;UserState&gt; = emptyList(), body: String = "hi", )</ID>
     <ID>LongParameterList:ChatAdapterTest.kt$ChatAdapterTest$( parser: ChatContentParser = ChatContentParser("[image]"), scope: CoroutineScope = CoroutineScope(Dispatchers.Unconfined), thumbnailPx: Int = 240, parseDispatcher: CoroutineDispatcher = Dispatchers.Default, selfSessionId: () -&gt; Int = { 42 }, decodeDispatcher: CoroutineDispatcher = Dispatchers.Unconfined, diff: DiffUtil.ItemCallback&lt;IChatMessage&gt; = ChatAdapter.DIFF, )</ID>
     <ID>LongParameterList:InputLevelMeterPreferenceTest.kt$InputLevelMeterPreferenceTest$( levelDbfs: Float = -30f, floorDbfs: Float? = -45f, speechDbfs: Float? = -20f, thresholdDbfs: Float? = -32f, voice: Boolean = true, holding: Boolean = false, tooClose: Boolean = false, )</ID>
@@ -22,14 +22,14 @@
     <ID>ReturnCount:ChatImageLoader.kt$ChatImageLoader$suspend fun loadThumbnail(source: String, maxWidth: Int, maxHeight: Int): ImageResult</ID>
     <ID>ReturnCount:ImageSource.kt$ImageSource.Companion$private fun parseData(uri: String): ImageSource</ID>
     <ID>ReturnCount:MediaKeyHandler.kt$MediaKeyHandler$fun onKeyEvent(event: KeyEvent): Boolean</ID>
-    <ID>ReturnCount:MumlaConnectionNotification.kt$MumlaConnectionNotification$fun show(): Boolean</ID>
+    <ID>ReturnCount:NomlaConnectionNotification.kt$NomlaConnectionNotification$fun show(): Boolean</ID>
     <ID>ReturnCount:PublicServerListFragment.kt$PublicServerListFragment$override fun onMenuItemSelected(menuItem: MenuItem): Boolean</ID>
     <ID>ReturnCount:ZoomImageView.kt$ZoomImageView$private fun canFit(): Boolean</ID>
     <ID>SwallowedException:HtmlUtils.kt$HtmlUtils$e: IllegalArgumentException</ID>
     <ID>SwallowedException:ImageSource.kt$ImageSource.Companion$e: IllegalArgumentException</ID>
     <ID>SwallowedException:ImageViewerDialogFragment.kt$ImageViewerDialogFragment$e: IOException</ID>
     <ID>SwallowedException:ImageViewerDialogFragment.kt$ImageViewerDialogFragment$e: ImageFetchException</ID>
-    <ID>SwallowedException:MumlaTrustStoreTest.kt$MumlaTrustStoreTest$e: IOException</ID>
+    <ID>SwallowedException:NomlaTrustStoreTest.kt$NomlaTrustStoreTest$e: IOException</ID>
     <ID>SwallowedException:OutgoingImagePreparer.kt$OutgoingImagePreparer$e: IOException</ID>
     <ID>SwallowedException:OutgoingImagePreparer.kt$OutgoingImagePreparer$e: SecurityException</ID>
     <ID>SwallowedException:ServerPinger.kt$ServerPinger$e: Exception</ID>
@@ -38,9 +38,9 @@
     <ID>TooGenericExceptionCaught:SecretCipher.kt$KeystoreSecretCipher$e: Exception</ID>
     <ID>TooGenericExceptionCaught:SecretCipher.kt$SecretCodec$e: Exception</ID>
     <ID>TooGenericExceptionCaught:ServerPinger.kt$ServerPinger$e: Exception</ID>
-    <ID>TooManyFunctions:AudioSettingsFragment.kt$AudioSettingsFragment : MumlaPreferenceFragment</ID>
+    <ID>TooManyFunctions:AudioSettingsFragment.kt$AudioSettingsFragment : NomlaPreferenceFragment</ID>
     <ID>TooManyFunctions:ChannelChatFragment.kt$ChannelChatFragment : FragmentMenuProvider</ID>
-    <ID>TooManyFunctions:MumlaSQLiteDatabase.kt$MumlaSQLiteDatabase : SQLiteOpenHelperMumlaDatabase</ID>
+    <ID>TooManyFunctions:NomlaSQLiteDatabase.kt$NomlaSQLiteDatabase : SQLiteOpenHelperNomlaDatabase</ID>
     <ID>TooManyFunctions:PublicServerListFragment.kt$PublicServerListFragment : FragmentPublicServerAdapterMenuListenerMenuProvider</ID>
     <ID>TooManyFunctions:ZoomImageView.kt$ZoomImageView : AppCompatImageView</ID>
   </CurrentIssues>

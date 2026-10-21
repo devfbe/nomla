@@ -36,7 +36,7 @@ import kotlin.math.sqrt
 
 /**
  * The dry path of [RnnoisePreprocessor]'s attenuation limit must line up with rnnoise's output to the
- * sample, or the mix comb-filters. Real `libhumla_native.so`.
+ * sample, or the mix comb-filters. Real `libnomla_native.so`.
  */
 @RunWith(AndroidJUnit4::class)
 class RnnoiseLatencyDeviceTest {

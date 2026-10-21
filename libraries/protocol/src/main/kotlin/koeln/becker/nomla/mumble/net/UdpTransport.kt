@@ -19,9 +19,9 @@
 package koeln.becker.nomla.mumble.net
 
 /**
- * The UDP voice channel as seen by [HumlaConnection].
+ * The UDP voice channel as seen by [NomlaConnection].
  *
- * Single-use: [HumlaConnection] builds a fresh transport for every UDP start and for every restart
+ * Single-use: [NomlaConnection] builds a fresh transport for every UDP start and for every restart
  * after a failure, so an implementation may refuse a second [connect].
  */
 internal interface UdpTransport {

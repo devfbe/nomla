@@ -30,7 +30,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.testing.ServiceHostActivity
 import koeln.becker.nomla.testing.stubConnected
 import koeln.becker.nomla.testing.stubEvents
@@ -38,7 +38,7 @@ import koeln.becker.nomla.testing.stubEvents
 /** The comment dialog shows the rendered comment and its source on two tabs. */
 @RunWith(RobolectricTestRunner::class)
 class CommentTabsTest {
-    private val session: IHumlaSession = mockk<IHumlaSession>(relaxed = true).stubConnected()
+    private val session: INomlaSession = mockk<INomlaSession>(relaxed = true).stubConnected()
     private val activity = Robolectric.buildActivity(ServiceHostActivity::class.java).setup().get()
         .also { it.bind(session) }
 

@@ -239,7 +239,7 @@ class ChatImageHttpTest {
     }
 
     @Test
-    fun theUserAgentIsMumlaAndNoCookiesAreKept() {
+    fun theUserAgentIsNomlaAndNoCookiesAreKept() {
         server.enqueue(MockResponse(200, headersOf("Set-Cookie", "id=tracker; Path=/")))
         server.enqueue(image())
         val client = client()

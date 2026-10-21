@@ -27,8 +27,8 @@ import koeln.becker.nomla.mumble.session.SessionConfig
 import koeln.becker.nomla.BuildConfig
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
-import koeln.becker.nomla.db.MumlaDatabase
-import koeln.becker.nomla.util.MumlaTrustStore
+import koeln.becker.nomla.db.NomlaDatabase
+import koeln.becker.nomla.util.NomlaTrustStore
 
 /**
  * Maps the user's settings onto the [SessionConfig] a session runs with.
@@ -89,7 +89,7 @@ object SessionSettings {
     )
 
     /** Everything to connect to [server] with. Reads the database, so not on the main thread. */
-    fun forServer(context: Context, settings: Settings, database: MumlaDatabase, server: Server): SessionConfig {
+    fun forServer(context: Context, settings: Settings, database: NomlaDatabase, server: Server): SessionConfig {
         val certificate = if (settings.isUsingCertificate) {
             // TODO(acomminos): handle the case where a certificate's data is unavailable.
             database.getCertificateData(settings.defaultCertificateId)?.let { ClientCertificate(it) }
@@ -101,9 +101,9 @@ object SessionSettings {
                 server = server,
                 clientName = context.getString(R.string.app_name) + " " + BuildConfig.VERSION_NAME,
                 certificate = certificate,
-                trustStorePath = MumlaTrustStore.getTrustStorePath(context),
-                trustStorePassword = MumlaTrustStore.STORE_PASSWORD,
-                trustStoreFormat = MumlaTrustStore.STORE_FORMAT,
+                trustStorePath = NomlaTrustStore.getTrustStorePath(context),
+                trustStorePassword = NomlaTrustStore.STORE_PASSWORD,
+                trustStoreFormat = NomlaTrustStore.STORE_FORMAT,
                 forceTcp = settings.isTcpForced,
                 useTor = settings.isTorEnabled,
                 localMuteHistory = if (server.isSaved) database.getLocalMutedUsers(server.id) else emptyList(),

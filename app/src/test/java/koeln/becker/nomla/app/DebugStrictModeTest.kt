@@ -45,7 +45,7 @@ class DebugStrictModeTest {
 
     @Test
     fun theDebugApplicationLogsLeakedClosables() {
-        // Unit tests run the debug variant, so this checks the MumlaApplication wiring too.
+        // Unit tests run the debug variant, so this checks the NomlaApplication wiring too.
         assertThat(BuildConfig.DEBUG).isTrue()
         assertThat(closableLeaksLogged).isNotEqualTo(0)
 

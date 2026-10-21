@@ -31,7 +31,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
-import koeln.becker.nomla.db.MumlaRepository
+import koeln.becker.nomla.db.NomlaRepository
 
 private const val TEXT_SIZE_SP = 16f
 
@@ -47,7 +47,7 @@ class CertificateSelectActivity : AppCompatActivity() {
         enableEdgeToEdge()
         val settings = Settings.getInstance(this)
         lifecycleScope.launch {
-            val certificates = MumlaRepository.get(this@CertificateSelectActivity).io { getCertificates() }
+            val certificates = NomlaRepository.get(this@CertificateSelectActivity).io { getCertificates() }
             val none = Choice(getString(R.string.no_certificate), !settings.isUsingCertificate) {
                 settings.disableCertificate()
             }

@@ -48,7 +48,7 @@ import koeln.becker.nomla.session.SessionSettings
 import koeln.becker.nomla.util.changes
 
 /** The audio settings screen; the decisions live in [AudioSettingsPolicy], this is the wiring. */
-open class AudioSettingsFragment : MumlaPreferenceFragment(R.xml.settings_audio) {
+open class AudioSettingsFragment : NomlaPreferenceFragment(R.xml.settings_audio) {
     private val bluetoothSwitch = BluetoothScoSwitch(this)
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

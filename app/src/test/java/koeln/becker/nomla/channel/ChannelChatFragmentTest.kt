@@ -62,12 +62,12 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import org.robolectric.shadows.ShadowDialog
 import org.robolectric.shadows.ShadowPopupMenu
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.model.ChannelState
 import koeln.becker.nomla.mumble.model.ServerSettings
 import koeln.becker.nomla.mumble.model.ServerState
 import koeln.becker.nomla.mumble.model.UserState
-import koeln.becker.nomla.mumble.session.HumlaEvent
+import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
@@ -115,7 +115,7 @@ import java.io.ByteArrayOutputStream
 @RunWith(RobolectricTestRunner::class)
 class ChannelChatFragmentTest {
 
-    private val session: IHumlaSession = mockk(relaxed = true)
+    private val session: INomlaSession = mockk(relaxed = true)
     private val actions = session.stubActions()
     private val model = session.stubModel(model())
     private val chat get() = SessionManager.get(ApplicationProvider.getApplicationContext<Context>()).chat
@@ -147,8 +147,8 @@ class ChannelChatFragmentTest {
     /** Adds a line to the chat log the way the session's events do. */
     private fun add(message: IChatMessage) {
         val event = when (message) {
-            is IChatMessage.TextMessage -> HumlaEvent.TextMessage(message.message)
-            is IChatMessage.InfoMessage -> HumlaEvent.LogMessage(HumlaEvent.Level.INFO, message.body)
+            is IChatMessage.TextMessage -> NomlaEvent.TextMessage(message.message)
+            is IChatMessage.InfoMessage -> NomlaEvent.LogMessage(NomlaEvent.Level.INFO, message.body)
             else -> error("not a chat line: $message")
         }
         session.stubEvents().tryEmit(event)
@@ -156,7 +156,7 @@ class ChannelChatFragmentTest {
     }
 
     /** Makes a session that has ended the current one, as if there were none. */
-    private fun unbind() = installSession(mockk<IHumlaSession>(relaxed = true).stubDisconnected())
+    private fun unbind() = installSession(mockk<INomlaSession>(relaxed = true).stubDisconnected())
 
     /** Brings the host up, without a connected session unless [withSession], then attaches the fragment. */
     private fun launch(withSession: Boolean = true) {
@@ -647,7 +647,7 @@ class ChannelChatFragmentTest {
     @Test
     fun aSentMessageAppearsInTheListImmediately() {
         every { actions.sendChannelTextMessage(any(), any(), any()) } answers {
-            textMessage("hi there").also { session.stubEvents().tryEmit(HumlaEvent.MessageSent(it)) }
+            textMessage("hi there").also { session.stubEvents().tryEmit(NomlaEvent.MessageSent(it)) }
         }
         launch()
         send("hi there")

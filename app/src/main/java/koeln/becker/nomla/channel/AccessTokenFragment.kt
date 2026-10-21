@@ -32,16 +32,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.databinding.FragmentTokensBinding
 import koeln.becker.nomla.databinding.TokenRowBinding
-import koeln.becker.nomla.db.MumlaRepository
+import koeln.becker.nomla.db.NomlaRepository
 import koeln.becker.nomla.session.SessionManager
 
 /** Edits the access tokens stored for a server, and sends them to it while connected. */
 class AccessTokenFragment : Fragment() {
 
-    private val repository get() = MumlaRepository.get(requireContext())
+    private val repository get() = NomlaRepository.get(requireContext())
     private val serverId get() = requireArguments().getLong(ARG_SERVER)
 
     private val tokens = mutableListOf<String>()
@@ -83,7 +83,7 @@ class AccessTokenFragment : Fragment() {
         val token = field.text.toString().trim()
         if (token.isEmpty()) return
         field.setText("")
-        HumlaLog.i(TAG, "Adding a token")
+        NomlaLog.i(TAG, "Adding a token")
 
         tokens += token
         showTokens { binding?.tokenList?.smoothScrollToPosition(tokens.size - 1) }

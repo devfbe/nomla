@@ -43,7 +43,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.audio.routing.CommunicationDevice
 import koeln.becker.nomla.mumble.audio.routing.PreferredAudioDevice
@@ -56,14 +56,14 @@ import koeln.becker.nomla.MainScreen
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.app.DrawerAdapter
-import koeln.becker.nomla.app.MumlaActivity
+import koeln.becker.nomla.app.NomlaActivity
 import koeln.becker.nomla.channel.ChannelFragment
 import koeln.becker.nomla.servers.FavouriteServerListFragment
 import koeln.becker.nomla.servers.PublicServerListFragment
 import koeln.becker.nomla.testing.assertUntouched
 import koeln.becker.nomla.testing.drainMainUntil
 import koeln.becker.nomla.testing.installSession
-import koeln.becker.nomla.testing.launchMumlaActivity
+import koeln.becker.nomla.testing.launchNomlaActivity
 import koeln.becker.nomla.testing.offerCommunicationDevices
 import koeln.becker.nomla.testing.platformDevice
 import koeln.becker.nomla.testing.stubAudio
@@ -83,12 +83,12 @@ class AudioPanelSheetTest {
     private val source = TestCaptureSource(listOf(ShortArray(FRAME) { 1000 }), loopLastFrame = true)
     private val capture = TestCaptureSource.Factory(source)
 
-    private val session: IHumlaSession = mockk(relaxed = true) {
+    private val session: INomlaSession = mockk(relaxed = true) {
         every { targetServer } returns Server(1, "Home", "example.org", 64738, "me", null)
     }
     private val audio = session.stubAudio()
     private val state = session.stubState(SessionState.Disconnected())
-    private lateinit var activity: MumlaActivity
+    private lateinit var activity: NomlaActivity
 
     @Before
     fun setUp() {
@@ -114,8 +114,8 @@ class AudioPanelSheetTest {
 
     /** Starts the activity on the drawer screen [screen], with the session current. */
     private fun launch(screen: Int) {
-        val intent = Intent(app, MumlaActivity::class.java).putExtra(MainScreen.EXTRA_SCREEN, screen)
-        activity = launchMumlaActivity(intent)
+        val intent = Intent(app, NomlaActivity::class.java).putExtra(MainScreen.EXTRA_SCREEN, screen)
+        activity = launchNomlaActivity(intent)
         installSession(session)
         idleMainLooper()
     }

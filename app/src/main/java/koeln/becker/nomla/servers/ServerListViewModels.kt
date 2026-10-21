@@ -42,7 +42,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.Settings
-import koeln.becker.nomla.db.MumlaRepository
+import koeln.becker.nomla.db.NomlaRepository
 import koeln.becker.nomla.db.PublicServer
 import kotlin.time.Duration.Companion.seconds
 
@@ -94,7 +94,7 @@ private fun pingsAllowed(app: Application): () -> Boolean = { !Settings.getInsta
 
 /** The favourite servers, read from the database off the main thread, with their pings. Main thread. */
 class FavouriteServersViewModel(
-    private val repository: MumlaRepository,
+    private val repository: NomlaRepository,
     pingsAllowed: () -> Boolean,
     pinger: ServerPinger = ServerPinger(),
 ) : ViewModel() {
@@ -117,7 +117,7 @@ class FavouriteServersViewModel(
     }
 
     companion object {
-        fun create(app: Application) = FavouriteServersViewModel(MumlaRepository.get(app), pingsAllowed(app))
+        fun create(app: Application) = FavouriteServersViewModel(NomlaRepository.get(app), pingsAllowed(app))
     }
 }
 
@@ -128,7 +128,7 @@ class FavouriteServersViewModel(
  * changes and once when the first replies settle; later replies do not move the cards. Main thread.
  */
 class PublicServersViewModel(
-    private val repository: MumlaRepository,
+    private val repository: NomlaRepository,
     private val fetcher: PublicServerFetcher,
     private val torEnabled: () -> Boolean,
     private val savedState: SavedStateHandle,
@@ -250,7 +250,7 @@ class PublicServersViewModel(
             pinger: ServerPinger,
             savedState: SavedStateHandle,
         ) = PublicServersViewModel(
-            MumlaRepository.get(app), fetcher, { Settings.getInstance(app).isTorEnabled }, savedState, pinger,
+            NomlaRepository.get(app), fetcher, { Settings.getInstance(app).isTorEnabled }, savedState, pinger,
         )
     }
 }

@@ -32,8 +32,8 @@ import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.session.ConnectionConfig
 import koeln.becker.nomla.mumble.session.SessionConfig
 import koeln.becker.nomla.mumble.session.SessionState
-import koeln.becker.nomla.app.MumlaActivity
-import koeln.becker.nomla.service.MumlaService
+import koeln.becker.nomla.app.NomlaActivity
+import koeln.becker.nomla.service.NomlaService
 import koeln.becker.nomla.session.SessionManager
 import java.net.InetAddress
 import java.net.ServerSocket
@@ -56,14 +56,14 @@ class ForegroundServiceTest {
 
     @Suppress("DEPRECATION") // Still lists the caller's own services.
     private fun serviceRunning(): Boolean = context.getSystemService(ActivityManager::class.java)
-        .getRunningServices(Int.MAX_VALUE).any { it.service.className == MumlaService::class.java.name }
+        .getRunningServices(Int.MAX_VALUE).any { it.service.className == NomlaService::class.java.name }
 
     @Test
     fun aSessionRunsTheServiceFromConnectingUntilItEnds() {
         ServerSocket(0, 1, InetAddress.getLoopbackAddress()).use { server ->
             val client = AtomicReference<Socket?>()
             val acceptor = thread { runCatching { client.set(server.accept()) } }
-            ActivityScenario.launch(MumlaActivity::class.java).use {
+            ActivityScenario.launch(NomlaActivity::class.java).use {
                 val target = Server(Server.NOT_SAVED, "smoke", "127.0.0.1", server.localPort, "smoke", null)
                 val config = SessionConfig(ConnectionConfig(server = target))
                 InstrumentationRegistry.getInstrumentation().runOnMainSync { sessions.connect(config) }

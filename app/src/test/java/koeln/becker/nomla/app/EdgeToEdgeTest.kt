@@ -30,7 +30,7 @@ import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.preference.SettingsActivity
 import koeln.becker.nomla.testing.currentScreen
-import koeln.becker.nomla.testing.launchMumlaActivity
+import koeln.becker.nomla.testing.launchNomlaActivity
 
 /** The activities draw behind the system bars and keep their controls clear of them. */
 @RunWith(RobolectricTestRunner::class)
@@ -46,7 +46,7 @@ class EdgeToEdgeTest {
 
     @Test
     fun theMainScreenPadsTheAppBarTheContentAndTheDrawer() {
-        val activity = launchMumlaActivity()
+        val activity = launchNomlaActivity()
 
         activity.findViewById<View>(R.id.drawer_layout).dispatch()
 

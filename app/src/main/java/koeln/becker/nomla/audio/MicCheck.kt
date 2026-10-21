@@ -36,7 +36,7 @@ import koeln.becker.nomla.mumble.audio.capture.PcmCaptureSourceFactory
 import koeln.becker.nomla.mumble.audio.capture.VadConfig
 import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.exception.AudioInitializationException
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.Settings
 
 /**
@@ -89,7 +89,7 @@ class MicCheck(private val context: Context, private val onReading: (MeterReadin
             preview = started
             vad
         } catch (e: AudioInitializationException) {
-            HumlaLog.w(TAG, "microphone test unavailable", e)
+            NomlaLog.w(TAG, "microphone test unavailable", e)
             null
         }
     }

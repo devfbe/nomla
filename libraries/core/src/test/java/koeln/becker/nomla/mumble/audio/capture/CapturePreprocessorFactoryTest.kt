@@ -308,7 +308,7 @@ class CapturePreprocessorFactoryTest {
     @Test
     fun `a stage that cannot be built is skipped and logged, the rest keeps working`() {
         val missingLibrary =
-            ExceptionInInitializerError(UnsatisfiedLinkError("dlopen failed: libhumla_native.so not found"))
+            ExceptionInInitializerError(UnsatisfiedLinkError("dlopen failed: libnomla_native.so not found"))
         val apmLevel = 0.4608f
         val cases = listOf(
             Triple("RNNoise", NoiseSuppressionMode.RNNOISE, null) to ("apm" to apmLevel),

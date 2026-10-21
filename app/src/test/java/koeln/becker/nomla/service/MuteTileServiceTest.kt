@@ -27,7 +27,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
@@ -43,7 +43,7 @@ import koeln.becker.nomla.testing.stubModel
 @RunWith(RobolectricTestRunner::class)
 class MuteTileServiceTest {
     private val app: Application = ApplicationProvider.getApplicationContext()
-    private val session = mockk<IHumlaSession>(relaxed = true)
+    private val session = mockk<INomlaSession>(relaxed = true)
     private val model = session.stubModel(model(muted = false))
 
     private fun model(muted: Boolean, deafened: Boolean = false) =
@@ -95,7 +95,7 @@ class MuteTileServiceTest {
     fun aNewSessionIsFollowedToo() {
         session.stubConnected()
         val tile = listeningTile()
-        val next = mockk<IHumlaSession>(relaxed = true).also {
+        val next = mockk<INomlaSession>(relaxed = true).also {
             it.stubState(SessionState.Connecting)
             it.stubModel(null)
         }

@@ -21,19 +21,19 @@ package koeln.becker.nomla.mumble.net
 import com.google.protobuf.MessageLite
 
 /**
- * The TCP control channel to a Mumble server as seen by [HumlaConnection].
+ * The TCP control channel to a Mumble server as seen by [NomlaConnection].
  *
- * Implementations dispatch every [HumlaTCP.TCPConnectionListener] call on the scope they were given,
+ * Implementations dispatch every [NomlaTCP.TCPConnectionListener] call on the scope they were given,
  * so the connection never sees a callback on a socket thread. Single-use.
  */
 internal interface TcpTransport {
     val isRunning: Boolean
-    fun setTCPConnectionListener(listener: HumlaTCP.TCPConnectionListener?)
+    fun setTCPConnectionListener(listener: NomlaTCP.TCPConnectionListener?)
 
     /** Opens the connection. A second call is refused with a ConnectException. */
     fun connect(host: String, port: Int, useTor: Boolean)
-    fun sendMessage(message: MessageLite, messageType: HumlaTCPMessageType)
-    fun sendMessage(data: ByteArray, length: Int, messageType: HumlaTCPMessageType)
+    fun sendMessage(message: MessageLite, messageType: NomlaTCPMessageType)
+    fun sendMessage(data: ByteArray, length: Int, messageType: NomlaTCPMessageType)
 
     /**
      * Closes the socket. The listener's onTCPConnectionDisconnect follows exactly once, and it is

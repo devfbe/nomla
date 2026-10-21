@@ -30,7 +30,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowAudioTrack
 import koeln.becker.nomla.mumble.exception.NativeAudioException
-import koeln.becker.nomla.mumble.net.HumlaUDPMessageType
+import koeln.becker.nomla.mumble.net.NomlaUDPMessageType
 import koeln.becker.nomla.mumble.net.VoicePacket
 import koeln.becker.nomla.mumble.testutil.FakeOpusDecoder
 import koeln.becker.nomla.mumble.testutil.LogRecorder
@@ -220,10 +220,10 @@ class AudioOutputTest {
         log.clear()
 
         for (type in listOf(
-            HumlaUDPMessageType.UDPVoiceCELTAlpha,
-            HumlaUDPMessageType.UDPVoiceSpeex,
-            HumlaUDPMessageType.UDPVoiceCELTBeta,
-            HumlaUDPMessageType.UDPVoiceCELTAlpha,
+            NomlaUDPMessageType.UDPVoiceCELTAlpha,
+            NomlaUDPMessageType.UDPVoiceSpeex,
+            NomlaUDPMessageType.UDPVoiceCELTBeta,
+            NomlaUDPMessageType.UDPVoiceCELTAlpha,
         )) {
             o.queueVoiceData(voicePacket(type))
         }
@@ -241,7 +241,7 @@ class AudioOutputTest {
 
     /** One decoded packet of [codec] from [session] with a two-byte opus frame. */
     private fun voicePacket(
-        codec: HumlaUDPMessageType = HumlaUDPMessageType.UDPVoiceOpus,
+        codec: NomlaUDPMessageType = NomlaUDPMessageType.UDPVoiceOpus,
         session: Int = SESSION,
         terminator: Boolean = false,
     ) =

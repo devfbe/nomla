@@ -41,7 +41,7 @@ android {
 
     defaultConfig {
         testApplicationId = "koeln.becker.nomla.mumble.test"
-        // Device tests run the real libhumla_native.so (src/androidTest).
+        // Device tests run the real libnomla_native.so (src/androidTest).
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
 
@@ -50,7 +50,7 @@ android {
         }
         externalNativeBuild {
             cmake {
-                // Static libc++ is safe because libhumla_native.so is the only native library and
+                // Static libc++ is safe because libnomla_native.so is the only native library and
                 // exports nothing but JNI_OnLoad (enforced by src/main/cpp/check_library.cmake).
                 arguments += "-DANDROID_STL=c++_static"
             }

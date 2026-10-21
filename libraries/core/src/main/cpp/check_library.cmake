@@ -1,7 +1,7 @@
 # Post-link assertions about the JNI shared library: that it exports JNI_OnLoad and nothing else,
 # and that its segments are 16 KB aligned.
 #
-# Run as a POST_BUILD step (see humla_check_library). The properties come from
+# Run as a POST_BUILD step (see nomla_check_library). The properties come from
 # -Wl,--exclude-libs,ALL with -fvisibility=hidden, and -Wl,-z,max-page-size=16384; both fail only
 # on a device if lost.
 # Invoked with -DNM=<llvm-nm> -DREADELF=<llvm-readelf> -DLIBRARY=<path to the .so>.

@@ -24,7 +24,7 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
 
-/** Settings shared by the app and the humla library. */
+/** Settings shared by the app and the nomla library. */
 internal fun Project.configureAndroidCommon(android: CommonExtension) {
     extensions.configure<JavaPluginExtension> {
         toolchain.languageVersion.set(JavaLanguageVersion.of(21))

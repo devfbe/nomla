@@ -30,7 +30,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.FragmentServerInfoBinding
 import koeln.becker.nomla.session.SessionManager
@@ -80,7 +80,7 @@ class ServerInfoFragment : Fragment() {
         }
     }
 
-    private fun updateData(session: IHumlaSession) {
+    private fun updateData(session: INomlaSession) {
         val info = session.serverInfo ?: return
         val latency = session.latency ?: return
 

@@ -22,8 +22,8 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import koeln.becker.nomla.mumble.session.HumlaEvent
-import koeln.becker.nomla.mumble.session.HumlaEvent.DenyType
+import koeln.becker.nomla.mumble.session.NomlaEvent
+import koeln.becker.nomla.mumble.session.NomlaEvent.DenyType
 import koeln.becker.nomla.testing.textMessage
 
 /** The exact English lines the chat log and the refusal dialog show. */
@@ -34,11 +34,11 @@ class NoticeFormatterTest {
 
     private fun hl(name: String) = "<font color=\"#33b5e5\">$name</font>"
 
-    private fun format(notice: HumlaEvent.Notice) = formatter.format(notice)
+    private fun format(notice: NomlaEvent.Notice) = formatter.format(notice)
 
     @Test
     fun aLogMessageIsShownAsItIs() {
-        assertThat(format(HumlaEvent.LogMessage(HumlaEvent.Level.WARNING, "<b>raw</b>"))).isEqualTo("<b>raw</b>")
+        assertThat(format(NomlaEvent.LogMessage(NomlaEvent.Level.WARNING, "<b>raw</b>"))).isEqualTo("<b>raw</b>")
     }
 
     @Test
@@ -49,67 +49,67 @@ class NoticeFormatterTest {
 
     @Test
     fun comingAndGoing() {
-        assertThat(format(HumlaEvent.UserJoinedServer("Ann"))).isEqualTo("${hl("Ann")} connected.")
-        assertThat(format(HumlaEvent.UserLeftServer("Ann"))).isEqualTo("${hl("Ann")} disconnected.")
-        assertThat(format(HumlaEvent.UserLeftServer(null))).isEqualTo("${hl("unknown")} disconnected.")
+        assertThat(format(NomlaEvent.UserJoinedServer("Ann"))).isEqualTo("${hl("Ann")} connected.")
+        assertThat(format(NomlaEvent.UserLeftServer("Ann"))).isEqualTo("${hl("Ann")} disconnected.")
+        assertThat(format(NomlaEvent.UserLeftServer(null))).isEqualTo("${hl("unknown")} disconnected.")
     }
 
     @Test
     fun kicksAndBans() {
-        assertThat(format(HumlaEvent.SelfKicked("Mod", "spam", ban = false)))
+        assertThat(format(NomlaEvent.SelfKicked("Mod", "spam", ban = false)))
             .isEqualTo("You were kicked from the server by ${hl("Mod")}: spam.")
-        assertThat(format(HumlaEvent.SelfKicked(null, "spam", ban = true)))
+        assertThat(format(NomlaEvent.SelfKicked(null, "spam", ban = true)))
             .isEqualTo("You were kicked and banned from the server by ${hl("unknown")}: spam.")
-        assertThat(format(HumlaEvent.UserKicked("Ann", "Mod", "spam", ban = false)))
+        assertThat(format(NomlaEvent.UserKicked("Ann", "Mod", "spam", ban = false)))
             .isEqualTo("${hl("Ann")} was kicked from the server by ${hl("Mod")}: spam.")
-        assertThat(format(HumlaEvent.UserKicked(null, "Mod", "spam", ban = true)))
+        assertThat(format(NomlaEvent.UserKicked(null, "Mod", "spam", ban = true)))
             .isEqualTo("${hl("unknown")} was kicked and banned from the server by ${hl("Mod")}: spam.")
     }
 
     @Test
     fun ourOwnMuteState() {
-        assertThat(format(HumlaEvent.SelfMuteChanged(muted = true, deafened = true))).isEqualTo("Muted and deafened.")
-        assertThat(format(HumlaEvent.SelfMuteChanged(muted = true, deafened = false))).isEqualTo("Muted.")
-        assertThat(format(HumlaEvent.SelfMuteChanged(muted = false, deafened = false))).isEqualTo("Unmuted.")
+        assertThat(format(NomlaEvent.SelfMuteChanged(muted = true, deafened = true))).isEqualTo("Muted and deafened.")
+        assertThat(format(NomlaEvent.SelfMuteChanged(muted = true, deafened = false))).isEqualTo("Muted.")
+        assertThat(format(NomlaEvent.SelfMuteChanged(muted = false, deafened = false))).isEqualTo("Unmuted.")
         // Deafened without muted does not happen; it reads as unmuted, as it always did.
-        assertThat(format(HumlaEvent.SelfMuteChanged(muted = false, deafened = true))).isEqualTo("Unmuted.")
+        assertThat(format(NomlaEvent.SelfMuteChanged(muted = false, deafened = true))).isEqualTo("Unmuted.")
     }
 
     @Test
     fun somebodyElsesMuteState() {
-        assertThat(format(HumlaEvent.UserMuteChanged("Ann", muted = true, deafened = true)))
+        assertThat(format(NomlaEvent.UserMuteChanged("Ann", muted = true, deafened = true)))
             .isEqualTo("${hl("Ann")} is now muted and deafened.")
-        assertThat(format(HumlaEvent.UserMuteChanged("Ann", muted = true, deafened = false)))
+        assertThat(format(NomlaEvent.UserMuteChanged("Ann", muted = true, deafened = false)))
             .isEqualTo("${hl("Ann")} is now muted.")
-        assertThat(format(HumlaEvent.UserMuteChanged("Ann", muted = false, deafened = false)))
+        assertThat(format(NomlaEvent.UserMuteChanged("Ann", muted = false, deafened = false)))
             .isEqualTo("${hl("Ann")} is now unmuted.")
     }
 
     @Test
     fun recording() {
-        assertThat(format(HumlaEvent.SelfRecordingChanged(true))).isEqualTo("Recording started")
-        assertThat(format(HumlaEvent.SelfRecordingChanged(false))).isEqualTo("Recording stopped")
-        assertThat(format(HumlaEvent.UserRecordingChanged("Ann", true))).isEqualTo("${hl("Ann")} started recording.")
-        assertThat(format(HumlaEvent.UserRecordingChanged("Ann", false))).isEqualTo("${hl("Ann")} stopped recording.")
+        assertThat(format(NomlaEvent.SelfRecordingChanged(true))).isEqualTo("Recording started")
+        assertThat(format(NomlaEvent.SelfRecordingChanged(false))).isEqualTo("Recording stopped")
+        assertThat(format(NomlaEvent.UserRecordingChanged("Ann", true))).isEqualTo("${hl("Ann")} started recording.")
+        assertThat(format(NomlaEvent.UserRecordingChanged("Ann", false))).isEqualTo("${hl("Ann")} stopped recording.")
     }
 
     @Test
     fun movesOutOfOurChannel() {
-        assertThat(format(HumlaEvent.UserLeftChannel("Ann", "Games", "Ann", byThemselves = true)))
+        assertThat(format(NomlaEvent.UserLeftChannel("Ann", "Games", "Ann", byThemselves = true)))
             .isEqualTo("${hl("Ann")} moved to ${hl("Games")}.")
-        assertThat(format(HumlaEvent.UserLeftChannel("Ann", "Games", "Mod", byThemselves = false)))
+        assertThat(format(NomlaEvent.UserLeftChannel("Ann", "Games", "Mod", byThemselves = false)))
             .isEqualTo("${hl("Ann")} moved to ${hl("Games")} by ${hl("Mod")}.")
-        assertThat(format(HumlaEvent.UserLeftChannel("Ann", "Games", null, byThemselves = false)))
+        assertThat(format(NomlaEvent.UserLeftChannel("Ann", "Games", null, byThemselves = false)))
             .isEqualTo("${hl("Ann")} moved to ${hl("Games")} by the server.")
     }
 
     @Test
     fun movesIntoOurChannel() {
-        assertThat(format(HumlaEvent.UserEnteredChannel("Ann", "Games", "Ann", byThemselves = true)))
+        assertThat(format(NomlaEvent.UserEnteredChannel("Ann", "Games", "Ann", byThemselves = true)))
             .isEqualTo("${hl("Ann")} entered channel.")
-        assertThat(format(HumlaEvent.UserEnteredChannel("Ann", "Games", "Mod", byThemselves = false)))
+        assertThat(format(NomlaEvent.UserEnteredChannel("Ann", "Games", "Mod", byThemselves = false)))
             .isEqualTo("${hl("Ann")} moved in from ${hl("Games")} by ${hl("Mod")}.")
-        assertThat(format(HumlaEvent.UserEnteredChannel("Ann", "Games", null, byThemselves = false)))
+        assertThat(format(NomlaEvent.UserEnteredChannel("Ann", "Games", null, byThemselves = false)))
             .isEqualTo("${hl("Ann")} moved in from ${hl("Games")} by the server.")
     }
 
@@ -130,11 +130,11 @@ class NoticeFormatterTest {
         )
         for ((type, text) in expected) {
             // The server's reason only matters for the refusals the client does not explain itself.
-            assertThat(formatter.denial(HumlaEvent.PermissionDenied(type, null))).isEqualTo(text)
+            assertThat(formatter.denial(NomlaEvent.PermissionDenied(type, null))).isEqualTo(text)
         }
-        assertThat(formatter.denial(HumlaEvent.PermissionDenied(DenyType.CHANNEL_FULL, "full")))
+        assertThat(formatter.denial(NomlaEvent.PermissionDenied(DenyType.CHANNEL_FULL, "full")))
             .isEqualTo("Channel is full.")
-        assertThat(formatter.denial(HumlaEvent.PermissionDenied(DenyType.OTHER, "not you")))
+        assertThat(formatter.denial(NomlaEvent.PermissionDenied(DenyType.OTHER, "not you")))
             .isEqualTo("Reason: not you")
     }
 

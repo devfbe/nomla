@@ -25,7 +25,7 @@ import androidx.preference.Preference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.BuildConfig
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
@@ -43,7 +43,7 @@ private const val VERSION_KEY = "version"
 private const val SHOW_NEWS_KEY = "showNews"
 private const val SHARE_LOG_KEY = "shareLog"
 
-class AboutSettingsFragment : MumlaPreferenceFragment(R.xml.settings_about) {
+class AboutSettingsFragment : NomlaPreferenceFragment(R.xml.settings_about) {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         super.onCreatePreferences(savedInstanceState, rootKey)
         requireNotNull(findPreference<Preference>(VERSION_KEY)).apply {
@@ -69,7 +69,7 @@ class AboutSettingsFragment : MumlaPreferenceFragment(R.xml.settings_about) {
             val uri = try {
                 withContext(Dispatchers.IO) { AppLog.export(context, AppLog.report()) }
             } catch (e: IOException) {
-                HumlaLog.w(TAG, "Could not write the log", e)
+                NomlaLog.w(TAG, "Could not write the log", e)
                 showSnackbar(R.string.share_log_failed)
                 return@launch
             }

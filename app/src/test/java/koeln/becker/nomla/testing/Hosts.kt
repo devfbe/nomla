@@ -29,11 +29,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import io.mockk.mockk
 import org.robolectric.Robolectric
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.channel.ChatViewModel
-import koeln.becker.nomla.db.MumlaDatabase
+import koeln.becker.nomla.db.NomlaDatabase
 
 private const val TALL_LIST_WIDTH = 480
 private const val TALL_LIST_HEIGHT = 4000
@@ -69,12 +69,12 @@ fun <F : Fragment> hostInThemedActivity(fragment: F): F =
  * mock is the app's database.
  */
 class ServiceHostActivity : ThemedActivity() {
-    val database: MumlaDatabase = installDatabase(mockk(relaxed = true))
+    val database: NomlaDatabase = installDatabase(mockk(relaxed = true))
     var menuInvalidations = 0
         private set
 
     /** Makes [session] the current session, as a connect does. */
-    fun bind(session: IHumlaSession) = installSession(session)
+    fun bind(session: INomlaSession) = installSession(session)
 
     override fun invalidateOptionsMenu() {
         menuInvalidations++

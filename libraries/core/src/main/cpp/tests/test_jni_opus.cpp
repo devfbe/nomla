@@ -237,7 +237,7 @@ static void test_inband_fec(Env& env) {
 
 int main() {
     Env env;
-    CHECK(humla::registerOpusNatives(env.get()), "the opus bridge registers");
+    CHECK(nomla::registerOpusNatives(env.get()), "the opus bridge registers");
     test_encoder(env);
     test_decoder(env);
     test_inband_fec(env);

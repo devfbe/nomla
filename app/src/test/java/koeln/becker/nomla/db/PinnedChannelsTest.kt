@@ -26,12 +26,12 @@ import org.junit.Test
 
 class PinnedChannelsTest {
     private val stored = mutableListOf(3, 1)
-    private val database = mockk<MumlaDatabase>(relaxed = true) {
+    private val database = mockk<NomlaDatabase>(relaxed = true) {
         every { getPinnedChannels(SERVER) } answers { stored.toList() }
         every { addPinnedChannel(SERVER, any()) } answers { stored += secondArg<Int>() }
         every { removePinnedChannel(SERVER, any()) } answers { stored -= secondArg<Int>() }
     }
-    private val pins = MumlaRepository(database, Dispatchers.Unconfined).pinnedChannels
+    private val pins = NomlaRepository(database, Dispatchers.Unconfined).pinnedChannels
 
     @Test
     fun `the pins are read once and kept in pinning order`() {

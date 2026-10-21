@@ -18,19 +18,19 @@ package koeln.becker.nomla.testing
 
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.Dispatchers
-import koeln.becker.nomla.app.MumlaApplication
-import koeln.becker.nomla.db.MumlaDatabase
-import koeln.becker.nomla.db.MumlaRepository
-import koeln.becker.nomla.db.MumlaSQLiteDatabase
+import koeln.becker.nomla.app.NomlaApplication
+import koeln.becker.nomla.db.NomlaDatabase
+import koeln.becker.nomla.db.NomlaRepository
+import koeln.becker.nomla.db.NomlaSQLiteDatabase
 
 /**
  * Makes [database] the app's database, queried inline so that UI code reading it off the main
  * thread finishes before the test looks.
  */
 fun installDatabase(
-    database: MumlaDatabase = MumlaSQLiteDatabase(ApplicationProvider.getApplicationContext()),
-): MumlaDatabase {
-    ApplicationProvider.getApplicationContext<MumlaApplication>()
-        .installRepository(MumlaRepository(database, Dispatchers.Unconfined))
+    database: NomlaDatabase = NomlaSQLiteDatabase(ApplicationProvider.getApplicationContext()),
+): NomlaDatabase {
+    ApplicationProvider.getApplicationContext<NomlaApplication>()
+        .installRepository(NomlaRepository(database, Dispatchers.Unconfined))
     return database
 }

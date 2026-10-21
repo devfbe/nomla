@@ -42,9 +42,9 @@ class TcpFrameReaderTest {
     fun readsTypeAndPayload() {
         val input = stream(tcpFrame(7, byteArrayOf(1, 2, 3)))
 
-        val read = HumlaTCP.readFrame(input)!!
+        val read = NomlaTCP.readFrame(input)!!
 
-        assertThat(read.type).isEqualTo(HumlaTCPMessageType.ChannelState)
+        assertThat(read.type).isEqualTo(NomlaTCPMessageType.ChannelState)
         assertThat(read.data).isEqualTo(byteArrayOf(1, 2, 3))
     }
 
@@ -52,9 +52,9 @@ class TcpFrameReaderTest {
     fun unknownTypeIsSkippedAndTheNextFrameIsStillReadable() {
         val input = stream(tcpFrame(99, byteArrayOf(9, 9)), tcpFrame(3, byteArrayOf()))
 
-        assertThat(HumlaTCP.readFrame(input)).isNull()
-        val next = HumlaTCP.readFrame(input)!!
-        assertThat(next.type).isEqualTo(HumlaTCPMessageType.Ping)
+        assertThat(NomlaTCP.readFrame(input)).isNull()
+        val next = NomlaTCP.readFrame(input)!!
+        assertThat(next.type).isEqualTo(NomlaTCPMessageType.Ping)
         assertThat(next.data).isEmpty()
     }
 
@@ -67,7 +67,7 @@ class TcpFrameReaderTest {
         val full = tcpFrame(7, ByteArray(8) { 1 })
         for (bytes in listOf(byteArrayOf(0), byteArrayOf(0, 7), full.copyOf(full.size - 5))) {
             val input = DataInputStream(ByteArrayInputStream(bytes))
-            assertThrows(EOFException::class.java) { HumlaTCP.readFrame(input) }
+            assertThrows(EOFException::class.java) { NomlaTCP.readFrame(input) }
         }
     }
 
@@ -82,12 +82,12 @@ class TcpFrameReaderTest {
         val bytes = tcpFrame(7, payload) + tcpFrame(3, byteArrayOf(42))
         val input = DataInputStream(Dribbling(ByteArrayInputStream(bytes)))
 
-        val first = HumlaTCP.readFrame(input)!!
-        assertThat(first.type).isEqualTo(HumlaTCPMessageType.ChannelState)
+        val first = NomlaTCP.readFrame(input)!!
+        assertThat(first.type).isEqualTo(NomlaTCPMessageType.ChannelState)
         assertThat(first.data).isEqualTo(payload)
 
-        val second = HumlaTCP.readFrame(input)!!
-        assertThat(second.type).isEqualTo(HumlaTCPMessageType.Ping)
+        val second = NomlaTCP.readFrame(input)!!
+        assertThat(second.type).isEqualTo(NomlaTCPMessageType.Ping)
         assertThat(second.data).isEqualTo(byteArrayOf(42))
         assertThat(input.read()).isEqualTo(-1)
     }
@@ -97,17 +97,17 @@ class TcpFrameReaderTest {
     fun endOfStreamAtAFrameBoundaryThrowsEof() {
         val input = stream(tcpFrame(3, byteArrayOf()))
 
-        assertThat(HumlaTCP.readFrame(input)).isNotNull()
-        assertThrows(EOFException::class.java) { HumlaTCP.readFrame(input) }
+        assertThat(NomlaTCP.readFrame(input)).isNotNull()
+        assertThrows(EOFException::class.java) { NomlaTCP.readFrame(input) }
     }
 
     /** The last known type must not be mistaken for an unknown one by an off-by-one bound. */
     @Test
     fun theHighestKnownTypeIsAccepted() {
-        val last = HumlaTCPMessageType.values().last()
+        val last = NomlaTCPMessageType.values().last()
         val input = stream(tcpFrame(last.ordinal, byteArrayOf(5)))
 
-        val read = HumlaTCP.readFrame(input)!!
+        val read = NomlaTCP.readFrame(input)!!
 
         assertThat(read.type).isEqualTo(last)
         assertThat(read.data).isEqualTo(byteArrayOf(5))
@@ -126,7 +126,7 @@ class TcpFrameReaderTest {
         for (length in listOf(-1, 0x7fffff + 1)) {
             val input = DataInputStream(ByteArrayInputStream(tcpFrame(3, length = length)))
 
-            val thrown = assertThrows(IOException::class.java) { HumlaTCP.readFrame(input) }
+            val thrown = assertThrows(IOException::class.java) { NomlaTCP.readFrame(input) }
 
             assertWithMessage("length $length").that(thrown).isNotInstanceOf(EOFException::class.java)
         }
@@ -138,7 +138,7 @@ class TcpFrameReaderTest {
         val payload = ByteArray(0x7fffff)
         val input = stream(tcpFrame(3, payload))
 
-        val read = HumlaTCP.readFrame(input)!!
+        val read = NomlaTCP.readFrame(input)!!
 
         assertThat(read.data.size).isEqualTo(payload.size)
     }

@@ -35,11 +35,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import koeln.becker.nomla.mumble.net.Pkcs12Certificates
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.DialogExportPasswordBinding
 import koeln.becker.nomla.db.DatabaseCertificate
-import koeln.becker.nomla.db.MumlaRepository
+import koeln.becker.nomla.db.NomlaRepository
 import koeln.becker.nomla.ui.AppMessages
 import koeln.becker.nomla.ui.showMessageDialog
 import java.io.FileNotFoundException
@@ -52,7 +52,7 @@ import java.io.IOException
  */
 class CertificateExportActivity : AppCompatActivity(), DialogInterface.OnClickListener {
 
-    private val repository get() = MumlaRepository.get(this)
+    private val repository get() = NomlaRepository.get(this)
     private var certificates: List<DatabaseCertificate> = emptyList()
 
     private val documentCreator: ActivityResultLauncher<String> =
@@ -135,7 +135,7 @@ class CertificateExportActivity : AppCompatActivity(), DialogInterface.OnClickLi
         val pending = certificatePending
         val password = passwordPending
         if (uri == null || pending == null || password == null) {
-            if (uri != null) HumlaLog.w(TAG, "No pending certificate after user picked output file")
+            if (uri != null) NomlaLog.w(TAG, "No pending certificate after user picked output file")
             clearPassword()
             finish()
             return
@@ -151,7 +151,7 @@ class CertificateExportActivity : AppCompatActivity(), DialogInterface.OnClickLi
                     }
                 }
             } catch (e: Exception) {
-                HumlaLog.w(TAG, "Could not prepare certificate for export", e)
+                NomlaLog.w(TAG, "Could not prepare certificate for export", e)
                 null
             } finally {
                 clearPassword()
@@ -172,10 +172,10 @@ class CertificateExportActivity : AppCompatActivity(), DialogInterface.OnClickLi
                 os.buffered().use { it.write(data) }
                 null
             } catch (e: FileNotFoundException) {
-                HumlaLog.w(TAG, "FileNotFound on output file picked by user?!", e)
+                NomlaLog.w(TAG, "FileNotFound on output file picked by user?!", e)
                 R.string.externalStorageUnavailable
             } catch (e: IOException) {
-                HumlaLog.w(TAG, "Could not write exported certificate", e)
+                NomlaLog.w(TAG, "Could not write exported certificate", e)
                 R.string.error_writing_to_storage
             }
         }

@@ -18,7 +18,7 @@ remote users ─▶ mix ─▶ FarEndFrameChunker ─▶ AEC3 far-end reference 
 | Level | Where | What it proves |
 |---|---|---|
 | JVM (Robolectric, fakes for the native code) | `libraries/core/src/test`, `app/src/test` | Wiring and logic: the chain's order, the settings reaching the pipeline, the attenuation limit's arithmetic, the self-test's state machine. Runs in `verify`. |
-| Device, simulated acoustics | `libraries/core/src/androidTest/.../capture` | The real `libhumla_native.so` (AEC3, AGC2, RNNoise) on the phone's CPU, fed synthetic or Piper speech through a simulated echo path (`DoubleTalkRig`). Deterministic; no microphone. |
+| Device, simulated acoustics | `libraries/core/src/androidTest/.../capture` | The real `libnomla_native.so` (AEC3, AGC2, RNNoise) on the phone's CPU, fed synthetic or Piper speech through a simulated echo path (`DoubleTalkRig`). Deterministic; no microphone. |
 | Device, real acoustics | `AcousticLoopbackDeviceTest` | The phone's own speaker and microphone: routing, what each capture source hears, latency. |
 | Room | `RoomAcousticsDeviceTest` + `tools/room-test/room_test.py` | A real room: the phone plays the far end, the PC speaker plays the near end, and every capture configuration is recorded and replayed through the app's chain. Manual, opt-in. |
 | In-app | the "Talk-over test" | The same chain, live, for the user to check and tune their own phone. `DoubleTalkSelfTestDeviceTest` runs its engine against the PC speaker. |

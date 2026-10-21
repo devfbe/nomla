@@ -35,11 +35,11 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowDialog
-import koeln.becker.nomla.mumble.net.HumlaCertificateGenerator
+import koeln.becker.nomla.mumble.net.NomlaCertificateGenerator
 import koeln.becker.nomla.mumble.net.Pkcs12Certificates
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
-import koeln.becker.nomla.db.MumlaSQLiteDatabase
+import koeln.becker.nomla.db.NomlaSQLiteDatabase
 import koeln.becker.nomla.testing.installDatabase
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -55,11 +55,11 @@ class CertificateExportActivityTest {
 
     @After
     fun tearDown() {
-        context.deleteDatabase(MumlaSQLiteDatabase.DATABASE_NAME)
+        context.deleteDatabase(NomlaSQLiteDatabase.DATABASE_NAME)
     }
 
     private fun storeCertificate(name: String, data: ByteArray) {
-        val db = MumlaSQLiteDatabase(context)
+        val db = NomlaSQLiteDatabase(context)
         db.addCertificate(name, data)
         db.close()
     }
@@ -135,7 +135,7 @@ class CertificateExportActivityTest {
 
     @Test
     fun `a confirmed unprotected export opens with the empty password`() {
-        val stored = ByteArrayOutputStream().also { HumlaCertificateGenerator.generateCertificate(it) }.toByteArray()
+        val stored = ByteArrayOutputStream().also { NomlaCertificateGenerator.generateCertificate(it) }.toByteArray()
         storeCertificate("alice.p12", stored)
         val uri = Uri.parse("content://test.documents/alice.p12")
         val written = ByteArrayOutputStream()
@@ -159,7 +159,7 @@ class CertificateExportActivityTest {
 
     @Test
     fun `the exported file opens only with the chosen password`() {
-        val stored = ByteArrayOutputStream().also { HumlaCertificateGenerator.generateCertificate(it) }.toByteArray()
+        val stored = ByteArrayOutputStream().also { NomlaCertificateGenerator.generateCertificate(it) }.toByteArray()
         storeCertificate("alice.p12", stored)
         val uri = Uri.parse("content://test.documents/alice.p12")
         val written = ByteArrayOutputStream()

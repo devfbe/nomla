@@ -1,8 +1,8 @@
 # Asserts that a named function in a linked test binary really carries AddressSanitizer
 # instrumentation.
 #
-# test_apm_asan links humla_apm.cpp twice (instrumented from humla_apm_asan, uninstrumented from
-# humla_apm), and link order alone decides which copy wins. If it flips, everything still passes
+# test_apm_asan links nomla_apm.cpp twice (instrumented from nomla_apm_asan, uninstrumented from
+# nomla_apm), and link order alone decides which copy wins. If it flips, everything still passes
 # while instrumenting nothing. Neither __SANITIZE_ADDRESS__ nor anything observable at run time
 # can tell, so the linked image is checked.
 #
@@ -23,7 +23,7 @@ list(LENGTH hits count)
 if(count EQUAL 0)
   message(FATAL_ERROR
       "${SYMBOL} in ${BINARY} contains no AddressSanitizer instrumentation. The uninstrumented "
-      "copy of humla_apm.cpp won the link, so the sanitized test is exercising uninstrumented "
-      "code. Check the order of humla_apm_asan and humla_apm on the link line.")
+      "copy of nomla_apm.cpp won the link, so the sanitized test is exercising uninstrumented "
+      "code. Check the order of nomla_apm_asan and nomla_apm on the link line.")
 endif()
 message(STATUS "${SYMBOL}: ${count} AddressSanitizer references in ${BINARY}")

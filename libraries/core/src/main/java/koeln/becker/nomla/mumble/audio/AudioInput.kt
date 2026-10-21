@@ -21,7 +21,7 @@ package koeln.becker.nomla.mumble.audio
 import android.os.Process
 import koeln.becker.nomla.mumble.audio.capture.CaptureState
 import koeln.becker.nomla.mumble.audio.capture.PcmCaptureSource
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 
 /**
  * Owns the capture thread and pumps 10 ms frames from a [PcmCaptureSource] to [listener].
@@ -90,7 +90,7 @@ internal class AudioInput(
             Thread.currentThread().interrupt()
         }
         val exited = !t.isAlive
-        if (!exited) HumlaLog.e(TAG, "capture thread still running after $joinTimeoutMs ms; releasing anyway")
+        if (!exited) NomlaLog.e(TAG, "capture thread still running after $joinTimeoutMs ms; releasing anyway")
         thread = if (exited) null else t
         source.setSilenceListener(null)
         return exited
@@ -112,18 +112,18 @@ internal class AudioInput(
         try {
             source.start()
         } catch (e: IllegalStateException) {
-            HumlaLog.e(TAG, "capture could not be started", e)
+            NomlaLog.e(TAG, "capture could not be started", e)
             stateListener?.invoke(CaptureState.Error("capture could not be started: ${e.message}"))
             return
         }
-        HumlaLog.i(TAG, "capturing at $sampleRate Hz in frames of $frameSize")
+        NomlaLog.i(TAG, "capturing at $sampleRate Hz in frames of $frameSize")
         val buffer = ShortArray(frameSize)
         while (recording) {
             val read = source.read(buffer, frameSize)
             if (read < 0) {
                 // A read racing our own shutdown fails too; don't report that to the user.
                 if (recording) {
-                    HumlaLog.e(TAG, "capture read error $read")
+                    NomlaLog.e(TAG, "capture read error $read")
                     stateListener?.invoke(CaptureState.Error("capture read error $read"))
                 }
                 break
@@ -135,12 +135,12 @@ internal class AudioInput(
             listener.onAudioInputReceived(buffer, frameSize)
         }
         source.stop()
-        HumlaLog.i(TAG, "capture stopped")
+        NomlaLog.i(TAG, "capture stopped")
     }
 
     companion object {
         private const val TAG = "AudioInput"
-        private const val THREAD_NAME = "humla-capture"
+        private const val THREAD_NAME = "nomla-capture"
         private const val FRAMES_PER_SECOND = 100
         const val DEFAULT_JOIN_TIMEOUT_MS = 2000L
     }

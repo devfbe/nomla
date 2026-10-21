@@ -22,7 +22,7 @@ import androidx.fragment.app.DialogFragment
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.session.DisconnectReason
 import koeln.becker.nomla.mumble.session.SessionState
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.app.ConnectionErrorDialogFragment.Action
@@ -30,7 +30,7 @@ import koeln.becker.nomla.servers.ServerEditFragment
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.ui.MessageDialogFragment
 import koeln.becker.nomla.ui.showSnackbar
-import koeln.becker.nomla.util.MumlaTrustStore
+import koeln.becker.nomla.util.NomlaTrustStore
 import java.io.IOException
 import java.security.GeneralSecurityException
 import java.security.cert.X509Certificate
@@ -158,7 +158,7 @@ class ConnectionDialogs(
 
     private fun trustAndReconnect(server: Server, certificate: X509Certificate) {
         try {
-            MumlaTrustStore.pinCertificate(activity, server.host, certificate)
+            NomlaTrustStore.pinCertificate(activity, server.host, certificate)
         } catch (e: IOException) {
             onTrustFailed(e)
             return
@@ -171,7 +171,7 @@ class ConnectionDialogs(
     }
 
     private fun onTrustFailed(e: Exception) {
-        HumlaLog.w(TAG, "Could not trust the certificate", e)
+        NomlaLog.w(TAG, "Could not trust the certificate", e)
         activity.showSnackbar(R.string.trust_add_failed)
     }
 

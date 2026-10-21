@@ -30,9 +30,9 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.model.TalkState
-import koeln.becker.nomla.mumble.session.HumlaEvent
+import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.service.toggleSelfDeafen
 import koeln.becker.nomla.service.toggleSelfMute
@@ -89,7 +89,7 @@ class SessionViewModel(private val sessions: SessionManager) : ViewModel() {
         if (session == null) {
             flowOf(WhisperSnapshot(null, false))
         } else {
-            val targetChanges = session.events.filterIsInstance<HumlaEvent.VoiceTargetChanged>()
+            val targetChanges = session.events.filterIsInstance<NomlaEvent.VoiceTargetChanged>()
                 .map { }.onStart { emit(Unit) }
             combine(session.state, targetChanges) { state, _ ->
                 if (state != SessionState.Connected) {
@@ -109,7 +109,7 @@ class SessionViewModel(private val sessions: SessionManager) : ViewModel() {
     val isWhisperActive: StateFlow<Boolean> =
         whisperSnapshot.map { it.active }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    private val connected: IHumlaSession? get() = sessions.connected
+    private val connected: INomlaSession? get() = sessions.connected
 
     val serverName: String? get() = connected?.serverName
 

@@ -25,11 +25,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.session.ConnectionConfig
 import koeln.becker.nomla.mumble.session.DisconnectReason
-import koeln.becker.nomla.mumble.session.HumlaEvent
+import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.mumble.session.SessionConfig
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.mumble.testutil.collectOnMain
@@ -43,12 +43,12 @@ import koeln.becker.nomla.testing.stubState
 /** One session per connect, the foreground service started for it, and the chat that follows it. */
 @RunWith(RobolectricTestRunner::class)
 class SessionManagerTest {
-    private val created = mutableListOf<IHumlaSession>()
+    private val created = mutableListOf<INomlaSession>()
     private var foregroundStarts = 0
     private var endAtOnce = false
     private val sessions = SessionManager(
         newSession = { config ->
-            mockk<IHumlaSession>(relaxed = true).also { session ->
+            mockk<INomlaSession>(relaxed = true).also { session ->
                 session.stubEvents()
                 val state = session.stubState(SessionState.Disconnected())
                 every { session.config } returns config
@@ -166,12 +166,12 @@ class SessionManagerTest {
     fun theChatFollowsTheCurrentSession() {
         sessions.connect(config)
         val first = created.single()
-        first.stubEvents().tryEmit(HumlaEvent.LogMessage(HumlaEvent.Level.WARNING, "first"))
+        first.stubEvents().tryEmit(NomlaEvent.LogMessage(NomlaEvent.Level.WARNING, "first"))
         idleMainLooper()
         assertThat(sessions.chat.messages.value.map { it.body }).containsExactly("first")
 
         sessions.connect(config)
-        first.stubEvents().tryEmit(HumlaEvent.LogMessage(HumlaEvent.Level.WARNING, "stale"))
+        first.stubEvents().tryEmit(NomlaEvent.LogMessage(NomlaEvent.Level.WARNING, "stale"))
         idleMainLooper()
 
         assertThat(sessions.chat.messages.value).isEmpty()
@@ -182,7 +182,7 @@ class SessionManagerTest {
     fun theChatIsClearedWhenTheSessionEndsButNotWhenItsConnectionIsLost() {
         sessions.connect(config)
         val session = created.single()
-        session.stubEvents().tryEmit(HumlaEvent.LogMessage(HumlaEvent.Level.WARNING, "kept"))
+        session.stubEvents().tryEmit(NomlaEvent.LogMessage(NomlaEvent.Level.WARNING, "kept"))
         idleMainLooper()
 
         session.stubState(SessionState.ConnectionLost(1L, 1, null))

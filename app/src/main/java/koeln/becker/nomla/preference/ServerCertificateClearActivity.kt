@@ -22,14 +22,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import koeln.becker.nomla.R
 import koeln.becker.nomla.ui.AppMessages
-import koeln.becker.nomla.util.MumlaTrustStore
+import koeln.becker.nomla.util.NomlaTrustStore
 
 /** Forgets every trusted server certificate, then finishes. */
 class ServerCertificateClearActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        MumlaTrustStore.clearTrustStore(this)
+        NomlaTrustStore.clearTrustStore(this)
         AppMessages.post(this, R.string.trust_cleared)
         finish()
     }

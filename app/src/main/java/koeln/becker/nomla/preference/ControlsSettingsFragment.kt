@@ -23,7 +23,7 @@ import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 
 /** The buttons, keys and screen controls that transmit, and how they behave. */
-class ControlsSettingsFragment : MumlaPreferenceFragment(R.xml.settings_controls) {
+class ControlsSettingsFragment : NomlaPreferenceFragment(R.xml.settings_controls) {
     override fun onResume() {
         super.onResume()
         // The transmit mode is chosen on the audio screen, so it may have changed meanwhile.

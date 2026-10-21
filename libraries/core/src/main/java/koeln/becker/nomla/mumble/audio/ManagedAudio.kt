@@ -21,11 +21,11 @@ import android.content.Context
 import koeln.becker.nomla.mumble.audio.capture.CaptureState
 import koeln.becker.nomla.mumble.audio.capture.IInputMode
 import koeln.becker.nomla.mumble.model.UserState
-import koeln.becker.nomla.mumble.net.HumlaUDPMessageType
+import koeln.becker.nomla.mumble.net.NomlaUDPMessageType
 import koeln.becker.nomla.mumble.net.TcpMessageHandler
 import koeln.becker.nomla.mumble.net.UdpProtocol
 import koeln.becker.nomla.mumble.net.VoicePacketHandler
-import koeln.becker.nomla.mumble.util.HumlaLogger
+import koeln.becker.nomla.mumble.util.NomlaLogger
 
 /** A running audio pipeline as [AudioController] sees it (real: AudioHandler; tests: fakes). */
 internal interface ManagedAudio {
@@ -45,7 +45,7 @@ internal interface ManagedAudio {
 internal data class AudioSessionParams(
     val self: UserState,
     val maxBandwidth: Int,
-    val codec: HumlaUDPMessageType?,
+    val codec: NomlaUDPMessageType?,
     val targetId: Byte,
     val inputMode: IInputMode,
     /** The connection's voice packet format. */
@@ -55,7 +55,7 @@ internal data class AudioSessionParams(
 /** What every pipeline of a session is built with, across its rebuilds. */
 internal class AudioHost(
     val context: Context,
-    val logger: HumlaLogger,
+    val logger: NomlaLogger,
     val encodeListener: AudioHandler.AudioEncodeListener,
     val outputListener: AudioOutput.AudioOutputListener,
 )

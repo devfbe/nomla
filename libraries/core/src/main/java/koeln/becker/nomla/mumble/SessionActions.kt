@@ -57,7 +57,7 @@ public interface SessionActions {
     /** Asks for a description only its hash was sent for; it arrives in the model. */
     public fun requestChannelDescription(channel: Int)
 
-    /** Asks for [session]'s connection statistics; they arrive as `HumlaEvent.UserStatsReceived`. */
+    /** Asks for [session]'s connection statistics; they arrive as `NomlaEvent.UserStatsReceived`. */
     public fun requestUserStats(session: Int)
 
     public fun registerUser(session: Int)

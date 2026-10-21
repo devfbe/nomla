@@ -17,7 +17,7 @@
 package koeln.becker.nomla.mumble.model
 
 import koeln.becker.nomla.mumble.protobuf.Mumble
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.mumble.util.MumbleVersion
 import java.net.InetAddress
 import java.net.UnknownHostException
@@ -91,7 +91,7 @@ public data class UserStats(
             val factory = CertificateFactory.getInstance("X.509")
             msg.certificatesList.map { factory.generateCertificate(it.newInput()) as X509Certificate }
         } catch (e: CertificateException) {
-            HumlaLog.w(TAG, "Unreadable client certificate", e)
+            NomlaLog.w(TAG, "Unreadable client certificate", e)
             emptyList()
         }
 
@@ -99,7 +99,7 @@ public data class UserStats(
         private fun address(bytes: ByteArray): String? = try {
             InetAddress.getByAddress(bytes).hostAddress
         } catch (e: UnknownHostException) {
-            HumlaLog.w(TAG, "Unreadable client address", e)
+            NomlaLog.w(TAG, "Unreadable client address", e)
             null
         }
     }

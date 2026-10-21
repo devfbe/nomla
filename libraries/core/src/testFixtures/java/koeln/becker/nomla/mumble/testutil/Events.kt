@@ -23,8 +23,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import koeln.becker.nomla.mumble.IHumlaSession
-import koeln.becker.nomla.mumble.session.HumlaEvent
+import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.session.NomlaEvent
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -37,12 +37,12 @@ public fun <T> collectOnMain(flow: Flow<T>, block: (T) -> Unit): Job =
     }
 
 /** Calls [block] for each of this session's events; see [collectOnMain]. Cancel the job to stop. */
-internal fun IHumlaSession.onEvents(block: (HumlaEvent) -> Unit): Job = collectOnMain(events, block)
+internal fun INomlaSession.onEvents(block: (NomlaEvent) -> Unit): Job = collectOnMain(events, block)
 
 /** Records this session's events; see [collectOnMain]. */
-internal class EventRecorder(session: IHumlaSession) {
-    val events: MutableList<HumlaEvent> = CopyOnWriteArrayList()
+internal class EventRecorder(session: INomlaSession) {
+    val events: MutableList<NomlaEvent> = CopyOnWriteArrayList()
     val job: Job = session.onEvents { events += it }
 
-    inline fun <reified T : HumlaEvent> of(): List<T> = events.filterIsInstance<T>()
+    inline fun <reified T : NomlaEvent> of(): List<T> = events.filterIsInstance<T>()
 }

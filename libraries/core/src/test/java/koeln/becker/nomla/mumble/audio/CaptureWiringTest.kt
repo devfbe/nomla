@@ -29,7 +29,7 @@ import koeln.becker.nomla.mumble.audio.capture.fakes.FakeResampler
 import koeln.becker.nomla.mumble.audio.capture.fakes.FakeRnnoiseApi
 import koeln.becker.nomla.mumble.audio.capture.fakes.FakeWebRtcApmApi
 import koeln.becker.nomla.mumble.audio.inputmode.ContinuousInputMode
-import koeln.becker.nomla.mumble.util.HumlaLogger
+import koeln.becker.nomla.mumble.util.NomlaLogger
 
 /**
  * The wiring's guarantees: the preprocessed frame reaches the consumer, the mixed playback buffer
@@ -43,14 +43,14 @@ class CaptureWiringTest {
     }
 
     private val warnings = mutableListOf<String>()
-    private val logger = object : HumlaLogger {
+    private val logger = object : NomlaLogger {
         override fun logInfo(message: String) = Unit
         override fun logWarning(message: String) { warnings += message }
         override fun logError(message: String) = Unit
     }
 
     /** The native library loads in the object initialiser, so it fails as this, not an `Exception`. */
-    private fun missingLibrary() = ExceptionInInitializerError(UnsatisfiedLinkError("libhumla_native.so"))
+    private fun missingLibrary() = ExceptionInInitializerError(UnsatisfiedLinkError("libnomla_native.so"))
 
     private fun factory(rnnoise: () -> koeln.becker.nomla.mumble.audio.native.RnnoiseApi) =
         CapturePreprocessorFactory(rnnoiseApi = rnnoise, log = { warnings += it })

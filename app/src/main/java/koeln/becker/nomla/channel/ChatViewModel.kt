@@ -43,7 +43,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.chat.IChatMessage
@@ -160,7 +160,7 @@ class ChatViewModel(
     }
 
     /** Our channel while [session] is synchronized, as a message target; null while it is not. */
-    private fun ownChannel(session: IHumlaSession): Flow<OwnChannel?> =
+    private fun ownChannel(session: INomlaSession): Flow<OwnChannel?> =
         combine(session.state, session.model) { state, model ->
             if (state != SessionState.Connected) return@combine null
             OwnChannel(model?.selfChannel?.let { ChatTarget.Channel(it.id, it.name) })

@@ -119,7 +119,7 @@ internal class FakeWebRtcApmApi(
         /** `webrtc::AudioProcessing::kBadDataLengthError`, what the bridge answers a short frame. */
         const val SHORT_FRAME = -8
 
-        /** The only rates `humla_apm_create` accepts; anything else answers 0. */
+        /** The only rates `nomla_apm_create` accepts; anything else answers 0. */
         val SUPPORTED_RATES = setOf(8000, 16000, 32000, 48000)
     }
 }

@@ -31,7 +31,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.xmlpull.v1.XmlPullParser
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.audio.capture.AndroidAudioEffects
 import koeln.becker.nomla.mumble.audio.capture.NoiseSuppressionMode
 import koeln.becker.nomla.mumble.audio.capture.VadConfig
@@ -61,7 +61,7 @@ class SessionSettingsSyncTest {
     private val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     private var config = SessionConfig()
     private var configures = 0
-    private val session = mockk<IHumlaSession>(relaxed = true) {
+    private val session = mockk<INomlaSession>(relaxed = true) {
         every { this@mockk.config } answers { this@SessionSettingsSyncTest.config }
         every { configure(any()) } answers {
             this@SessionSettingsSyncTest.config = firstArg()

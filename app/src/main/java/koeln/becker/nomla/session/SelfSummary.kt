@@ -18,7 +18,7 @@
 package koeln.becker.nomla.session
 
 import android.content.Context
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.model.ServerState
 import koeln.becker.nomla.R
 
@@ -50,5 +50,5 @@ data class SelfSummary(val channel: String?, val isSelfMuted: Boolean, val isSel
 }
 
 /** The name the user gave the server, or its host. */
-val IHumlaSession.serverName: String?
+val INomlaSession.serverName: String?
     get() = targetServer?.let { it.name.ifEmpty { it.host } }

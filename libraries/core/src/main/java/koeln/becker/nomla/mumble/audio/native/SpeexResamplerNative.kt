@@ -47,7 +47,7 @@ internal interface SpeexResamplerApi {
 
 internal object SpeexResamplerNative : SpeexResamplerApi {
     init {
-        HumlaNativeLibrary.load()
+        NomlaNativeLibrary.load()
     }
 
     external override fun init(channels: Int, inRate: Int, outRate: Int, quality: Int, error: IntArray?): Long

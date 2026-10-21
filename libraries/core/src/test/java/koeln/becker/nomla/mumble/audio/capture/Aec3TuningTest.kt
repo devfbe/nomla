@@ -23,7 +23,7 @@ import org.junit.Assert.assertThrows
 import org.junit.Test
 import koeln.becker.nomla.mumble.audio.capture.fakes.FakeWebRtcApmApi
 
-/** The AEC3 tuning as it crosses into `humla_apm_create`. */
+/** The AEC3 tuning as it crosses into `nomla_apm_create`. */
 class Aec3TuningTest {
 
     /**
@@ -31,8 +31,8 @@ class Aec3TuningTest {
      * side; a missing, extra or reordered name would silently set the wrong field.
      */
     @Test
-    fun `the parameters are the HUMLA_AEC3 enum of humla_apm_h, name for name and in order`() {
-        val header = File("src/main/cpp/webrtc_apm/humla_apm.h").readText()
+    fun `the parameters are the HUMLA_AEC3 enum of nomla_apm_h, name for name and in order`() {
+        val header = File("src/main/cpp/webrtc_apm/nomla_apm.h").readText()
         val names = Regex("""^\s*HUMLA_AEC3_(\w+)\s*,""", RegexOption.MULTILINE)
             .findAll(header).map { it.groupValues[1] }.toList()
 

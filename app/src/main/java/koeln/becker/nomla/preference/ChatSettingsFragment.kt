@@ -20,4 +20,4 @@ package koeln.becker.nomla.preference
 import koeln.becker.nomla.R
 
 /** Chat messages, how they are shown and read aloud, and their notifications. */
-class ChatSettingsFragment : MumlaPreferenceFragment(R.xml.settings_chat)
+class ChatSettingsFragment : NomlaPreferenceFragment(R.xml.settings_chat)

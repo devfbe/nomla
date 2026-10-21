@@ -45,7 +45,7 @@ import koeln.becker.nomla.mumble.audio.routing.AndroidCommunicationDevices
 import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.audio.routing.CommunicationDevice
 import koeln.becker.nomla.mumble.audio.routing.CommunicationDevices
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 import kotlin.math.log10
 import kotlin.math.roundToInt
 
@@ -162,11 +162,11 @@ public class DoubleTalkSelfTest internal constructor(
     ) : this(
         audioManager,
         AndroidCommunicationDevices(audioManager, Handler(Looper.getMainLooper())) {
-            HumlaLog.w(TAG, "the platform refused to route to the speaker", it)
+            NomlaLog.w(TAG, "the platform refused to route to the speaker", it)
         },
         vadConfig, noiseSuppression, speexNoiseSuppressDb, echoCancellation, effects, attenuationLimitDb, clip,
         onReading, AndroidAudioRecordSource.Factory(), AndroidAudioTrackSink.CallFactory(),
-        CapturePreprocessorFactory(log = { HumlaLog.w(TAG, it) }), { from, to -> SpeexResampler(from, to) },
+        CapturePreprocessorFactory(log = { NomlaLog.w(TAG, it) }), { from, to -> SpeexResampler(from, to) },
         echoCancellationVoiceCallSource = echoCancellationVoiceCallSource,
     )
 
@@ -257,8 +257,8 @@ public class DoubleTalkSelfTest internal constructor(
             val snk = sinkFactory.open(AudioManager.STREAM_VOICE_CALL, rate)
             sink = snk
             running = true
-            playbackThread = Thread({ play(snk, farEnd) }, "humla-selftest-playback").also { it.start() }
-            captureThread = Thread({ capture(src, pipe) }, "humla-selftest-capture").also { it.start() }
+            playbackThread = Thread({ play(snk, farEnd) }, "nomla-selftest-playback").also { it.start() }
+            captureThread = Thread({ capture(src, pipe) }, "nomla-selftest-capture").also { it.start() }
             started = true
         } finally {
             if (!started) stop()
@@ -308,7 +308,7 @@ public class DoubleTalkSelfTest internal constructor(
         audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
         val speaker = devices.available().firstOrNull { it.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER }
         val routed = speaker != null && devices.select(speaker.id)
-        if (!routed) HumlaLog.w(TAG, "could not route to the speaker; playing on ${devices.current()?.type}")
+        if (!routed) NomlaLog.w(TAG, "could not route to the speaker; playing on ${devices.current()?.type}")
         return Restore(saved.mode, saved.device, routed)
     }
 

@@ -56,7 +56,7 @@ internal object RnnoiseNative : RnnoiseApi {
     const val FRAME_SIZE = 480
 
     init {
-        HumlaNativeLibrary.load()
+        NomlaNativeLibrary.load()
     }
 
     external override fun create(): Long

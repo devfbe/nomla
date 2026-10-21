@@ -26,7 +26,7 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
-import koeln.becker.nomla.db.MumlaSQLiteDatabase
+import koeln.becker.nomla.db.NomlaSQLiteDatabase
 import koeln.becker.nomla.testing.drainMainUntil
 import koeln.becker.nomla.testing.installDatabase
 import koeln.becker.nomla.testing.latestAlertMessage
@@ -37,7 +37,7 @@ class CertificateGenerateActivityTest {
 
     @After
     fun tearDown() {
-        context.deleteDatabase(MumlaSQLiteDatabase.DATABASE_NAME)
+        context.deleteDatabase(NomlaSQLiteDatabase.DATABASE_NAME)
     }
 
     @Test

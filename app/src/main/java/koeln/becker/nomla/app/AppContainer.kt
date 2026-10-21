@@ -18,12 +18,12 @@ package koeln.becker.nomla.app
 
 import android.app.Application
 import kotlinx.coroutines.CoroutineScope
-import koeln.becker.nomla.mumble.HumlaSession
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.NomlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.session.SessionConfig
 import koeln.becker.nomla.chat.NoticeFormatter
 import koeln.becker.nomla.chat.SessionChat
-import koeln.becker.nomla.service.MumlaService
+import koeln.becker.nomla.service.NomlaService
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.session.SessionSettingsSync
 import koeln.becker.nomla.ui.AppMessages
@@ -32,13 +32,13 @@ import koeln.becker.nomla.ui.AppMessages
 class AppContainer(
     app: Application,
     scope: CoroutineScope,
-    newSession: (SessionConfig) -> IHumlaSession = { config -> HumlaSession(app, config) },
+    newSession: (SessionConfig) -> INomlaSession = { config -> NomlaSession(app, config) },
 ) {
     val appMessages = AppMessages()
 
     val sessionManager = SessionManager(
         newSession = newSession,
-        startForeground = { MumlaService.start(app) },
+        startForeground = { NomlaService.start(app) },
         chat = SessionChat(NoticeFormatter(app), scope),
     )
 

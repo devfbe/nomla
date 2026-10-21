@@ -24,14 +24,14 @@ import com.google.common.truth.Truth.assertThat
 import org.robolectric.Robolectric
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.android.controller.ServiceController
-import koeln.becker.nomla.service.MumlaService
+import koeln.becker.nomla.service.NomlaService
 
 /**
- * A created [MumlaService]. [beforeCreate] runs on the bare instance first, where the seams that
+ * A created [NomlaService]. [beforeCreate] runs on the bare instance first, where the seams that
  * `onCreate` reads (connection factory, reconnect policy, communication devices) must be set.
  */
-fun createMumlaService(beforeCreate: MumlaService.() -> Unit = {}): ServiceController<MumlaService> =
-    Robolectric.buildService(MumlaService::class.java).also { it.get().beforeCreate() }.create()
+fun createNomlaService(beforeCreate: NomlaService.() -> Unit = {}): ServiceController<NomlaService> =
+    Robolectric.buildService(NomlaService::class.java).also { it.get().beforeCreate() }.create()
 
 /** From here on the platform refuses every foreground start, as with the screen off. */
 fun Service.refuseForegroundStarts() {

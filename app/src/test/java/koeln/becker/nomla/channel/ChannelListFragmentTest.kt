@@ -31,7 +31,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.android.controller.ActivityController
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.SessionActions
 import koeln.becker.nomla.mumble.model.ChannelState
 import koeln.becker.nomla.mumble.model.Server
@@ -78,7 +78,7 @@ class ChannelListFragmentTest {
     private lateinit var controller: ActivityController<ServiceHostActivity>
     private lateinit var parent: ChatTargetParentFragment
     private lateinit var fragment: ChannelListFragment
-    private val session: IHumlaSession = mockk(relaxed = true) {
+    private val session: INomlaSession = mockk(relaxed = true) {
         every { targetServer } returns Server(SERVER, "Home", "example.org", 64738, "me", null)
     }
     private lateinit var model: MutableStateFlow<ServerState?>

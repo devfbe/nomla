@@ -36,8 +36,8 @@
 #include <cstring>
 
 #include "jni_bridges.h"
-#include "webrtc_apm/humla_apm.h"
-#include "rnnoise/humla_rnnoise.h"
+#include "webrtc_apm/nomla_apm.h"
+#include "rnnoise/nomla_rnnoise.h"
 
 using jnistub::Array;
 using jnistub::Env;
@@ -159,7 +159,7 @@ static void test_apm_arguments(Env& env) {
      * past its end, a long one would mean the two sides disagree about the layout. */
     {
         Array<jfloat> shorter(HUMLA_AEC3_PARAM_COUNT - 1), longer(HUMLA_AEC3_PARAM_COUNT + 1);
-        humla_apm_aec3_defaults(longer.data());  // valid values, so only the length is wrong
+        nomla_apm_aec3_defaults(longer.data());  // valid values, so only the length is wrong
         CHECK(APM_CREATE(e, nullptr, kRate, JNI_TRUE, JNI_FALSE, 0, JNI_FALSE, JNI_TRUE,
                          shorter.as<jfloatArray>()) == 0,
               "apm create refuses an AEC3 tuning one value short");
@@ -168,7 +168,7 @@ static void test_apm_arguments(Env& env) {
               "apm create refuses an AEC3 tuning one value long");
 
         Array<jfloat> defaults(HUMLA_AEC3_PARAM_COUNT);
-        humla_apm_aec3_defaults(defaults.data());
+        nomla_apm_aec3_defaults(defaults.data());
         jlong tuned = APM_CREATE(e, nullptr, kRate, JNI_TRUE, JNI_FALSE, 0, JNI_FALSE, JNI_TRUE,
                                  defaults.as<jfloatArray>());
         CHECK(tuned != 0, "apm create accepts a full AEC3 tuning");
@@ -187,7 +187,7 @@ static void test_apm_arguments(Env& env) {
         CHECK(APM_LEVEL(e, nullptr, h) <= -99.0f, "apm reports -100 dBFS for silence");
     }
 
-    /* One sample short: humla_apm writes exactly frame_size samples and cannot see the length.
+    /* One sample short: nomla_apm writes exactly frame_size samples and cannot see the length.
      * The return code pins this, not the sanitizer: the write happens inside uninstrumented
      * webrtc objects. */
     {
@@ -291,7 +291,7 @@ static void test_apm_wiring(Env& env) {
 
     CHECK(ordered.err == 0, "every JNI AEC call returns 0");
     CHECK(mismatched.err == 0, "every JNI AEC call returns 0 with a mismatched reference too");
-    /* Kills a bridge whose processRender calls humla_apm_process_capture (or the other way
+    /* Kills a bridge whose processRender calls nomla_apm_process_capture (or the other way
      * round): with the streams crossed nothing is cancelled and this ratio stays near 1. */
     CHECK(ordered.output < ordered.input / 16.0,
           "driven through JNI in the right order, the echo is attenuated by at least 12 dB");
@@ -303,8 +303,8 @@ static void test_apm_wiring(Env& env) {
 
 int main() {
     Env env;
-    CHECK(humla::registerRnnoiseNatives(env.get()), "the rnnoise bridge registers");
-    CHECK(humla::registerWebRtcApmNatives(env.get()), "the apm bridge registers");
+    CHECK(nomla::registerRnnoiseNatives(env.get()), "the rnnoise bridge registers");
+    CHECK(nomla::registerWebRtcApmNatives(env.get()), "the apm bridge registers");
     test_rnnoise(env);
     test_apm_arguments(env);
     test_apm_wiring(env);

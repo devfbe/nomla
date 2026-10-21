@@ -115,7 +115,7 @@ class UdpAudioCodecTest {
 
             assertThat(decoder.decodeProtobuf(wire, 1, wire.size - 1, out)).isTrue()
 
-            assertThat(out.codec).isEqualTo(HumlaUDPMessageType.UDPVoiceOpus)
+            assertThat(out.codec).isEqualTo(NomlaUDPMessageType.UDPVoiceOpus)
             assertThat(out.context).isEqualTo(context ?: 0)
             assertThat(out.session).isEqualTo(session)
             assertThat(out.frameNumber).isEqualTo(frameNumber)
@@ -181,7 +181,7 @@ class UdpAudioCodecTest {
         }
     }
 
-    private fun legacyServerPacket(type: HumlaUDPMessageType, context: Int, session: Long, seq: Long, body: ByteArray) =
+    private fun legacyServerPacket(type: NomlaUDPMessageType, context: Int, session: Long, seq: Long, body: ByteArray) =
         PacketBuffer.allocate(64).run {
             append(((type.ordinal shl 5) or context).toLong())
             writeLong(session)
@@ -195,12 +195,12 @@ class UdpAudioCodecTest {
     @Test
     fun `a legacy packet yields context, session, sequence, opus data and terminator, ignoring positional data`() {
         val body = bytes(0xA0, 0x03, 0x11, 0x22, 0x33) + ByteArray(12) // 3 | terminator, opus, x/y/z
-        val wire = legacyServerPacket(HumlaUDPMessageType.UDPVoiceOpus, 2, 300, 70_000, body)
+        val wire = legacyServerPacket(NomlaUDPMessageType.UDPVoiceOpus, 2, 300, 70_000, body)
         val out = VoicePacket()
 
         assertThat(UdpPacketDecoder().decodeLegacy(wire, wire.size, out)).isTrue()
 
-        assertThat(out.codec).isEqualTo(HumlaUDPMessageType.UDPVoiceOpus)
+        assertThat(out.codec).isEqualTo(NomlaUDPMessageType.UDPVoiceOpus)
         assertThat(out.context).isEqualTo(2)
         assertThat(out.session).isEqualTo(300)
         assertThat(out.frameNumber).isEqualTo(70_000)
@@ -214,18 +214,18 @@ class UdpAudioCodecTest {
     fun `a legacy packet that is truncated, empty or a ping is refused, and other codecs pass without audio`() {
         val decoder = UdpPacketDecoder()
         val out = VoicePacket()
-        val full = legacyServerPacket(HumlaUDPMessageType.UDPVoiceOpus, 0, 1, 1, bytes(0x03, 1, 2, 3))
+        val full = legacyServerPacket(NomlaUDPMessageType.UDPVoiceOpus, 0, 1, 1, bytes(0x03, 1, 2, 3))
 
         for (length in 1 until full.size) assertThat(decoder.decodeLegacy(full, length, out)).isFalse()
-        val empty = legacyServerPacket(HumlaUDPMessageType.UDPVoiceOpus, 0, 1, 1, bytes(0x00))
+        val empty = legacyServerPacket(NomlaUDPMessageType.UDPVoiceOpus, 0, 1, 1, bytes(0x00))
         assertThat(decoder.decodeLegacy(empty, empty.size, out)).isFalse()
-        val ping = legacyServerPacket(HumlaUDPMessageType.UDPPing, 0, 1, 1, bytes())
+        val ping = legacyServerPacket(NomlaUDPMessageType.UDPPing, 0, 1, 1, bytes())
         assertThat(decoder.decodeLegacy(ping, ping.size, out)).isFalse()
         assertThat(decoder.decodeLegacy(bytes(0xE0, 1, 1), 3, out)).isFalse() // type 7
 
-        val celt = legacyServerPacket(HumlaUDPMessageType.UDPVoiceCELTAlpha, 0, 5, 1, bytes(0x02, 1, 2))
+        val celt = legacyServerPacket(NomlaUDPMessageType.UDPVoiceCELTAlpha, 0, 5, 1, bytes(0x02, 1, 2))
         assertThat(decoder.decodeLegacy(celt, celt.size, out)).isTrue()
-        assertThat(out.codec).isEqualTo(HumlaUDPMessageType.UDPVoiceCELTAlpha)
+        assertThat(out.codec).isEqualTo(NomlaUDPMessageType.UDPVoiceCELTAlpha)
         assertThat(out.session).isEqualTo(5)
         assertThat(out.opusLength).isEqualTo(0)
     }
@@ -243,7 +243,7 @@ class UdpAudioCodecTest {
             volumeAdjustment = 0.7f
             addAllPositionalData(listOf(1f, 2f, 3f))
         }.toByteArray()
-        val legacy = legacyServerPacket(HumlaUDPMessageType.UDPVoiceOpus, 0, 4, 12, bytes(0x03, 1, 2, 3))
+        val legacy = legacyServerPacket(NomlaUDPMessageType.UDPVoiceOpus, 0, 4, 12, bytes(0x03, 1, 2, 3))
         val decoder = UdpPacketDecoder()
         val out = VoicePacket()
         val protocols = UdpProtocol.entries.toTypedArray()

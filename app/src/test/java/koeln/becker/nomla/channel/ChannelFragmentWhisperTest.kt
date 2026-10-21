@@ -32,9 +32,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import koeln.becker.nomla.mumble.AudioControls
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.model.WhisperTarget
-import koeln.becker.nomla.mumble.session.HumlaEvent
+import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.mumble.util.VoiceTargetMode
 import koeln.becker.nomla.R
@@ -51,7 +51,7 @@ import koeln.becker.nomla.testing.stubModel
 /** The prominent whisper panel: shown while a whisper target is armed, its stop button, and its text. */
 @RunWith(RobolectricTestRunner::class)
 class ChannelFragmentWhisperTest {
-    private val session: IHumlaSession = mockk(relaxed = true)
+    private val session: INomlaSession = mockk(relaxed = true)
     private val actions = session.stubActions()
     private val audio: AudioControls = session.stubAudio()
     private val preferences =
@@ -72,7 +72,7 @@ class ChannelFragmentWhisperTest {
     private fun whisperTo(name: String) {
         every { actions.whisperTarget } returns mockk<WhisperTarget> { every { this@mockk.name } returns name }
         every { actions.isWhisperActive } returns true
-        session.stubEvents().tryEmit(HumlaEvent.VoiceTargetChanged(VoiceTargetMode.WHISPER))
+        session.stubEvents().tryEmit(NomlaEvent.VoiceTargetChanged(VoiceTargetMode.WHISPER))
         idleMainLooper()
     }
 

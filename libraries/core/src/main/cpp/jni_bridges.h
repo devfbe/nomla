@@ -27,13 +27,13 @@
 
 #include <jni.h>
 
-namespace humla {
+namespace nomla {
 
 bool registerOpusNatives(JNIEnv* env);
 bool registerSpeexdspNatives(JNIEnv* env);
 bool registerRnnoiseNatives(JNIEnv* env);
 bool registerWebRtcApmNatives(JNIEnv* env);
 
-}  // namespace humla
+}  // namespace nomla
 
 #endif  // HUMLA_JNI_BRIDGES_H

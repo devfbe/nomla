@@ -28,9 +28,9 @@ import koeln.becker.nomla.mumble.audio.capture.FarEndFrameChunker
 import koeln.becker.nomla.mumble.exception.AudioInitializationException
 import koeln.becker.nomla.mumble.exception.NativeAudioException
 import koeln.becker.nomla.mumble.model.TalkState
-import koeln.becker.nomla.mumble.net.HumlaUDPMessageType
+import koeln.becker.nomla.mumble.net.NomlaUDPMessageType
 import koeln.becker.nomla.mumble.net.VoicePacket
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 import java.util.Arrays
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
@@ -107,7 +107,7 @@ internal class AudioOutput(
         }
         val sizes = playbackBuffer(minBufferSize)
         bufferSize = sizes.mixSamples
-        HumlaLog.v(
+        NomlaLog.v(
             TAG,
             "Mixing ${sizes.mixSamples} samples per write into a ${sizes.trackBytes}-byte track " +
                 "(system minimum $minBufferSize bytes)",
@@ -152,7 +152,7 @@ internal class AudioOutput(
     internal fun playbackTrack(): AudioTrack? = audioTrack
 
     override fun run() {
-        HumlaLog.v(TAG, "Started thread.")
+        NomlaLog.v(TAG, "Started thread.")
         Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO)
         val track = audioTrack!!
         track.play()
@@ -226,11 +226,11 @@ internal class AudioOutput(
     }
 
     /** True for Opus; anything else is dropped, with one log line per output. */
-    private fun isDecodable(messageType: HumlaUDPMessageType): Boolean {
-        if (messageType == HumlaUDPMessageType.UDPVoiceOpus) return true
+    private fun isDecodable(messageType: NomlaUDPMessageType): Boolean {
+        if (messageType == NomlaUDPMessageType.UDPVoiceOpus) return true
         if (!loggedUnsupportedCodec) {
             loggedUnsupportedCodec = true
-            HumlaLog.w(TAG, "Dropping $messageType voice packets: only Opus is supported")
+            NomlaLog.w(TAG, "Dropping $messageType voice packets: only Opus is supported")
         }
         return false
     }
@@ -257,7 +257,7 @@ internal class AudioOutput(
             mix.add(it)
         }
     } catch (e: NativeAudioException) {
-        HumlaLog.w(TAG, "Could not create the decoder for session $session", e)
+        NomlaLog.w(TAG, "Could not create the decoder for session $session", e)
         null
     }
 

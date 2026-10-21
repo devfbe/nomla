@@ -46,7 +46,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.model.ChannelState
 import koeln.becker.nomla.mumble.model.ServerState
 import koeln.becker.nomla.mumble.model.TalkState
@@ -56,10 +56,10 @@ import koeln.becker.nomla.mumble.model.WhisperTargetChannel
 import koeln.becker.nomla.mumble.model.WhisperTargetUsers
 import koeln.becker.nomla.mumble.model.localVolumeKey
 import koeln.becker.nomla.mumble.model.localVolumeScope
-import koeln.becker.nomla.mumble.session.HumlaEvent
+import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.Settings
-import koeln.becker.nomla.db.MumlaRepository
+import koeln.becker.nomla.db.NomlaRepository
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.util.changes
 
@@ -92,7 +92,7 @@ data class UserMenuState(
 @Suppress("TooManyFunctions") // One action per menu item.
 class ChannelTreeViewModel(
     private val sessions: SessionManager,
-    private val repository: MumlaRepository,
+    private val repository: NomlaRepository,
     private val pinnedOnly: Boolean,
     showUserCount: Flow<Boolean>,
     private val settings: Settings,
@@ -142,7 +142,7 @@ class ChannelTreeViewModel(
         val showUserCount: Boolean,
     )
 
-    private val connected: IHumlaSession? get() = sessions.connected
+    private val connected: INomlaSession? get() = sessions.connected
     private val current: ServerState? get() = connected?.model?.value
 
     fun setExpanded(channel: Int, expand: Boolean) = expanded.update { it + (channel to expand) }
@@ -238,8 +238,8 @@ class ChannelTreeViewModel(
      * server has no voice target slot left, or true without a session to whisper to.
      */
     fun whisperToUser(session: Int): Boolean {
-        val (humla, user) = userOf(session) ?: return true
-        return humla.actions.whisperTo(
+        val (nomla, user) = userOf(session) ?: return true
+        return nomla.actions.whisperTo(
             WhisperTargetUsers(listOf(session), user.name),
             activate = !settings.isHoldToWhisper,
         )
@@ -271,18 +271,18 @@ class ChannelTreeViewModel(
 
     /** Mutes [session] on this device, and remembers it for a registered user of a saved server. */
     fun setLocalMuted(session: Int, muted: Boolean) {
-        val (humla, user) = userOf(session) ?: return
-        humla.actions.setLocalMuted(session, muted)
-        remember(humla, user) { server, id ->
+        val (nomla, user) = userOf(session) ?: return
+        nomla.actions.setLocalMuted(session, muted)
+        remember(nomla, user) { server, id ->
             if (muted) addLocalMutedUser(server, id) else removeLocalMutedUser(server, id)
         }
     }
 
     /** Ignores [session]'s messages on this device, remembered like [setLocalMuted]. */
     fun setLocalIgnored(session: Int, ignored: Boolean) {
-        val (humla, user) = userOf(session) ?: return
-        humla.actions.setLocalIgnored(session, ignored)
-        remember(humla, user) { server, id ->
+        val (nomla, user) = userOf(session) ?: return
+        nomla.actions.setLocalIgnored(session, ignored)
+        remember(nomla, user) { server, id ->
             if (ignored) addLocalIgnoredUser(server, id) else removeLocalIgnoredUser(server, id)
         }
     }
@@ -294,9 +294,9 @@ class ChannelTreeViewModel(
 
     /** Plays [session] at [volume] on this device and stores it for anyone of the same identity. */
     fun setLocalVolume(session: Int, volume: Float) {
-        val (humla, user) = userOf(session) ?: return
-        humla.actions.setLocalVolume(session, volume)
-        val key = localVolumeKey(user, humla.targetServer?.localVolumeScope) ?: return
+        val (nomla, user) = userOf(session) ?: return
+        nomla.actions.setLocalVolume(session, volume)
+        val key = localVolumeKey(user, nomla.targetServer?.localVolumeScope) ?: return
         repository.launchIo { setLocalVolume(key, volume) }
     }
 
@@ -305,29 +305,29 @@ class ChannelTreeViewModel(
 
     /** [session]'s connection statistics, asked for now and every few seconds while collected. */
     fun userStats(session: Int): Flow<UserStats> = channelFlow {
-        val humla = connected ?: return@channelFlow
+        val nomla = connected ?: return@channelFlow
         launch(start = CoroutineStart.UNDISPATCHED) {
-            humla.events.filterIsInstance<HumlaEvent.UserStatsReceived>()
+            nomla.events.filterIsInstance<NomlaEvent.UserStatsReceived>()
                 .filter { it.stats.session == session }
                 .collect { send(it.stats) }
         }
         while (true) {
-            humla.actions.requestUserStats(session)
+            nomla.actions.requestUserStats(session)
             delay(STATS_REFRESH_MILLIS)
         }
     }
 
-    private fun userOf(session: Int): Pair<IHumlaSession, UserState>? {
-        val humla = connected
-        val user = humla?.model?.value?.user(session) ?: return null
-        return humla to user
+    private fun userOf(session: Int): Pair<INomlaSession, UserState>? {
+        val nomla = connected
+        val user = nomla?.model?.value?.user(session) ?: return null
+        return nomla to user
     }
 
     /** Stores a local choice about a registered [user] of a saved server, off the main thread. */
     private fun remember(
-        session: IHumlaSession,
+        session: INomlaSession,
         user: UserState,
-        write: koeln.becker.nomla.db.MumlaDatabase.(Long, Int) -> Unit,
+        write: koeln.becker.nomla.db.NomlaDatabase.(Long, Int) -> Unit,
     ) {
         val server = session.targetServer ?: return
         if (user.userId < 0 || !server.isSaved) return
@@ -347,7 +347,7 @@ class ChannelTreeViewModel(
                 .onStart { emit(Settings.getInstance(app).shouldShowUserCount) }
             return ChannelTreeViewModel(
                 SessionManager.get(app),
-                MumlaRepository.get(app),
+                NomlaRepository.get(app),
                 pinnedOnly,
                 showUserCount,
                 Settings.getInstance(app),

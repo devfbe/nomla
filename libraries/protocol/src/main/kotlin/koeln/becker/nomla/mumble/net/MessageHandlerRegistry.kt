@@ -20,7 +20,7 @@ package koeln.becker.nomla.mumble.net
 
 
 /**
- * Registration of protocol message handlers, implemented by [HumlaConnection].
+ * Registration of protocol message handlers, implemented by [NomlaConnection].
  *
  * Registering and unregistering is safe from any thread. A handler runs on the protocol context, so
  * it must not block: everything behind it - parsing, the model, voice routing - waits on it.

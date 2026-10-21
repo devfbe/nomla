@@ -26,11 +26,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.session.SessionConfig
 import koeln.becker.nomla.mumble.session.SessionState
-import koeln.becker.nomla.service.MumlaService
+import koeln.becker.nomla.service.NomlaService
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.testing.drainMainUntil
 import koeln.becker.nomla.testing.installDatabase
@@ -40,9 +40,9 @@ import koeln.becker.nomla.testing.stubState
 @RunWith(RobolectricTestRunner::class)
 class ServerConnectTest {
 
-    private val app = ApplicationProvider.getApplicationContext<MumlaApplication>()
+    private val app = ApplicationProvider.getApplicationContext<NomlaApplication>()
     private val server = Server(1, "Home", "example.org", 64738, "me", null)
-    private val session = mockk<IHumlaSession>(relaxed = true).stubDisconnected()
+    private val session = mockk<INomlaSession>(relaxed = true).stubDisconnected()
     private val configs = mutableListOf<SessionConfig>()
 
     @Test
@@ -57,7 +57,7 @@ class ServerConnectTest {
         assertThat(configs.single().connection.server).isSameInstanceAs(server)
         verify { session.connect() }
         assertThat(SessionManager.get(app).session.value).isSameInstanceAs(session)
-        assertThat(shadowOf(app).nextStartedService.component).isEqualTo(ComponentName(app, MumlaService::class.java))
+        assertThat(shadowOf(app).nextStartedService.component).isEqualTo(ComponentName(app, NomlaService::class.java))
     }
 
     /** A session that ended at once needs no foreground service. */

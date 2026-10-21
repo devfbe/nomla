@@ -39,7 +39,7 @@ internal interface OpusDecoderApi {
 
 internal object OpusDecoderNative : OpusDecoderApi {
     init {
-        HumlaNativeLibrary.load()
+        NomlaNativeLibrary.load()
     }
 
     external override fun create(sampleRate: Int, channels: Int, error: IntArray): Long

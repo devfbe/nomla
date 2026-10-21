@@ -20,7 +20,7 @@ package koeln.becker.nomla.mumble.audio.capture
 /**
  * The `webrtc::EchoCanceller3Config` fields the native glue can set, with webrtc's defaults.
  *
- * Names and order are the `HUMLA_AEC3_*` enum in `webrtc_apm/humla_apm.h` (the ordinal is the
+ * Names and order are the `HUMLA_AEC3_*` enum in `webrtc_apm/nomla_apm.h` (the ordinal is the
  * index; `Aec3ParamHeaderTest` pins both). Integer fields are rounded, booleans are 0 or 1.
  *
  * AEC3 works on 64-sample blocks (4 ms) of the 0-8 kHz band at 16 kHz, in 65 frequency bins of
@@ -165,7 +165,7 @@ internal class Aec3Tuning private constructor(private val values: FloatArray) {
         return Aec3Tuning(copy)
     }
 
-    /** The values in [Aec3Param] order, as `humla_apm_create` reads them. */
+    /** The values in [Aec3Param] order, as `nomla_apm_create` reads them. */
     fun toArray(): FloatArray = values.copyOf()
 
     override fun equals(other: Any?): Boolean = other is Aec3Tuning && values.contentEquals(other.values)

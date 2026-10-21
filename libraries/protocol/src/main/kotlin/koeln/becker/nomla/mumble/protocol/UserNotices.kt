@@ -21,15 +21,15 @@ package koeln.becker.nomla.mumble.protocol
 import koeln.becker.nomla.mumble.model.ChannelState
 import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.mumble.protobuf.Mumble
-import koeln.becker.nomla.mumble.session.HumlaEvent
+import koeln.becker.nomla.mumble.session.NomlaEvent
 
 /** The chat log notices of the model's changes, and of the server's refusals. */
 internal object UserNotices {
 
     /** Our own mute change, or that of a user in our channel; null for anyone else. */
-    fun selfMute(user: UserState, self: UserState): HumlaEvent.Notice? = when {
-        user.session == self.session -> HumlaEvent.SelfMuteChanged(user.isSelfMuted, user.isSelfDeafened)
-        user.channel == self.channel -> HumlaEvent.UserMuteChanged(user.name, user.isSelfMuted, user.isSelfDeafened)
+    fun selfMute(user: UserState, self: UserState): NomlaEvent.Notice? = when {
+        user.session == self.session -> NomlaEvent.SelfMuteChanged(user.isSelfMuted, user.isSelfDeafened)
+        user.channel == self.channel -> NomlaEvent.UserMuteChanged(user.name, user.isSelfMuted, user.isSelfDeafened)
         else -> null
     }
 
@@ -37,10 +37,10 @@ internal object UserNotices {
      * Our own recording change, or that of a user in our channel or one linked to it, directly or
      * through other links, as desktop Mumble reports them; null for anyone else.
      */
-    fun recording(user: UserState, self: UserState, channel: (Int) -> ChannelState?): HumlaEvent.Notice? = when {
-        user.session == self.session -> HumlaEvent.SelfRecordingChanged(user.isRecording)
+    fun recording(user: UserState, self: UserState, channel: (Int) -> ChannelState?): NomlaEvent.Notice? = when {
+        user.session == self.session -> NomlaEvent.SelfRecordingChanged(user.isRecording)
         self.channel in linkedTree(user.channel, channel) ->
-            HumlaEvent.UserRecordingChanged(user.name, user.isRecording)
+            NomlaEvent.UserRecordingChanged(user.name, user.isRecording)
         else -> null
     }
 
@@ -61,30 +61,30 @@ internal object UserNotices {
         old: ChannelState?,
         new: ChannelState,
         self: UserState,
-    ): HumlaEvent.Notice? {
+    ): NomlaEvent.Notice? {
         val byThemselves = actor != null && actor.session == user.session
         return when {
             self.channel != new.id && self.channel == old?.id ->
-                HumlaEvent.UserLeftChannel(user.name, new.name, actor?.name, byThemselves)
-            self.channel == new.id -> HumlaEvent.UserEnteredChannel(user.name, old?.name, actor?.name, byThemselves)
+                NomlaEvent.UserLeftChannel(user.name, new.name, actor?.name, byThemselves)
+            self.channel == new.id -> NomlaEvent.UserEnteredChannel(user.name, old?.name, actor?.name, byThemselves)
             else -> null
         }
     }
 
-    fun denial(msg: Mumble.PermissionDenied): HumlaEvent.PermissionDenied =
-        HumlaEvent.PermissionDenied(denyType(msg.type), if (msg.hasReason()) msg.reason else null)
+    fun denial(msg: Mumble.PermissionDenied): NomlaEvent.PermissionDenied =
+        NomlaEvent.PermissionDenied(denyType(msg.type), if (msg.hasReason()) msg.reason else null)
 
-    private fun denyType(type: Mumble.PermissionDenied.DenyType): HumlaEvent.DenyType = when (type) {
-        Mumble.PermissionDenied.DenyType.ChannelName -> HumlaEvent.DenyType.CHANNEL_NAME
-        Mumble.PermissionDenied.DenyType.TextTooLong -> HumlaEvent.DenyType.TEXT_TOO_LONG
-        Mumble.PermissionDenied.DenyType.TemporaryChannel -> HumlaEvent.DenyType.TEMPORARY_CHANNEL
-        Mumble.PermissionDenied.DenyType.MissingCertificate -> HumlaEvent.DenyType.MISSING_CERTIFICATE
-        Mumble.PermissionDenied.DenyType.UserName -> HumlaEvent.DenyType.USER_NAME
-        Mumble.PermissionDenied.DenyType.ChannelFull -> HumlaEvent.DenyType.CHANNEL_FULL
-        Mumble.PermissionDenied.DenyType.NestingLimit -> HumlaEvent.DenyType.NESTING_LIMIT
-        Mumble.PermissionDenied.DenyType.ChannelCountLimit -> HumlaEvent.DenyType.CHANNEL_COUNT_LIMIT
-        Mumble.PermissionDenied.DenyType.ChannelListenerLimit -> HumlaEvent.DenyType.CHANNEL_LISTENER_LIMIT
-        Mumble.PermissionDenied.DenyType.UserListenerLimit -> HumlaEvent.DenyType.USER_LISTENER_LIMIT
-        else -> HumlaEvent.DenyType.OTHER
+    private fun denyType(type: Mumble.PermissionDenied.DenyType): NomlaEvent.DenyType = when (type) {
+        Mumble.PermissionDenied.DenyType.ChannelName -> NomlaEvent.DenyType.CHANNEL_NAME
+        Mumble.PermissionDenied.DenyType.TextTooLong -> NomlaEvent.DenyType.TEXT_TOO_LONG
+        Mumble.PermissionDenied.DenyType.TemporaryChannel -> NomlaEvent.DenyType.TEMPORARY_CHANNEL
+        Mumble.PermissionDenied.DenyType.MissingCertificate -> NomlaEvent.DenyType.MISSING_CERTIFICATE
+        Mumble.PermissionDenied.DenyType.UserName -> NomlaEvent.DenyType.USER_NAME
+        Mumble.PermissionDenied.DenyType.ChannelFull -> NomlaEvent.DenyType.CHANNEL_FULL
+        Mumble.PermissionDenied.DenyType.NestingLimit -> NomlaEvent.DenyType.NESTING_LIMIT
+        Mumble.PermissionDenied.DenyType.ChannelCountLimit -> NomlaEvent.DenyType.CHANNEL_COUNT_LIMIT
+        Mumble.PermissionDenied.DenyType.ChannelListenerLimit -> NomlaEvent.DenyType.CHANNEL_LISTENER_LIMIT
+        Mumble.PermissionDenied.DenyType.UserListenerLimit -> NomlaEvent.DenyType.USER_LISTENER_LIMIT
+        else -> NomlaEvent.DenyType.OTHER
     }
 }

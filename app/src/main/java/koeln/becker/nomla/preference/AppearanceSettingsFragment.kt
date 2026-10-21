@@ -26,7 +26,7 @@ import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import java.util.Locale
 
-class AppearanceSettingsFragment : MumlaPreferenceFragment(R.xml.settings_appearance) {
+class AppearanceSettingsFragment : NomlaPreferenceFragment(R.xml.settings_appearance) {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         super.onCreatePreferences(savedInstanceState, rootKey)
         // Each language named in itself, after the system default.

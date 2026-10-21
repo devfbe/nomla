@@ -32,7 +32,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.model.ChannelState
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.model.UserState
@@ -41,8 +41,8 @@ import koeln.becker.nomla.mumble.net.Permissions
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.Settings
-import koeln.becker.nomla.db.MumlaDatabase
-import koeln.becker.nomla.db.MumlaRepository
+import koeln.becker.nomla.db.NomlaDatabase
+import koeln.becker.nomla.db.NomlaRepository
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.testing.installSession
 import koeln.becker.nomla.testing.serverState
@@ -53,10 +53,10 @@ import koeln.becker.nomla.testing.stubState
 @RunWith(RobolectricTestRunner::class)
 class ChannelTreeViewModelTest {
     private val app = ApplicationProvider.getApplicationContext<Application>()
-    private val database = mockk<MumlaDatabase>(relaxed = true)
-    private val repository = MumlaRepository(database, Dispatchers.Unconfined)
+    private val database = mockk<NomlaDatabase>(relaxed = true)
+    private val repository = NomlaRepository(database, Dispatchers.Unconfined)
     private var server = Server(SERVER, "Home", "example.org", 64738, "me", null)
-    private val session = mockk<IHumlaSession>(relaxed = true) { every { targetServer } answers { server } }
+    private val session = mockk<INomlaSession>(relaxed = true) { every { targetServer } answers { server } }
     private val state = session.stubState(SessionState.Connected)
     private val model = session.stubModel(tree())
     private val actions = session.stubActions()

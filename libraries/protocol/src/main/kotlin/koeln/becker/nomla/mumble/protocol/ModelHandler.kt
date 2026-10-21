@@ -24,7 +24,7 @@ import koeln.becker.nomla.mumble.model.ServerState
 import koeln.becker.nomla.mumble.model.UserStats
 import koeln.becker.nomla.mumble.net.TcpMessageHandler
 import koeln.becker.nomla.mumble.protobuf.Mumble
-import koeln.becker.nomla.mumble.session.HumlaEvent
+import koeln.becker.nomla.mumble.session.NomlaEvent
 
 /**
  * The model's single writer: reduces the frames about channels, users and permissions into
@@ -38,7 +38,7 @@ import koeln.becker.nomla.mumble.session.HumlaEvent
  */
 internal class ModelHandler(
     initial: ServerState,
-    private val events: (HumlaEvent) -> Unit,
+    private val events: (NomlaEvent) -> Unit,
     private val publisher: Publisher,
     private val requestAvatar: (Int) -> Unit = {},
 ) : TcpMessageHandler {
@@ -72,7 +72,7 @@ internal class ModelHandler(
             }
             is Mumble.PermissionDenied -> events(UserNotices.denial(msg))
             is Mumble.TextMessage -> textMessage(msg)
-            is Mumble.UserStats -> events(HumlaEvent.UserStatsReceived(UserStats.from(msg)))
+            is Mumble.UserStats -> events(NomlaEvent.UserStatsReceived(UserStats.from(msg)))
         }
     }
 
@@ -108,6 +108,6 @@ internal class ModelHandler(
             msg.sessionList.mapNotNull(writer::user),
             msg.message,
         )
-        events(HumlaEvent.TextMessage(message))
+        events(NomlaEvent.TextMessage(message))
     }
 }

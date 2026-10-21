@@ -20,7 +20,7 @@ package koeln.becker.nomla.chat
 import android.content.Context
 import koeln.becker.nomla.mumble.model.Message
 import koeln.becker.nomla.mumble.session.DisconnectReason
-import koeln.becker.nomla.mumble.session.HumlaEvent
+import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.R
 
 /**
@@ -29,33 +29,33 @@ import koeln.becker.nomla.R
  */
 class NoticeFormatter(private val context: Context) {
 
-    fun format(notice: HumlaEvent.Notice): String = when (notice) {
-        is HumlaEvent.LogMessage -> notice.text
-        is HumlaEvent.UserJoinedServer -> string(R.string.chat_notify_connected, highlight(notice.user))
-        is HumlaEvent.UserLeftServer ->
+    fun format(notice: NomlaEvent.Notice): String = when (notice) {
+        is NomlaEvent.LogMessage -> notice.text
+        is NomlaEvent.UserJoinedServer -> string(R.string.chat_notify_connected, highlight(notice.user))
+        is NomlaEvent.UserLeftServer ->
             string(R.string.chat_notify_disconnected, highlight(notice.user ?: UNKNOWN))
-        is HumlaEvent.UserKicked -> kicked(notice)
-        is HumlaEvent.SelfKicked -> kicked(notice)
-        is HumlaEvent.SelfMuteChanged -> string(muteState(notice.muted, notice.deafened, self = true))
-        is HumlaEvent.UserMuteChanged ->
+        is NomlaEvent.UserKicked -> kicked(notice)
+        is NomlaEvent.SelfKicked -> kicked(notice)
+        is NomlaEvent.SelfMuteChanged -> string(muteState(notice.muted, notice.deafened, self = true))
+        is NomlaEvent.UserMuteChanged ->
             string(muteState(notice.muted, notice.deafened, self = false), highlight(notice.user))
-        is HumlaEvent.SelfRecordingChanged -> string(recording(notice.recording, self = true))
-        is HumlaEvent.UserRecordingChanged -> string(recording(notice.recording, self = false), highlight(notice.user))
-        is HumlaEvent.UserLeftChannel -> leftChannel(notice)
-        is HumlaEvent.UserEnteredChannel -> enteredChannel(notice)
+        is NomlaEvent.SelfRecordingChanged -> string(recording(notice.recording, self = true))
+        is NomlaEvent.UserRecordingChanged -> string(recording(notice.recording, self = false), highlight(notice.user))
+        is NomlaEvent.UserLeftChannel -> leftChannel(notice)
+        is NomlaEvent.UserEnteredChannel -> enteredChannel(notice)
     }
 
-    private fun kicked(notice: HumlaEvent.UserKicked): String = string(
+    private fun kicked(notice: NomlaEvent.UserKicked): String = string(
         if (notice.ban) R.string.chat_notify_kick_ban else R.string.chat_notify_kick,
         highlight(notice.actor ?: UNKNOWN), notice.reason, highlight(notice.user ?: UNKNOWN),
     )
 
-    private fun kicked(notice: HumlaEvent.SelfKicked): String = string(
+    private fun kicked(notice: NomlaEvent.SelfKicked): String = string(
         if (notice.ban) R.string.chat_notify_kick_ban_self else R.string.chat_notify_kick_self,
         highlight(notice.actor ?: UNKNOWN), notice.reason,
     )
 
-    private fun leftChannel(notice: HumlaEvent.UserLeftChannel): String =
+    private fun leftChannel(notice: NomlaEvent.UserLeftChannel): String =
         if (notice.byThemselves) {
             string(R.string.chat_notify_user_left_channel, highlight(notice.user), highlight(notice.channel))
         } else {
@@ -65,7 +65,7 @@ class NoticeFormatter(private val context: Context) {
             )
         }
 
-    private fun enteredChannel(notice: HumlaEvent.UserEnteredChannel): String =
+    private fun enteredChannel(notice: NomlaEvent.UserEnteredChannel): String =
         if (notice.byThemselves) {
             string(R.string.chat_notify_user_joined_channel, highlight(notice.user))
         } else {
@@ -76,18 +76,18 @@ class NoticeFormatter(private val context: Context) {
         }
 
     /** What to tell the user about a refused operation. */
-    fun denial(event: HumlaEvent.PermissionDenied): String = when (event.type) {
-        HumlaEvent.DenyType.CHANNEL_NAME -> string(R.string.deny_reason_channel_name)
-        HumlaEvent.DenyType.TEXT_TOO_LONG -> string(R.string.deny_reason_text_too_long)
-        HumlaEvent.DenyType.TEMPORARY_CHANNEL -> string(R.string.deny_reason_no_operation_temp)
-        HumlaEvent.DenyType.MISSING_CERTIFICATE -> string(R.string.deny_reason_no_certificate)
-        HumlaEvent.DenyType.USER_NAME -> string(R.string.deny_reason_invalid_username)
-        HumlaEvent.DenyType.CHANNEL_FULL -> string(R.string.deny_reason_channel_full)
-        HumlaEvent.DenyType.NESTING_LIMIT -> string(R.string.deny_reason_channel_nesting)
-        HumlaEvent.DenyType.CHANNEL_COUNT_LIMIT -> string(R.string.deny_reason_channel_count)
-        HumlaEvent.DenyType.CHANNEL_LISTENER_LIMIT -> string(R.string.deny_reason_channel_listener_limit)
-        HumlaEvent.DenyType.USER_LISTENER_LIMIT -> string(R.string.deny_reason_user_listener_limit)
-        HumlaEvent.DenyType.OTHER ->
+    fun denial(event: NomlaEvent.PermissionDenied): String = when (event.type) {
+        NomlaEvent.DenyType.CHANNEL_NAME -> string(R.string.deny_reason_channel_name)
+        NomlaEvent.DenyType.TEXT_TOO_LONG -> string(R.string.deny_reason_text_too_long)
+        NomlaEvent.DenyType.TEMPORARY_CHANNEL -> string(R.string.deny_reason_no_operation_temp)
+        NomlaEvent.DenyType.MISSING_CERTIFICATE -> string(R.string.deny_reason_no_certificate)
+        NomlaEvent.DenyType.USER_NAME -> string(R.string.deny_reason_invalid_username)
+        NomlaEvent.DenyType.CHANNEL_FULL -> string(R.string.deny_reason_channel_full)
+        NomlaEvent.DenyType.NESTING_LIMIT -> string(R.string.deny_reason_channel_nesting)
+        NomlaEvent.DenyType.CHANNEL_COUNT_LIMIT -> string(R.string.deny_reason_channel_count)
+        NomlaEvent.DenyType.CHANNEL_LISTENER_LIMIT -> string(R.string.deny_reason_channel_listener_limit)
+        NomlaEvent.DenyType.USER_LISTENER_LIMIT -> string(R.string.deny_reason_user_listener_limit)
+        NomlaEvent.DenyType.OTHER ->
             event.reason?.let { string(R.string.deny_reason_other, it) } ?: string(R.string.perm_denied)
     }
 

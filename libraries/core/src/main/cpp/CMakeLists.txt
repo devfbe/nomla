@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(humla_native LANGUAGES C CXX)
+project(nomla_native LANGUAGES C CXX)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 17)
@@ -25,7 +25,7 @@ set(HUMLA_JNI_C_OPTIONS -fvisibility=hidden)
 #
 # POST_BUILD commands take no DEPENDS, so the script is a link dependency instead: changing it
 # relinks the library, which reruns the check.
-function(humla_check_library target)
+function(nomla_check_library target)
   set_property(TARGET ${target} APPEND PROPERTY LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/check_library.cmake)
   add_custom_command(TARGET ${target} POST_BUILD
       COMMAND ${CMAKE_COMMAND} -DNM=${CMAKE_NM} -DREADELF=${CMAKE_READELF}
@@ -74,11 +74,11 @@ target_compile_definitions(speexdsp PUBLIC __EMX__ PRIVATE FIXED_POINT USE_KISS_
 add_subdirectory(rnnoise)
 add_subdirectory(webrtc_apm)
 
-# ---------------------------------------------------------------- libhumla_native.so
+# ---------------------------------------------------------------- libnomla_native.so
 # One library, one System.loadLibrary: JNI_OnLoad registers every bridge's methods.
-add_library(humla_native SHARED
+add_library(nomla_native SHARED
     jni_onload.cpp jni_opus.cpp jni_speexdsp.cpp jni_rnnoise.cpp jni_webrtc_apm.cpp)
-target_link_libraries(humla_native PRIVATE opus speexdsp humla_rnnoise humla_apm log)
-target_link_options(humla_native PRIVATE ${HUMLA_LINK_OPTIONS})
-target_compile_options(humla_native PRIVATE ${HUMLA_JNI_C_OPTIONS})
-humla_check_library(humla_native)
+target_link_libraries(nomla_native PRIVATE opus speexdsp nomla_rnnoise nomla_apm log)
+target_link_options(nomla_native PRIVATE ${HUMLA_LINK_OPTIONS})
+target_compile_options(nomla_native PRIVATE ${HUMLA_JNI_C_OPTIONS})
+nomla_check_library(nomla_native)

@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap
  * background.
  */
 class PinnedChannels internal constructor(
-    private val repository: MumlaRepository,
+    private val repository: NomlaRepository,
     private val scope: CoroutineScope,
 ) {
     private val servers = ConcurrentHashMap<Long, MutableStateFlow<Set<Int>?>>()

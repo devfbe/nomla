@@ -24,7 +24,7 @@ import koeln.becker.nomla.mumble.model.Bytes
 import koeln.becker.nomla.mumble.model.LocalUserSettings
 import koeln.becker.nomla.mumble.model.ServerState
 import koeln.becker.nomla.mumble.protobuf.Mumble
-import koeln.becker.nomla.mumble.session.HumlaEvent
+import koeln.becker.nomla.mumble.session.NomlaEvent
 
 /** What [ServerReducer] makes of each frame: the next snapshot and the chat log notices. */
 class ServerReducerTest {
@@ -141,7 +141,7 @@ class ServerReducerTest {
     fun theWelcomeTextIsAnInfoLineAndServerSyncNamesUs() {
         model.feed(serverSync(1, "<b>Hi</b>"))
 
-        assertThat(model.notices).containsExactly(HumlaEvent.LogMessage(HumlaEvent.Level.INFO, "<b>Hi</b>"))
+        assertThat(model.notices).containsExactly(NomlaEvent.LogMessage(NomlaEvent.Level.INFO, "<b>Hi</b>"))
         assertThat(state.self!!.name).isEqualTo("Me")
         assertThat(state.selfChannel!!.name).isEqualTo("Lobby")
     }
@@ -252,7 +252,7 @@ class ServerReducerTest {
     fun aNewUserIsAnnouncedAndStartsInTheRoot() {
         model.feed(userFrame(3) { setName("Bob") })
 
-        assertThat(model.notices).containsExactly(HumlaEvent.UserJoinedServer("Bob"))
+        assertThat(model.notices).containsExactly(NomlaEvent.UserJoinedServer("Bob"))
         assertThat(state.user(3)!!.channel).isEqualTo(0)
         assertThat(state.userIds(0)).containsExactly(3)
     }
@@ -282,9 +282,9 @@ class ServerReducerTest {
         )
 
         assertThat(model.notices).containsExactly(
-            HumlaEvent.SelfMuteChanged(muted = true, deafened = false),
-            HumlaEvent.SelfMuteChanged(muted = true, deafened = true),
-            HumlaEvent.SelfMuteChanged(muted = false, deafened = false),
+            NomlaEvent.SelfMuteChanged(muted = true, deafened = false),
+            NomlaEvent.SelfMuteChanged(muted = true, deafened = true),
+            NomlaEvent.SelfMuteChanged(muted = false, deafened = false),
         ).inOrder()
         assertThat(state.self!!.isSelfMuted).isFalse()
     }
@@ -296,7 +296,7 @@ class ServerReducerTest {
 
         model.feed(userFrame(2) { selfMute = true }, userFrame(3) { selfMute = true })
 
-        assertThat(model.notices).containsExactly(HumlaEvent.UserMuteChanged("Ann", muted = true, deafened = false))
+        assertThat(model.notices).containsExactly(NomlaEvent.UserMuteChanged("Ann", muted = true, deafened = false))
     }
 
     @Test
@@ -320,9 +320,9 @@ class ServerReducerTest {
         )
 
         assertThat(model.notices).containsExactly(
-            HumlaEvent.SelfRecordingChanged(true),
-            HumlaEvent.UserRecordingChanged("Ann", true),
-            HumlaEvent.UserRecordingChanged("Ann", false),
+            NomlaEvent.SelfRecordingChanged(true),
+            NomlaEvent.UserRecordingChanged("Ann", true),
+            NomlaEvent.UserRecordingChanged("Ann", false),
         ).inOrder()
     }
 
@@ -348,8 +348,8 @@ class ServerReducerTest {
         )
 
         assertThat(model.notices).containsExactly(
-            HumlaEvent.UserRecordingChanged("Near", true),
-            HumlaEvent.UserRecordingChanged("Nearish", true),
+            NomlaEvent.UserRecordingChanged("Near", true),
+            NomlaEvent.UserRecordingChanged("Nearish", true),
         ).inOrder()
     }
 
@@ -366,10 +366,10 @@ class ServerReducerTest {
         )
 
         assertThat(model.notices).containsExactly(
-            HumlaEvent.UserLeftChannel("Ann", "Games", actor = "Ann", byThemselves = true),
-            HumlaEvent.UserEnteredChannel("Ann", "Games", actor = "Ann", byThemselves = true),
-            HumlaEvent.UserLeftChannel("Ann", "Games", actor = "Mod", byThemselves = false),
-            HumlaEvent.UserEnteredChannel("Ann", "Games", actor = null, byThemselves = false),
+            NomlaEvent.UserLeftChannel("Ann", "Games", actor = "Ann", byThemselves = true),
+            NomlaEvent.UserEnteredChannel("Ann", "Games", actor = "Ann", byThemselves = true),
+            NomlaEvent.UserLeftChannel("Ann", "Games", actor = "Mod", byThemselves = false),
+            NomlaEvent.UserEnteredChannel("Ann", "Games", actor = null, byThemselves = false),
         ).inOrder()
     }
 
@@ -414,10 +414,10 @@ class ServerReducerTest {
         model.feed(userRemoveFrame(1, actor = 9, reason = "bye", ban = true))
 
         assertThat(model.notices).containsExactly(
-            HumlaEvent.SelfKicked("Ann", "spam", ban = false),
-            HumlaEvent.SelfKicked(null, "bye", ban = true),
+            NomlaEvent.SelfKicked("Ann", "spam", ban = false),
+            NomlaEvent.SelfKicked(null, "bye", ban = true),
         ).inOrder()
-        assertThat(model.notices.map { it.level }.toSet()).containsExactly(HumlaEvent.Level.WARNING)
+        assertThat(model.notices.map { it.level }.toSet()).containsExactly(NomlaEvent.Level.WARNING)
     }
 
     @Test
@@ -428,11 +428,11 @@ class ServerReducerTest {
         model.feed(userRemoveFrame(3, actor = 2, reason = "r", ban = true), userRemoveFrame(2, actor = 99))
 
         assertThat(model.notices).containsExactly(
-            HumlaEvent.UserKicked("Bob", "Ann", "r", ban = true),
-            HumlaEvent.UserLeftServer("Ann"),
+            NomlaEvent.UserKicked("Bob", "Ann", "r", ban = true),
+            NomlaEvent.UserLeftServer("Ann"),
         ).inOrder()
         assertThat(model.notices.map { it.level })
-            .containsExactly(HumlaEvent.Level.WARNING, HumlaEvent.Level.INFO).inOrder()
+            .containsExactly(NomlaEvent.Level.WARNING, NomlaEvent.Level.INFO).inOrder()
         assertThat(state.user(2)).isNull()
         assertThat(state.userIds(1)).containsExactly(1)
     }

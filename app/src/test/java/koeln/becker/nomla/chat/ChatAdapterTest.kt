@@ -201,7 +201,7 @@ class ChatAdapterTest {
 
     @Test
     fun aPictureAUserSentIsAnImageRowAndNotItsRawMarkup() = runTest {
-        // The real use case: MumlaService wraps every incoming chat message in a TextMessage, so a
+        // The real use case: NomlaService wraps every incoming chat message in a TextMessage, so a
         // sent picture arrives as a TextMessage whose body holds the <img>, not as an InfoMessage.
         val adapter = adapter()
         val sent = text(body = "look <img src=\"$url\"/>")

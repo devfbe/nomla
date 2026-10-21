@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.model.ServerState
 import koeln.becker.nomla.mumble.model.TalkState
 import koeln.becker.nomla.mumble.model.UserState
@@ -55,7 +55,7 @@ import koeln.becker.nomla.ui.showSnackbar
 class ChannelFragmentControlBarTest {
     private val context = ApplicationProvider.getApplicationContext<Context>()
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-    private val session = mockk<IHumlaSession>(relaxed = true)
+    private val session = mockk<INomlaSession>(relaxed = true)
     private lateinit var model: MutableStateFlow<ServerState?>
     private lateinit var talkStates: MutableStateFlow<Map<Int, TalkState>>
     private lateinit var fragment: ChannelFragment

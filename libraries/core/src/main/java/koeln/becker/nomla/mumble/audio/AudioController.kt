@@ -23,7 +23,7 @@ import android.os.Looper
 import koeln.becker.nomla.mumble.audio.capture.CaptureState
 import koeln.becker.nomla.mumble.audio.capture.IInputMode
 import koeln.becker.nomla.mumble.net.MessageHandlerRegistry
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 
 /**
  * Owns the audio pipeline's lifecycle on the [THREAD_NAME] HandlerThread.
@@ -149,7 +149,7 @@ internal class AudioController(
         } catch (e: Exception) {
             // Exception, not AudioException: AudioTrack/AudioRecord construction can throw
             // unchecked, which would kill the control thread and silently drop all later messages.
-            HumlaLog.e(TAG, "Audio initialization failed", e)
+            NomlaLog.e(TAG, "Audio initialization failed", e)
             mainHandler.post { onFailed(e.message ?: e.javaClass.simpleName) }
         }
     }
@@ -180,11 +180,11 @@ internal class AudioController(
     private fun onCaptureError(message: String) {
         val s = session ?: return
         if (rebuiltAfterCaptureError) {
-            HumlaLog.e(TAG, "Capture failed again after its rebuild: $message")
+            NomlaLog.e(TAG, "Capture failed again after its rebuild: $message")
             mainHandler.post { onFailed(message) }
             return
         }
-        HumlaLog.w(TAG, "Capture failed, rebuilding the pipeline once: $message")
+        NomlaLog.w(TAG, "Capture failed, rebuilding the pipeline once: $message")
         rebuiltAfterCaptureError = true
         stopRunning()
         create(s)
@@ -198,6 +198,6 @@ internal class AudioController(
 
     companion object {
         internal val TAG: String = AudioController::class.java.name
-        const val THREAD_NAME = "humla-audio-control"
+        const val THREAD_NAME = "nomla-audio-control"
     }
 }

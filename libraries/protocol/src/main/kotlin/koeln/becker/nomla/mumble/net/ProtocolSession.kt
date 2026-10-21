@@ -24,11 +24,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import koeln.becker.nomla.mumble.exception.HumlaException
+import koeln.becker.nomla.mumble.exception.NomlaException
 import koeln.becker.nomla.mumble.model.Latency
 import koeln.becker.nomla.mumble.model.ServerInfo
 import koeln.becker.nomla.mumble.protobuf.Mumble
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.mumble.util.MumbleVersion
 import java.security.InvalidKeyException
 
@@ -73,7 +73,7 @@ internal class ProtocolSession(
         /** Where the connection went; known before any server message arrives. */
         val endpoint: Endpoint
 
-        fun sendTcp(message: MessageLite, type: HumlaTCPMessageType)
+        fun sendTcp(message: MessageLite, type: NomlaTCPMessageType)
 
         /** Sends over UDP, whichever way voice currently goes. */
         fun sendUdp(data: ByteArray, length: Int)
@@ -85,7 +85,7 @@ internal class ProtocolSession(
         fun onWarning(warning: ConnectionWarning)
 
         /** Ends the connection with [error]. */
-        fun fail(error: HumlaException)
+        fun fail(error: NomlaException)
     }
 
     @Volatile private var startNanos = 0L
@@ -146,8 +146,8 @@ internal class ProtocolSession(
         when (message) {
             is Mumble.ServerSync -> onServerSync(message)
             is Mumble.CodecVersion -> onCodecVersion(message)
-            is Mumble.Reject -> link.fail(HumlaException(message))
-            is Mumble.UserRemove -> if (message.session == session) link.fail(HumlaException(message))
+            is Mumble.Reject -> link.fail(NomlaException(message))
+            is Mumble.UserRemove -> if (message.session == session) link.fail(NomlaException(message))
             is Mumble.CryptSetup -> onCryptSetup(message)
             is Mumble.Version -> {
                 version = message
@@ -212,13 +212,13 @@ internal class ProtocolSession(
                 }
             } else {
                 val reply = Mumble.CryptSetup.newBuilder().setClientNonce(ByteString.copyFrom(crypt.encryptIV))
-                link.sendTcp(reply.build(), HumlaTCPMessageType.CryptSetup)
+                link.sendTcp(reply.build(), NomlaTCPMessageType.CryptSetup)
             }
         } catch (e: InvalidKeyException) {
             link.fail(
-                HumlaException(
+                NomlaException(
                     "Received invalid cryptographic nonce from server", e,
-                    HumlaException.HumlaDisconnectReason.CONNECTION_ERROR,
+                    NomlaException.NomlaDisconnectReason.CONNECTION_ERROR,
                 )
             )
         }
@@ -226,7 +226,7 @@ internal class ProtocolSession(
 
     /** Received UDP packets stopped decrypting; asks the server for a fresh nonce. */
     fun requestCryptResync() {
-        link.sendTcp(Mumble.CryptSetup.newBuilder().build(), HumlaTCPMessageType.CryptSetup)
+        link.sendTcp(Mumble.CryptSetup.newBuilder().build(), NomlaTCPMessageType.CryptSetup)
     }
 
     private fun onPing(message: Mumble.Ping) {
@@ -280,21 +280,21 @@ internal class ProtocolSession(
             .setTcpPackets(tcpPingStats.count)
         if (udpPingStats.count > 0) ping.setUdpPingAvg(udpPingStats.average).setUdpPingVar(udpPingStats.variance)
         if (tcpPingStats.count > 0) ping.setTcpPingAvg(tcpPingStats.average).setTcpPingVar(tcpPingStats.variance)
-        link.sendTcp(ping.build(), HumlaTCPMessageType.Ping)
+        link.sendTcp(ping.build(), NomlaTCPMessageType.Ping)
     }
 
     /** The UDP transport's socket failed: tunnels the voice and rebuilds the transport later. */
     fun onUdpFailed(error: Exception) {
-        HumlaLog.w(TAG, "UDP connection failed", error)
+        NomlaLog.w(TAG, "UDP connection failed", error)
         switchToTcp(ConnectionWarning.UDP_THREAD_FAILED)
         sendTunnelRequest()
         udpRestartAttempt += 1
         // No jitter: this is one socket in a live session. Null means the policy gave up.
         val delayMillis = udpRestartPolicy.delayFor(udpRestartAttempt, 0.0) ?: return
-        HumlaLog.i(TAG, "UDP restart scheduled in $delayMillis ms")
+        NomlaLog.i(TAG, "UDP restart scheduled in $delayMillis ms")
         link.scope.launch {
             delay(delayMillis)
-            HumlaLog.i(TAG, "Restarting UDP transport, attempt $udpRestartAttempt")
+            NomlaLog.i(TAG, "Restarting UDP transport, attempt $udpRestartAttempt")
             link.startUdp()
         }
     }
@@ -306,7 +306,7 @@ internal class ProtocolSession(
 
     private fun sendTunnelRequest() {
         val packet = Mumble.UDPTunnel.newBuilder().setPacket(ByteString.copyFrom(ByteArray(FORCE_TCP_PACKET_BYTES)))
-        link.sendTcp(packet.build(), HumlaTCPMessageType.UDPTunnel)
+        link.sendTcp(packet.build(), NomlaTCPMessageType.UDPTunnel)
     }
 
     /**
@@ -316,7 +316,7 @@ internal class ProtocolSession(
     private fun warn(warning: ConnectionWarning) {
         val now = elapsedMicros
         if (warning == lastWarning && now - lastWarnedMicros < WARNING_REPEAT_MICROS) {
-            HumlaLog.d(TAG, "Suppressing a repeat of $warning")
+            NomlaLog.d(TAG, "Suppressing a repeat of $warning")
             return
         }
         lastWarning = warning

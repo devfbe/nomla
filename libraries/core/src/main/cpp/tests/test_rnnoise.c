@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "humla_rnnoise.h"
+#include "nomla_rnnoise.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,7 +36,7 @@ static int16_t noise_sample(void) { seed = seed * 1664525u + 1013904223u; return
    plus white noise about 10 dB below the voiced parts. After warm-up, the voiced frames must keep
    most of their energy, the noise-only frames must be attenuated, and the VAD must separate them. */
 static void speech_in_noise(void) {
-    humla_rnnoise *h = humla_rnnoise_create();
+    nomla_rnnoise *h = nomla_rnnoise_create();
     CHECK(h != NULL, "create returns a state for the speech test");
     if (!h) return;
     const double pi = 3.14159265358979323846;
@@ -59,7 +59,7 @@ static void speech_in_noise(void) {
             frame[i] = (int16_t)lrint(clean[i] + noise_sample() / 4);
         }
         double in_e = energy(frame, HUMLA_RNNOISE_FRAME_SIZE);
-        float p = humla_rnnoise_process(h, frame);
+        float p = nomla_rnnoise_process(h, frame);
         if (!(p >= 0.0f && p <= 1.0f)) vad_in_range = 0;
         if (n < warmup) continue;
         if (voiced && phase >= 5 && phase < 22) {
@@ -74,7 +74,7 @@ static void speech_in_noise(void) {
             vad_noise += p; n_noise++;
         }
     }
-    humla_rnnoise_destroy(h);
+    nomla_rnnoise_destroy(h);
     double voiced_db = 10.0 * log10(voiced_out / voiced_in);
     double noise_db = 10.0 * log10(noise_in / noise_out);
     vad_voiced /= n_voiced; vad_noise /= n_noise;
@@ -87,14 +87,14 @@ static void speech_in_noise(void) {
 }
 
 int main(void) {
-    humla_rnnoise *h = humla_rnnoise_create();
+    nomla_rnnoise *h = nomla_rnnoise_create();
     CHECK(h != NULL, "create returns a state (embedded model loads)");
     if (!h) return 1;
     CHECK(HUMLA_RNNOISE_FRAME_SIZE == 480, "frame size is 480 samples (10 ms @ 48 kHz)");
 
     int16_t frame[HUMLA_RNNOISE_FRAME_SIZE];
     memset(frame, 0, sizeof frame);
-    float p = humla_rnnoise_process(h, frame);
+    float p = nomla_rnnoise_process(h, frame);
     CHECK(p >= 0.0f && p <= 1.0f, "probability is within [0,1]");
     CHECK(p < 0.5f, "silence is not classified as voice");
     CHECK(energy(frame, HUMLA_RNNOISE_FRAME_SIZE) == 0.0, "silence in gives silence out");
@@ -104,7 +104,7 @@ int main(void) {
     for (int n = 0; n < 100; n++) {
         for (int i = 0; i < HUMLA_RNNOISE_FRAME_SIZE; i++) frame[i] = noise_sample();
         double ie = energy(frame, HUMLA_RNNOISE_FRAME_SIZE);
-        humla_rnnoise_process(h, frame);
+        nomla_rnnoise_process(h, frame);
         if (n >= 50) { in_e += ie; out_e += energy(frame, HUMLA_RNNOISE_FRAME_SIZE); }
     }
     /* RNNoise gates stationary white noise almost completely (~80 dB on the host). 20 dB fails
@@ -112,15 +112,15 @@ int main(void) {
     printf("noise attenuation: %.1f dB\n", 10.0 * log10(in_e / out_e));
     CHECK(out_e * 100.0 < in_e, "stationary white noise is attenuated by at least 20 dB");
 
-    humla_rnnoise_destroy(h);
+    nomla_rnnoise_destroy(h);
 
     speech_in_noise();
 
     /* Every state shares the one static blob (rnnoise_model_from_buffer keeps a pointer into
        it), and the Kotlin layer runs the capture pipeline and the settings loopback test at
        the same time. Two live states fed identical input must stay bit-identical. */
-    humla_rnnoise *a = humla_rnnoise_create();
-    humla_rnnoise *b = humla_rnnoise_create();
+    nomla_rnnoise *a = nomla_rnnoise_create();
+    nomla_rnnoise *b = nomla_rnnoise_create();
     CHECK(a != NULL && b != NULL, "two states can be live at once on the shared blob");
     if (a && b) {
         int16_t fa[HUMLA_RNNOISE_FRAME_SIZE], fb[HUMLA_RNNOISE_FRAME_SIZE];
@@ -128,28 +128,28 @@ int main(void) {
         seed = 999;
         for (int n = 0; n < 20; n++) {
             for (int i = 0; i < HUMLA_RNNOISE_FRAME_SIZE; i++) fa[i] = fb[i] = noise_sample();
-            float pa = humla_rnnoise_process(a, fa);
-            float pb = humla_rnnoise_process(b, fb);
+            float pa = nomla_rnnoise_process(a, fa);
+            float pb = nomla_rnnoise_process(b, fb);
             if (pa != pb || memcmp(fa, fb, sizeof fa) != 0) identical = 0;
         }
         CHECK(identical, "two live states give identical output (no shared mutable state)");
     }
-    humla_rnnoise_destroy(a);
-    humla_rnnoise_destroy(b);
+    nomla_rnnoise_destroy(a);
+    nomla_rnnoise_destroy(b);
 
     /* Repeated teardown catches a double free or corrupted allocator state, and in the sanitized
        entry any per-cycle leak. The uninitialised FILE* read documented in
-       humla_rnnoise_destroy is only caught reliably by the sanitized build. */
+       nomla_rnnoise_destroy is only caught reliably by the sanitized build. */
     for (int n = 0; n < 200; n++) {
-        humla_rnnoise *cycle = humla_rnnoise_create();
+        nomla_rnnoise *cycle = nomla_rnnoise_create();
         CHECK(cycle != NULL, "create succeeds on every cycle");
         if (!cycle) break;
         int16_t f[HUMLA_RNNOISE_FRAME_SIZE];
         memset(f, 0, sizeof f);
-        humla_rnnoise_process(cycle, f);
-        humla_rnnoise_destroy(cycle);
+        nomla_rnnoise_process(cycle, f);
+        nomla_rnnoise_destroy(cycle);
     }
-    humla_rnnoise_destroy(NULL);   /* must be a no-op */
+    nomla_rnnoise_destroy(NULL);   /* must be a no-op */
 
     printf("%s\n", failures ? "FAILED" : "OK");
     return failures ? 1 : 0;

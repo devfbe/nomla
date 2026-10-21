@@ -37,7 +37,7 @@ private const val BYTE_MASK = 0xFF
  * legacy ping from a client that announced 1.5, so the format must match the voice format.
  */
 internal object UdpPing {
-    private val HEADER = ((HumlaUDPMessageType.UDPPing.ordinal shl TYPE_SHIFT) and BYTE_MASK).toByte()
+    private val HEADER = ((NomlaUDPMessageType.UDPPing.ordinal shl TYPE_SHIFT) and BYTE_MASK).toByte()
 
     /** Header plus the longest varint (0xF4 and eight bytes). */
     const val MAX_SIZE = 1 + 9

@@ -47,7 +47,7 @@ class Pkcs12CertificatesTest {
     @Test
     fun `an export is protected by the password with PBES2 AES-256 and a SHA-256 MAC`() {
         val out = ByteArrayOutputStream()
-        val generated = HumlaCertificateGenerator.generateCertificate(out)
+        val generated = NomlaCertificateGenerator.generateCertificate(out)
 
         val exported = Pkcs12Certificates.exportWithPassword(out.toByteArray(), "hunter2".toCharArray())
 
@@ -79,7 +79,7 @@ class Pkcs12CertificatesTest {
     @Test
     fun `isPkcs12 tells a pfx from garbage`() {
         val out = ByteArrayOutputStream()
-        HumlaCertificateGenerator.generateCertificate(out)
+        NomlaCertificateGenerator.generateCertificate(out)
         assertThat(Pkcs12Certificates.isPkcs12(out.toByteArray())).isTrue()
         assertThat(Pkcs12Certificates.isPkcs12(byteArrayOf(1, 2, 3))).isFalse()
     }
@@ -87,7 +87,7 @@ class Pkcs12CertificatesTest {
     @Test
     fun `an export without password opens with the empty password and keeps key and certificate`() {
         val out = ByteArrayOutputStream()
-        val generated = HumlaCertificateGenerator.generateCertificate(out)
+        val generated = NomlaCertificateGenerator.generateCertificate(out)
         val source = Pkcs12Certificates.load(out.toByteArray(), null)
 
         val exported = Pkcs12Certificates.exportWithoutPassword(out.toByteArray())
@@ -147,9 +147,9 @@ class Pkcs12CertificatesTest {
     }
 
     @Test
-    fun `a certificate written by HumlaCertificateGenerator loads back with its key`() {
+    fun `a certificate written by NomlaCertificateGenerator loads back with its key`() {
         val out = ByteArrayOutputStream()
-        val generated = HumlaCertificateGenerator.generateCertificate(out)
+        val generated = NomlaCertificateGenerator.generateCertificate(out)
 
         val store = Pkcs12Certificates.load(out.toByteArray(), "")
 
@@ -165,7 +165,7 @@ class Pkcs12CertificatesTest {
     @Test
     fun `a generated certificate uses a cheap iteration count`() {
         val out = ByteArrayOutputStream()
-        HumlaCertificateGenerator.generateCertificate(out)
+        NomlaCertificateGenerator.generateCertificate(out)
         val bytes = out.toByteArray()
 
         assertThat(Pfx.getInstance(bytes).macData.iterationCount.toInt()).isEqualTo(2048)
@@ -181,7 +181,7 @@ class Pkcs12CertificatesTest {
     @Test
     fun `a generated certificate has the same shape as a mumble written one`() {
         val out = ByteArrayOutputStream()
-        HumlaCertificateGenerator.generateCertificate(out)
+        NomlaCertificateGenerator.generateCertificate(out)
 
         assertIsUnencryptedKeyBagShape(out.toByteArray())
     }

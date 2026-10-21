@@ -498,7 +498,7 @@ static void test_partial_write_back(Env& env) {
 
 int main() {
     Env env;
-    CHECK(humla::registerSpeexdspNatives(env.get()), "the speexdsp bridge registers");
+    CHECK(nomla::registerSpeexdspNatives(env.get()), "the speexdsp bridge registers");
     test_preprocessor(env);
     test_resampler(env);
     test_resampler_channel_index(env);

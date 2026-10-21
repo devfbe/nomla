@@ -34,7 +34,7 @@ internal object OpusEncoderNative : OpusEncoderApi {
     const val OPUS_SET_DTX_REQUEST = 4016
 
     init {
-        HumlaNativeLibrary.load()
+        NomlaNativeLibrary.load()
     }
 
     external override fun create(sampleRate: Int, channels: Int, application: Int, error: IntArray): Long

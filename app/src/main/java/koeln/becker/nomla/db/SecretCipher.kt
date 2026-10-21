@@ -19,7 +19,7 @@ package koeln.becker.nomla.db
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 import java.security.GeneralSecurityException
 import java.security.KeyStore
 import java.util.Base64
@@ -79,7 +79,7 @@ object KeystoreSecretCipher : SecretCipher {
         } catch (e: Exception) {
             val failure = e as? GeneralSecurityException ?: GeneralSecurityException("Android Keystore unavailable", e)
             if (!failureLogged) {
-                HumlaLog.e(TAG, "Android Keystore unavailable", failure)
+                NomlaLog.e(TAG, "Android Keystore unavailable", failure)
                 failureLogged = true
             }
             throw failure
@@ -115,7 +115,7 @@ class SecretCodec(private val cipher: SecretCipher) {
         return try {
             STRING_PREFIX + Base64.getEncoder().encodeToString(cipher.encrypt(plain.toByteArray(Charsets.UTF_8)))
         } catch (e: GeneralSecurityException) {
-            HumlaLog.w(TAG, "Storing a secret unencrypted", e)
+            NomlaLog.w(TAG, "Storing a secret unencrypted", e)
             plain
         }
     }
@@ -125,7 +125,7 @@ class SecretCodec(private val cipher: SecretCipher) {
         return try {
             String(cipher.decrypt(Base64.getDecoder().decode(stored.substring(STRING_PREFIX.length))), Charsets.UTF_8)
         } catch (e: Exception) {
-            HumlaLog.w(TAG, "Could not decrypt a stored secret", e)
+            NomlaLog.w(TAG, "Could not decrypt a stored secret", e)
             null
         }
     }
@@ -133,7 +133,7 @@ class SecretCodec(private val cipher: SecretCipher) {
     fun sealBlob(plain: ByteArray): ByteArray = try {
         BLOB_MAGIC + cipher.encrypt(plain)
     } catch (e: GeneralSecurityException) {
-        HumlaLog.w(TAG, "Storing a secret unencrypted", e)
+        NomlaLog.w(TAG, "Storing a secret unencrypted", e)
         plain
     }
 
@@ -142,7 +142,7 @@ class SecretCodec(private val cipher: SecretCipher) {
         return try {
             cipher.decrypt(stored.copyOfRange(BLOB_MAGIC.size, stored.size))
         } catch (e: Exception) {
-            HumlaLog.w(TAG, "Could not decrypt a stored secret", e)
+            NomlaLog.w(TAG, "Could not decrypt a stored secret", e)
             null
         }
     }

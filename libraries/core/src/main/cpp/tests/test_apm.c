@@ -17,10 +17,10 @@
 
 /* Host test for the webrtc-audio-processing C wrapper.
  *
- * Deliberately C: if humla_apm.h stopped being valid C, or extern "C" were dropped from
- * humla_apm.cpp, this would fail to compile or link. A .cpp test would not notice.
+ * Deliberately C: if nomla_apm.h stopped being valid C, or extern "C" were dropped from
+ * nomla_apm.cpp, this would fail to compile or link. A .cpp test would not notice.
  */
-#include "humla_apm.h"
+#include "nomla_apm.h"
 
 #include <math.h>
 #include <stdint.h>
@@ -82,8 +82,8 @@ typedef struct {
  * set_stream_delay_ms stays 0: AEC3 estimates the delay itself. */
 static aec_result run_aec(order_t order) {
     aec_result r = {0, 0, 0};
-    humla_apm_config cfg = {1, 0, 0, 0, 1};
-    humla_apm *apm = humla_apm_create(kRate, &cfg);
+    nomla_apm_config cfg = {1, 0, 0, 0, 1};
+    nomla_apm *apm = nomla_apm_create(kRate, &cfg);
     if (!apm) { r.err = -1; return r; }
     seed(12345u);
     uint32_t other = 777u;
@@ -104,27 +104,27 @@ static aec_result run_aec(order_t order) {
         double ie = energy(capture, kFrame);
 
         if (order == kOrdered) {
-            r.err |= humla_apm_process_render(apm, render);
+            r.err |= nomla_apm_process_render(apm, render);
         } else if (order == kMismatched) {
-            r.err |= humla_apm_process_render(apm, unrelated);
+            r.err |= nomla_apm_process_render(apm, unrelated);
         } else if (order == kLateRender) {
             if (n >= kLag) { int16_t old[kFrame];
                 memcpy(old, held[n % kLag], sizeof old);
-                r.err |= humla_apm_process_render(apm, old); }
+                r.err |= nomla_apm_process_render(apm, old); }
             memcpy(held[n % kLag], render, sizeof render);
         }
-        humla_apm_set_stream_delay_ms(apm, 0);
+        nomla_apm_set_stream_delay_ms(apm, 0);
 
         if (order == kCaptureFirst) {
-            r.err |= humla_apm_process_capture(apm, capture);
-            r.err |= humla_apm_process_render(apm, render);
+            r.err |= nomla_apm_process_capture(apm, capture);
+            r.err |= nomla_apm_process_render(apm, render);
         } else {
-            r.err |= humla_apm_process_capture(apm, capture);
+            r.err |= nomla_apm_process_capture(apm, capture);
         }
 
         if (n >= 900) { r.input += ie; r.output += energy(capture, kFrame); }
     }
-    humla_apm_destroy(apm);
+    nomla_apm_destroy(apm);
     return r;
 }
 
@@ -132,8 +132,8 @@ static aec_result run_aec(order_t order) {
  * with `tuning` (NULL: webrtc's default). Returns an FNV-1a hash of every output sample, and the
  * output energy of the double-talk half in *dt_energy; 0 if the APM could not be created. */
 static uint32_t run_tuned(const float *tuning, double *dt_energy) {
-    humla_apm_config cfg = {1, 0, 0, 0, 1, tuning};
-    humla_apm *apm = humla_apm_create(kRate, &cfg);
+    nomla_apm_config cfg = {1, 0, 0, 0, 1, tuning};
+    nomla_apm *apm = nomla_apm_create(kRate, &cfg);
     if (!apm) return 0;
     uint32_t far = 12345u, near = 999u, hash = 2166136261u;
     enum { kEchoDelay = 3 };
@@ -148,75 +148,75 @@ static uint32_t run_tuned(const float *tuning, double *dt_energy) {
             capture[i] = (int16_t)v;
         }
         memcpy(echo[n % kEchoDelay], render, sizeof render);
-        humla_apm_process_render(apm, render);
-        humla_apm_process_capture(apm, capture);
+        nomla_apm_process_render(apm, render);
+        nomla_apm_process_capture(apm, capture);
         for (int i = 0; i < kFrame; i++) {
             hash = (hash ^ (uint16_t)capture[i]) * 16777619u;
         }
         if (n >= 200) *dt_energy += energy(capture, kFrame);
     }
-    humla_apm_destroy(apm);
+    nomla_apm_destroy(apm);
     return hash;
 }
 
 int main(void) {
     /* ---- 1. Argument validation. ---- */
-    humla_apm_config ns_only = {0, 1, 2, 0, 1};
-    CHECK(humla_apm_create(kRate, NULL) == NULL, "a NULL config is rejected");
-    CHECK(humla_apm_create(44100, &ns_only) == NULL, "44.1 kHz is rejected");
-    CHECK(humla_apm_create(0, &ns_only) == NULL, "0 Hz is rejected");
-    CHECK(humla_apm_create(-48000, &ns_only) == NULL, "a negative rate is rejected");
+    nomla_apm_config ns_only = {0, 1, 2, 0, 1};
+    CHECK(nomla_apm_create(kRate, NULL) == NULL, "a NULL config is rejected");
+    CHECK(nomla_apm_create(44100, &ns_only) == NULL, "44.1 kHz is rejected");
+    CHECK(nomla_apm_create(0, &ns_only) == NULL, "0 Hz is rejected");
+    CHECK(nomla_apm_create(-48000, &ns_only) == NULL, "a negative rate is rejected");
     static const int kRates[] = {8000, 16000, 32000, 48000};
     for (int i = 0; i < 4; i++) {
-        humla_apm *h = humla_apm_create(kRates[i], &ns_only);
+        nomla_apm *h = nomla_apm_create(kRates[i], &ns_only);
         CHECK(h != NULL, "every supported rate is accepted");
         if (h) {
-            CHECK(humla_apm_frame_size(h) == kRates[i] / 100, "frame size is 10 ms worth of samples");
-            humla_apm_destroy(h);
+            CHECK(nomla_apm_frame_size(h) == kRates[i] / 100, "frame size is 10 ms worth of samples");
+            nomla_apm_destroy(h);
         }
     }
     /* Out-of-range NS levels are clamped, not rejected: the level comes from a user preference. */
-    humla_apm_config all_on = {1, 1, 3, 1, 1};
-    humla_apm *every = humla_apm_create(kRate, &all_on);
+    nomla_apm_config all_on = {1, 1, 3, 1, 1};
+    nomla_apm *every = nomla_apm_create(kRate, &all_on);
     CHECK(every != NULL, "AEC3 + NS + AGC2 + HPF all enabled at once succeeds");
     if (every) {
         int16_t f[kFrame];
         memset(f, 0, sizeof f);
-        CHECK(humla_apm_process_render(every, f) == 0, "render succeeds with every stage on");
-        CHECK(humla_apm_process_capture(every, f) == 0, "capture succeeds with every stage on");
-        humla_apm_destroy(every);
+        CHECK(nomla_apm_process_render(every, f) == 0, "render succeeds with every stage on");
+        CHECK(nomla_apm_process_capture(every, f) == 0, "capture succeeds with every stage on");
+        nomla_apm_destroy(every);
     }
 
-    humla_apm_config wild = {0, 1, 99, 0, 1};
-    humla_apm *clamped = humla_apm_create(kRate, &wild);
+    nomla_apm_config wild = {0, 1, 99, 0, 1};
+    nomla_apm *clamped = nomla_apm_create(kRate, &wild);
     CHECK(clamped != NULL, "an out-of-range NS level is clamped, not rejected");
-    humla_apm_destroy(clamped);
+    nomla_apm_destroy(clamped);
 
     /* ---- 2. Every entry point tolerates a NULL handle. ---- */
     int16_t dummy[kFrame];
     memset(dummy, 0, sizeof dummy);
-    CHECK(humla_apm_process_capture(NULL, dummy) != 0, "process_capture(NULL) reports an error");
-    CHECK(humla_apm_process_render(NULL, dummy) != 0, "process_render(NULL) reports an error");
-    CHECK(humla_apm_set_stream_delay_ms(NULL, 0) != 0, "set_stream_delay_ms(NULL) reports an error");
-    CHECK(humla_apm_last_capture_level_dbfs(NULL) <= -99.0f, "level(NULL) is -100 dBFS");
-    CHECK(humla_apm_frame_size(NULL) == 0, "frame_size(NULL) is 0");
-    humla_apm_destroy(NULL); /* must not crash */
+    CHECK(nomla_apm_process_capture(NULL, dummy) != 0, "process_capture(NULL) reports an error");
+    CHECK(nomla_apm_process_render(NULL, dummy) != 0, "process_render(NULL) reports an error");
+    CHECK(nomla_apm_set_stream_delay_ms(NULL, 0) != 0, "set_stream_delay_ms(NULL) reports an error");
+    CHECK(nomla_apm_last_capture_level_dbfs(NULL) <= -99.0f, "level(NULL) is -100 dBFS");
+    CHECK(nomla_apm_frame_size(NULL) == 0, "frame_size(NULL) is 0");
+    nomla_apm_destroy(NULL); /* must not crash */
 
     /* ---- 3. Noise suppression only: zeros in, zeros out, no error. ---- */
-    humla_apm *ns = humla_apm_create(kRate, &ns_only);
+    nomla_apm *ns = nomla_apm_create(kRate, &ns_only);
     CHECK(ns != NULL, "create with NS+HPF succeeds at 48 kHz");
     if (ns) {
         int16_t frame[kFrame];
         int err = 0;
-        CHECK(humla_apm_process_capture(ns, NULL) != 0, "a NULL frame reports an error");
+        CHECK(nomla_apm_process_capture(ns, NULL) != 0, "a NULL frame reports an error");
         for (int n = 0; n < 20 && err == 0; n++) {
             memset(frame, 0, sizeof frame);
-            err = humla_apm_process_capture(ns, frame);
+            err = nomla_apm_process_capture(ns, frame);
         }
         CHECK(err == 0, "process_capture returns 0");
         CHECK(energy(frame, kFrame) == 0.0, "silence stays silent");
-        CHECK(humla_apm_last_capture_level_dbfs(ns) <= -99.0f, "silence reports -100 dBFS");
-        humla_apm_destroy(ns);
+        CHECK(nomla_apm_last_capture_level_dbfs(ns) <= -99.0f, "silence reports -100 dBFS");
+        nomla_apm_destroy(ns);
     }
 
     /* ---- 4. AEC3, and the relation between the near-end and far-end streams. ----
@@ -254,26 +254,26 @@ int main(void) {
 
     /* process_render must not be mistaken for a capture frame: it feeds the reference, it does
      * not produce near-end output, and it must leave the reported capture level alone. */
-    humla_apm_config aec = {1, 0, 0, 0, 1};
-    humla_apm *a = humla_apm_create(kRate, &aec);
+    nomla_apm_config aec = {1, 0, 0, 0, 1};
+    nomla_apm *a = nomla_apm_create(kRate, &aec);
     CHECK(a != NULL, "create with AEC3 succeeds");
     if (a) {
         int16_t loud[kFrame], quiet[kFrame];
         seed(4242u);
         for (int i = 0; i < kFrame; i++) { loud[i] = (int16_t)(noise() * 4); quiet[i] = 0; }
-        CHECK(humla_apm_process_capture(a, quiet) == 0, "capture of silence succeeds");
-        float after_capture = humla_apm_last_capture_level_dbfs(a);
-        CHECK(humla_apm_process_render(a, loud) == 0, "render of a loud frame succeeds");
-        CHECK(humla_apm_last_capture_level_dbfs(a) == after_capture,
+        CHECK(nomla_apm_process_capture(a, quiet) == 0, "capture of silence succeeds");
+        float after_capture = nomla_apm_last_capture_level_dbfs(a);
+        CHECK(nomla_apm_process_render(a, loud) == 0, "render of a loud frame succeeds");
+        CHECK(nomla_apm_last_capture_level_dbfs(a) == after_capture,
               "process_render does not change the reported capture level");
-        humla_apm_destroy(a);
+        nomla_apm_destroy(a);
     }
 
     /* ---- 5. AEC3 tuning. ----
      * webrtc's defaults passed back in must give the very same canceller as no tuning at all (the
      * app's default path stays what it was), and a tuning must actually reach the suppressor. */
     float tuning[HUMLA_AEC3_PARAM_COUNT];
-    humla_apm_aec3_defaults(tuning);
+    nomla_apm_aec3_defaults(tuning);
     CHECK(tuning[HUMLA_AEC3_NORMAL_HF_ENR_SUPPRESS] == 0.1f, "defaults: normal hf enr_suppress is 0.1");
     CHECK(tuning[HUMLA_AEC3_DNE_HOLD_DURATION] == 50.f, "defaults: dominant near-end hold is 50 blocks");
     CHECK(tuning[HUMLA_AEC3_FILTER_REFINED_LENGTH_BLOCKS] == 13.f, "defaults: refined filter is 13 blocks");
@@ -298,24 +298,24 @@ int main(void) {
     CHECK(h_tuned != 0 && h_tuned != h_null, "a tuning changes the output");
     CHECK(e_tuned > e_null, "more transparent masks let more through in double talk");
 
-    humla_apm_config tuned_cfg = {1, 0, 0, 0, 1, NULL};
+    nomla_apm_config tuned_cfg = {1, 0, 0, 0, 1, NULL};
     float bad[HUMLA_AEC3_PARAM_COUNT];
     memcpy(bad, tuning, sizeof tuning);
     bad[HUMLA_AEC3_DNE_ENR_THRESHOLD] = NAN;
     tuned_cfg.aec3_tuning = bad;
-    CHECK(humla_apm_create(kRate, &tuned_cfg) == NULL, "a NaN in the tuning is refused");
+    CHECK(nomla_apm_create(kRate, &tuned_cfg) == NULL, "a NaN in the tuning is refused");
     memcpy(bad, tuning, sizeof tuning);
     bad[HUMLA_AEC3_NEAREND_HF_ENR_TRANSPARENT] = bad[HUMLA_AEC3_NEAREND_HF_ENR_SUPPRESS];
-    CHECK(humla_apm_create(kRate, &tuned_cfg) == NULL,
+    CHECK(nomla_apm_create(kRate, &tuned_cfg) == NULL,
           "a masking pair with enr_transparent not below enr_suppress is refused");
     memcpy(bad, tuning, sizeof tuning);
     bad[HUMLA_AEC3_FILTER_REFINED_LENGTH_BLOCKS] = -1.f;
-    CHECK(humla_apm_create(kRate, &tuned_cfg) == NULL, "a negative filter length is refused");
-    humla_apm_config ns_tuned = {0, 1, 2, 0, 1, bad};
-    humla_apm *ignored = humla_apm_create(kRate, &ns_tuned);
+    CHECK(nomla_apm_create(kRate, &tuned_cfg) == NULL, "a negative filter length is refused");
+    nomla_apm_config ns_tuned = {0, 1, 2, 0, 1, bad};
+    nomla_apm *ignored = nomla_apm_create(kRate, &ns_tuned);
     CHECK(ignored != NULL, "without echo cancellation the tuning is not read");
-    humla_apm_destroy(ignored);
-    humla_apm_aec3_defaults(NULL); /* must not crash */
+    nomla_apm_destroy(ignored);
+    nomla_apm_aec3_defaults(NULL); /* must not crash */
 
     printf("%s\n", failures ? "FAILED" : "OK");
     return failures ? 1 : 0;

@@ -59,7 +59,7 @@ class WebRtcApmPreprocessorTest {
 
             WebRtcApmPreprocessor(api, config)
 
-            assertWithMessage("config %s did not reach humla_apm_create unchanged", config)
+            assertWithMessage("config %s did not reach nomla_apm_create unchanged", config)
                 .that(api.createdWith).isEqualTo(48000 to config)
         }
     }
@@ -72,7 +72,7 @@ class WebRtcApmPreprocessorTest {
     }
 
     /**
-     * `humla_apm_create` answers 0 for rates other than 8/16/32/48 kHz. The factory turns this
+     * `nomla_apm_create` answers 0 for rates other than 8/16/32/48 kHz. The factory turns this
      * [IllegalStateException] into a skipped stage and a log line.
      */
     @Test

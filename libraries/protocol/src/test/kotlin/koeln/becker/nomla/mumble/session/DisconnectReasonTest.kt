@@ -19,7 +19,7 @@ package koeln.becker.nomla.mumble.session
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
-import koeln.becker.nomla.mumble.exception.HumlaException
+import koeln.becker.nomla.mumble.exception.NomlaException
 import koeln.becker.nomla.mumble.protobuf.Mumble
 import java.io.IOException
 
@@ -27,7 +27,7 @@ import java.io.IOException
 class DisconnectReasonTest {
     private val names = mapOf(4 to "Mod")
 
-    private fun reasonOf(e: HumlaException) = disconnectReasonOf(e) { names[it] }
+    private fun reasonOf(e: NomlaException) = disconnectReasonOf(e) { names[it] }
 
     @Test
     fun aRejectKeepsItsTypeAndTheServersText() {
@@ -47,7 +47,7 @@ class DisconnectReasonTest {
 
         for ((wire, type) in expected) {
             val reject = Mumble.Reject.newBuilder().setType(wire).setReason("because").build()
-            assertThat(reasonOf(HumlaException(reject))).isEqualTo(DisconnectReason.Rejected(type, "because"))
+            assertThat(reasonOf(NomlaException(reject))).isEqualTo(DisconnectReason.Rejected(type, "because"))
         }
     }
 
@@ -55,7 +55,7 @@ class DisconnectReasonTest {
     fun aKickNamesItsActorAndSaysWhetherItWasABan() {
         val kick = Mumble.UserRemove.newBuilder().setSession(1).setActor(4).setReason("spam").setBan(true).build()
 
-        assertThat(reasonOf(HumlaException(kick))).isEqualTo(DisconnectReason.Kicked("spam", "Mod", banned = true))
+        assertThat(reasonOf(NomlaException(kick))).isEqualTo(DisconnectReason.Kicked("spam", "Mod", banned = true))
     }
 
     @Test
@@ -63,8 +63,8 @@ class DisconnectReasonTest {
         val anonymous = Mumble.UserRemove.newBuilder().setSession(1).setReason("bye").build()
         val unknown = Mumble.UserRemove.newBuilder().setSession(1).setActor(9).setReason("bye").build()
 
-        assertThat(reasonOf(HumlaException(anonymous))).isEqualTo(DisconnectReason.Kicked("bye", null, banned = false))
-        assertThat(reasonOf(HumlaException(unknown))).isEqualTo(DisconnectReason.Kicked("bye", null, banned = false))
+        assertThat(reasonOf(NomlaException(anonymous))).isEqualTo(DisconnectReason.Kicked("bye", null, banned = false))
+        assertThat(reasonOf(NomlaException(unknown))).isEqualTo(DisconnectReason.Kicked("bye", null, banned = false))
     }
 
     /** Only a network failure is a [DisconnectReason.Network], the one an automatic reconnect retries. */
@@ -72,9 +72,9 @@ class DisconnectReasonTest {
     fun connectionErrorsAreNetworkFailuresAndTheRestAreFailures() {
         val cause = IOException("reset")
 
-        assertThat(reasonOf(HumlaException("lost", cause, HumlaException.HumlaDisconnectReason.CONNECTION_ERROR)))
+        assertThat(reasonOf(NomlaException("lost", cause, NomlaException.NomlaDisconnectReason.CONNECTION_ERROR)))
             .isEqualTo(DisconnectReason.Network("lost", cause))
-        assertThat(reasonOf(HumlaException("bad key", cause, HumlaException.HumlaDisconnectReason.OTHER_ERROR)))
+        assertThat(reasonOf(NomlaException("bad key", cause, NomlaException.NomlaDisconnectReason.OTHER_ERROR)))
             .isEqualTo(DisconnectReason.Failed("bad key", cause))
     }
 }

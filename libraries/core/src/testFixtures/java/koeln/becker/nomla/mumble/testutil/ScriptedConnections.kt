@@ -23,16 +23,16 @@ import android.os.Looper
 import com.google.protobuf.MessageLite
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import koeln.becker.nomla.mumble.HumlaSession
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.NomlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.audio.capture.CaptureState
-import koeln.becker.nomla.mumble.exception.HumlaException
+import koeln.becker.nomla.mumble.exception.NomlaException
 import koeln.becker.nomla.mumble.net.CryptState
-import koeln.becker.nomla.mumble.net.HumlaConnection
-import koeln.becker.nomla.mumble.net.HumlaSSLSocketFactory
-import koeln.becker.nomla.mumble.net.HumlaTCP
-import koeln.becker.nomla.mumble.net.HumlaTCPMessageType
-import koeln.becker.nomla.mumble.net.HumlaUDP
+import koeln.becker.nomla.mumble.net.NomlaConnection
+import koeln.becker.nomla.mumble.net.NomlaSSLSocketFactory
+import koeln.becker.nomla.mumble.net.NomlaTCP
+import koeln.becker.nomla.mumble.net.NomlaTCPMessageType
+import koeln.becker.nomla.mumble.net.NomlaUDP
 import koeln.becker.nomla.mumble.net.ReconnectPolicy
 import koeln.becker.nomla.mumble.net.TcpTransport
 import koeln.becker.nomla.mumble.net.UdpTransport
@@ -41,7 +41,7 @@ import koeln.becker.nomla.mumble.session.SessionConfig
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
- * Opens [HumlaSession]s whose connections reach no network: every attempt gets a transport that
+ * Opens [NomlaSession]s whose connections reach no network: every attempt gets a transport that
  * never opens a socket, and the test plays the server through [synchronizeLatest] and
  * [loseLatest]. A connection runs inline on the calling thread; its callbacks reach the session
  * through the main looper, as a real connection's do. The audio pipeline is a fake.
@@ -61,15 +61,15 @@ public class ScriptedConnections(reconnectBaseDelayMillis: Long, reconnectAttemp
     /** How often the transport of attempt [index] (0-based) was closed. */
     public fun disconnectCalls(index: Int): Int = transports[index].disconnectCalls
 
-    public fun session(context: Context, config: SessionConfig): IHumlaSession {
+    public fun session(context: Context, config: SessionConfig): INomlaSession {
         val main = Handler(Looper.getMainLooper())
-        return HumlaSession(
+        return NomlaSession(
             context,
             config,
             main,
             communicationDevices = FakeCommunicationDevices(),
             connectionFactory = { params, listener ->
-                HumlaConnection(params, listener, main::post, Dispatchers.Unconfined, Transports())
+                NomlaConnection(params, listener, main::post, Dispatchers.Unconfined, Transports())
             },
             audioFactory = FakeAudioFactory().also { audioFactories += it },
             reconnectPolicy = policy,
@@ -92,28 +92,28 @@ public class ScriptedConnections(reconnectBaseDelayMillis: Long, reconnectAttemp
     public fun synchronizeLatest(session: Int = 1) {
         val tcp = transports.last()
         tcp.listener.onTCPConnectionEstablished()
-        tcp.receive(HumlaTCPMessageType.ChannelState, Mumble.ChannelState.newBuilder().setChannelId(0).setName("Root"))
+        tcp.receive(NomlaTCPMessageType.ChannelState, Mumble.ChannelState.newBuilder().setChannelId(0).setName("Root"))
         tcp.receive(
-            HumlaTCPMessageType.UserState,
+            NomlaTCPMessageType.UserState,
             Mumble.UserState.newBuilder().setSession(session).setName("me").setChannelId(0),
         )
-        tcp.receive(HumlaTCPMessageType.ServerSync, Mumble.ServerSync.newBuilder().setSession(session))
+        tcp.receive(NomlaTCPMessageType.ServerSync, Mumble.ServerSync.newBuilder().setSession(session))
     }
 
     /** The latest attempt's socket fails with [message], as a dropped network does. */
     public fun loseLatest(message: String) {
         transports.last().listener.onTCPConnectionFailed(
-            HumlaException(message, HumlaException.HumlaDisconnectReason.CONNECTION_ERROR),
+            NomlaException(message, NomlaException.NomlaDisconnectReason.CONNECTION_ERROR),
         )
     }
 
-    private inner class Transports : HumlaConnection.TransportFactory {
-        override fun createTcp(socketFactory: HumlaSSLSocketFactory, scope: CoroutineScope): TcpTransport =
+    private inner class Transports : NomlaConnection.TransportFactory {
+        override fun createTcp(socketFactory: NomlaSSLSocketFactory, scope: CoroutineScope): TcpTransport =
             ScriptedTcp().also { transports += it }
 
         override fun createUdp(
             cryptState: CryptState,
-            listener: HumlaUDP.UDPConnectionListener,
+            listener: NomlaUDP.UDPConnectionListener,
             scope: CoroutineScope,
         ): UdpTransport = SilentUdp()
     }
@@ -126,24 +126,24 @@ public class ScriptedConnections(reconnectBaseDelayMillis: Long, reconnectAttemp
     }
 
     private class ScriptedTcp : TcpTransport {
-        lateinit var listener: HumlaTCP.TCPConnectionListener
+        lateinit var listener: NomlaTCP.TCPConnectionListener
         @Volatile var disconnectCalls = 0
 
         override val isRunning: Boolean get() = disconnectCalls == 0
 
-        override fun setTCPConnectionListener(listener: HumlaTCP.TCPConnectionListener?) {
+        override fun setTCPConnectionListener(listener: NomlaTCP.TCPConnectionListener?) {
             this.listener = checkNotNull(listener)
         }
 
         override fun connect(host: String, port: Int, useTor: Boolean) = Unit
-        override fun sendMessage(message: MessageLite, messageType: HumlaTCPMessageType) = Unit
-        override fun sendMessage(data: ByteArray, length: Int, messageType: HumlaTCPMessageType) = Unit
+        override fun sendMessage(message: MessageLite, messageType: NomlaTCPMessageType) = Unit
+        override fun sendMessage(data: ByteArray, length: Int, messageType: NomlaTCPMessageType) = Unit
 
         override fun disconnect() {
             disconnectCalls++
         }
 
-        fun receive(type: HumlaTCPMessageType, message: MessageLite.Builder) {
+        fun receive(type: NomlaTCPMessageType, message: MessageLite.Builder) {
             val bytes = message.build().toByteArray()
             listener.onTCPMessageReceived(type, bytes.size, bytes)
         }

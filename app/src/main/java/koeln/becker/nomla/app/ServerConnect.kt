@@ -22,7 +22,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.Settings
-import koeln.becker.nomla.db.MumlaRepository
+import koeln.becker.nomla.db.NomlaRepository
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.session.SessionSettings
 import koeln.becker.nomla.util.ApplicationScope
@@ -35,7 +35,7 @@ fun startServerConnect(context: Context, server: Server): Job {
     val app = context.applicationContext
     val settings = Settings.getInstance(app)
     return ApplicationScope.of(app).launch {
-        val config = MumlaRepository.get(app).io { SessionSettings.forServer(app, settings, this, server) }
+        val config = NomlaRepository.get(app).io { SessionSettings.forServer(app, settings, this, server) }
         SessionManager.get(app).connect(config)
     }
 }

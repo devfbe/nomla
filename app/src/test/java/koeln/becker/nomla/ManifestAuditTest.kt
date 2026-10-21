@@ -31,13 +31,13 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.xmlpull.v1.XmlPullParser
-import koeln.becker.nomla.app.MumlaActivity
+import koeln.becker.nomla.app.NomlaActivity
 import koeln.becker.nomla.preference.CertificateExportActivity
 import koeln.becker.nomla.preference.CertificateGenerateActivity
 import koeln.becker.nomla.preference.CertificateImportActivity
 import koeln.becker.nomla.preference.CertificateSelectActivity
 import koeln.becker.nomla.preference.ServerCertificateClearActivity
-import koeln.becker.nomla.service.MumlaService
+import koeln.becker.nomla.service.NomlaService
 import koeln.becker.nomla.service.MuteTileService
 
 @RunWith(RobolectricTestRunner::class)
@@ -122,7 +122,7 @@ class ManifestAuditTest {
 
     @Test
     fun mumlaServiceIsNotExportedAndDeclaresOnlyTheMicrophoneType() {
-        val info = pm.getServiceInfo(ComponentName(context, MumlaService::class.java), 0)
+        val info = pm.getServiceInfo(ComponentName(context, NomlaService::class.java), 0)
 
         assertThat(info.foregroundServiceType).isEqualTo(ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE)
         assertThat(info.exported).isFalse()
@@ -170,7 +170,7 @@ class ManifestAuditTest {
         assertThat(offenders).isEmpty()
 
         // Not vacuous: the filters of the exported components are seen.
-        assertThat(shadow.getIntentFiltersForActivity(ComponentName(context, MumlaActivity::class.java))).isNotEmpty()
+        assertThat(shadow.getIntentFiltersForActivity(ComponentName(context, NomlaActivity::class.java))).isNotEmpty()
         assertThat(shadow.getIntentFiltersForService(ComponentName(context, MuteTileService::class.java))).isNotEmpty()
     }
 

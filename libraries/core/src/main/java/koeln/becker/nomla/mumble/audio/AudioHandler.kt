@@ -35,13 +35,13 @@ import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.exception.AudioException
 import koeln.becker.nomla.mumble.exception.AudioInitializationException
 import koeln.becker.nomla.mumble.exception.NativeAudioException
-import koeln.becker.nomla.mumble.net.HumlaUDPMessageType
+import koeln.becker.nomla.mumble.net.NomlaUDPMessageType
 import koeln.becker.nomla.mumble.net.TcpMessageHandler
 import koeln.becker.nomla.mumble.net.VoicePacket
 import koeln.becker.nomla.mumble.net.VoicePacketHandler
 import koeln.becker.nomla.mumble.protobuf.Mumble
-import koeln.becker.nomla.mumble.util.HumlaLog
-import koeln.becker.nomla.mumble.util.HumlaLogger
+import koeln.becker.nomla.mumble.util.NomlaLog
+import koeln.becker.nomla.mumble.util.NomlaLogger
 
 /**
  * Bridges the protocol's audio messages to the input and output threads. Audio playback and
@@ -64,7 +64,7 @@ internal class AudioHandler(
 ) : TcpMessageHandler, VoicePacketHandler {
 
     private val context: Context = host.context
-    private val logger: HumlaLogger = host.logger
+    private val logger: NomlaLogger = host.logger
     private val encodeListener: AudioEncodeListener = host.encodeListener
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private val input: AudioInput
@@ -153,12 +153,12 @@ internal class AudioHandler(
      * The encoder for [codec], or null (input disabled) for one it cannot encode.
      * @throws NativeAudioException if the encoder cannot be created.
      */
-    private fun createEncoder(codec: HumlaUDPMessageType): IEncoder? = when (codec) {
+    private fun createEncoder(codec: NomlaUDPMessageType): IEncoder? = when (codec) {
         // Resampling and preprocessing happen in capturePipeline, before the voice detector.
-        HumlaUDPMessageType.UDPVoiceOpus ->
+        NomlaUDPMessageType.UDPVoiceOpus ->
             OpusEncoder(SAMPLE_RATE, 1, FRAME_SIZE, framesPerPacket, bitrate, MAX_BUFFER_SIZE)
         else -> {
-            HumlaLog.w(TAG, "Unsupported codec, input disabled.")
+            NomlaLog.w(TAG, "Unsupported codec, input disabled.")
             null
         }
     }
@@ -207,11 +207,11 @@ internal class AudioHandler(
         if (!isInitialized) return // Only listen to change events in this handler.
 
         // Without Opus there is no codec to encode with; null turns input off.
-        val newCodec = if (msg.opus) HumlaUDPMessageType.UDPVoiceOpus else null
+        val newCodec = if (msg.opus) NomlaUDPMessageType.UDPVoiceOpus else null
         try {
             transmitter.setCodecIfChanged(newCodec, ::createEncoder)
         } catch (e: NativeAudioException) {
-            HumlaLog.e(TAG, "Could not create the encoder", e)
+            NomlaLog.e(TAG, "Could not create the encoder", e)
         }
     }
 

@@ -28,8 +28,8 @@ import koeln.becker.nomla.mumble.audio.capture.Resampler
 import koeln.becker.nomla.mumble.audio.capture.RnnoisePreprocessor
 import koeln.becker.nomla.mumble.audio.capture.SpeexPreprocessor
 import koeln.becker.nomla.mumble.audio.capture.SpeexResampler
-import koeln.becker.nomla.mumble.util.HumlaLog
-import koeln.becker.nomla.mumble.util.HumlaLogger
+import koeln.becker.nomla.mumble.util.NomlaLog
+import koeln.becker.nomla.mumble.util.NomlaLogger
 
 /**
  * Assembles the capture chain for `AudioHandler`. Echo cancellation has two ends, the near-end stage
@@ -54,12 +54,12 @@ internal object CaptureWiring {
         echo: EchoCancellationMode,
         speexNoiseSuppressDb: Int = SpeexPreprocessor.DEFAULT_NOISE_SUPPRESS_DB,
         rnnoiseAttenuationLimitDb: Float = RnnoisePreprocessor.ATTENUATION_LIMIT_DB,
-        logger: HumlaLogger? = null,
+        logger: NomlaLogger? = null,
         factory: CapturePreprocessorFactory? = null,
         newResampler: (Int, Int) -> Resampler = { from, to -> SpeexResampler(from, to) },
     ): Wiring {
         val log: (String) -> Unit = { message ->
-            HumlaLog.w(TAG, message)
+            NomlaLog.w(TAG, message)
             logger?.logWarning(message)
         }
         val chain = (factory ?: CapturePreprocessorFactory(log = log))

@@ -28,7 +28,7 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.preference.AboutSettingsFragment
 import koeln.becker.nomla.testing.FileProviderCache
 import koeln.becker.nomla.testing.ThemedActivity
@@ -44,7 +44,7 @@ class ShareLogTest {
 
     @Test
     fun theSharedFileHoldsTheRecentLogWithoutSecrets() {
-        HumlaLog.i("ShareLogTest", "connecting with password=hunter2 to example.org")
+        NomlaLog.i("ShareLogTest", "connecting with password=hunter2 to example.org")
         val activity = Robolectric.buildActivity(ThemedActivity::class.java).setup().get()
         val fragment = AboutSettingsFragment()
         activity.supportFragmentManager.beginTransaction().add(android.R.id.content, fragment).commitNow()

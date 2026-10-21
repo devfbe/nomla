@@ -26,7 +26,7 @@ import koeln.becker.nomla.util.BatteryOptimization
 import koeln.becker.nomla.util.Orbot
 
 /** Reconnecting, running in the background, and the transport and route to the server. */
-class ConnectionSettingsFragment : MumlaPreferenceFragment(R.xml.settings_connection) {
+class ConnectionSettingsFragment : NomlaPreferenceFragment(R.xml.settings_connection) {
 
     private val batteryPreference: Preference
         get() = requireNotNull(preferenceScreen.findPreference(Settings.PREF_BATTERY_OPTIMIZATION))

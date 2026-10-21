@@ -55,7 +55,7 @@ internal object SpeexJitterNative : SpeexJitterApi {
     const val JITTER_BUFFER_GET_AVAILABLE_COUNT = 3
 
     init {
-        HumlaNativeLibrary.load()
+        NomlaNativeLibrary.load()
     }
 
     external override fun init(stepSize: Int): Long

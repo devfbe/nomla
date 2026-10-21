@@ -42,7 +42,7 @@
     </queries>
 
     <application
-        android:name=".app.MumlaApplication"
+        android:name=".app.NomlaApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -56,7 +56,7 @@
             android:exported="false" />
 
         <service
-            android:name=".service.MumlaService"
+            android:name=".service.NomlaService"
             android:exported="false"
             android:enabled="true"
             android:foregroundServiceType="microphone" />
@@ -87,7 +87,7 @@
         </provider>
 
         <activity
-            android:name=".app.MumlaActivity"
+            android:name=".app.NomlaActivity"
             android:windowSoftInputMode="adjustResize"
             android:launchMode="singleTop"
             android:exported="true">

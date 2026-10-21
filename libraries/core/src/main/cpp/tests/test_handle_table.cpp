@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Host test for humla::HandleTable (../jni_native_handle.h), the handle convention of every JNI
+/* Host test for nomla::HandleTable (../jni_native_handle.h), the handle convention of every JNI
  * bridge: exactly-once release, stale handles that read as nullptr even after their slot has been
  * reused, and memory bounded by the number of live objects. */
 #include "jni_native_handle.h"
@@ -35,7 +35,7 @@ static int failures = 0;
 static int a, b, c;
 
 static void test_lifecycle() {
-    humla::HandleTable table;
+    nomla::HandleTable table;
     CHECK(table.add(nullptr) == 0, "a null object gets no handle");
 
     jlong ha = table.add(&a);
@@ -57,7 +57,7 @@ static void test_lifecycle() {
 }
 
 static void test_foreign_values() {
-    humla::HandleTable table;
+    nomla::HandleTable table;
     jlong h = table.add(&a);
 
     CHECK(table.get(0) == nullptr, "0 reads as nullptr");
@@ -75,7 +75,7 @@ static void test_foreign_values() {
 /* Released slots are reused, so a long session creating and destroying objects does not grow the
  * table: after many cycles a new handle still names one of the first slots. */
 static void test_slots_are_reused() {
-    humla::HandleTable table;
+    nomla::HandleTable table;
     jlong live = table.add(&c);
     for (int i = 0; i < 200000; i++) {
         jlong h = table.add(&a);
@@ -93,7 +93,7 @@ static void test_slots_are_reused() {
 
 /* Many live objects at once span several chunks; each handle keeps its own object. */
 static void test_many_live_objects() {
-    humla::HandleTable table;
+    nomla::HandleTable table;
     static int objects[2000];
     static jlong handles[2000];
     for (int i = 0; i < 2000; i++) handles[i] = table.add(&objects[i]);

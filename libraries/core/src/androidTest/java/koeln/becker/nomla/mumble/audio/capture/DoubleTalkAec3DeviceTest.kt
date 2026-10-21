@@ -61,7 +61,7 @@ import kotlin.math.max
 
 /**
  * Double talk through the capture chain the app builds for [EchoCancellationMode.WEBRTC] (real
- * `libhumla_native.so`: AEC3 + AGC2 + high-pass, then RNNoise), see [DoubleTalkRig]: how much
+ * `libnomla_native.so`: AEC3 + AGC2 + high-pass, then RNNoise), see [DoubleTalkRig]: how much
  * near-end speech survives while the far end talks, whether the app's default adaptive gate opens
  * on it, and how much echo gets through when only the far end talks.
  *
@@ -105,7 +105,7 @@ class DoubleTalkAec3DeviceTest {
 
     /**
      * webrtc's default config handed over as a tuning takes the injected-factory path in
-     * `humla_apm.cpp`; it must be the very canceller the built-in path creates, sample for sample.
+     * `nomla_apm.cpp`; it must be the very canceller the built-in path creates, sample for sample.
      * Also catches a Kotlin default that drifted from the native one.
      */
     @Test

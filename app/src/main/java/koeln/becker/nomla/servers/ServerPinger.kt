@@ -20,7 +20,7 @@ package koeln.becker.nomla.servers
 
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.net.ServerResolver
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
@@ -53,7 +53,7 @@ class ServerPinger(
             socket.receive(DatagramPacket(reply, reply.size))
             val latencyMs = ((System.nanoTime() - startTime) / NANOS_PER_MILLI).toInt()
             ServerInfoResponse(server, reply, latencyMs).also {
-                HumlaLog.d(TAG, "Server version: ${it.versionString} Users: ${it.currentUsers}/${it.maximumUsers}")
+                NomlaLog.d(TAG, "Server version: ${it.versionString} Users: ${it.currentUsers}/${it.maximumUsers}")
             }
         }
     } catch (e: Exception) {

@@ -25,7 +25,7 @@ import io.mockk.mockk
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.testing.installSession
@@ -37,7 +37,7 @@ import koeln.becker.nomla.testing.stubState
 class PushToTalkTest {
     private val context = ApplicationProvider.getApplicationContext<Context>()
     private var talking = false
-    private val session = mockk<IHumlaSession>(relaxed = true).also {
+    private val session = mockk<INomlaSession>(relaxed = true).also {
         val audio = it.stubAudio()
         every { audio.isTalking } answers { talking }
         every { audio.setTalking(any()) } answers { talking = firstArg() }

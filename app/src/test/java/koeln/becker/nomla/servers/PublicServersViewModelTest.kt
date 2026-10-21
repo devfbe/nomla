@@ -32,8 +32,8 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
-import koeln.becker.nomla.db.MumlaDatabase
-import koeln.becker.nomla.db.MumlaRepository
+import koeln.becker.nomla.db.NomlaDatabase
+import koeln.becker.nomla.db.NomlaRepository
 import koeln.becker.nomla.db.PublicServer
 import koeln.becker.nomla.testing.drainMainUntil
 import java.nio.ByteBuffer
@@ -45,7 +45,7 @@ class PublicServersViewModelTest {
         PublicServer(name, null, country, countryCode, "$name.example", 64738, null, null)
 
     private val servers = listOf(server("Bravo", "Sweden"), server("alpha", "Norway"), server("Charlie", null))
-    private val repository = MumlaRepository(mockk<MumlaDatabase>(relaxed = true), Dispatchers.Unconfined)
+    private val repository = NomlaRepository(mockk<NomlaDatabase>(relaxed = true), Dispatchers.Unconfined)
 
     /** Answers every ping with the users [users] gives the server's name, none by default. */
     private fun pinger(users: (String) -> Int = { 0 }) = mockk<ServerPinger> {
@@ -195,8 +195,8 @@ class PublicServersViewModelTest {
 
     @Test
     fun `a favourite is stored with the username given`() {
-        val database = mockk<MumlaDatabase>(relaxed = true)
-        val repository = MumlaRepository(database, Dispatchers.Unconfined)
+        val database = mockk<NomlaDatabase>(relaxed = true)
+        val repository = NomlaRepository(database, Dispatchers.Unconfined)
         val list = PublicServersViewModel(repository, mockk(relaxed = true), { true }, SavedStateHandle())
 
         list.favourite(servers[0], "me")

@@ -19,7 +19,7 @@ package koeln.becker.nomla.util
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.Socket
@@ -32,7 +32,7 @@ suspend fun isPortOpen(host: String, port: Int, timeoutMs: Int): Boolean = withC
         Socket().use { it.connect(InetSocketAddress(host, port), timeoutMs) }
         true
     } catch (e: IOException) {
-        HumlaLog.d(TAG, "isPortOpen($host, $port): $e")
+        NomlaLog.d(TAG, "isPortOpen($host, $port): $e")
         false
     }
 }

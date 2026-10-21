@@ -26,7 +26,7 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import koeln.becker.nomla.mumble.model.UserState
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.testing.ServiceHostActivity
 import koeln.becker.nomla.testing.stubConnected
@@ -36,7 +36,7 @@ import koeln.becker.nomla.testing.stubModel
 @RunWith(RobolectricTestRunner::class)
 class CommentObserverTest {
 
-    private val session: IHumlaSession = mockk<IHumlaSession>(relaxed = true).stubConnected()
+    private val session: INomlaSession = mockk<INomlaSession>(relaxed = true).stubConnected()
     private val model = session.stubModel(withComment(7, null))
     private val activity = Robolectric.buildActivity(ServiceHostActivity::class.java).setup().get()
         .also { it.bind(session) }

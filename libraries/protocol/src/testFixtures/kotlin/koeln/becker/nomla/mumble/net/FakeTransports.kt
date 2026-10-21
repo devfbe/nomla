@@ -20,7 +20,7 @@ package koeln.becker.nomla.mumble.net
 import com.google.protobuf.MessageLite
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import koeln.becker.nomla.mumble.exception.HumlaException
+import koeln.becker.nomla.mumble.exception.NomlaException
 import java.security.cert.X509Certificate
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicBoolean
@@ -29,14 +29,14 @@ import java.util.concurrent.atomic.AtomicInteger
 /**
  * A TCP transport that never opens a socket; tests push frames through it as the read thread would.
  *
- * Like HumlaTCP, every callback, including the terminal one [disconnect] reports, is dispatched on
+ * Like NomlaTCP, every callback, including the terminal one [disconnect] reports, is dispatched on
  * [scope] rather than called inline. [inProtocolContext] tells whether the caller runs there.
  */
 internal class FakeTcpTransport(
     private val scope: CoroutineScope,
     private val inProtocolContext: () -> Boolean,
 ) : TcpTransport {
-    @Volatile var listener: HumlaTCP.TCPConnectionListener? = null
+    @Volatile var listener: NomlaTCP.TCPConnectionListener? = null
 
     /** Whether [connect] ran on the protocol context; null before it ran. */
     @Volatile var connectedInProtocolContext: Boolean? = null
@@ -45,7 +45,7 @@ internal class FakeTcpTransport(
     @Volatile var connectPort: Int = 0
     @Volatile var connectUseTor: Boolean = false
     @Volatile var disconnectCalls = 0
-    val sent = CopyOnWriteArrayList<HumlaTCPMessageType>()
+    val sent = CopyOnWriteArrayList<NomlaTCPMessageType>()
 
     /** The protobuf messages sent, in order; raw tunnelled frames are not included. */
     val sentMessages = CopyOnWriteArrayList<MessageLite>()
@@ -57,13 +57,13 @@ internal class FakeTcpTransport(
      * Called from [sendMessage], on whichever thread sends. Lets a test act while the protocol
      * context is in the middle of a message handler.
      */
-    @Volatile var onSend: ((HumlaTCPMessageType) -> Unit)? = null
+    @Volatile var onSend: ((NomlaTCPMessageType) -> Unit)? = null
 
     /** Whether the terminal callback [disconnect] dispatched actually ran. */
     val terminalDelivered = AtomicBoolean(false)
 
     override val isRunning: Boolean get() = isConnectCalled && disconnectCalls == 0
-    override fun setTCPConnectionListener(listener: HumlaTCP.TCPConnectionListener?) { this.listener = listener }
+    override fun setTCPConnectionListener(listener: NomlaTCP.TCPConnectionListener?) { this.listener = listener }
     override fun connect(host: String, port: Int, useTor: Boolean) {
         connectHost = host
         connectPort = port
@@ -71,16 +71,16 @@ internal class FakeTcpTransport(
         // Published last: tests wait on this field, so everything else must be in place first.
         connectedInProtocolContext = inProtocolContext()
     }
-    override fun sendMessage(message: MessageLite, messageType: HumlaTCPMessageType) {
+    override fun sendMessage(message: MessageLite, messageType: NomlaTCPMessageType) {
         sentMessages += message
         record(messageType)
     }
-    override fun sendMessage(data: ByteArray, length: Int, messageType: HumlaTCPMessageType) {
+    override fun sendMessage(data: ByteArray, length: Int, messageType: NomlaTCPMessageType) {
         sentFrames += data.copyOf(length)
         record(messageType)
     }
 
-    private fun record(messageType: HumlaTCPMessageType) {
+    private fun record(messageType: NomlaTCPMessageType) {
         sent += messageType
         onSend?.invoke(messageType)
     }
@@ -97,9 +97,9 @@ internal class FakeTcpTransport(
     }
 
     fun simulateConnected() = post { it.onTCPConnectionEstablished() }
-    fun simulateMessage(type: HumlaTCPMessageType, data: ByteArray) =
+    fun simulateMessage(type: NomlaTCPMessageType, data: ByteArray) =
         post { it.onTCPMessageReceived(type, data.size, data) }
-    fun simulateFailure(e: HumlaException) = post { it.onTCPConnectionFailed(e) }
+    fun simulateFailure(e: NomlaException) = post { it.onTCPConnectionFailed(e) }
     fun simulateHandshakeFailure(chain: Array<X509Certificate>) = post { it.onTLSHandshakeFailed(chain) }
 
     /**
@@ -110,7 +110,7 @@ internal class FakeTcpTransport(
         checkNotNull(listener) { "connect() was not called" }.onTCPConnectionDisconnect()
     }
 
-    private fun post(block: (HumlaTCP.TCPConnectionListener) -> Unit) {
+    private fun post(block: (NomlaTCP.TCPConnectionListener) -> Unit) {
         val l = checkNotNull(listener) { "connect() was not called" }
         scope.launch { block(l) }
     }
@@ -125,7 +125,7 @@ internal class FakeTcpTransport(
  */
 internal class FakeUdpTransport(
     private val scope: CoroutineScope,
-    private val listener: HumlaUDP.UDPConnectionListener,
+    private val listener: NomlaUDP.UDPConnectionListener,
     private val cryptState: CryptState,
     private val inProtocolContext: () -> Boolean,
 ) : UdpTransport {
@@ -165,16 +165,16 @@ internal class FakeUdpTransport(
 /** [inProtocolContext] tells the fakes whether their caller runs on the protocol context. */
 internal class FakeTransports(
     private val inProtocolContext: () -> Boolean = { true },
-) : HumlaConnection.TransportFactory {
+) : NomlaConnection.TransportFactory {
     val tcps = CopyOnWriteArrayList<FakeTcpTransport>()
     val udps = CopyOnWriteArrayList<FakeUdpTransport>()
 
-    override fun createTcp(socketFactory: HumlaSSLSocketFactory, scope: CoroutineScope): TcpTransport =
+    override fun createTcp(socketFactory: NomlaSSLSocketFactory, scope: CoroutineScope): TcpTransport =
         FakeTcpTransport(scope, inProtocolContext).also { tcps += it }
 
     override fun createUdp(
         cryptState: CryptState,
-        listener: HumlaUDP.UDPConnectionListener,
+        listener: NomlaUDP.UDPConnectionListener,
         scope: CoroutineScope,
     ): UdpTransport =
         FakeUdpTransport(scope, listener, cryptState, inProtocolContext).also { udps += it }
@@ -183,7 +183,7 @@ internal class FakeTransports(
 /** [onCallbackThread] tells whether a callback runs where the connection's callbacks belong. */
 internal class RecordingConnectionListener(
     private val onCallbackThread: () -> Boolean = { true },
-) : HumlaConnection.Listener {
+) : NomlaConnection.Listener {
     /**
      * One entry per callback, in delivery order, so tests can check that onConnectionDisconnected
      * is terminal.
@@ -192,7 +192,7 @@ internal class RecordingConnectionListener(
 
     val established = AtomicInteger()
     val synchronizedCount = AtomicInteger()
-    val disconnects = CopyOnWriteArrayList<HumlaException?>()
+    val disconnects = CopyOnWriteArrayList<NomlaException?>()
     val warnings = CopyOnWriteArrayList<ConnectionWarning>()
     val handshakeFailures = CopyOnWriteArrayList<Array<X509Certificate>>()
     val certificateChanges = CopyOnWriteArrayList<Array<X509Certificate>>()
@@ -212,7 +212,7 @@ internal class RecordingConnectionListener(
         record("certificateChanged")
         certificateChanges += chain
     }
-    override fun onConnectionDisconnected(e: HumlaException?) { record("disconnected"); disconnects += e }
+    override fun onConnectionDisconnected(e: NomlaException?) { record("disconnected"); disconnects += e }
     override fun onConnectionWarning(warning: ConnectionWarning) { record("warning:$warning"); warnings += warning }
 
     private fun record(event: String) {

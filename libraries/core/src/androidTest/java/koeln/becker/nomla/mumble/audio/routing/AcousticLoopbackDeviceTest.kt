@@ -114,7 +114,7 @@ class AcousticLoopbackDeviceTest {
 
     @Before
     fun setUp() {
-        // Not GrantPermissionRule: with Robolectric on this classpath (humla's test fixtures) its
+        // Not GrantPermissionRule: with Robolectric on this classpath (nomla's test fixtures) its
         // service loader picks Robolectric's granter, which fails on a device. The app op lets the
         // test process, which has no activity, record without being silenced as a background app.
         val automation = InstrumentationRegistry.getInstrumentation().uiAutomation

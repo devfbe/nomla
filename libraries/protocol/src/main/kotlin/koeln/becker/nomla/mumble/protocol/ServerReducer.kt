@@ -28,8 +28,8 @@ import koeln.becker.nomla.mumble.model.ServerState.Companion.ROOT_CHANNEL_ID
 import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.mumble.model.localVolumeKey
 import koeln.becker.nomla.mumble.protobuf.Mumble
-import koeln.becker.nomla.mumble.session.HumlaEvent
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.session.NomlaEvent
+import koeln.becker.nomla.mumble.util.NomlaLog
 
 /** A change the client makes to its own view of other users, applied by the model's writer. */
 internal sealed interface LocalInput {
@@ -61,7 +61,7 @@ internal class ServerWriter(private var published: ServerState) {
     private val members = published.members.builder()
     private val listeners = published.listeners.builder()
 
-    fun onMessage(msg: MessageLite, emit: (HumlaEvent) -> Unit) {
+    fun onMessage(msg: MessageLite, emit: (NomlaEvent) -> Unit) {
         when (msg) {
             is Mumble.ChannelState -> if (msg.hasChannelId()) channelState(msg)
             is Mumble.ChannelRemove -> removeChannel(msg.channelId)
@@ -69,7 +69,7 @@ internal class ServerWriter(private var published: ServerState) {
             is Mumble.UserState -> userState(msg, emit)
             is Mumble.UserRemove -> userRemove(msg, emit)
             is Mumble.ServerSync -> {
-                emit(HumlaEvent.LogMessage(HumlaEvent.Level.INFO, msg.welcomeText))
+                emit(NomlaEvent.LogMessage(NomlaEvent.Level.INFO, msg.welcomeText))
                 selfSession = msg.session
             }
             is Mumble.ServerConfig -> serverSettings = ServerSettings.from(msg)
@@ -152,7 +152,7 @@ internal class ServerWriter(private var published: ServerState) {
             }
             above = channels[above]?.parent
         }
-        refusal?.let { HumlaLog.w(TAG, it) }
+        refusal?.let { NomlaLog.w(TAG, it) }
         return refusal == null
     }
 
@@ -223,7 +223,7 @@ internal class ServerWriter(private var published: ServerState) {
     private fun self(): UserState? = selfSession?.let { users[it] }
 
     @Suppress("CyclomaticComplexMethod", "LongMethod") // One step per field group, in protocol order.
-    private fun userState(msg: Mumble.UserState, emit: (HumlaEvent) -> Unit) {
+    private fun userState(msg: Mumble.UserState, emit: (NomlaEvent) -> Unit) {
         val session = msg.session
         val known = users[session]
         if (known == null && !msg.hasName()) return
@@ -245,7 +245,7 @@ internal class ServerWriter(private var published: ServerState) {
             )
         }
         if (msg.hasHash()) commit(user.copy(hash = msg.hash))
-        if (known == null) emit(HumlaEvent.UserJoinedServer(user.name))
+        if (known == null) emit(NomlaEvent.UserJoinedServer(user.name))
 
         if (msg.hasSelfMute() || msg.hasSelfDeaf()) {
             commit(
@@ -274,7 +274,7 @@ internal class ServerWriter(private var published: ServerState) {
             val target = channels[msg.channelId]
             if (target == null) {
                 // The rest of a frame naming an unknown channel is dropped.
-                HumlaLog.e(TAG, "Invalid channel for user!")
+                NomlaLog.e(TAG, "Invalid channel for user!")
                 return
             }
             val old = user.channel
@@ -338,14 +338,14 @@ internal class ServerWriter(private var published: ServerState) {
         return next
     }
 
-    private fun userRemove(msg: Mumble.UserRemove, emit: (HumlaEvent) -> Unit) {
+    private fun userRemove(msg: Mumble.UserRemove, emit: (NomlaEvent) -> Unit) {
         val user = users[msg.session]
         val actor = users[msg.actor]
         emit(
             when {
-                msg.session == selfSession -> HumlaEvent.SelfKicked(actor?.name, msg.reason, msg.ban)
-                actor != null -> HumlaEvent.UserKicked(user?.name, actor.name, msg.reason, msg.ban)
-                else -> HumlaEvent.UserLeftServer(user?.name)
+                msg.session == selfSession -> NomlaEvent.SelfKicked(actor?.name, msg.reason, msg.ban)
+                actor != null -> NomlaEvent.UserKicked(user?.name, actor.name, msg.reason, msg.ban)
+                else -> NomlaEvent.UserLeftServer(user?.name)
             }
         )
         if (user == null) return

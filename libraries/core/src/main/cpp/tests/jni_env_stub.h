@@ -90,7 +90,7 @@ F native(const char* cls, const char* name) {
         std::fprintf(stderr, "stub: %s.%s was never registered\n", cls, name);
         std::abort();
     }
-    const char* expected = humla::NativeFunction<F>::descriptor();
+    const char* expected = nomla::NativeFunction<F>::descriptor();
     if (found->signature != expected) {
         std::fprintf(stderr, "stub: %s.%s registered as %s, called as %s\n", cls, name,
                      found->signature.c_str(), expected);

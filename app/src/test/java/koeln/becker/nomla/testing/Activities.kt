@@ -24,15 +24,15 @@ import io.mockk.mockk
 import org.robolectric.Robolectric
 import org.robolectric.shadows.ShadowDialog
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
-import koeln.becker.nomla.app.MumlaActivity
+import koeln.becker.nomla.app.NomlaActivity
 
-/** Starts [MumlaActivity] with [intent] on a relaxed mock database, past the first-run guide. */
-fun launchMumlaActivity(intent: Intent? = null): MumlaActivity {
+/** Starts [NomlaActivity] with [intent] on a relaxed mock database, past the first-run guide. */
+fun launchNomlaActivity(intent: Intent? = null): NomlaActivity {
     installDatabase(mockk(relaxed = true))
     val controller = if (intent == null) {
-        Robolectric.buildActivity(MumlaActivity::class.java)
+        Robolectric.buildActivity(NomlaActivity::class.java)
     } else {
-        Robolectric.buildActivity(MumlaActivity::class.java, intent)
+        Robolectric.buildActivity(NomlaActivity::class.java, intent)
     }
     val activity = controller.setup().get()
     idleMainLooper()

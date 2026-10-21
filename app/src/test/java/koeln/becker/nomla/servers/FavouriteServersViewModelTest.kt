@@ -27,15 +27,15 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
-import koeln.becker.nomla.db.MumlaDatabase
-import koeln.becker.nomla.db.MumlaRepository
+import koeln.becker.nomla.db.NomlaDatabase
+import koeln.becker.nomla.db.NomlaRepository
 
 @RunWith(RobolectricTestRunner::class)
 class FavouriteServersViewModelTest {
     private val home = Server(3, "Home", "home.example", 0, "me", null)
     private val work = Server(4, "Work", "work.example", 0, "me", null)
-    private val database = mockk<MumlaDatabase>(relaxed = true) { every { getServers() } returns listOf(home, work) }
-    private val favourites = FavouriteServersViewModel(MumlaRepository(database, Dispatchers.Unconfined), { false })
+    private val database = mockk<NomlaDatabase>(relaxed = true) { every { getServers() } returns listOf(home, work) }
+    private val favourites = FavouriteServersViewModel(NomlaRepository(database, Dispatchers.Unconfined), { false })
 
     @Test
     fun theServersAreUnknownUntilReadAndThenWhatTheDatabaseHolds() {

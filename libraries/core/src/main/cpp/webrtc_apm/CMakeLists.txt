@@ -1,6 +1,6 @@
 # webrtc-audio-processing v2.1 plus upstream's fixes up to d0569cf (BSD-3; the abseil >= 202508
 # build fix is in no release tag yet) and abseil-cpp 20260817.0 (Apache-2.0), built as one static
-# library with the C wrapper in humla_apm.cpp.
+# library with the C wrapper in nomla_apm.cpp.
 #
 # Upstream builds with meson, which Gradle's externalNativeBuild cannot drive, so the meson file
 # lists are transcribed here in upstream's order and grouping, so the result can be diffed against
@@ -278,25 +278,25 @@ list(TRANSFORM WAP_ALL_SOURCES PREPEND ${WEBRTC_DIR}/)
 
 # Everything needed to include webrtc's headers, shared by the library, the x86 SIMD objects and
 # the sanitized rebuild in tests/ so they cannot drift apart.
-add_library(humla_apm_buildflags INTERFACE)
-target_include_directories(humla_apm_buildflags INTERFACE ${WEBRTC_DIR} ${WAP_DIR})
-target_compile_definitions(humla_apm_buildflags INTERFACE ${WAP_DEFS})
+add_library(nomla_apm_buildflags INTERFACE)
+target_include_directories(nomla_apm_buildflags INTERFACE ${WEBRTC_DIR} ${WAP_DIR})
+target_compile_definitions(nomla_apm_buildflags INTERFACE ${WAP_DEFS})
 # abseil deprecates aliases webrtc still uses, and its clang nullability macros leave webrtc's
 # partially annotated headers "incomplete"; neither is ours to fix.
-target_compile_options(humla_apm_buildflags INTERFACE ${WAP_ARCH_FLAGS} -Wno-deprecated-declarations
+target_compile_options(nomla_apm_buildflags INTERFACE ${WAP_ARCH_FLAGS} -Wno-deprecated-declarations
     $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-nullability-completeness>)
 # meson.build:49-56 absl_dep, narrowed to the abseil headers this tree actually includes.
 # absl_synchronization and absl_bad_optional_access are not named: nothing includes them directly
 # and abseil's own dependencies bring them in.
-target_link_libraries(humla_apm_buildflags INTERFACE
+target_link_libraries(nomla_apm_buildflags INTERFACE
     absl::base absl::strings absl::any_invocable absl::algorithm_container absl::type_traits
     ${WAP_OS_LIBS})
 
-add_library(humla_apm STATIC ${WAP_ALL_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/humla_apm.cpp)
-target_include_directories(humla_apm PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_compile_options(humla_apm PRIVATE -O2 -fvisibility=hidden)
-# PRIVATE: humla_apm.h exposes neither webrtc nor abseil, so no consumer needs their headers.
-target_link_libraries(humla_apm PRIVATE humla_apm_buildflags)
+add_library(nomla_apm STATIC ${WAP_ALL_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/nomla_apm.cpp)
+target_include_directories(nomla_apm PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_options(nomla_apm PRIVATE -O2 -fvisibility=hidden)
+# PRIVATE: nomla_apm.h exposes neither webrtc nor abseil, so no consumer needs their headers.
+target_link_libraries(nomla_apm PRIVATE nomla_apm_buildflags)
 # third_party/pffft/meson.build:5 pffft_cflags.
 set_source_files_properties(${WEBRTC_DIR}/third_party/pffft/src/pffft.c PROPERTIES COMPILE_DEFINITIONS _GNU_SOURCE)
 
@@ -312,13 +312,13 @@ if(WAP_ARCH_X86)
       modules/audio_processing/aec3/vector_math_avx2.cc modules/audio_processing/agc2/rnn_vad/vector_math_avx2.cc)
   list(TRANSFORM WAP_SSE2_SOURCES PREPEND ${WEBRTC_DIR}/)
   list(TRANSFORM WAP_AVX2_SOURCES PREPEND ${WEBRTC_DIR}/)
-  add_library(humla_apm_sse2 OBJECT ${WAP_SSE2_SOURCES})
-  target_compile_options(humla_apm_sse2 PRIVATE -msse2 -O2 -fvisibility=hidden)
+  add_library(nomla_apm_sse2 OBJECT ${WAP_SSE2_SOURCES})
+  target_compile_options(nomla_apm_sse2 PRIVATE -msse2 -O2 -fvisibility=hidden)
   # meson.build:186-190 avx_flags.
-  add_library(humla_apm_avx2 OBJECT ${WAP_AVX2_SOURCES})
-  target_compile_options(humla_apm_avx2 PRIVATE -mavx2 -mfma -O2 -fvisibility=hidden)
-  foreach(t humla_apm_sse2 humla_apm_avx2)
-    target_link_libraries(${t} PRIVATE humla_apm_buildflags)
+  add_library(nomla_apm_avx2 OBJECT ${WAP_AVX2_SOURCES})
+  target_compile_options(nomla_apm_avx2 PRIVATE -mavx2 -mfma -O2 -fvisibility=hidden)
+  foreach(t nomla_apm_sse2 nomla_apm_avx2)
+    target_link_libraries(${t} PRIVATE nomla_apm_buildflags)
   endforeach()
-  target_sources(humla_apm PRIVATE $<TARGET_OBJECTS:humla_apm_sse2> $<TARGET_OBJECTS:humla_apm_avx2>)
+  target_sources(nomla_apm PRIVATE $<TARGET_OBJECTS:nomla_apm_sse2> $<TARGET_OBJECTS:nomla_apm_avx2>)
 endif()

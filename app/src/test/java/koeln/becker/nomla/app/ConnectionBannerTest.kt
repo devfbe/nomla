@@ -31,7 +31,7 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.android.controller.ActivityController
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
@@ -60,7 +60,7 @@ class ConnectionBannerTest {
     }
 
     private val context = ApplicationProvider.getApplicationContext<Context>()
-    private val session: IHumlaSession = mockk(relaxed = true) {
+    private val session: INomlaSession = mockk(relaxed = true) {
         every { targetServer } returns Server(1, "Home", "example.org", 64738, "me", null)
     }
 

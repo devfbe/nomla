@@ -19,7 +19,7 @@ package koeln.becker.nomla.audio
 
 import android.content.Context
 import android.media.AudioManager
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.audio.routing.CommunicationDevice
 import koeln.becker.nomla.mumble.audio.routing.PreferredAudioDevice
@@ -37,7 +37,7 @@ data class AudioDeviceChoice(val id: Int?, val label: String, val selected: Bool
 class AudioDeviceControls(
     private val context: Context,
     private val settings: Settings,
-    private val session: () -> IHumlaSession?,
+    private val session: () -> INomlaSession?,
 ) {
     /**
      * "Automatic", then the session's devices, or without a session the ones the platform offers for
@@ -61,7 +61,7 @@ class AudioDeviceControls(
     }
 
     /** The session's devices, or without one what the platform offers, read without routing. */
-    private fun devices(session: IHumlaSession?): List<CommunicationDevice> =
+    private fun devices(session: INomlaSession?): List<CommunicationDevice> =
         session?.audio?.devices ?: listCommunicationDevices(context.getSystemService(AudioManager::class.java))
 
     /**

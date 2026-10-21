@@ -38,7 +38,7 @@ import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.exception.AudioException
 import koeln.becker.nomla.mumble.exception.AudioInitializationException
 import koeln.becker.nomla.mumble.model.UserState
-import koeln.becker.nomla.mumble.net.HumlaUDPMessageType
+import koeln.becker.nomla.mumble.net.NomlaUDPMessageType
 import koeln.becker.nomla.mumble.testutil.NoopEncodeListener
 import koeln.becker.nomla.mumble.testutil.NoopOutputListener
 import koeln.becker.nomla.mumble.testutil.SilentLogger
@@ -52,7 +52,7 @@ class AudioHandlerTest {
     private val context = ApplicationProvider.getApplicationContext<Context>()
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private val params = AudioSessionParams(
-        UserState(1, "me", 0), 72_000, HumlaUDPMessageType.UDPVoiceOpus, 0, ContinuousInputMode(),
+        UserState(1, "me", 0), 72_000, NomlaUDPMessageType.UDPVoiceOpus, 0, ContinuousInputMode(),
     )
     private val host = AudioHost(
         context,

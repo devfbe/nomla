@@ -29,7 +29,7 @@ import java.util.Locale
 
 /**
  * RNNoise's attenuation limit ([RnnoisePreprocessor]) and AGC2's place in the WEBRTC chain, over
- * double talk, echo alone, noise alone and the near end alone (real `libhumla_native.so`, see
+ * double talk, echo alone, noise alone and the near end alone (real `libnomla_native.so`, see
  * [DoubleTalkRig]). Tables go to logcat (tag [DoubleTalkRig.TAG]).
  *
  * Measured 2026-09 (x86-64 host build of the same native sources, three talker pairs): any limit

@@ -17,9 +17,9 @@
 
 package koeln.becker.nomla.mumble.testutil
 
-import koeln.becker.nomla.mumble.util.HumlaLogger
+import koeln.becker.nomla.mumble.util.NomlaLogger
 
-internal object SilentLogger : HumlaLogger {
+internal object SilentLogger : NomlaLogger {
     override fun logInfo(message: String) = Unit
     override fun logWarning(message: String) = Unit
     override fun logError(message: String) = Unit

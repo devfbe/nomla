@@ -35,7 +35,7 @@ import kotlin.math.tanh
 import kotlin.random.Random
 
 /**
- * Double talk through the real capture chain (`libhumla_native.so`), shared by the device tests in
+ * Double talk through the real capture chain (`libnomla_native.so`), shared by the device tests in
  * this package. The talkers are synthetic vowels ([Talkers.SYNTHETIC], the default every bound was
  * measured with) or real speech from Piper ([Talkers.PIPER], see [SpeechCorpus]).
  *

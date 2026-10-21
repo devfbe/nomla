@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.R
 import koeln.becker.nomla.session.SessionManager
@@ -87,14 +87,14 @@ data class MuteTileModel(val state: Int, @param:StringRes val subtitle: Int?) {
 }
 
 /** Flips our mute as the mute button does: unmuting undeafens too. */
-fun toggleSelfMute(session: IHumlaSession) {
+fun toggleSelfMute(session: INomlaSession) {
     val self = session.model.value?.self ?: return
     val muted = !self.isSelfMuted
     session.actions.setSelfMuteDeafState(muted, self.isSelfDeafened && muted)
 }
 
 /** Flips our deafness as the deafen button does: deafening mutes too, undeafening unmutes. */
-fun toggleSelfDeafen(session: IHumlaSession) {
+fun toggleSelfDeafen(session: INomlaSession) {
     val self = session.model.value?.self ?: return
     val deafened = !self.isSelfDeafened
     session.actions.setSelfMuteDeafState(deafened, deafened)

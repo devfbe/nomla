@@ -58,7 +58,7 @@ class NotificationPostingTest {
 
     private fun postedNotifications() = shadowOf(notificationManager).allNotifications
 
-    private fun showMessage() = MumlaMessageNotification(context).show("alice", "hello")
+    private fun showMessage() = NomlaMessageNotification(context).show("alice", "hello")
 
     /**
      * Below API 33 ContextCompat.registerReceiver emulates RECEIVER_NOT_EXPORTED behind
@@ -66,15 +66,15 @@ class NotificationPostingTest {
      * (androidx.core declares it at signature level); Robolectric grants no install-time
      * permissions, so it is granted here.
      */
-    private fun showReconnect(): MumlaReconnectNotification {
+    private fun showReconnect(): NomlaReconnectNotification {
         shadowOf(context as Application)
             .grantPermissions(context.packageName + DYNAMIC_RECEIVER_PERMISSION)
-        return MumlaReconnectNotification(context, NoopActions).also { it.show("connection lost") }
+        return NomlaReconnectNotification(context, NoopActions).also { it.show("connection lost") }
     }
 
     /**
      * The declaration comes from androidx.core's manifest. If it disappears while minSdk < 33,
-     * MumlaReconnectNotification.show() throws on Android 12.
+     * NomlaReconnectNotification.show() throws on Android 12.
      */
     @Test
     fun `the merged manifest declares the permission ContextCompat needs below api 33`() {
@@ -139,7 +139,7 @@ class NotificationPostingTest {
         const val DYNAMIC_RECEIVER_PERMISSION = ".DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
     }
 
-    private object NoopActions : MumlaReconnectNotification.OnActionListener {
+    private object NoopActions : NomlaReconnectNotification.OnActionListener {
         override fun onReconnectNotificationDismissed() {}
         override fun reconnect() {}
     }

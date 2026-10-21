@@ -38,10 +38,10 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowDialog
-import koeln.becker.nomla.mumble.net.HumlaCertificateGenerator
+import koeln.becker.nomla.mumble.net.NomlaCertificateGenerator
 import koeln.becker.nomla.mumble.net.Pkcs12Certificates
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
-import koeln.becker.nomla.db.MumlaSQLiteDatabase
+import koeln.becker.nomla.db.NomlaSQLiteDatabase
 import koeln.becker.nomla.testing.installDatabase
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -67,7 +67,7 @@ class CertificateImportActivityTest {
 
     @After
     fun tearDown() {
-        context.deleteDatabase(MumlaSQLiteDatabase.DATABASE_NAME)
+        context.deleteDatabase(NomlaSQLiteDatabase.DATABASE_NAME)
     }
 
     /** A document that fails half way, as a provider backed by the network can. */
@@ -84,7 +84,7 @@ class CertificateImportActivityTest {
         shadowOf(activity).receiveResult(request.intent, Activity.RESULT_OK, Intent().setData(uri))
     }
 
-    private fun storedCertificates() = MumlaSQLiteDatabase(context).let { db ->
+    private fun storedCertificates() = NomlaSQLiteDatabase(context).let { db ->
         try { db.getCertificates() } finally { db.close() }
     }
 
@@ -113,7 +113,7 @@ class CertificateImportActivityTest {
 
     @Test
     fun anImportedCertificateIsStoredAndItsDocumentClosed() {
-        val p12 = ByteArrayOutputStream().also { HumlaCertificateGenerator.generateCertificate(it) }.toByteArray()
+        val p12 = ByteArrayOutputStream().also { NomlaCertificateGenerator.generateCertificate(it) }.toByteArray()
         val stream = RecordingStream(p12)
 
         import(stream)
@@ -134,7 +134,7 @@ class CertificateImportActivityTest {
 
     @Test
     fun aPasswordProtectedCertificateAsksForThePasswordInAMaskedField() {
-        val plain = ByteArrayOutputStream().also { HumlaCertificateGenerator.generateCertificate(it) }.toByteArray()
+        val plain = ByteArrayOutputStream().also { NomlaCertificateGenerator.generateCertificate(it) }.toByteArray()
         val keyStore = Pkcs12Certificates.load(plain, null)
         val protectedP12 = ByteArrayOutputStream().also { keyStore.store(it, "secret".toCharArray()) }.toByteArray()
 

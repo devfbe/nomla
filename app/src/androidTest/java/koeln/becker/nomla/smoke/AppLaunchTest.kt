@@ -24,7 +24,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import koeln.becker.nomla.R
-import koeln.becker.nomla.app.MumlaActivity
+import koeln.becker.nomla.app.NomlaActivity
 import koeln.becker.nomla.servers.FavouriteServerListFragment
 
 @RunWith(AndroidJUnit4::class)
@@ -34,7 +34,7 @@ class AppLaunchTest {
 
     @Test
     fun theAppOpensOnTheServerList() {
-        ActivityScenario.launch(MumlaActivity::class.java).use { scenario ->
+        ActivityScenario.launch(NomlaActivity::class.java).use { scenario ->
             scenario.onActivity { activity ->
                 activity.supportFragmentManager.executePendingTransactions()
                 val screen = activity.supportFragmentManager.findFragmentById(R.id.content_frame)

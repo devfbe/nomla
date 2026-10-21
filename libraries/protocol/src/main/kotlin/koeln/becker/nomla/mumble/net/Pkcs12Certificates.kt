@@ -43,7 +43,7 @@ import java.security.cert.X509Certificate
 
 /**
  * Reads PKCS#12 client certificates: the ones Mumble writes (unencrypted keyBag and certBag,
- * MAC over the empty password) and the ones [HumlaCertificateGenerator] writes.
+ * MAC over the empty password) and the ones [NomlaCertificateGenerator] writes.
  *
  * The bundled BouncyCastle provider is passed explicitly rather than registered globally, so the
  * parse never depends on whatever "BC" provider the device ROM ships.

@@ -23,7 +23,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.PowerManager
 import android.provider.Settings
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 
 /**
  * Android's battery optimisation, which lets some vendors stop the connection service in the
@@ -56,7 +56,7 @@ object BatteryOptimization {
         context.startActivity(intent)
         true
     } catch (e: ActivityNotFoundException) {
-        HumlaLog.w(TAG, "No activity for ${intent.action}", e)
+        NomlaLog.w(TAG, "No activity for ${intent.action}", e)
         false
     }
 }

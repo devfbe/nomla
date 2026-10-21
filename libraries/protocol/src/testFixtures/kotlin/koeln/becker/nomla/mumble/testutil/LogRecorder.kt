@@ -18,15 +18,15 @@
 package koeln.becker.nomla.mumble.testutil
 
 import org.junit.rules.ExternalResource
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 import java.util.concurrent.CopyOnWriteArrayList
 
-/** A rule that records every [HumlaLog] line written while a test runs. */
+/** A rule that records every [NomlaLog] line written while a test runs. */
 public class LogRecorder : ExternalResource() {
-    public data class Line(val level: HumlaLog.Level, val tag: String, val message: String)
+    public data class Line(val level: NomlaLog.Level, val tag: String, val message: String)
 
     private val recorded = CopyOnWriteArrayList<Line>()
-    private val sink = HumlaLog.Sink { level, tag, message, _ -> recorded += Line(level, tag, message) }
+    private val sink = NomlaLog.Sink { level, tag, message, _ -> recorded += Line(level, tag, message) }
 
     public val lines: List<Line> get() = recorded
 
@@ -34,7 +34,7 @@ public class LogRecorder : ExternalResource() {
 
     public fun clear(): Unit = recorded.clear()
 
-    override fun before(): Unit = HumlaLog.addSink(sink)
+    override fun before(): Unit = NomlaLog.addSink(sink)
 
-    override fun after(): Unit = HumlaLog.removeSink(sink)
+    override fun after(): Unit = NomlaLog.removeSink(sink)
 }

@@ -31,7 +31,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import koeln.becker.nomla.mumble.net.Pkcs12Certificates
 import koeln.becker.nomla.R
-import koeln.becker.nomla.db.MumlaRepository
+import koeln.becker.nomla.db.NomlaRepository
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
@@ -114,7 +114,7 @@ class CertificateImportActivity : AppCompatActivity() {
         val pkcs12Out = output.toByteArray()
         val success = getString(R.string.certificate_import_success, fileName)
         lifecycleScope.launch {
-            MumlaRepository.get(this@CertificateImportActivity).io { addCertificate(fileName, pkcs12Out) }
+            NomlaRepository.get(this@CertificateImportActivity).io { addCertificate(fileName, pkcs12Out) }
             AppMessages.get(this@CertificateImportActivity).post(success)
             finish()
         }

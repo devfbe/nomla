@@ -24,7 +24,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.text.HtmlCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.BuildConfig
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
@@ -114,7 +114,7 @@ private data class Version(val major: Int, val minor: Int, val patch: Int) : Com
             for (part in version.substringBefore('-').split('.').take(PARTS)) {
                 val number = part.toIntOrNull()
                 if (number == null) {
-                    HumlaLog.d("DialogUtils", "Failed to parse version string: $version")
+                    NomlaLog.d("DialogUtils", "Failed to parse version string: $version")
                     break
                 }
                 numbers += number

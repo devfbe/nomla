@@ -76,7 +76,7 @@ internal interface WebRtcApmApi {
  */
 internal object WebRtcApmNative : WebRtcApmApi {
     init {
-        HumlaNativeLibrary.load()
+        NomlaNativeLibrary.load()
     }
 
     external override fun create(

@@ -28,7 +28,7 @@ import android.media.audiofx.AutomaticGainControl
 import android.media.audiofx.NoiseSuppressor
 import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.exception.AudioInitializationException
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 import java.util.concurrent.Executor
 
 /** Blocking 16-bit mono PCM capture; the hardware edge of the capture path (fakeable for tests). */
@@ -150,7 +150,7 @@ public class AndroidAudioRecordSource internal constructor(
             val record = rates.firstNotNullOfOrNull { tryOpen(source, it) }
                 ?: throw AudioInitializationException("Unable to open AudioRecord at any of $rates Hz")
             request.preferredDevice?.let { record.preferredDevice = it }
-            HumlaLog.i(TAG, "capturing from source $source at ${record.sampleRate} Hz")
+            NomlaLog.i(TAG, "capturing from source $source at ${record.sampleRate} Hz")
             return AndroidAudioRecordSource(record, attachEffects(record.audioSessionId, request))
         }
 
@@ -172,10 +172,10 @@ public class AndroidAudioRecordSource internal constructor(
                     .setBufferSizeInBytes(minBufferSize)
                     .build()
             } catch (e: IllegalArgumentException) {
-                HumlaLog.w(TAG, "no AudioRecord at $rate Hz: ${e.message}")
+                NomlaLog.w(TAG, "no AudioRecord at $rate Hz: ${e.message}")
                 return null
             } catch (e: UnsupportedOperationException) {
-                HumlaLog.w(TAG, "no AudioRecord at $rate Hz: ${e.message}")
+                NomlaLog.w(TAG, "no AudioRecord at $rate Hz: ${e.message}")
                 return null
             }
             if (record.state != AudioRecord.STATE_INITIALIZED) {
@@ -193,17 +193,17 @@ public class AndroidAudioRecordSource internal constructor(
             val attached = mutableListOf<AudioEffect>()
             fun attach(name: String, available: Boolean, create: () -> AudioEffect?) {
                 if (!available) {
-                    HumlaLog.w(TAG, "$name not available on this device")
+                    NomlaLog.w(TAG, "$name not available on this device")
                     return
                 }
                 val effect = create()
                 if (effect == null) {
-                    HumlaLog.w(TAG, "$name creation failed")
+                    NomlaLog.w(TAG, "$name creation failed")
                     return
                 }
                 effect.enabled = true
                 attached += effect
-                HumlaLog.i(TAG, "$name enabled")
+                NomlaLog.i(TAG, "$name enabled")
             }
             if (request.effects.noiseSuppressor) {
                 attach("NoiseSuppressor", NoiseSuppressor.isAvailable()) { NoiseSuppressor.create(sessionId) }

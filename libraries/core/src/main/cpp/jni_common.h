@@ -28,7 +28,7 @@
 #include <cstddef>
 #include <new>
 
-namespace humla {
+namespace nomla {
 
 template <typename T> struct JniDescriptor;
 template <> struct JniDescriptor<void> { static constexpr char value[] = "V"; };
@@ -150,6 +150,6 @@ inline void writeInt(JNIEnv* env, jintArray target, jint value) {
     if (target != nullptr && env->GetArrayLength(target) >= 1) env->SetIntArrayRegion(target, 0, 1, &value);
 }
 
-}  // namespace humla
+}  // namespace nomla
 
 #endif  // HUMLA_JNI_COMMON_H

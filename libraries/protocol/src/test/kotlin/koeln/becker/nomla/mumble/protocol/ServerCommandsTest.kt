@@ -20,14 +20,14 @@ package koeln.becker.nomla.mumble.protocol
 import com.google.common.truth.Truth.assertThat
 import com.google.protobuf.MessageLite
 import org.junit.Test
-import koeln.becker.nomla.mumble.net.HumlaTCPMessageType
+import koeln.becker.nomla.mumble.net.NomlaTCPMessageType
 import koeln.becker.nomla.mumble.protobuf.Mumble
 
 class ServerCommandsTest {
-    private val sent = mutableListOf<Pair<HumlaTCPMessageType, MessageLite>>()
+    private val sent = mutableListOf<Pair<NomlaTCPMessageType, MessageLite>>()
     private val commands = ServerCommands { message, type -> sent += type to message }
 
-    private inline fun <reified T : MessageLite> single(type: HumlaTCPMessageType): T {
+    private inline fun <reified T : MessageLite> single(type: NomlaTCPMessageType): T {
         assertThat(sent.map { it.first }).containsExactly(type)
         return sent.single().second as T
     }
@@ -38,7 +38,7 @@ class ServerCommandsTest {
         commands.handshake("Mumla 1", "14", "me", "pw", listOf("t1", "t2"))
 
         assertThat(sent.map { it.first })
-            .containsExactly(HumlaTCPMessageType.Version, HumlaTCPMessageType.Authenticate).inOrder()
+            .containsExactly(NomlaTCPMessageType.Version, NomlaTCPMessageType.Authenticate).inOrder()
         val version = sent[0].second as Mumble.Version
         assertThat(version.versionV1).isEqualTo(0x010500)
         assertThat(version.versionV2).isEqualTo(0x0001_0005_0000_0000L)
@@ -57,7 +57,7 @@ class ServerCommandsTest {
     fun accessTokensGoOutAsAnAuthenticateWithOnlyTheTokens() {
         commands.sendAccessTokens(listOf("a", "b"))
 
-        val auth = single<Mumble.Authenticate>(HumlaTCPMessageType.Authenticate)
+        val auth = single<Mumble.Authenticate>(NomlaTCPMessageType.Authenticate)
         assertThat(auth.tokensList).containsExactly("a", "b").inOrder()
         assertThat(auth.hasUsername()).isFalse()
     }
@@ -80,7 +80,7 @@ class ServerCommandsTest {
     fun movingAUserSetsItsChannel() {
         commands.moveUser(3, 7)
 
-        val state = single<Mumble.UserState>(HumlaTCPMessageType.UserState)
+        val state = single<Mumble.UserState>(NomlaTCPMessageType.UserState)
         assertThat(state.session).isEqualTo(3)
         assertThat(state.channelId).isEqualTo(7)
     }
@@ -89,7 +89,7 @@ class ServerCommandsTest {
     fun aNewChannelCarriesEveryField() {
         commands.createChannel(2, "name", "desc", 4, temporary = true)
 
-        val state = single<Mumble.ChannelState>(HumlaTCPMessageType.ChannelState)
+        val state = single<Mumble.ChannelState>(NomlaTCPMessageType.ChannelState)
         assertThat(state.parent).isEqualTo(2)
         assertThat(state.name).isEqualTo("name")
         assertThat(state.description).isEqualTo("desc")
@@ -102,7 +102,7 @@ class ServerCommandsTest {
     fun removingAChannelNamesIt() {
         commands.removeChannel(9)
 
-        assertThat(single<Mumble.ChannelRemove>(HumlaTCPMessageType.ChannelRemove).channelId).isEqualTo(9)
+        assertThat(single<Mumble.ChannelRemove>(NomlaTCPMessageType.ChannelRemove).channelId).isEqualTo(9)
     }
 
     @Test
@@ -124,7 +124,7 @@ class ServerCommandsTest {
         commands.requestChannelDescription(3)
 
         assertThat(sent.map { it.first }).containsExactly(
-            HumlaTCPMessageType.RequestBlob, HumlaTCPMessageType.RequestBlob, HumlaTCPMessageType.RequestBlob,
+            NomlaTCPMessageType.RequestBlob, NomlaTCPMessageType.RequestBlob, NomlaTCPMessageType.RequestBlob,
         )
         val blobs = sent.map { it.second as Mumble.RequestBlob }
         assertThat(blobs[0].sessionCommentList).containsExactly(1)
@@ -138,14 +138,14 @@ class ServerCommandsTest {
     fun permissionsAreQueriedPerChannel() {
         commands.requestPermissions(4)
 
-        assertThat(single<Mumble.PermissionQuery>(HumlaTCPMessageType.PermissionQuery).channelId).isEqualTo(4)
+        assertThat(single<Mumble.PermissionQuery>(NomlaTCPMessageType.PermissionQuery).channelId).isEqualTo(4)
     }
 
     @Test
     fun userStatsAreRequestedInFull() {
         commands.requestUserStats(7)
 
-        val request = single<Mumble.UserStats>(HumlaTCPMessageType.UserStats)
+        val request = single<Mumble.UserStats>(NomlaTCPMessageType.UserStats)
         assertThat(request.session).isEqualTo(7)
         assertThat(request.statsOnly).isFalse()
     }
@@ -154,7 +154,7 @@ class ServerCommandsTest {
     fun registeringAUserSetsUserIdZero() {
         commands.registerUser(5)
 
-        val state = single<Mumble.UserState>(HumlaTCPMessageType.UserState)
+        val state = single<Mumble.UserState>(NomlaTCPMessageType.UserState)
         assertThat(state.session).isEqualTo(5)
         assertThat(state.userId).isEqualTo(0)
         assertThat(state.hasUserId()).isTrue()
@@ -164,7 +164,7 @@ class ServerCommandsTest {
     fun aKickOrBanCarriesItsReason() {
         commands.kickBanUser(5, "spam", ban = true)
 
-        val remove = single<Mumble.UserRemove>(HumlaTCPMessageType.UserRemove)
+        val remove = single<Mumble.UserRemove>(NomlaTCPMessageType.UserRemove)
         assertThat(remove.session).isEqualTo(5)
         assertThat(remove.reason).isEqualTo("spam")
         assertThat(remove.ban).isTrue()
@@ -200,7 +200,7 @@ class ServerCommandsTest {
     fun selfMuteAndDeafenNameNoSession() {
         commands.setSelfMuteDeaf(mute = true, deaf = false)
 
-        val state = single<Mumble.UserState>(HumlaTCPMessageType.UserState)
+        val state = single<Mumble.UserState>(NomlaTCPMessageType.UserState)
         assertThat(state.hasSession()).isFalse()
         assertThat(state.selfMute).isTrue()
         assertThat(state.selfDeaf).isFalse()
@@ -227,7 +227,7 @@ class ServerCommandsTest {
 
         commands.registerVoiceTarget(3, target)
 
-        val voiceTarget = single<Mumble.VoiceTarget>(HumlaTCPMessageType.VoiceTarget)
+        val voiceTarget = single<Mumble.VoiceTarget>(NomlaTCPMessageType.VoiceTarget)
         assertThat(voiceTarget.id).isEqualTo(3)
         assertThat(voiceTarget.targetsList).containsExactly(target)
     }

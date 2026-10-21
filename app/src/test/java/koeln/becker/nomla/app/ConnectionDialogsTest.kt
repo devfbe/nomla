@@ -33,9 +33,9 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.android.controller.ActivityController
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.model.Server
-import koeln.becker.nomla.mumble.net.HumlaCertificateGenerator
+import koeln.becker.nomla.mumble.net.NomlaCertificateGenerator
 import koeln.becker.nomla.mumble.session.DisconnectReason
 import koeln.becker.nomla.mumble.session.RejectType
 import koeln.becker.nomla.mumble.session.SessionState
@@ -48,7 +48,7 @@ import koeln.becker.nomla.testing.ThemedActivity
 import koeln.becker.nomla.testing.installSession
 import koeln.becker.nomla.testing.message
 import koeln.becker.nomla.testing.stubState
-import koeln.becker.nomla.util.MumlaTrustStore
+import koeln.becker.nomla.util.NomlaTrustStore
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 
@@ -67,7 +67,7 @@ class ConnectionDialogsTest {
 
     private val server = Server(1, "Home", "example.org", 64738, "me", null)
     private val context = ApplicationProvider.getApplicationContext<Context>()
-    private val session: IHumlaSession = mockk(relaxed = true) {
+    private val session: INomlaSession = mockk(relaxed = true) {
         every { targetServer } returns server
     }
     private val sessions = SessionManager.get(context)
@@ -215,7 +215,7 @@ class ConnectionDialogsTest {
     /** The prompt comes from the state, once; after rotation the restored dialog pins and reconnects. */
     @Test
     fun aChangedCertificateIsOfferedOnceAndTrustedAfterRotation() {
-        val certificate = HumlaCertificateGenerator.generateCertificate(ByteArrayOutputStream())
+        val certificate = NomlaCertificateGenerator.generateCertificate(ByteArrayOutputStream())
         show(SessionState.Disconnected(DisconnectReason.TlsCertificateChanged(listOf(certificate))))
         idleMainLooper()
         assertThat(sessions.errorShown.value).isTrue()
@@ -227,7 +227,7 @@ class ConnectionDialogsTest {
         dialog.getButton(DialogInterface.BUTTON_NEGATIVE).performClick()
         idleMainLooper()
 
-        assertThat(MumlaTrustStore.getTrustStore(activity).getCertificateAlias(certificate)).isNotNull()
+        assertThat(NomlaTrustStore.getTrustStore(activity).getCertificateAlias(certificate)).isNotNull()
         verify { listener.reconnect(match { it.host == server.host }) }
     }
 

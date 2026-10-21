@@ -59,7 +59,7 @@ class SettingsActivity :
         val className = pref.fragment ?: return false
         val fragment = supportFragmentManager.fragmentFactory.instantiate(classLoader, className)
         fragment.arguments = Bundle(pref.extras).apply {
-            putCharSequence(MumlaPreferenceFragment.ARG_TITLE, pref.title)
+            putCharSequence(NomlaPreferenceFragment.ARG_TITLE, pref.title)
         }
         supportFragmentManager.beginTransaction()
             .replace(R.id.settings_container, fragment)
@@ -69,5 +69,5 @@ class SettingsActivity :
     }
 
     /** The index of the settings screens. */
-    class RootPreferenceFragment : MumlaPreferenceFragment(R.xml.preference_headers)
+    class RootPreferenceFragment : NomlaPreferenceFragment(R.xml.preference_headers)
 }

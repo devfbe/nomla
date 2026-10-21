@@ -19,7 +19,7 @@ package koeln.becker.nomla.mumble.protocol
 import com.google.protobuf.MessageLite
 import koeln.becker.nomla.mumble.model.ServerState
 import koeln.becker.nomla.mumble.protobuf.Mumble
-import koeln.becker.nomla.mumble.session.HumlaEvent
+import koeln.becker.nomla.mumble.session.NomlaEvent
 
 fun channelFrame(
     id: Int,
@@ -46,7 +46,7 @@ fun serverSync(session: Int, welcome: String = ""): Mumble.ServerSync =
 
 /** Runs frames through [ServerReducer], keeping the latest snapshot and every event. */
 internal class ReducerHarness(var state: ServerState = ServerState.empty()) {
-    val events = mutableListOf<HumlaEvent>()
+    val events = mutableListOf<NomlaEvent>()
 
     fun feed(vararg frames: MessageLite): ServerState {
         for (frame in frames) state = ServerReducer.reduce(state, frame, events::add)
@@ -55,7 +55,7 @@ internal class ReducerHarness(var state: ServerState = ServerState.empty()) {
 
     fun local(input: LocalInput): ServerState = ServerReducer.reduce(state, input).also { state = it }
 
-    val notices: List<HumlaEvent.Notice> get() = events.filterIsInstance<HumlaEvent.Notice>()
+    val notices: List<NomlaEvent.Notice> get() = events.filterIsInstance<NomlaEvent.Notice>()
 }
 
 /** A synchronized server of [channels] channels, four below each, and [users] users spread over them. */
@@ -75,7 +75,7 @@ fun syncFrames(channels: Int, users: Int): List<MessageLite> = buildList {
  * chat log go to `emit` as they arise.
  */
 internal object ServerReducer {
-    fun reduce(state: ServerState, msg: MessageLite, emit: (HumlaEvent) -> Unit): ServerState =
+    fun reduce(state: ServerState, msg: MessageLite, emit: (NomlaEvent) -> Unit): ServerState =
         ServerWriter(state).apply { onMessage(msg, emit) }.snapshot()
 
     fun reduce(state: ServerState, input: LocalInput): ServerState =

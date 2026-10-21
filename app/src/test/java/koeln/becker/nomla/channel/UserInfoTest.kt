@@ -25,9 +25,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.model.UserStats
-import koeln.becker.nomla.mumble.session.HumlaEvent
+import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.mumble.testutil.idleMainLooperFor
 import koeln.becker.nomla.R
@@ -78,7 +78,7 @@ class UserInfoTest {
     @Test
     fun theDialogRequestsStatsShowsThemAndRefreshesWhileOpen() {
         val context = Robolectric.buildActivity(ThemedActivity::class.java).setup().get()
-        val session = mockk<IHumlaSession>(relaxed = true)
+        val session = mockk<INomlaSession>(relaxed = true)
         val actions = session.stubActions()
         installSession(session.stubConnected())
         val events = session.stubEvents()
@@ -91,11 +91,11 @@ class UserInfoTest {
         val text = dialog.findViewById<TextView>(R.id.user_info_text)!!
         assertThat(text.text.toString()).isEqualTo("Loading…")
 
-        events.tryEmit(HumlaEvent.UserStatsReceived(stats.copy(session = 8)))
+        events.tryEmit(NomlaEvent.UserStatsReceived(stats.copy(session = 8)))
         idleMainLooper()
         assertThat(text.text.toString()).isEqualTo("Loading…")
 
-        events.tryEmit(HumlaEvent.UserStatsReceived(stats))
+        events.tryEmit(NomlaEvent.UserStatsReceived(stats))
         idleMainLooper()
         assertThat(text.text.toString()).contains("Operating system: Linux Ubuntu 24.04")
 

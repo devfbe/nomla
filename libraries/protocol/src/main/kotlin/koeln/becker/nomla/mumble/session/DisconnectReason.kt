@@ -17,7 +17,7 @@
 
 package koeln.becker.nomla.mumble.session
 
-import koeln.becker.nomla.mumble.exception.HumlaException
+import koeln.becker.nomla.mumble.exception.NomlaException
 import koeln.becker.nomla.mumble.protobuf.Mumble
 import java.security.cert.X509Certificate
 
@@ -60,7 +60,7 @@ public enum class RejectType {
 }
 
 /** The reason [e] stands for; [actorName] names the session of a kick's actor. */
-internal fun disconnectReasonOf(e: HumlaException, actorName: (Int) -> String?): DisconnectReason {
+internal fun disconnectReasonOf(e: NomlaException, actorName: (Int) -> String?): DisconnectReason {
     val reject = e.reject
     val removal = e.userRemove
     return when {
@@ -70,7 +70,7 @@ internal fun disconnectReasonOf(e: HumlaException, actorName: (Int) -> String?):
             if (removal.hasActor()) actorName(removal.actor) else null,
             removal.ban,
         )
-        e.reason == HumlaException.HumlaDisconnectReason.CONNECTION_ERROR ->
+        e.reason == NomlaException.NomlaDisconnectReason.CONNECTION_ERROR ->
             DisconnectReason.Network(e.message.orEmpty(), e.cause)
         else -> DisconnectReason.Failed(e.message.orEmpty(), e.cause)
     }

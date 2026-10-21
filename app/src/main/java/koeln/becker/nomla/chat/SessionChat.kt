@@ -25,8 +25,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import koeln.becker.nomla.mumble.IHumlaSession
-import koeln.becker.nomla.mumble.session.HumlaEvent
+import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.mumble.session.inMainThreadSlices
 
@@ -60,7 +60,7 @@ class SessionChat(
     }
 
     /** Starts over with [session]; subscribed before this returns, so nothing it emits is missed. */
-    fun follow(session: IHumlaSession) {
+    fun follow(session: INomlaSession) {
         following?.cancel()
         startOver()
         following = scope.launch(Dispatchers.Main.immediate, CoroutineStart.UNDISPATCHED) {
@@ -100,21 +100,21 @@ class SessionChat(
         log.add(IChatMessage.InfoMessage(IChatMessage.InfoMessage.Type.WARNING, text))
     }
 
-    private fun onEvent(event: HumlaEvent) {
+    private fun onEvent(event: NomlaEvent) {
         when (event) {
-            is HumlaEvent.Notice -> log.add(IChatMessage.InfoMessage(infoType(event.level), notices.format(event)))
-            is HumlaEvent.TextMessage -> {
+            is NomlaEvent.Notice -> log.add(IChatMessage.InfoMessage(infoType(event.level), notices.format(event)))
+            is NomlaEvent.TextMessage -> {
                 log.add(IChatMessage.TextMessage(event.message))
                 if (!shown) unreadCount.value++
             }
-            is HumlaEvent.MessageSent -> log.add(IChatMessage.TextMessage(event.message))
+            is NomlaEvent.MessageSent -> log.add(IChatMessage.TextMessage(event.message))
             else -> Unit
         }
     }
 
-    private fun infoType(level: HumlaEvent.Level) = when (level) {
-        HumlaEvent.Level.INFO -> IChatMessage.InfoMessage.Type.INFO
-        HumlaEvent.Level.WARNING -> IChatMessage.InfoMessage.Type.WARNING
-        HumlaEvent.Level.ERROR -> IChatMessage.InfoMessage.Type.ERROR
+    private fun infoType(level: NomlaEvent.Level) = when (level) {
+        NomlaEvent.Level.INFO -> IChatMessage.InfoMessage.Type.INFO
+        NomlaEvent.Level.WARNING -> IChatMessage.InfoMessage.Type.WARNING
+        NomlaEvent.Level.ERROR -> IChatMessage.InfoMessage.Type.ERROR
     }
 }

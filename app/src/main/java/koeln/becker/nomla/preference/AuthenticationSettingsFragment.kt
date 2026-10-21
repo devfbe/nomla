@@ -29,7 +29,7 @@ import koeln.becker.nomla.R
  * name the flavor's package. An action alone would resolve to another installed Mumla variant,
  * which declares the same actions, and change that app's certificates instead.
  */
-class AuthenticationSettingsFragment : MumlaPreferenceFragment(R.xml.settings_authentication) {
+class AuthenticationSettingsFragment : NomlaPreferenceFragment(R.xml.settings_authentication) {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         super.onCreatePreferences(savedInstanceState, rootKey)
         opens("certificateGenerate", CertificateGenerateActivity::class.java)

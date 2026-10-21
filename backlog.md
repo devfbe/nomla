@@ -5,7 +5,7 @@ Open requests, newest first. Move an item out once it ships.
 ## Client certificates
 
 - **Delete a client certificate.** User request (2026-10-05): one's own certificates cannot be
-  removed. The database already has `MumlaDatabase.removeCertificate(id)`, but no screen calls it.
+  removed. The database already has `NomlaDatabase.removeCertificate(id)`, but no screen calls it.
   Open points: what happens to the default when it is the deleted one (fall back to "no
   certificate"), and a confirmation dialog that suggests exporting first, since a deleted
   certificate loses every server registration tied to it.

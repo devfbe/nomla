@@ -34,7 +34,7 @@ import koeln.becker.nomla.R
 private const val HALF_OPEN = 0.5f
 
 /**
- * The navigation drawer of [MumlaActivity]. [onItemSelected] receives the `DrawerAdapter.ITEM_*`
+ * The navigation drawer of [NomlaActivity]. [onItemSelected] receives the `DrawerAdapter.ITEM_*`
  * id of a tapped row; [serverName] is the connected server's name, or null while not connected.
  */
 class MainDrawer(

@@ -24,12 +24,12 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
-import koeln.becker.nomla.mumble.net.HumlaCertificateGenerator
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.net.NomlaCertificateGenerator
+import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.db.DatabaseCertificate
-import koeln.becker.nomla.db.MumlaRepository
+import koeln.becker.nomla.db.NomlaRepository
 import koeln.becker.nomla.ui.AppMessages
 import koeln.becker.nomla.util.ApplicationScope
 import java.io.ByteArrayOutputStream
@@ -68,7 +68,7 @@ suspend fun Context.generateDefaultCertificate(): DatabaseCertificate? {
 /** The work of [generateDefaultCertificate]: null if it failed. */
 internal suspend fun createDefaultCertificate(
     context: Context,
-    repository: MumlaRepository = MumlaRepository.get(context),
+    repository: NomlaRepository = NomlaRepository.get(context),
     work: CoroutineDispatcher = Dispatchers.Default,
 ): DatabaseCertificate? {
     val name = context.getString(
@@ -77,17 +77,17 @@ internal suspend fun createDefaultCertificate(
     )
     val certificate = try {
         val pkcs12 = withContext(work) {
-            ByteArrayOutputStream().also { HumlaCertificateGenerator.generateCertificate(it) }.toByteArray()
+            ByteArrayOutputStream().also { NomlaCertificateGenerator.generateCertificate(it) }.toByteArray()
         }
         repository.io { addCertificate(name, pkcs12) }
     } catch (e: GeneralSecurityException) {
-        HumlaLog.w(TAG, "Could not generate a certificate", e)
+        NomlaLog.w(TAG, "Could not generate a certificate", e)
         null
     } catch (e: IOException) {
-        HumlaLog.w(TAG, "Could not generate a certificate", e)
+        NomlaLog.w(TAG, "Could not generate a certificate", e)
         null
     } catch (e: SQLException) {
-        HumlaLog.w(TAG, "Could not store the certificate", e)
+        NomlaLog.w(TAG, "Could not store the certificate", e)
         null
     }
     certificate?.let { Settings.getInstance(context).defaultCertificateId = it.id }

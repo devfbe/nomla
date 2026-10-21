@@ -28,37 +28,37 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowDialog
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.testing.installSession
-import koeln.becker.nomla.testing.launchMumlaActivity
+import koeln.becker.nomla.testing.launchNomlaActivity
 import koeln.becker.nomla.testing.message
 import koeln.becker.nomla.testing.stubState
 import koeln.becker.nomla.testing.stubConnected
 import koeln.becker.nomla.testing.stubDisconnected
 
-/** MumlaActivity offers the battery optimisation exemption once, after a connection succeeds. */
+/** NomlaActivity offers the battery optimisation exemption once, after a connection succeeds. */
 @RunWith(RobolectricTestRunner::class)
 class BatteryOptimizationPromptTest {
 
     private val app = ApplicationProvider.getApplicationContext<Application>()
     private val settings = Settings.getInstance(app)
-    private lateinit var activity: MumlaActivity
+    private lateinit var activity: NomlaActivity
 
     private fun launch() {
-        activity = launchMumlaActivity()
+        activity = launchNomlaActivity()
     }
 
     /** Makes [session] current; null stands for an ended one, as after leaving the app. */
-    private fun attach(session: IHumlaSession?) {
-        installSession(session ?: mockk<IHumlaSession>(relaxed = true).stubDisconnected())
+    private fun attach(session: INomlaSession?) {
+        installSession(session ?: mockk<INomlaSession>(relaxed = true).stubDisconnected())
         idleMainLooper()
     }
 
-    private fun connectedService() = mockk<IHumlaSession>(relaxed = true).stubConnected()
+    private fun connectedService() = mockk<INomlaSession>(relaxed = true).stubConnected()
 
     private fun exempt(value: Boolean) {
         shadowOf(app.getSystemService(PowerManager::class.java))
@@ -86,7 +86,7 @@ class BatteryOptimizationPromptTest {
     @Test
     fun itIsOfferedWhenTheSessionBecomesSynchronized() {
         launch()
-        val session = mockk<IHumlaSession>(relaxed = true).stubDisconnected()
+        val session = mockk<INomlaSession>(relaxed = true).stubDisconnected()
         attach(session)
         assertThat(promptShown()).isFalse()
 
@@ -100,7 +100,7 @@ class BatteryOptimizationPromptTest {
     fun itIsNotOfferedWhileDisconnected() {
         launch()
 
-        attach(mockk<IHumlaSession>(relaxed = true).stubDisconnected())
+        attach(mockk<INomlaSession>(relaxed = true).stubDisconnected())
 
         assertThat(promptShown()).isFalse()
     }

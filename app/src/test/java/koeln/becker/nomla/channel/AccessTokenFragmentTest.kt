@@ -29,7 +29,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.testing.ServiceHostActivity
@@ -38,7 +38,7 @@ import koeln.becker.nomla.testing.stubConnected
 
 @RunWith(RobolectricTestRunner::class)
 class AccessTokenFragmentTest {
-    private val session = mockk<IHumlaSession>(relaxed = true)
+    private val session = mockk<INomlaSession>(relaxed = true)
     private val activity = Robolectric.buildActivity(ServiceHostActivity::class.java).setup().get().also {
         it.bind(session.stubConnected())
     }

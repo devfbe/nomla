@@ -21,10 +21,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import org.robolectric.Robolectric
 import org.robolectric.android.controller.ActivityController
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 
 /** A resumed [ServiceHostActivity] with [session] as the current session. */
-fun hostWith(session: IHumlaSession): ActivityController<ServiceHostActivity> =
+fun hostWith(session: INomlaSession): ActivityController<ServiceHostActivity> =
     Robolectric.buildActivity(ServiceHostActivity::class.java).setup().also { it.get().bind(session) }
 
 /** Adds [fragment] under [tag], into the content view if [inContent], else without a view slot. */

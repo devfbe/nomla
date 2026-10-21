@@ -21,11 +21,11 @@ package koeln.becker.nomla.mumble.audio
 import koeln.becker.nomla.mumble.audio.capture.CapturePipeline
 import koeln.becker.nomla.mumble.audio.encoder.IEncoder
 import koeln.becker.nomla.mumble.exception.NativeAudioException
-import koeln.becker.nomla.mumble.net.HumlaUDPMessageType
+import koeln.becker.nomla.mumble.net.NomlaUDPMessageType
 import koeln.becker.nomla.mumble.net.PacketBuffer
 import koeln.becker.nomla.mumble.net.UdpAudioEncoder
 import koeln.becker.nomla.mumble.net.UdpProtocol
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 
 private const val TAG = "VoiceTransmitter"
 private const val PACKET_SIZE = 1024
@@ -60,7 +60,7 @@ internal class VoiceTransmitter(
     @Volatile var udpProtocol = UdpProtocol.LEGACY
 
     /** Written under [encoderLock], read without it. */
-    @Volatile var codec: HumlaUDPMessageType? = null
+    @Volatile var codec: NomlaUDPMessageType? = null
         private set
 
     private val encoderLock = Any()
@@ -92,18 +92,18 @@ internal class VoiceTransmitter(
      * @param create builds the encoder for a non-null codec, or returns null if it has none.
      * @throws NativeAudioException from [create]; input stays off until the next [setCodec].
      */
-    fun setCodec(codec: HumlaUDPMessageType?, create: (HumlaUDPMessageType) -> IEncoder?) {
+    fun setCodec(codec: NomlaUDPMessageType?, create: (NomlaUDPMessageType) -> IEncoder?) {
         synchronized(encoderLock) {
             this.codec = codec
             encoder?.close()
             encoder = null
             encodeFailureLogged = false
-            if (codec != null) encoder = create(codec) else HumlaLog.w(TAG, "No codec, input disabled.")
+            if (codec != null) encoder = create(codec) else NomlaLog.w(TAG, "No codec, input disabled.")
         }
     }
 
     /** Like [setCodec], but a no-op when [codec] is already set. @return whether it changed. */
-    fun setCodecIfChanged(codec: HumlaUDPMessageType?, create: (HumlaUDPMessageType) -> IEncoder?): Boolean {
+    fun setCodecIfChanged(codec: NomlaUDPMessageType?, create: (NomlaUDPMessageType) -> IEncoder?): Boolean {
         synchronized(encoderLock) {
             if (codec == this.codec) return false
             setCodec(codec, create)
@@ -152,7 +152,7 @@ internal class VoiceTransmitter(
             } catch (e: NativeAudioException) {
                 if (!encodeFailureLogged) {
                     encodeFailureLogged = true
-                    HumlaLog.e(TAG, "Encoding failed", e)
+                    NomlaLog.e(TAG, "Encoding failed", e)
                 }
             }
             if (encoder.isReady) send(encoder, streamTarget)

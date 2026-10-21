@@ -26,11 +26,11 @@ import io.mockk.verify
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import koeln.becker.nomla.mumble.IHumlaSession
+import koeln.becker.nomla.mumble.INomlaSession
 import koeln.becker.nomla.mumble.model.TalkState
 import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.mumble.model.WhisperTarget
-import koeln.becker.nomla.mumble.session.HumlaEvent
+import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.mumble.util.VoiceTargetMode
@@ -44,7 +44,7 @@ import koeln.becker.nomla.testing.stubTalkStates
 
 @RunWith(RobolectricTestRunner::class)
 class SessionViewModelTest {
-    private val session = mockk<IHumlaSession>(relaxed = true)
+    private val session = mockk<INomlaSession>(relaxed = true)
     private val state = session.stubState(SessionState.Connecting)
     private val model = session.stubModel(selfServerState(UserState(1, "me", 0)))
     private val talkStates = session.stubTalkStates()
@@ -106,13 +106,13 @@ class SessionViewModelTest {
         // Armed but not active: the panel shows the target, without it receiving voice yet.
         every { actions.whisperTarget } returns mockk<WhisperTarget> { every { name } returns "Lobby" }
         every { actions.isWhisperActive } returns false
-        events.tryEmit(HumlaEvent.VoiceTargetChanged(VoiceTargetMode.NORMAL))
+        events.tryEmit(NomlaEvent.VoiceTargetChanged(VoiceTargetMode.NORMAL))
         idleMainLooper()
         assertThat(viewModel.whisperTarget.value).isEqualTo("Lobby")
         assertThat(viewModel.isWhisperActive.value).isFalse()
 
         every { actions.isWhisperActive } returns true
-        events.tryEmit(HumlaEvent.VoiceTargetChanged(VoiceTargetMode.WHISPER))
+        events.tryEmit(NomlaEvent.VoiceTargetChanged(VoiceTargetMode.WHISPER))
         idleMainLooper()
         assertThat(viewModel.whisperTarget.value).isEqualTo("Lobby")
         assertThat(viewModel.isWhisperActive.value).isTrue()

@@ -18,10 +18,10 @@
 package koeln.becker.nomla.mumble.util
 
 import android.util.Log
-import koeln.becker.nomla.mumble.util.HumlaLog.Level
+import koeln.becker.nomla.mumble.util.NomlaLog.Level
 
-/** Sends [HumlaLog] lines to logcat. */
-public object AndroidLogSink : HumlaLog.Sink {
+/** Sends [NomlaLog] lines to logcat. */
+public object AndroidLogSink : NomlaLog.Sink {
     override fun log(level: Level, tag: String, message: String, error: Throwable?) {
         when (level) {
             Level.VERBOSE -> Log.v(tag, message, error)

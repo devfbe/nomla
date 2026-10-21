@@ -24,7 +24,7 @@ import android.net.Uri
 import android.os.Build
 import androidx.core.content.FileProvider
 import koeln.becker.nomla.mumble.util.AndroidLogSink
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.BuildConfig
 import koeln.becker.nomla.chat.ImageShareExporter
 import java.io.File
@@ -39,8 +39,8 @@ object AppLog {
 
     /** Idempotent. */
     fun install() {
-        HumlaLog.addSink(AndroidLogSink)
-        HumlaLog.addSink(buffer)
+        NomlaLog.addSink(AndroidLogSink)
+        NomlaLog.addSink(buffer)
     }
 
     /** What "Share log" sends: the app and device, then the buffer, redacted. */

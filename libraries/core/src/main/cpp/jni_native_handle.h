@@ -52,7 +52,7 @@
 #include <new>
 #include <vector>
 
-namespace humla {
+namespace nomla {
 
 class HandleTable {
   public:
@@ -179,6 +179,6 @@ HandleTable& handleTable() {
     return *table;
 }
 
-}  // namespace humla
+}  // namespace nomla
 
 #endif  // HUMLA_JNI_NATIVE_HANDLE_H

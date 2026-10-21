@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(humla_native_tests C CXX ASM)
+project(nomla_native_tests C CXX ASM)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -43,12 +43,12 @@ if(HUMLA_HAVE_SANITIZERS)
   set(HUMLA_SAN_TEST_ENV
       "UBSAN_OPTIONS=print_stacktrace=1:halt_on_error=1;ASAN_OPTIONS=detect_leaks=1")
 else()
-  message(STATUS "humla: no ASan/UBSan on this toolchain, skipping the sanitized tests")
+  message(STATUS "nomla: no ASan/UBSan on this toolchain, skipping the sanitized tests")
 endif()
 
 # Every test carries a label (fast set per push, instrumented set on a schedule). Run ctest with
 # --no-tests=error, or a label that matches nothing passes.
-function(humla_add_labelled_test name target label)
+function(nomla_add_labelled_test name target label)
   add_test(NAME ${name} COMMAND ${target})
   set_tests_properties(${name} PROPERTIES LABELS ${label})
   if("${label}" STREQUAL "sanitized")
@@ -59,105 +59,105 @@ endfunction()
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../rnnoise ${CMAKE_BINARY_DIR}/rnnoise)
 
 add_executable(test_rnnoise test_rnnoise.c)
-target_link_libraries(test_rnnoise PRIVATE humla_rnnoise m)
-humla_add_labelled_test(rnnoise test_rnnoise plain)
+target_link_libraries(test_rnnoise PRIVATE nomla_rnnoise m)
+nomla_add_labelled_test(rnnoise test_rnnoise plain)
 
 # The same sources again under ASan+UBSan. Some bugs are invisible to a plain build, e.g.
-# rnnoise_model_free() reading an uninitialised FILE* (see humla_rnnoise_destroy) only fails
+# rnnoise_model_free() reading an uninitialised FILE* (see nomla_rnnoise_destroy) only fails
 # reliably under ASan, which fills fresh heap with garbage. LeakSanitizer turns the create/destroy
 # cycles into a leak check.
 if(HUMLA_HAVE_SANITIZERS)
   # A second, instrumented copy of the library. Sources, include dirs and definitions are read
   # back from the real target so the two cannot drift apart.
-  get_target_property(HUMLA_RNNOISE_SOURCES humla_rnnoise SOURCES)
-  get_target_property(HUMLA_RNNOISE_INCLUDES humla_rnnoise INCLUDE_DIRECTORIES)
-  get_target_property(HUMLA_RNNOISE_DEFS humla_rnnoise COMPILE_DEFINITIONS)
+  get_target_property(HUMLA_RNNOISE_SOURCES nomla_rnnoise SOURCES)
+  get_target_property(HUMLA_RNNOISE_INCLUDES nomla_rnnoise INCLUDE_DIRECTORIES)
+  get_target_property(HUMLA_RNNOISE_DEFS nomla_rnnoise COMPILE_DEFINITIONS)
 
-  add_library(humla_rnnoise_asan STATIC ${HUMLA_RNNOISE_SOURCES})
-  target_include_directories(humla_rnnoise_asan PUBLIC ${HUMLA_RNNOISE_INCLUDES})
-  target_compile_definitions(humla_rnnoise_asan PRIVATE ${HUMLA_RNNOISE_DEFS})
+  add_library(nomla_rnnoise_asan STATIC ${HUMLA_RNNOISE_SOURCES})
+  target_include_directories(nomla_rnnoise_asan PUBLIC ${HUMLA_RNNOISE_INCLUDES})
+  target_compile_definitions(nomla_rnnoise_asan PRIVATE ${HUMLA_RNNOISE_DEFS})
   # The sanitizer flags are restricted to C so the .incbin assembly file is assembled exactly
   # as it is in the real target.
-  target_compile_options(humla_rnnoise_asan PRIVATE
+  target_compile_options(nomla_rnnoise_asan PRIVATE
       $<$<COMPILE_LANGUAGE:C>:${HUMLA_SAN_FLAGS} -fvisibility=hidden -Wno-unused-function>)
-  target_link_options(humla_rnnoise_asan PUBLIC -fsanitize=address,undefined)
-  target_link_libraries(humla_rnnoise_asan PUBLIC m)
+  target_link_options(nomla_rnnoise_asan PUBLIC -fsanitize=address,undefined)
+  target_link_libraries(nomla_rnnoise_asan PUBLIC m)
 
   add_executable(test_rnnoise_asan test_rnnoise.c)
   target_compile_options(test_rnnoise_asan PRIVATE ${HUMLA_SAN_FLAGS})
-  target_link_libraries(test_rnnoise_asan PRIVATE humla_rnnoise_asan m)
+  target_link_libraries(test_rnnoise_asan PRIVATE nomla_rnnoise_asan m)
 
-  humla_add_labelled_test(rnnoise_sanitized test_rnnoise_asan sanitized)
+  nomla_add_labelled_test(rnnoise_sanitized test_rnnoise_asan sanitized)
 endif()
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../webrtc_apm ${CMAKE_BINARY_DIR}/webrtc_apm)
 
-# test_apm.c is C on purpose, to prove humla_apm.h is valid C with C linkage. The C++ driver
-# links it because humla_apm and webrtc need the C++ runtime.
+# test_apm.c is C on purpose, to prove nomla_apm.h is valid C with C linkage. The C++ driver
+# links it because nomla_apm and webrtc need the C++ runtime.
 add_executable(test_apm test_apm.c)
 set_target_properties(test_apm PROPERTIES LINKER_LANGUAGE CXX)
-target_link_libraries(test_apm PRIVATE humla_apm m)
-humla_add_labelled_test(apm test_apm plain)
+target_link_libraries(test_apm PRIVATE nomla_apm m)
+nomla_add_labelled_test(apm test_apm plain)
 
 if(HUMLA_HAVE_SANITIZERS)
   # Only the wrapper is instrumented by default, not the ~200 upstream translation units (which
-  # would dominate build time); the bugs worth catching live in humla_apm.cpp and its caller.
+  # would dominate build time); the bugs worth catching live in nomla_apm.cpp and its caller.
   # ASan's malloc interceptors are process-wide, so allocations are still covered. Configure with
   # -DHUMLA_SANITIZE_WEBRTC=ON to instrument upstream too.
   option(HUMLA_SANITIZE_WEBRTC "Also instrument the vendored webrtc sources" OFF)
 
   if(HUMLA_SANITIZE_WEBRTC)
-    get_target_property(HUMLA_APM_ASAN_SOURCES humla_apm SOURCES)
+    get_target_property(HUMLA_APM_ASAN_SOURCES nomla_apm SOURCES)
   else()
-    set(HUMLA_APM_ASAN_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../webrtc_apm/humla_apm.cpp)
+    set(HUMLA_APM_ASAN_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../webrtc_apm/nomla_apm.cpp)
   endif()
 
-  add_library(humla_apm_asan STATIC ${HUMLA_APM_ASAN_SOURCES})
+  add_library(nomla_apm_asan STATIC ${HUMLA_APM_ASAN_SOURCES})
   # Same INTERFACE target as the real library, so flags and dependencies cannot drift.
-  target_link_libraries(humla_apm_asan PRIVATE humla_apm_buildflags)
-  target_include_directories(humla_apm_asan PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../webrtc_apm)
-  target_compile_options(humla_apm_asan PRIVATE ${HUMLA_SAN_FLAGS} -fvisibility=hidden)
-  target_link_options(humla_apm_asan PUBLIC -fsanitize=address,undefined)
+  target_link_libraries(nomla_apm_asan PRIVATE nomla_apm_buildflags)
+  target_include_directories(nomla_apm_asan PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../webrtc_apm)
+  target_compile_options(nomla_apm_asan PRIVATE ${HUMLA_SAN_FLAGS} -fvisibility=hidden)
+  target_link_options(nomla_apm_asan PUBLIC -fsanitize=address,undefined)
   if(NOT HUMLA_SANITIZE_WEBRTC)
-    # The uninstrumented upstream objects come from humla_apm. humla_apm.cpp is in both archives;
+    # The uninstrumented upstream objects come from nomla_apm. nomla_apm.cpp is in both archives;
     # the instrumented one is listed first so its definitions win. apm_is_instrumented verifies
     # that on the linked image (see assert_instrumented.cmake).
-    target_link_libraries(humla_apm_asan PUBLIC humla_apm)
+    target_link_libraries(nomla_apm_asan PUBLIC nomla_apm)
   endif()
 
   add_executable(test_apm_asan test_apm.c)
   set_target_properties(test_apm_asan PROPERTIES LINKER_LANGUAGE CXX)
   target_compile_options(test_apm_asan PRIVATE ${HUMLA_SAN_FLAGS})
-  target_link_libraries(test_apm_asan PRIVATE humla_apm_asan m)
+  target_link_libraries(test_apm_asan PRIVATE nomla_apm_asan m)
 
-  humla_add_labelled_test(apm_sanitized test_apm_asan sanitized)
+  nomla_add_labelled_test(apm_sanitized test_apm_asan sanitized)
 
   # objdump is required: an optional check could silently disappear.
   find_program(HUMLA_OBJDUMP NAMES ${CMAKE_OBJDUMP} llvm-objdump objdump)
   if(NOT HUMLA_OBJDUMP)
     message(FATAL_ERROR
         "No objdump found. It is needed to verify that test_apm_asan links the instrumented "
-        "copy of humla_apm.cpp rather than the uninstrumented one; without it that test can "
+        "copy of nomla_apm.cpp rather than the uninstrumented one; without it that test can "
         "pass while instrumenting nothing.")
   endif()
   add_test(NAME apm_is_instrumented
            COMMAND ${CMAKE_COMMAND} -DOBJDUMP=${HUMLA_OBJDUMP}
                                     -DBINARY=$<TARGET_FILE:test_apm_asan>
-                                    -DSYMBOL=humla_apm_create
+                                    -DSYMBOL=nomla_apm_create
                                     -P ${CMAKE_CURRENT_SOURCE_DIR}/assert_instrumented.cmake)
   set_tests_properties(apm_is_instrumented PROPERTIES LABELS sanitized)
 endif()
 
 add_executable(test_handle_table test_handle_table.cpp)
 target_include_directories(test_handle_table PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
-humla_add_labelled_test(handle_table test_handle_table plain)
+nomla_add_labelled_test(handle_table test_handle_table plain)
 
 if(HUMLA_HAVE_SANITIZERS)
   add_executable(test_handle_table_asan test_handle_table.cpp)
   target_include_directories(test_handle_table_asan PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
   target_compile_options(test_handle_table_asan PRIVATE ${HUMLA_SAN_FLAGS})
   target_link_options(test_handle_table_asan PRIVATE -fsanitize=address,undefined)
-  humla_add_labelled_test(handle_table_sanitized test_handle_table_asan sanitized)
+  nomla_add_labelled_test(handle_table_sanitized test_handle_table_asan sanitized)
 endif()
 
 # jni_rnnoise.cpp and jni_webrtc_apm.cpp run here through a stand-in JNIEnv (jni_env_stub.h):
@@ -186,8 +186,8 @@ set(HUMLA_JNI_BRIDGE_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/..
 
 add_executable(test_jni_bridges ${HUMLA_JNI_BRIDGE_SOURCES})
 target_include_directories(test_jni_bridges PRIVATE ${HUMLA_JNI_BRIDGE_INCLUDES})
-target_link_libraries(test_jni_bridges PRIVATE humla_rnnoise humla_apm m)
-humla_add_labelled_test(jni_bridges test_jni_bridges plain)
+target_link_libraries(test_jni_bridges PRIVATE nomla_rnnoise nomla_apm m)
+nomla_add_labelled_test(jni_bridges test_jni_bridges plain)
 
 if(HUMLA_HAVE_SANITIZERS)
   # The same bridges against the instrumented libraries. jni_env_stub.h hands out exact-size
@@ -196,8 +196,8 @@ if(HUMLA_HAVE_SANITIZERS)
   add_executable(test_jni_bridges_asan ${HUMLA_JNI_BRIDGE_SOURCES})
   target_include_directories(test_jni_bridges_asan PRIVATE ${HUMLA_JNI_BRIDGE_INCLUDES})
   target_compile_options(test_jni_bridges_asan PRIVATE ${HUMLA_SAN_FLAGS})
-  target_link_libraries(test_jni_bridges_asan PRIVATE humla_rnnoise_asan humla_apm_asan m)
-  humla_add_labelled_test(jni_bridges_sanitized test_jni_bridges_asan sanitized)
+  target_link_libraries(test_jni_bridges_asan PRIVATE nomla_rnnoise_asan nomla_apm_asan m)
+  nomla_add_labelled_test(jni_bridges_sanitized test_jni_bridges_asan sanitized)
 endif()
 
 # libspeexdsp takes sample counts from the state or from separate arguments, never from the
@@ -214,7 +214,7 @@ set(HUMLA_SPEEXDSP_SOURCES
     ${HUMLA_SPEEXDSP_DIR}/mdf.c ${HUMLA_SPEEXDSP_DIR}/preprocess.c
     ${HUMLA_SPEEXDSP_DIR}/resample.c ${HUMLA_SPEEXDSP_DIR}/scal.c)
 
-function(humla_add_speexdsp name)  # name, then the extra compile options
+function(nomla_add_speexdsp name)  # name, then the extra compile options
   add_library(${name} STATIC ${HUMLA_SPEEXDSP_SOURCES})
   target_include_directories(${name}
       PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/speexdsp/include
@@ -224,7 +224,7 @@ function(humla_add_speexdsp name)  # name, then the extra compile options
   target_link_libraries(${name} PUBLIC m)
 endfunction()
 
-humla_add_speexdsp(speexdsp_hosttest)
+nomla_add_speexdsp(speexdsp_hosttest)
 
 set(HUMLA_JNI_SPEEXDSP_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/test_jni_speexdsp.cpp
@@ -233,17 +233,17 @@ set(HUMLA_JNI_SPEEXDSP_SOURCES
 add_executable(test_jni_speexdsp ${HUMLA_JNI_SPEEXDSP_SOURCES})
 target_include_directories(test_jni_speexdsp PRIVATE ${HUMLA_JNI_BRIDGE_INCLUDES})
 target_link_libraries(test_jni_speexdsp PRIVATE speexdsp_hosttest m)
-humla_add_labelled_test(jni_speexdsp test_jni_speexdsp plain)
+nomla_add_labelled_test(jni_speexdsp test_jni_speexdsp plain)
 
 if(HUMLA_HAVE_SANITIZERS)
-  humla_add_speexdsp(speexdsp_hosttest_asan ${HUMLA_SAN_FLAGS})
+  nomla_add_speexdsp(speexdsp_hosttest_asan ${HUMLA_SAN_FLAGS})
   target_link_options(speexdsp_hosttest_asan PUBLIC -fsanitize=address,undefined)
 
   add_executable(test_jni_speexdsp_asan ${HUMLA_JNI_SPEEXDSP_SOURCES})
   target_include_directories(test_jni_speexdsp_asan PRIVATE ${HUMLA_JNI_BRIDGE_INCLUDES})
   target_compile_options(test_jni_speexdsp_asan PRIVATE ${HUMLA_SAN_FLAGS})
   target_link_libraries(test_jni_speexdsp_asan PRIVATE speexdsp_hosttest_asan m)
-  humla_add_labelled_test(jni_speexdsp_sanitized test_jni_speexdsp_asan sanitized)
+  nomla_add_labelled_test(jni_speexdsp_sanitized test_jni_speexdsp_asan sanitized)
 endif()
 
 # libopus is built with the same options as ../CMakeLists.txt. Only the bridge and the test are
@@ -266,7 +266,7 @@ set(HUMLA_JNI_OPUS_SOURCES
 add_executable(test_jni_opus ${HUMLA_JNI_OPUS_SOURCES})
 target_include_directories(test_jni_opus PRIVATE ${HUMLA_JNI_BRIDGE_INCLUDES})
 target_link_libraries(test_jni_opus PRIVATE opus m)
-humla_add_labelled_test(jni_opus test_jni_opus plain)
+nomla_add_labelled_test(jni_opus test_jni_opus plain)
 
 if(HUMLA_HAVE_SANITIZERS)
   add_executable(test_jni_opus_asan ${HUMLA_JNI_OPUS_SOURCES})
@@ -274,10 +274,10 @@ if(HUMLA_HAVE_SANITIZERS)
   target_compile_options(test_jni_opus_asan PRIVATE ${HUMLA_SAN_FLAGS})
   target_link_options(test_jni_opus_asan PRIVATE -fsanitize=address,undefined)
   target_link_libraries(test_jni_opus_asan PRIVATE opus m)
-  humla_add_labelled_test(jni_opus_sanitized test_jni_opus_asan sanitized)
+  nomla_add_labelled_test(jni_opus_sanitized test_jni_opus_asan sanitized)
 endif()
 
-# Every bridge in one binary, as in libhumla_native.so, registered through JNI_OnLoad and compared
+# Every bridge in one binary, as in libnomla_native.so, registered through JNI_OnLoad and compared
 # with ../jni_registrations.txt.
 add_executable(test_jni_registration
     ${CMAKE_CURRENT_SOURCE_DIR}/test_jni_registration.cpp
@@ -287,7 +287,7 @@ add_executable(test_jni_registration
     ${CMAKE_CURRENT_SOURCE_DIR}/../jni_rnnoise.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../jni_webrtc_apm.cpp)
 target_include_directories(test_jni_registration PRIVATE ${HUMLA_JNI_BRIDGE_INCLUDES})
-target_link_libraries(test_jni_registration PRIVATE opus speexdsp_hosttest humla_rnnoise humla_apm m)
+target_link_libraries(test_jni_registration PRIVATE opus speexdsp_hosttest nomla_rnnoise nomla_apm m)
 add_test(NAME jni_registration
          COMMAND test_jni_registration ${CMAKE_CURRENT_SOURCE_DIR}/../jni_registrations.txt)
 set_tests_properties(jni_registration PROPERTIES LABELS plain)

@@ -47,7 +47,7 @@ arrays are compiled out, and embed the binary weight blob instead:
   preamble. The weight arrays around it are compiled out by
   `USE_WEIGHTS_FILE`.
 - `rnnoise_model_blob.S`: `.incbin`s `weights_blob.bin` as
-  `humla_rnnoise_model_blob` / `humla_rnnoise_model_blob_size`.
+  `nomla_rnnoise_model_blob` / `nomla_rnnoise_model_blob_size`.
 
 Nothing here is fetched at build time: the blob is checked in, so a fresh clone
 plus `git submodule update --init` reproduces the same binary byte for byte.

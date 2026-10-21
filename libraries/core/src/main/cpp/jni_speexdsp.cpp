@@ -54,11 +54,11 @@ jint clampToArray(JNIEnv* env, jint count, jarray array) {
     return count > capacity ? static_cast<jint>(capacity) : count;
 }
 
-humla::HandleTable& resamplers() { return humla::handleTable<ResamplerHandle>(); }
-humla::HandleTable& jitterBuffers() { return humla::handleTable<JitterBuffer>(); }
-humla::HandleTable& preprocessors() { return humla::handleTable<PreprocessHandle>(); }
+nomla::HandleTable& resamplers() { return nomla::handleTable<ResamplerHandle>(); }
+nomla::HandleTable& jitterBuffers() { return nomla::handleTable<JitterBuffer>(); }
+nomla::HandleTable& preprocessors() { return nomla::handleTable<PreprocessHandle>(); }
 
-using humla::writeInt;
+using nomla::writeInt;
 
 /* Stack capacity of the per-call copies; larger requests fall back to the heap. */
 constexpr std::size_t kInlineSamples = 2048;
@@ -153,8 +153,8 @@ jint resamplerProcessInt(JNIEnv* env, jobject, jlong state, jint channelIndex, j
     outCount = clampToArray(env, outCount, out);
     spx_uint32_t in = static_cast<spx_uint32_t>(inCount);
     spx_uint32_t outN = static_cast<spx_uint32_t>(outCount);
-    humla::RegionBuffer<jshort, kInlineSamples> inBuf(inCount);
-    humla::RegionBuffer<jshort, kInlineSamples> outBuf(outCount);
+    nomla::RegionBuffer<jshort, kInlineSamples> inBuf(inCount);
+    nomla::RegionBuffer<jshort, kInlineSamples> outBuf(outCount);
     if (inBuf.data() == nullptr || outBuf.data() == nullptr) return RESAMPLER_ERR_ALLOC_FAILED;
     inBuf.read(env, input, 0, inCount);
     int result = speex_resampler_process_int(h->state, channelIndex, inBuf.data(), &in, outBuf.data(), &outN);
@@ -189,7 +189,7 @@ void jitterPut(JNIEnv* env, jobject, jlong handle, jbyteArray data, jint len, ji
     if (jb == nullptr || data == nullptr) return;
     // jitter_buffer_put copies len bytes, and len is the caller's number, not the array's.
     len = clampToArray(env, len, data);
-    humla::RegionBuffer<jbyte, kInlinePacket> bytes(len);
+    nomla::RegionBuffer<jbyte, kInlinePacket> bytes(len);
     if (bytes.data() == nullptr) return;
     bytes.read(env, data, 0, len);
     JitterBufferPacket packet;
@@ -208,7 +208,7 @@ jint jitterGet(JNIEnv* env, jobject, jlong handle, jbyteArray out, jint desiredS
     if (jb == nullptr || out == nullptr || meta == nullptr || env->GetArrayLength(meta) < 5)
         return JITTER_BUFFER_BAD_ARGUMENT;
     jsize capacity = env->GetArrayLength(out);
-    humla::RegionBuffer<jbyte, kInlinePacket> bytes(capacity);
+    nomla::RegionBuffer<jbyte, kInlinePacket> bytes(capacity);
     if (bytes.data() == nullptr) return JITTER_BUFFER_INTERNAL_ERROR;
     JitterBufferPacket packet;
     packet.data = reinterpret_cast<char*>(bytes.data());
@@ -283,7 +283,7 @@ jint preprocessRun(JNIEnv* env, jobject, jlong state, jshortArray frame) noexcep
     auto* h = static_cast<PreprocessHandle*>(preprocessors().get(state));
     if (h == nullptr || frame == nullptr) return -1;
     if (env->GetArrayLength(frame) < h->frameSize) return -1;
-    humla::RegionBuffer<jshort, kInlineSamples> samples(h->frameSize);
+    nomla::RegionBuffer<jshort, kInlineSamples> samples(h->frameSize);
     if (samples.data() == nullptr) return -1;
     samples.read(env, frame, 0, h->frameSize);
     int result = speex_preprocess_run(h->state, samples.data());
@@ -313,29 +313,29 @@ void preprocessDestroy(JNIEnv*, jobject, jlong state) noexcept {
 
 }  // namespace
 
-bool humla::registerSpeexdspNatives(JNIEnv* env) {
+bool nomla::registerSpeexdspNatives(JNIEnv* env) {
     const std::array<JNINativeMethod, 3> resampler = {
-        humla::nativeMethod("init", resamplerInit),
-        humla::nativeMethod("processInt", resamplerProcessInt),
-        humla::nativeMethod("destroy", resamplerDestroy),
+        nomla::nativeMethod("init", resamplerInit),
+        nomla::nativeMethod("processInt", resamplerProcessInt),
+        nomla::nativeMethod("destroy", resamplerDestroy),
     };
     const std::array<JNINativeMethod, 8> jitter = {
-        humla::nativeMethod("init", jitterInit),
-        humla::nativeMethod("destroy", jitterDestroy),
-        humla::nativeMethod("put", jitterPut),
-        humla::nativeMethod("get", jitterGet),
-        humla::nativeMethod("pointerTimestamp", jitterPointerTimestamp),
-        humla::nativeMethod("tick", jitterTick),
-        humla::nativeMethod("ctl", jitterCtl),
-        humla::nativeMethod("updateDelay", jitterUpdateDelay),
+        nomla::nativeMethod("init", jitterInit),
+        nomla::nativeMethod("destroy", jitterDestroy),
+        nomla::nativeMethod("put", jitterPut),
+        nomla::nativeMethod("get", jitterGet),
+        nomla::nativeMethod("pointerTimestamp", jitterPointerTimestamp),
+        nomla::nativeMethod("tick", jitterTick),
+        nomla::nativeMethod("ctl", jitterCtl),
+        nomla::nativeMethod("updateDelay", jitterUpdateDelay),
     };
     const std::array<JNINativeMethod, 4> preprocess = {
-        humla::nativeMethod("init", preprocessInit),
-        humla::nativeMethod("run", preprocessRun),
-        humla::nativeMethod("ctlInt", preprocessCtlInt),
-        humla::nativeMethod("destroy", preprocessDestroy),
+        nomla::nativeMethod("init", preprocessInit),
+        nomla::nativeMethod("run", preprocessRun),
+        nomla::nativeMethod("ctlInt", preprocessCtlInt),
+        nomla::nativeMethod("destroy", preprocessDestroy),
     };
-    return humla::registerNatives(env, "koeln/becker/nomla/mumble/audio/native/SpeexResamplerNative", resampler) &&
-           humla::registerNatives(env, "koeln/becker/nomla/mumble/audio/native/SpeexJitterNative", jitter) &&
-           humla::registerNatives(env, "koeln/becker/nomla/mumble/audio/native/SpeexPreprocessNative", preprocess);
+    return nomla::registerNatives(env, "koeln/becker/nomla/mumble/audio/native/SpeexResamplerNative", resampler) &&
+           nomla::registerNatives(env, "koeln/becker/nomla/mumble/audio/native/SpeexJitterNative", jitter) &&
+           nomla::registerNatives(env, "koeln/becker/nomla/mumble/audio/native/SpeexPreprocessNative", preprocess);
 }

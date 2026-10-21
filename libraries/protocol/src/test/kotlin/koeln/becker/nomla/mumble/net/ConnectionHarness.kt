@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicLong
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
- * A [HumlaConnection] over [FakeTransports] on the test thread: the protocol context is a
+ * A [NomlaConnection] over [FakeTransports] on the test thread: the protocol context is a
  * [StandardTestDispatcher] on virtual time and the listener's thread is a queue, both run by
  * [runCurrent], so every interleaving a test builds is deterministic. [clock] is the protocol's
  * clock, set by the test independently of the scheduler's time.
@@ -58,7 +58,7 @@ internal class ConnectionHarness(
 
     private val dispatcher = StandardTestDispatcher(scheduler)
 
-    val connection = HumlaConnection(
+    val connection = NomlaConnection(
         ConnectionParams(server, forceTcp = forceTcp, useTor = useTor),
         listener,
         callbacks,
@@ -73,7 +73,7 @@ internal class ConnectionHarness(
     fun onProtocolContext(block: () -> Unit) = dispatcher.dispatch(EmptyCoroutineContext, Runnable(block))
 
     /**
-     * Runs [event] on the protocol context after [HumlaConnection.disconnect] was asked for but before
+     * Runs [event] on the protocol context after [NomlaConnection.disconnect] was asked for but before
      * the teardown it queued, so both transports are still wired up.
      */
     fun inTheTeardownWindow(event: () -> Unit) {
@@ -107,13 +107,13 @@ internal class ConnectionHarness(
         return tcp
     }
 
-    fun receive(type: HumlaTCPMessageType, message: MessageLite) {
+    fun receive(type: NomlaTCPMessageType, message: MessageLite) {
         tcp.simulateMessage(type, message.toByteArray())
         runCurrent()
     }
 
     fun synchronize(session: Int = 1, maxBandwidth: Int? = null) = receive(
-        HumlaTCPMessageType.ServerSync,
+        NomlaTCPMessageType.ServerSync,
         Mumble.ServerSync.newBuilder().setSession(session).apply { maxBandwidth?.let(::setMaxBandwidth) }.build(),
     )
 
@@ -154,7 +154,7 @@ internal fun textFrame(text: String): ByteArray = Mumble.TextMessage.newBuilder(
 
 /** A datagram of [size] bytes whose leading type nibble marks it as Opus voice data. */
 internal fun voiceDatagram(size: Int): ByteArray = ByteArray(size).also {
-    it[0] = ((HumlaUDPMessageType.UDPVoiceOpus.ordinal shl 5) and 0xFF).toByte()
+    it[0] = ((NomlaUDPMessageType.UDPVoiceOpus.ordinal shl 5) and 0xFF).toByte()
 }
 
 /** A thread's task queue, run by the test: tasks wait until [runAll]. */

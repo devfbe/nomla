@@ -25,7 +25,7 @@ import org.minidns.hla.ResolverApi
 import org.minidns.util.SrvUtil
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.util.Constants
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 import java.io.IOException
 
 /** Where a connection to a server is opened. */
@@ -69,21 +69,21 @@ public class ServerResolver internal constructor(
                 val result = ResolverApi.INSTANCE.resolveSrv(name)
                 val answers = if (result.wasSuccessful()) result.answersOrEmptySet else null
                 when {
-                    answers == null -> null.also { HumlaLog.d(TAG, "resolveSrv $name: ${result.responseCode}") }
-                    answers.isEmpty() -> null.also { HumlaLog.d(TAG, "resolveSrv $name: empty answer") }
+                    answers == null -> null.also { NomlaLog.d(TAG, "resolveSrv $name: ${result.responseCode}") }
+                    answers.isEmpty() -> null.also { NomlaLog.d(TAG, "resolveSrv $name: empty answer") }
                     else -> {
                         // TODO SRV just picking the first record.
                         val srv = SrvUtil.sortSrvRecords(answers)[0]
-                        HumlaLog.d(TAG, "resolved $name SRV: $srv")
+                        NomlaLog.d(TAG, "resolved $name SRV: $srv")
                         Endpoint(srv.target.toString(), srv.port)
                     }
                 }
             } catch (e: IOException) {
-                HumlaLog.d(TAG, "exception in srvResolve: $e")
+                NomlaLog.d(TAG, "exception in srvResolve: $e")
                 null
             } catch (e: IllegalArgumentException) {
                 // java.net.IDN.toASCII inside resolveSrv() throws IAE (MiniDNS issue 104).
-                HumlaLog.d(TAG, "exception in srvResolve: $e")
+                NomlaLog.d(TAG, "exception in srvResolve: $e")
                 null
             }
         }

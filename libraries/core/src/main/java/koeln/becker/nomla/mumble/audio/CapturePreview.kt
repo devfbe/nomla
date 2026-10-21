@@ -36,13 +36,13 @@ import koeln.becker.nomla.mumble.audio.capture.VadMode
 import koeln.becker.nomla.mumble.audio.capture.VoiceActivityDetector
 import koeln.becker.nomla.mumble.audio.inputmode.ActivityInputMode
 import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 
 /** Capture runs in 10 ms frames. */
 private const val FRAMES_PER_SECOND = 100
 
 private const val TAG = "CapturePreview"
-private const val THREAD_NAME = "humla-capture-preview"
+private const val THREAD_NAME = "nomla-capture-preview"
 
 /**
  * Half of `AudioInput`'s, because this join happens on the main thread (`onPause` and every
@@ -127,7 +127,7 @@ public class CapturePreview internal constructor(
     ) : this(
         audioManager, vadConfig, noiseSuppression, speexNoiseSuppressDb, echoCancellation, effects, loopback,
         onReading, DEFAULT_READING_INTERVAL_FRAMES, captureFactory, sinkFactory,
-        CapturePreprocessorFactory(log = { HumlaLog.w(TAG, it) }), rnnoiseAttenuationLimitDb,
+        CapturePreprocessorFactory(log = { NomlaLog.w(TAG, it) }), rnnoiseAttenuationLimitDb,
         route, echoCancellationVoiceCallSource, { from, to -> SpeexResampler(from, to) },
     )
 

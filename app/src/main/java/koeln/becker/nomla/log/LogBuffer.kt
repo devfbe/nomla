@@ -17,7 +17,7 @@
 
 package koeln.becker.nomla.log
 
-import koeln.becker.nomla.mumble.util.HumlaLog
+import koeln.becker.nomla.mumble.util.NomlaLog
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -34,10 +34,10 @@ private val TIME: DateTimeFormatter = DateTimeFormatter.ofPattern("MM-dd HH:mm:s
 class LogBuffer(
     private val capacity: Int,
     private val clock: () -> Long = System::currentTimeMillis,
-) : HumlaLog.Sink {
+) : NomlaLog.Sink {
     private class Line(
         val millis: Long,
-        val level: HumlaLog.Level,
+        val level: NomlaLog.Level,
         val tag: String,
         val thread: String,
         val message: String,
@@ -51,7 +51,7 @@ class LogBuffer(
         require(capacity > 0)
     }
 
-    override fun log(level: HumlaLog.Level, tag: String, message: String, error: Throwable?) {
+    override fun log(level: NomlaLog.Level, tag: String, message: String, error: Throwable?) {
         val line = Line(clock(), level, tag, Thread.currentThread().name, message, error)
         slots.set((next.getAndIncrement() % capacity).toInt(), line)
     }
