@@ -42,7 +42,7 @@ import koeln.becker.nomla.util.changes
 private const val TAG = "NomlaMediaSession"
 
 /**
- * Owns a [MediaSessionCompat] that is active exactly while Mumla is connected and the headset
+ * Owns a [MediaSessionCompat] that is active exactly while Nomla is connected and the headset
  * button action is not [MediaButtonAction.NONE], so headset and Bluetooth (AVRCP) media buttons
  * reach [MediaKeyHandler] even with the screen off. With NONE no session is held, because an
  * active PLAYING session takes play/pause away from every other app.

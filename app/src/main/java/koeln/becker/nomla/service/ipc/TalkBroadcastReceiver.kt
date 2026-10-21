@@ -43,7 +43,7 @@ class TalkBroadcastReceiver(
     }
 
     companion object {
-        const val BROADCAST_TALK = "se.lublin.mumla.action.TALK"
+        const val BROADCAST_TALK = "koeln.becker.nomla.action.TALK"
         const val EXTRA_TALK_STATUS = "status"
         const val TALK_STATUS_ON = "on"
         const val TALK_STATUS_OFF = "off"

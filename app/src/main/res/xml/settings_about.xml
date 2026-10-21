@@ -20,17 +20,18 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <Preference
-        android:title="@string/app_name"
-        android:summary="@string/copyright"
-        app:iconSpaceReserved="false">
-        <intent
-            android:action="android.intent.action.VIEW"
-            android:data="@string/project_link"/>
-    </Preference>
+    <!-- The summary is the version, set by AboutSettingsFragment. -->
     <Preference
         android:key="version"
-        android:title="@string/version"
+        android:title="@string/app_name"
+        app:iconSpaceReserved="false"/>
+    <!-- Paragraphs: a title in full, in preference_about_text, not a one-line summary. -->
+    <Preference
+        android:key="description"
+        android:title="@string/about_description"
+        android:layout="@layout/preference_about_text"
+        android:selectable="false"
+        app:singleLineTitle="false"
         app:iconSpaceReserved="false"/>
     <Preference
         android:key="showNews"
@@ -42,22 +43,69 @@
         android:title="@string/share_log"
         android:summary="@string/share_log_summary"
         app:iconSpaceReserved="false"/>
-    <Preference
-        android:title="@string/acknowledgements"
-        android:summary="@string/acknowledgementsSum"
+    <PreferenceCategory
+        android:title="@string/about_credits"
         app:iconSpaceReserved="false">
-        <intent
-            android:action="android.intent.action.VIEW"
-            android:data="@string/acknowledgements_link"/>
-    </Preference>
+        <Preference
+            android:title="@string/credits_mumla"
+            android:summary="@string/about_credits_lublin"
+            app:iconSpaceReserved="false">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="@string/credits_mumla_link"/>
+        </Preference>
+        <Preference
+            android:title="@string/credits_humla"
+            android:summary="@string/about_credits_lublin"
+            app:iconSpaceReserved="false">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="@string/credits_humla_link"/>
+        </Preference>
+        <Preference
+            android:title="@string/credits_plumble"
+            android:summary="@string/about_credits_comminos"
+            app:iconSpaceReserved="false">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="@string/credits_plumble_link"/>
+        </Preference>
+        <Preference
+            android:title="@string/credits_jumble"
+            android:summary="@string/about_credits_comminos"
+            app:iconSpaceReserved="false">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="@string/credits_jumble_link"/>
+        </Preference>
+    </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/licenses"
         app:iconSpaceReserved="false">
-        <Preference android:title="@string/license_gplv3"
+        <Preference
+            android:title="@string/license_gplv3"
+            android:summary="@string/about_license_summary"
             app:iconSpaceReserved="false">
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="@string/license_gplv3_link"/>
+        </Preference>
+        <Preference
+            android:key="sourceCode"
+            android:title="@string/about_source_code"
+            android:summary="@string/source_code_display"
+            app:iconSpaceReserved="false">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="@string/source_code_link"/>
+        </Preference>
+        <Preference
+            android:title="@string/about_third_party_notices"
+            android:summary="@string/about_third_party_notices_summary"
+            app:iconSpaceReserved="false">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="@string/third_party_notices_link"/>
         </Preference>
         <Preference android:title="@string/license_apache2"
             app:iconSpaceReserved="false">
@@ -73,4 +121,11 @@
                 android:data="@string/license_selftest_voice_link"/>
         </Preference>
     </PreferenceCategory>
+    <Preference
+        android:key="memorial"
+        android:title="@string/about_memorial"
+        android:layout="@layout/preference_about_text"
+        android:selectable="false"
+        app:singleLineTitle="false"
+        app:iconSpaceReserved="false"/>
 </PreferenceScreen>

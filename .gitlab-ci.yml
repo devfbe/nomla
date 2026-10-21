@@ -1,4 +1,4 @@
-# Builds and tests Mumla inside the Nix dev shell defined by flake.nix.
+# Builds and tests Nomla inside the Nix dev shell defined by flake.nix.
 image: nixos/nix:latest
 
 variables:

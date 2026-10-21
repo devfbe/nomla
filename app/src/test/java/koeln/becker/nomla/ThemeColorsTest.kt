@@ -32,7 +32,7 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 class ThemeColorsTest {
     private val context: Context =
-        ContextThemeWrapper(ApplicationProvider.getApplicationContext(), R.style.Theme_Mumla)
+        ContextThemeWrapper(ApplicationProvider.getApplicationContext(), R.style.Theme_Nomla)
 
     private fun attr(@AttrRes attr: Int): Int {
         val value = TypedValue()

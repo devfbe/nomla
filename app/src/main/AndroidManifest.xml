@@ -48,7 +48,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Mumla"
+        android:theme="@style/Theme.Nomla"
         android:localeConfig="@xml/local_config">
 
         <activity
@@ -116,23 +116,23 @@
 
         <activity
             android:name=".preference.CertificateSelectActivity"
-            android:theme="@style/Theme.Mumla"
+            android:theme="@style/Theme.Nomla"
             android:exported="false" />
         <activity
             android:name=".preference.CertificateImportActivity"
-            android:theme="@style/Theme.Mumla"
+            android:theme="@style/Theme.Nomla"
             android:exported="false" />
         <activity
             android:name=".preference.CertificateExportActivity"
-            android:theme="@style/Theme.Mumla"
+            android:theme="@style/Theme.Nomla"
             android:exported="false" />
         <activity
             android:name=".preference.CertificateGenerateActivity"
-            android:theme="@style/Theme.Mumla"
+            android:theme="@style/Theme.Nomla"
             android:exported="false" />
         <activity
             android:name=".preference.ServerCertificateClearActivity"
-            android:theme="@style/Theme.Mumla"
+            android:theme="@style/Theme.Nomla"
             android:exported="false" />
     </application>
 

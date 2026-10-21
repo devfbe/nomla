@@ -18,8 +18,8 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:mumla="http://schemas.android.com/apk/res-auto" >
+      xmlns:app="http://schemas.android.com/apk/res-auto" >
 
-    <item android:id="@+id/menu_match_server" android:title="@string/server_match" android:icon="@drawable/ic_action_match" mumla:showAsAction="ifRoom" android:orderInCategory="0"/>
+    <item android:id="@+id/menu_match_server" android:title="@string/server_match" android:icon="@drawable/ic_action_match" app:showAsAction="ifRoom" android:orderInCategory="0"/>
 
 </menu>

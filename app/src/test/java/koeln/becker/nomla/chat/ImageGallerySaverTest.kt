@@ -77,9 +77,9 @@ class ImageGallerySaverTest {
         assertThat(calls.map { it.op }).containsExactly(Op.INSERT, Op.WRITE, Op.UPDATE).inOrder()
         val (_, insertedInto, values) = calls[0]
         assertThat(insertedInto).isEqualTo(ImageGallerySaver.COLLECTION)
-        assertThat(values!!.getAsString(MediaStore.MediaColumns.DISPLAY_NAME)).matches("""Mumla_[-_0-9]{19}\.png""")
+        assertThat(values!!.getAsString(MediaStore.MediaColumns.DISPLAY_NAME)).matches("""Nomla_[-_0-9]{19}\.png""")
         assertThat(values.getAsString(MediaStore.MediaColumns.MIME_TYPE)).isEqualTo("image/png")
-        assertThat(values.getAsString(MediaStore.MediaColumns.RELATIVE_PATH)).isEqualTo("Pictures/Mumla")
+        assertThat(values.getAsString(MediaStore.MediaColumns.RELATIVE_PATH)).isEqualTo("Pictures/Nomla")
         assertThat(values.getAsInteger(MediaStore.MediaColumns.IS_PENDING)).isEqualTo(1)
         assertThat(written.toByteArray()).isEqualTo(png)
         val (_, updated, published) = calls[2]
@@ -89,7 +89,7 @@ class ImageGallerySaverTest {
         assertThat(saved).isEqualTo(ImageGallerySaver.Saved(FixedRowMediaProvider.ROW, "image/png"))
     }
 
-    /** What the gallery ends up holding: the bytes, published, in the Mumla album. */
+    /** What the gallery ends up holding: the bytes, published, in the Nomla album. */
     @Test
     fun aSavedRowIsPublishedInTheAlbumWithTheBytes() {
         val png = TestImages.png(4, 4)
@@ -100,7 +100,7 @@ class ImageGallerySaverTest {
         assertThat(readBack(saved.uri)).isEqualTo(png)
         val row = row(saved.uri)
         assertThat(row.getAsString(MediaStore.MediaColumns.MIME_TYPE)).isEqualTo("image/png")
-        assertThat(row.getAsString(MediaStore.MediaColumns.RELATIVE_PATH)).startsWith("Pictures/Mumla")
+        assertThat(row.getAsString(MediaStore.MediaColumns.RELATIVE_PATH)).startsWith("Pictures/Nomla")
         assertThat(row.getAsString(MediaStore.MediaColumns.DISPLAY_NAME)).endsWith(".png")
         assertThat(row.getAsString(MediaStore.MediaColumns.IS_PENDING)).isEqualTo("0")
     }
@@ -180,16 +180,16 @@ class ImageGallerySaverTest {
     @Test
     fun theFileNameIsTheLocalTimeOfTheSave() {
         val millis = ZonedDateTime.of(2026, 10, 5, 14, 3, 9, 0, berlin).toInstant().toEpochMilli()
-        assertThat(ImageGallerySaver.fileName(millis, berlin, "png")).isEqualTo("Mumla_2026-10-05_14-03-09.png")
+        assertThat(ImageGallerySaver.fileName(millis, berlin, "png")).isEqualTo("Nomla_2026-10-05_14-03-09.png")
 
         // The same instant in another zone names another local time: the zone is honoured.
         assertThat(ImageGallerySaver.fileName(millis, ZoneId.of("UTC"), "png"))
-            .isEqualTo("Mumla_2026-10-05_12-03-09.png")
+            .isEqualTo("Nomla_2026-10-05_12-03-09.png")
 
         FixedRowMediaProvider.install(into = ByteArrayOutputStream())
         ImageGallerySaver(context, nowMillis = { millis }, zone = { berlin }).save(TestImages.png(4, 4))
         assertThat(FixedRowMediaProvider.calls[0].values!!.getAsString(MediaStore.MediaColumns.DISPLAY_NAME))
-            .isEqualTo("Mumla_2026-10-05_14-03-09.png")
+            .isEqualTo("Nomla_2026-10-05_14-03-09.png")
     }
 
     /** The array is shared with the loader's cache (`fetchBytes` hands out no copy): never write it. */

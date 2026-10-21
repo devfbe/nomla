@@ -34,7 +34,7 @@ Further copyright holders named in the notices of derived files:
 
 The translations carried over from Mumla were contributed by many translators
 through Weblate (https://hosted.weblate.org/engage/mumla/); the git history
-records their names.
+records their names. Nomla's own translations are made in this repository.
 
 Third-party libraries bundled with Nomla have their own authors and licenses;
 see NOTICE and NOTICE.md.

@@ -40,8 +40,17 @@
 
     <!-- About -->
     <string name="about">About</string>
-    <string name="acknowledgements">Contributors</string>
-    <string name="acknowledgementsSum">See who contributed to Mumla (web link)</string>
+    <!-- Shown in full on the About screen, not as a one-line summary. -->
+    <string name="about_description">Nomla is a Mumble client for Android. It was ported from Mumla and almost completely rewritten.</string>
+    <string name="about_credits">Credits</string>
+    <string name="about_credits_lublin">Daniel Lublin and contributors</string>
+    <string name="about_credits_comminos">Andrew Comminos and contributors</string>
+    <string name="about_license_summary">Nomla is free software under this license</string>
+    <string name="about_source_code">Source code</string>
+    <string name="about_third_party_notices">Third-party notices</string>
+    <string name="about_third_party_notices_summary">Licenses of the bundled libraries (web link)</string>
+    <!-- Shown in full on the About screen, not as a one-line summary. -->
+    <string name="about_memorial">In memory of Andreas Mandalka (Natenom), whose guides, servers and patience helped so many people find their way to Mumble.</string>
     <string name="licenses">Licenses</string>
 
 
@@ -73,7 +82,7 @@
     <string name="chatNotificationsSum">Shown for new chat messages.</string>
     <string name="defaultUsername">Default username</string>
     <string name="defaultUsernameSum">Prefilled when adding or joining a server</string>
-    <string name="defaultUsernameDefault">Mumla_User</string>
+    <string name="defaultUsernameDefault">Nomla_User</string>
     <string name="certificateGenerate">Generate certificate</string>
     <string name="certificateGenerateSum">Create a new self-signed certificate (recommended)</string>
     <string name="pttSettings">Push-to-talk settings</string>
@@ -166,7 +175,7 @@
     <string name="audio_per_packet">Audio per packet</string>
     <string name="audio_per_packet_sum">The length of audio per voice packet.</string>
     <string name="stay_awake">Stay awake</string>
-    <string name="stay_awake_sum">Keeps the screen on when Mumla is open.</string>
+    <string name="stay_awake_sum">Keeps the screen on when Nomla is open.</string>
     <string name="pref_certificate_title">Certificate</string>
     <string name="pref_certificate_summary">Used when connecting to a server</string>
     <string name="pref_import_certificate_title">Import certificate</string>

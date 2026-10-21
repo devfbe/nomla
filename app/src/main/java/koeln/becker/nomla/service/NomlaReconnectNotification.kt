@@ -64,7 +64,7 @@ class NomlaReconnectNotification(
             .setSmallIcon(R.drawable.ic_stat_notify)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             // No setDefaults(VIBRATE | LIGHTS): since API 26 the channel decides both.
-            .setContentTitle(context.getString(R.string.mumlaDisconnected))
+            .setContentTitle(context.getString(R.string.nomlaDisconnected))
             .setContentText(error)
             .setDeleteIntent(broadcast(BROADCAST_DISMISS))
             .addAction(R.drawable.ic_action_move, context.getString(R.string.reconnect), broadcast(BROADCAST_RECONNECT))

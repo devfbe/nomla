@@ -141,7 +141,7 @@ class NomlaMessageNotification(private val context: Context) {
 
     companion object {
         /** The service intent action of an inline reply; see [replyText]. */
-        const val ACTION_REPLY = "se.lublin.mumla.action.CHAT_REPLY"
+        const val ACTION_REPLY = "koeln.becker.nomla.action.CHAT_REPLY"
 
         private const val NOTIFICATION_ID = 2
         private const val REPLY_REQUEST_CODE = 2

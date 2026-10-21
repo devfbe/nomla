@@ -157,10 +157,18 @@
         <item>mute</item>
     </string-array>
 
-    <string name="copyright">Copyright &#169; Daniel Lublin mumla@lublin.se\nCopyright &#169; 2014–2017 Andrew Comminos\nhttps://mumla-app.gitlab.io</string>
-    <string name="project_link">https://mumla-app.gitlab.io</string>
-    <string name="acknowledgements_link">https://gitlab.com/quite/mumla/-/graphs/master</string>
-    <string name="license_gplv3">GNU General Public License v3.0</string>
+    <string name="credits_mumla">Mumla</string>
+    <string name="credits_mumla_link">https://gitlab.com/quite/mumla</string>
+    <string name="credits_humla">Humla</string>
+    <string name="credits_humla_link">https://gitlab.com/quite/humla</string>
+    <string name="credits_plumble">Plumble</string>
+    <string name="credits_plumble_link">https://github.com/acomminos/Plumble</string>
+    <string name="credits_jumble">Jumble</string>
+    <string name="credits_jumble_link">https://github.com/acomminos/Jumble</string>
+    <string name="source_code_display">github.com/devfbe/nomla</string>
+    <string name="source_code_link">https://github.com/devfbe/nomla</string>
+    <string name="third_party_notices_link">https://github.com/devfbe/nomla/blob/HEAD/NOTICE.md</string>
+    <string name="license_gplv3">GNU General Public License v3.0 or later</string>
     <string name="license_gplv3_link">https://www.gnu.org/licenses/gpl-3.0.html</string>
     <string name="license_apache2">Apache License Version 2.0</string>
     <string name="license_apache2_link">https://www.apache.org/licenses/LICENSE-2.0.html</string>

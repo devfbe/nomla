@@ -19,7 +19,7 @@ package koeln.becker.nomla.service
 
 import koeln.becker.nomla.mumble.audio.TransmitMode
 
-/** The part of a Mumla session a headset/media button may act on. */
+/** The part of a Nomla session a headset/media button may act on. */
 interface MediaKeyTarget {
     /** True while the server session is synchronized. */
     val isConnected: Boolean

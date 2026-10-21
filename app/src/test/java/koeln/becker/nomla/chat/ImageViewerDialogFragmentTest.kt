@@ -633,7 +633,7 @@ class ImageViewerDialogFragmentTest {
 
     /**
      * Fullscreen is a property of the window: `android:windowIsFloating=false` in
-     * `Theme.Mumla.ImageViewer` makes `PhoneWindow.generateLayout` use MATCH_PARENT.
+     * `Theme.Nomla.ImageViewer` makes `PhoneWindow.generateLayout` use MATCH_PARENT.
      */
     @Test
     fun theViewerWindowFillsTheScreen() {

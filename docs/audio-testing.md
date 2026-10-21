@@ -1,6 +1,6 @@
 # Audio testing
 
-How Mumla's capture chain (echo cancellation, noise suppression, voice gate) is tested: what each
+How Nomla's capture chain (echo cancellation, noise suppression, voice gate) is tested: what each
 test proves, how to run the ones that need a phone and a PC speaker, how to read their output, and
 what they measured. Everything here concerns speakerphone double talk: the user talking while a
 remote user talks through the phone's speaker.
@@ -183,11 +183,11 @@ them.
 **Property switches** (Studio's run configurations cannot pass instrumentation arguments through
 its MCP, so system properties stand in; the arguments `roomTest` / `roomTestOnly` work too):
 
-- `debug.mumla.roomtest=true` enables the test; without it the test is skipped (so `verify` and a
+- `debug.nomla.roomtest=true` enables the test; without it the test is skipped (so `verify` and a
   plain run skip it).
-- `debug.mumla.roomtest.only=A,B` runs only the configurations whose name contains `A` or `B`, e.g.
+- `debug.nomla.roomtest.only=A,B` runs only the configurations whose name contains `A` or `B`, e.g.
   `VOICE_COMMUNICATION/COMM`.
-- `debug.mumla.roomtest.pulled=true` is set by the script once it has pulled the files; the test
+- `debug.nomla.roomtest.pulled=true` is set by the script once it has pulled the files; the test
   waits for it (up to 2 min) after `ROOM_DONE`.
 
 **Run it.**
@@ -303,7 +303,7 @@ sheet shows:
 - Start/Stop and Retry. Without echo cancellation for the speaker it still runs and warns that the
   far end may hear itself.
 
-**How it works.** `DoubleTalkSelfTest` (humla) runs what a call runs: `MODE_IN_COMMUNICATION`, the
+**How it works.** `DoubleTalkSelfTest` (libraries/core) runs what a call runs: `MODE_IN_COMMUNICATION`, the
 built-in speaker as communication device, a track built exactly like `AudioOutput`'s on the
 voice-call stream, each played frame handed to AEC3 through `FarEndFrameChunker` before the write,
 and the capture chain from the user's settings (AEC3 + AGC2, then RNNoise with the chosen limit, then
@@ -327,7 +327,7 @@ the two counts, the level kept, live limit, failure clean-up); `DoubleTalkTestVi
 stop racing a start, lamp, late readings dropped, strength live and stored on release, reset,
 cleared model stops the engine). On the phone, `DoubleTalkSelfTestDeviceTest` runs the engine with
 the PC as the user: `python3 tools/room-test/room_test.py --serial <serial> --selftest`, then start
-the test from Studio (it is skipped unless `debug.mumla.selftest=true`). It uses the far-end Piper
+the test from Studio (it is skipped unless `debug.nomla.selftest=true`). It uses the far-end Piper
 clip as the test voice at −18 dBFS and the near-end clip from the PC, with the shipped settings; it
 logs `SELFTEST voice alone: false open …%; talk-over: heard …%, …; kept … dB` (tag `SelfTest`) and
 asserts false open ≤ 10 %, heard ≥ 70 % and kept ≥ −6 dB. Those bounds are provisional until its
@@ -452,7 +452,7 @@ synthetic nonlinear path the relief may open on echo residual); and a real call.
   M failed`.
 - **The room test's files are gone.** Studio uninstalls the test APK, and with it its files
   directory, when the run ends. That is why the test waits after `ROOM_DONE` for
-  `debug.mumla.roomtest.pulled`, which the script sets after `adb pull`. Start the script before the
+  `debug.nomla.roomtest.pulled`, which the script sets after `adb pull`. Start the script before the
   test, or pull by hand during the wait.
 - **UNPROCESSED "unsupported".** `AudioManager.getProperty(PROPERTY_SUPPORT_AUDIO_SOURCE_UNPROCESSED)`
   is not `true` on the SM-S938B, yet recording from UNPROCESSED works (the raw microphone). The tests
@@ -467,6 +467,6 @@ synthetic nonlinear path the relief may open on echo residual); and a real call.
   start-server` if it stays away. A device test that was running is lost; rerun it. Before running
   audio tests, check nobody is using the phone (`adb shell dumpsys activity activities | grep
   topResumed`): the tests change the audio mode and route and play sound.
-- **A test was skipped.** The manual tests need their property (`debug.mumla.roomtest`,
-  `debug.mumla.selftest`); every audio device test skips itself when a wired or Bluetooth headset is
+- **A test was skipped.** The manual tests need their property (`debug.nomla.roomtest`,
+  `debug.nomla.selftest`); every audio device test skips itself when a wired or Bluetooth headset is
   connected.

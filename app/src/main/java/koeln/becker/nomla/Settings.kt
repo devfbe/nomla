@@ -398,7 +398,7 @@ class Settings private constructor(private val context: Context) {
         /** Database id of the default certificate; see [koeln.becker.nomla.db.DatabaseCertificate]. */
         val CERT_ID = Pref("certificateId", NO_CERTIFICATE)
 
-        val DEFAULT_USERNAME = Pref("defaultUsername", "Mumla_User")
+        val DEFAULT_USERNAME = Pref("defaultUsername", "Nomla_User")
 
         val FORCE_TCP = Pref("forceTcp", false)
 

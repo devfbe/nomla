@@ -78,7 +78,7 @@
     <string name="server_match_not_found">Couldn\'t find server</string>
     <string name="server_match_expand_country">Couldn\'t find any optimal servers in your country. Search worldwide?</string>
     <string name="server_match_info">Name: %1$s\nHost: %2$s:%3$d\nUsers: %4$d / %5$d\nVersion: %6$s \nCountry: %7$s \nLatency: %8$d ms</string>
-    <string name="server_match_description">Mumla can automatically find you an empty server, optimizing for location, version, and latency.</string>
+    <string name="server_match_description">Nomla can automatically find you an empty server, optimizing for location, version, and latency.</string>
 
     <!-- Common -->
     <string name="server_list_empty">No favorite servers yet</string>
@@ -141,18 +141,18 @@
     <string name="offline">Offline</string>
     <string name="clearChat">Clear Chat</string>
     <string name="connected">Connected</string>
-    <string name="mumlaConnecting">Mumla connecting…</string>
+    <string name="nomlaConnecting">Nomla connecting…</string>
     <string name="connection_lost_reconnecting">Connection lost – reconnecting…</string>
-    <string name="foreground_start_failed">Could not keep Mumla running in the background. Voice may stop when the screen turns off.</string>
-    <string name="microphone_blocked">Microphone blocked by Android – open Mumla to transmit again.</string>
-    <string name="mumlaDisconnected">Mumla disconnected</string>
+    <string name="foreground_start_failed">Could not keep Nomla running in the background. Voice may stop when the screen turns off.</string>
+    <string name="microphone_blocked">Microphone blocked by Android – open Nomla to transmit again.</string>
+    <string name="nomlaDisconnected">Nomla disconnected</string>
     <string name="channel">Channel</string>
     <string name="user">User</string>
     <string name="unknown">Unknown</string>
     <string name="name">Name</string>
     <string name="share">Share</string>
     <string name="description">Description</string>
-    <string name="shareMessage">Join this Mumble server with Mumla. %s</string>
+    <string name="shareMessage">Join this Mumble server with Nomla. %s</string>
     <string name="self_status_muted">Muted</string>
     <string name="self_status_deafened">Deafened</string>
     <string name="self_status_muted_deafened">Muted and deafened</string>
@@ -194,7 +194,7 @@
     <string name="channel_add">Add Channel</string>
     <string name="tts_failed">Could not start TTS</string>
     <string name="mumble_url_parse_failed">Mumble URL is not valid.</string>
-    <string name="first_run_generate_certificate_title">Welcome to Mumla</string>
+    <string name="first_run_generate_certificate_title">Welcome to Nomla</string>
     <string name="first_run_generate_certificate">Generating a certificate is highly recommended, and necessary for connection to some servers.</string>
     <string name="generate">Generate</string>
     <string name="send_message">Send message</string>
@@ -238,7 +238,7 @@
     <string name="failure_server_full_title">Server full</string>
     <string name="failure_server_full">The server has as many users as it allows. Try again later.</string>
     <string name="failure_version_title">Version mismatch</string>
-    <string name="failure_version">The server does not support this version of Mumla.</string>
+    <string name="failure_version">The server does not support this version of Nomla.</string>
     <string name="failure_tls_title">Secure connection failed</string>
     <string name="failure_tls">The encrypted connection to the server could not be set up.</string>
     <string name="failure_kicked_title">Kicked from the server</string>
@@ -273,8 +273,8 @@
     <string name="shout_configure">Whisper to channel</string>
     <string name="hold_to_whisper">Hold to whisper</string>
     <string name="grant_perm_microphone">Please grant microphone permission.</string>
-    <string name="microphone_permission_rationale">Mumla needs the microphone so that others on the server can hear you.</string>
-    <string name="microphone_permission_settings">Microphone access is turned off for Mumla. To connect to a server, allow it in the app settings.</string>
+    <string name="microphone_permission_rationale">Nomla needs the microphone so that others on the server can hear you.</string>
+    <string name="microphone_permission_settings">Microphone access is turned off for Nomla. To connect to a server, allow it in the app settings.</string>
     <string name="open_settings">Open settings</string>
     <string name="grant_perm_notifications">Please grant permission to send notifications.</string>
     <string name="grant_perm_draw_over_apps">Please grant permission to display over other apps.</string>
@@ -328,15 +328,12 @@
     <string name="chat_image_actions">Show image options</string>
 
     <!-- Used only by flavor "goog" -->
-    <string name="donate_dialog_title_goog">Enjoying Mumla?</string>
-    <string name="donate_dialog_message_goog">Thank you for using Mumla! Please consider making a small donation to help keep Mumla alive — and to remove this message.</string>
-    <string name="donate_dialog_positivebutton_goog">Support Mumla</string>
+    <string name="donate_dialog_title_goog">Enjoying Nomla?</string>
+    <string name="donate_dialog_message_goog">Thank you for using Nomla! Please consider making a small donation to help keep Nomla alive — and to remove this message.</string>
+    <string name="donate_dialog_positivebutton_goog">Support Nomla</string>
     <string name="donate_dialog_negativebutton_goog">Later</string>
     <string name="donate_purchase_pending_goog">Your donation is pending and may be ready at a later restart. Thank you!</string>
     <string name="donate_thanks_goog">Thank you for your support!</string>
-
-    <!-- Used only by flavor "foss" -->
-    <string name="donate_foss">Donate</string>
 
     <!-- Chat image sending -->
     <string name="permission_denied_storage">Permission denied to read storage</string>
@@ -428,7 +425,7 @@
     <string name="a11y_state_suppressed">Suppressed</string>
     <string name="a11y_transmitting">Transmitting</string>
     <string name="a11y_not_transmitting">Not transmitting</string>
-    <string name="tile_mute_label">Mumla mute</string>
+    <string name="tile_mute_label">Nomla mute</string>
     <string name="notification_you">You</string>
     <string name="notification_reply">Reply</string>
     <string name="notification_group_server">Server connection</string>
@@ -454,8 +451,8 @@
     <string name="battery_optimization_title">Background connection</string>
     <string name="battery_optimization_unrestricted">Unrestricted</string>
     <string name="battery_optimization_optimized">Optimized – tap to allow background use</string>
-    <string name="battery_optimization_prompt_title">Keep Mumla connected in the background?</string>
-    <string name="battery_optimization_prompt_message">Battery optimization can close Mumla while the screen is off, which drops you from the server. Allow Mumla to run in the background to stay connected. You can change this later under Settings › General › Background connection.</string>
+    <string name="battery_optimization_prompt_title">Keep Nomla connected in the background?</string>
+    <string name="battery_optimization_prompt_message">Battery optimization can close Nomla while the screen is off, which drops you from the server. Allow Nomla to run in the background to stay connected. You can change this later under Settings › General › Background connection.</string>
     <string name="battery_optimization_prompt_decline">Not now</string>
     <string name="rnnoise_strength">Maximum noise reduction</string>
     <string name="rnnoise_strength_sum">Higher: less noise. Eases while you talk over others</string>

@@ -24,7 +24,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:foreground="?selectableItemBackground"
-    style="@style/Widget.Mumla.CardView">
+    style="@style/Widget.Nomla.CardView">
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

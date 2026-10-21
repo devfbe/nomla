@@ -60,7 +60,7 @@ class UntrustedHtmlWebViewTest {
     fun `a link with an unexpected scheme is swallowed`() {
         val client = shadowOf(webView).webViewClient
         @Suppress("DEPRECATION")
-        val handled = client.shouldOverrideUrlLoading(webView, "file:///data/data/se.lublin.mumla/x")
+        val handled = client.shouldOverrideUrlLoading(webView, "file:///data/data/koeln.becker.nomla/x")
 
         assertThat(handled).isTrue()
         assertThat(shadowOf(app).nextStartedActivity).isNull()

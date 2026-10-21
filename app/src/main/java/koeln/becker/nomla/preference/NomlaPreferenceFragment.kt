@@ -30,7 +30,7 @@ import koeln.becker.nomla.util.padForSystemBars
 
 /**
  * A screen of [SettingsActivity] built from [preferencesXml]. Titles the action bar with the
- * [ARG_TITLE] argument, and shows the dialogs of Mumla's own dialog preferences.
+ * [ARG_TITLE] argument, and shows the dialogs of Nomla's own dialog preferences.
  */
 abstract class NomlaPreferenceFragment(@param:XmlRes private val preferencesXml: Int) : PreferenceFragmentCompat() {
 

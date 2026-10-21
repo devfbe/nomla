@@ -1,48 +1,32 @@
-# Software maintenance situation
+<p align="center"><img src="branding/nomla.svg" alt="Nomla logo: a white elephant with a headset on blue" width="128"></p>
 
-Current maintainer [Daniel Lublin](https://lublin.se)
-([@quite@mstdn.social](https://mstdn.social/@quite) on fedi) has very
-little time to do voluntary work on Mumla. My focus is strictly on
-maintaining stability and security. This includes migrations to newer
-Android SDKs, as they become requirements by Google/Alphabet for even
-getting updates published on Google Play. There are also other
-maintenance and administrative work, which barely gets done in a
-timely manner.
+# Nomla
 
-At some point I expect Mumla to disappear from Google Play, because
-there will be some requirement that I did not have time to fulfill.
-Eventually it will also rot and no longer work well in general on
-newer releases of Android.
+Nomla is a [Mumble](https://www.mumble.info/) voice-chat client for Android. It
+runs on Android 12 (API 31) and later.
 
-Mumla needs a new maintainer that can allocate time to take on, to
-begin with, all these tasks. To maintain stability and security. And
-then hopefully also work with the community on for example protocol
-parity with desktop Mumble, support for various hardware accessories,
-general usability, and new features.
+Nomla was ported from [Mumla](https://gitlab.com/quite/mumla) and almost
+completely rewritten, from Java to Kotlin. Credit goes to the projects it comes
+from:
 
-Until there is a new maintainer with time on their hands you cannot
-expect new features, or even the continued existence of a usable
-Mumble app for Android.
+- [Mumla](https://gitlab.com/quite/mumla) and its protocol library
+  [Humla](https://gitlab.com/quite/humla), by Daniel Lublin and contributors;
+- [Plumble](https://github.com/acomminos/Plumble) and
+  [Jumble](https://github.com/acomminos/Jumble), which Mumla and Humla continue,
+  by Andrew Comminos and contributors.
 
-# Mumla
+See [AUTHORS](AUTHORS) and [NOTICE](NOTICE) for details.
 
-Mumla is a [Mumble](https://www.mumble.info/) voice-chat client for Android
-(GPLv3). It is a fork and continuation of
-[Plumble](https://github.com/acomminos/Plumble) by Andrew Comminos and ships
-its own protocol/audio library, Humla (a fork of Comminos's Jumble), in
-`libraries/core`.
-
-Mumla runs on Android 12 (API 31) and later. It is available
-[on F-Droid](https://f-droid.org/packages/se.lublin.mumla/) and on Google
-Play; there is a small [landing page](https://mumla-app.gitlab.io/).
+*In memory of Andreas Mandalka (Natenom), whose guides, servers and patience
+helped so many people find their way to Mumble.*
 
 ## Building
 
 The supported development environment is the Nix flake in this repository.
 With [Nix](https://nixos.org/) installed and flakes enabled:
 
-    git clone --recursive https://gitlab.com/quite/mumla.git
-    cd mumla
+    git clone --recursive https://github.com/devfbe/nomla.git
+    cd nomla
     nix develop
 
 The shell provides JDK 21, the Android SDK (platform 37.0, build-tools 37.0.0),
@@ -54,6 +38,7 @@ NDK 29.0.14206865, SDK CMake 4.1.2, meson/ninja and `git`. Inside it:
     ./gradlew lintFossDebug lintGoogDebug lintDonationDebug lintBetaDebug \
               :libraries:core:lintDebug
     ./gradlew detekt                 # Kotlin static analysis against each module's baseline
+    ./gradlew verify                 # everything above that a change must pass
 
 If you cloned without `--recursive`, run `git submodule update --init --recursive`
 first. `libraries/core` is an ordinary directory in this repository, not a
@@ -64,16 +49,17 @@ dependency abseil-cpp — built for
 `arm64-v8a`, `armeabi-v7a` and `x86_64` via CMake with hand-written JNI glue.
 
 [direnv](https://direnv.net/) users can `direnv allow` to enter the shell
-automatically. The same shell is what CI uses (`.gitlab-ci.yml`).
+automatically. `nix run .#android-studio` starts Android Studio with the same
+SDK and NDK. The same shell is what CI uses (`.gitlab-ci.yml`).
 
 If you get an error running out of Java heap space, try raising the `-Xmx` in
 `gradle.properties`.
 
 ## Repository layout
 
-- `app/` — the Android application (`se.lublin.mumla`), product flavors
+- `app/` — the Android application (`koeln.becker.nomla`), product flavors
   `foss`, `goog`, `donation`, `beta`.
-- `libraries/protocol/` — the platform-free half of Humla, a plain
+- `libraries/protocol/` — the platform-free half of the Mumble library, a plain
   Kotlin/JVM module: the Mumble protocol (`src/Mumble.proto` and
   `src/MumbleUDP.proto` are compiled to Java at build time; nothing generated
   is checked in), TLS/UDP transports, OCB2 crypto (BouncyCastle), the model
@@ -85,6 +71,8 @@ If you get an error running out of Java heap space, try raising the `-Xmx` in
 - `build-logic/` — Gradle convention plugins with the Android and JVM
   configuration shared by the modules; dependency versions live in
   `gradle/libs.versions.toml`.
+- `branding/` — the logo (`nomla.svg`, a 512×512 PNG for stores, and the original
+  artwork).
 - `NOTICE.md` — third-party components and licenses.
 - `docs/audio-testing.md` — the audio test suite: what each test proves, the Piper
   speech corpus, how to run the device and room tests, and what they measured.
@@ -94,22 +82,17 @@ If you get an error running out of Java heap space, try raising the `-Xmx` in
 - **Tests first.** Every behavior change starts with a failing JVM test
   (JUnit 4, Robolectric for Android classes, MockK, Google Truth,
   `kotlinx-coroutines-test`); native code stays a thin JNI pass-through and
-  the Kotlin side is tested against fakes.
-  `./gradlew assembleFossDebug assembleGoogDebug test lintFossDebug
-  lintGoogDebug lintDonationDebug lintBetaDebug :libraries:core:lintDebug detekt`
-  (CI's acceptance command, verbatim: all four product flavors and both
-  modules) must be green. The bare `lint` task only covers `betaDebug`, so
-  every flavor is named.
+  the Kotlin side is tested against fakes. `./gradlew verify` must be green.
 - **Kotlin.** New files are Kotlin; a Java file you change substantially is
   converted first, as its own commit.
 - **Conventional Commits**, in English: `feat:`, `fix:`, `refactor:`,
-  `build:`, `test:`, `docs:`, `chore:`, optional scope such as `fix(humla):`,
-  imperative subject of at most 72 characters, no trailers.
-- **Strings**: only the base (English) texts are edited in the repository, in
-  `app/src/main/res/values/` (`strings.xml`, `preference.xml`) or
-  `libraries/core/src/main/res/values/strings.xml`; translations are
-  handled on [Weblate](https://hosted.weblate.org/engage/mumla/) — please do
-  not edit the translated resource files directly.
+  `build:`, `test:`, `docs:`, `chore:`, `l10n:`, optional scope such as
+  `fix(core):`, imperative subject of at most 72 characters.
+- **Strings**: English texts live in `app/src/main/res/values/` (`strings.xml`,
+  `preference.xml`) and `libraries/core/src/main/res/values/strings.xml`. The
+  translations in the `values-*` directories are maintained in this repository;
+  a change to an English string updates every locale, in a separate `l10n:`
+  commit.
 
 ## FAQ
 
@@ -119,5 +102,5 @@ when the UI was set up and are not updated while connected.
 
 ## License
 
-GNU GPL v3, see [LICENSE](LICENSE). Third-party notices are in
-[NOTICE.md](NOTICE.md).
+Nomla is free software: GNU GPL v3 or later, see [LICENSE](LICENSE). Third-party
+notices are in [NOTICE](NOTICE) and [NOTICE.md](NOTICE.md).

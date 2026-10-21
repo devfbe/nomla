@@ -135,7 +135,7 @@ class MediaButtonActionResourcesTest {
     @Test
     fun theOffEntrySaysThatOtherAppsKeepTheMediaKeys() {
         // MediaKeyHandler must not consume the event for NONE, or the media keys break for
-        // every other app and nobody would blame Mumla. "Nothing" alone does not say that.
+        // every other app and nobody would blame Nomla. "Nothing" alone does not say that.
         val names = stringArrayByName("mediaButtonActionNames")
         val values = stringArrayByName("mediaButtonActionValues")
         val offName = names[values.indexOf(MediaButtonAction.NONE.prefValue)].lowercase()

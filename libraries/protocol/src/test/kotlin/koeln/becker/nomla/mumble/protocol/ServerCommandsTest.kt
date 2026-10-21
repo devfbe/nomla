@@ -35,14 +35,14 @@ class ServerCommandsTest {
     /** Opus and no CELT version: Opus is the only codec this client has. */
     @Test
     fun theHandshakeSendsTheVersionThenAnOpusOnlyAuthenticate() {
-        commands.handshake("Mumla 1", "14", "me", "pw", listOf("t1", "t2"))
+        commands.handshake("Nomla 1", "14", "me", "pw", listOf("t1", "t2"))
 
         assertThat(sent.map { it.first })
             .containsExactly(NomlaTCPMessageType.Version, NomlaTCPMessageType.Authenticate).inOrder()
         val version = sent[0].second as Mumble.Version
         assertThat(version.versionV1).isEqualTo(0x010500)
         assertThat(version.versionV2).isEqualTo(0x0001_0005_0000_0000L)
-        assertThat(version.release).isEqualTo("Mumla 1")
+        assertThat(version.release).isEqualTo("Nomla 1")
         assertThat(version.os).isEqualTo("Android")
         assertThat(version.osVersion).isEqualTo("14")
         val auth = sent[1].second as Mumble.Authenticate

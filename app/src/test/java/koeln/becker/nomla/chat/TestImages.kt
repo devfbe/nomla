@@ -57,7 +57,7 @@ object TestImages {
      * an `eXIf` chunk).
      */
     fun withExifOrientation(image: ByteArray, orientation: Int, suffix: String = ".jpg"): ByteArray {
-        val file = File.createTempFile("mumla-test-image", suffix)
+        val file = File.createTempFile("nomla-test-image", suffix)
         try {
             file.writeBytes(image)
             val exif = ExifInterface(file.absolutePath)

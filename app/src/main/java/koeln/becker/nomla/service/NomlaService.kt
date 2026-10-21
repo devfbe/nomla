@@ -146,7 +146,7 @@ class NomlaService :
         settings = Settings.getInstance(this)
         pushToTalk = PushToTalk(settings, sessions)
         // Overlay views need the theme set manually; the <application> theme does not apply.
-        setTheme(R.style.Theme_Mumla)
+        setTheme(R.style.Theme_Nomla)
 
         notification = NomlaConnectionNotification.create(this, "", this)
         messageNotification = NomlaMessageNotification(this)
@@ -258,7 +258,7 @@ class NomlaService :
         when (state) {
             SessionState.Connecting -> {
                 hideReconnectPrompt()
-                showConnectionNotification(getString(R.string.mumlaConnecting) + torSuffix())
+                showConnectionNotification(getString(R.string.nomlaConnecting) + torSuffix())
             }
             SessionState.Connected -> {
                 val self = SelfSummary.of(session.model.value)
@@ -466,7 +466,7 @@ class NomlaService :
         if (on) {
             if (proximityLock?.isHeld == true) return
             proximityLock = getSystemService(PowerManager::class.java)
-                .newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK, "Mumla:Proximity")
+                .newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK, "Nomla:Proximity")
                 .also { it.acquire() }
         } else {
             proximityLock?.release()
@@ -504,7 +504,7 @@ class NomlaService :
 
         const val TTS_THRESHOLD = 250 // Maximum number of characters to read
 
-        private const val ACTION_TOGGLE_OVERLAY = "se.lublin.mumla.action.TOGGLE_OVERLAY"
+        private const val ACTION_TOGGLE_OVERLAY = "koeln.becker.nomla.action.TOGGLE_OVERLAY"
 
         /** The preferences [onPreferenceChanged] reacts to. */
         private val OBSERVED_KEYS = setOf(Settings.INPUT_METHOD.key, Settings.HOT_CORNER.key, Settings.USE_TTS.key)

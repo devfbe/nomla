@@ -27,16 +27,16 @@ import koeln.becker.nomla.mumble.util.NomlaLog
 
 /**
  * Android's battery optimisation, which lets some vendors stop the connection service in the
- * background, and the system screens that exempt Mumla from it.
+ * background, and the system screens that exempt Nomla from it.
  */
 object BatteryOptimization {
     private const val TAG = "BatteryOptimization"
 
-    /** Whether Mumla is exempt, i.e. "Unrestricted" in the system's battery settings. */
+    /** Whether Nomla is exempt, i.e. "Unrestricted" in the system's battery settings. */
     fun isExempt(context: Context): Boolean =
         context.getSystemService(PowerManager::class.java)?.isIgnoringBatteryOptimizations(context.packageName) ?: true
 
-    /** Asks the system to exempt Mumla; without that dialog, opens the list of all apps. */
+    /** Asks the system to exempt Nomla; without that dialog, opens the list of all apps. */
     // A VoIP client that must keep its connection is an acceptable use under the Play policy.
     @SuppressLint("BatteryLife")
     fun requestExemption(context: Context) {

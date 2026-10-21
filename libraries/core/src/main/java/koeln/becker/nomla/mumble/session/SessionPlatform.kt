@@ -91,7 +91,7 @@ internal class AndroidNetworkMonitor(
 }
 
 /** A partial [PowerManager] wake lock tagged [tag]; reference counted, as the platform's is. */
-internal class AndroidSessionWakeLock(powerManager: PowerManager, tag: String = "Humla:Session") : SessionWakeLock {
+internal class AndroidSessionWakeLock(powerManager: PowerManager, tag: String = "Nomla:Session") : SessionWakeLock {
     private val lock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, tag)
 
     override val isHeld: Boolean get() = lock.isHeld

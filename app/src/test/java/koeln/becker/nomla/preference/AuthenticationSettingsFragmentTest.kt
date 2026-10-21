@@ -29,7 +29,7 @@ import org.robolectric.RobolectricTestRunner
 import koeln.becker.nomla.testing.openScreen
 
 /**
- * The certificate rows open our own screens by class: another installed Mumla variant declares
+ * The certificate rows open our own screens by class: another installed Nomla variant declares
  * the same actions, and an implicit intent would open its screens and change its certificates.
  */
 @RunWith(RobolectricTestRunner::class)

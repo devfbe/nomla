@@ -126,7 +126,7 @@ class BatteryOptimizationPromptTest {
     }
 
     @Test
-    fun acceptingRequestsTheExemptionForMumla() {
+    fun acceptingRequestsTheExemptionForNomla() {
         launch()
         attach(connectedService())
 

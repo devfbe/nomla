@@ -47,8 +47,8 @@ import java.util.Date
 private const val RSA_KEY_BITS = 2048
 
 public object NomlaCertificateGenerator {
-    private const val ISSUER = "CN=Humla Client"
-    private const val ALIAS = "Humla Key"
+    private const val ISSUER = "CN=Nomla Client"
+    private const val ALIAS = "Nomla Key"
     private const val YEARS_VALID = 20
 
     /**

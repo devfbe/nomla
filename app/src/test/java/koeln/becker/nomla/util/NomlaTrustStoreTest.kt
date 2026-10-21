@@ -40,7 +40,7 @@ import java.security.KeyStore
 @RunWith(RobolectricTestRunner::class)
 class NomlaTrustStoreTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
-    private val file get() = File(context.filesDir, "mumla-store.bks")
+    private val file get() = File(context.filesDir, "nomla-store.bks")
 
     @After
     fun tearDown() {

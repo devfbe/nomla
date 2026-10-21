@@ -287,7 +287,7 @@ object ChatImageLoaders {
 
     private fun create(app: Context): ChatImageLoader {
         val allowed = { Settings.getInstance(app).shouldLoadExternalImages }
-        val http = chatImageHttpClient(networkAllowed = allowed, userAgent = "Mumla/" + BuildConfig.VERSIONTAG)
+        val http = chatImageHttpClient(networkAllowed = allowed, userAgent = "Nomla/" + BuildConfig.VERSIONTAG)
         return ChatImageLoader(app, ChatImageLoader.imageLoader(app, http), http, allowed)
     }
 

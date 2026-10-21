@@ -26,7 +26,7 @@ import java.security.cert.X509Certificate
 
 /** The app's store of server certificates the user chose to trust, one pin per host. */
 object NomlaTrustStore {
-    private const val STORE_FILE = "mumla-store.bks"
+    private const val STORE_FILE = "nomla-store.bks"
     const val STORE_PASSWORD = ""
     const val STORE_FORMAT = "BKS"
 

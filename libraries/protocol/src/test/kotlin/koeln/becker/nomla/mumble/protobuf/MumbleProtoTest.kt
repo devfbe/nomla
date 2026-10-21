@@ -39,17 +39,17 @@ class MumbleProtoTest {
     fun `version message serializes to the expected proto2 bytes and parses back`() {
         val bytes = Mumble.Version.newBuilder()
             .setVersionV1(0x10305)
-            .setRelease("Mumla")
+            .setRelease("Nomla")
             .build()
             .toByteArray()
 
-        // field 1 (varint) 0x10305 = 66309 -> 0x85 0x86 0x04 ; field 2 (len-delimited) "Mumla"
+        // field 1 (varint) 0x10305 = 66309 -> 0x85 0x86 0x04 ; field 2 (len-delimited) "Nomla"
         assertThat(bytes).isEqualTo(
-            byteArrayOf(0x08, 0x85.toByte(), 0x86.toByte(), 0x04, 0x12, 0x05, 0x4d, 0x75, 0x6d, 0x6c, 0x61)
+            byteArrayOf(0x08, 0x85.toByte(), 0x86.toByte(), 0x04, 0x12, 0x05, 0x4e, 0x6f, 0x6d, 0x6c, 0x61)
         )
         val parsed = Mumble.Version.parseFrom(bytes)
         assertThat(parsed.versionV1).isEqualTo(0x10305)
-        assertThat(parsed.release).isEqualTo("Mumla")
+        assertThat(parsed.release).isEqualTo("Nomla")
     }
 
     @Test
@@ -132,7 +132,7 @@ class MumbleProtoTest {
         // compatibility depends on those bytes being preserved verbatim across a round trip.
         val known = Mumble.Version.newBuilder()
             .setVersionV1(0x10305)
-            .setRelease("Mumla")
+            .setRelease("Nomla")
             .build()
             .toByteArray()
         // Field 111, wire type 0 (varint), value 42: tag = (111 << 3) | 0 = 888 = varint f8 06.

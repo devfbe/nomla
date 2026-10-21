@@ -12,15 +12,15 @@ dependencies {
 gradlePlugin {
     plugins {
         register("androidApplication") {
-            id = "mumla.android.application"
+            id = "nomla.android.application"
             implementationClass = "NomlaAndroidApplicationPlugin"
         }
         register("androidLibrary") {
-            id = "mumla.android.library"
+            id = "nomla.android.library"
             implementationClass = "NomlaAndroidLibraryPlugin"
         }
         register("jvmLibrary") {
-            id = "mumla.jvm.library"
+            id = "nomla.jvm.library"
             implementationClass = "NomlaJvmLibraryPlugin"
         }
     }

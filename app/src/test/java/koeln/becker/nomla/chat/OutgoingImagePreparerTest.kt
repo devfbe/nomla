@@ -93,8 +93,8 @@ class OutgoingImagePreparerTest {
     fun shutDownPools() = pools.forEach { it.shutdownNow() }
 
     private companion object {
-        const val CALLER = "mumla-test-caller"
-        const val NOTHING_AUTHORITY = "se.lublin.mumla.test.opensnothing"
+        const val CALLER = "nomla-test-caller"
+        const val NOTHING_AUTHORITY = "koeln.becker.nomla.test.opensnothing"
     }
 
     private fun uri(path: String) = Uri.parse("content://media/external/images/$path")
@@ -367,8 +367,8 @@ class OutgoingImagePreparerTest {
 
     @Test
     fun theReadRunsOnTheIoDispatcherAndTheDecodeOnTheDecodeDispatcher() = runTest {
-        val (io, ioRuns) = countingDispatcher("mumla-test-io")
-        val (decode, decodeRuns) = countingDispatcher("mumla-test-decode")
+        val (io, ioRuns) = countingDispatcher("nomla-test-io")
+        val (decode, decodeRuns) = countingDispatcher("nomla-test-decode")
         val uri = uri("dispatchers")
         var readThread = "none"
         shadowOf(context.contentResolver).registerInputStreamSupplier(uri) {
@@ -379,7 +379,7 @@ class OutgoingImagePreparerTest {
         val bitmap = OutgoingImagePreparer(context, ioDispatcher = io, decodeDispatcher = decode).prepare(uri)
 
         assertThat(bitmap).isNotNull()
-        assertThat(readThread).isEqualTo("mumla-test-io")
+        assertThat(readThread).isEqualTo("nomla-test-io")
         assertThat(ioRuns.get()).isAtLeast(1)
         assertThat(decodeRuns.get()).isAtLeast(1)
     }

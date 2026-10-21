@@ -24,7 +24,7 @@ import android.content.Context
 import koeln.becker.nomla.R
 
 /**
- * Mumla's notification channels, in one group. Creating them again is cheap and refreshes their
+ * Nomla's notification channels, in one group. Creating them again is cheap and refreshes their
  * names and descriptions; importance, once created, is the user's.
  */
 object NotificationChannels {

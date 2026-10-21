@@ -10,11 +10,11 @@ Open requests, newest first. Move an item out once it ships.
   certificate"), and a confirmation dialog that suggests exporting first, since a deleted
   certificate loses every server registration tied to it.
 - **Rename a client certificate.** User request (2026-10-05): rename the certificate (the name
-  shown in the list, e.g. `mumla_2026-09-20-16-09-33.p12`). Needs a database update method and
+  shown in the list, e.g. `nomla_2026-09-20-16-09-33.p12`). Needs a database update method and
   a UI entry point next to select, import and export. The name only labels the stored entry; the
   export file name derives from it.
 - **Distinguish generated certificates per variant.** Generated names use
-  `certificate_export_format` (`mumla_%s.p12`) in every flavor, so beta and release certificates
+  `certificate_export_format` (`nomla_%s.p12`) in every flavor, so beta and release certificates
   look alike; consider a flavor-specific prefix.
 
 ## Connection

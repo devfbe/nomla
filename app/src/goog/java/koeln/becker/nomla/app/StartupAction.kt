@@ -191,7 +191,7 @@ class StartupAction : IStartupAction {
     }
 
     private companion object {
-        const val DONATION_PRODUCT_ID = "mumla_donation_1"
+        const val DONATION_PRODUCT_ID = "nomla_donation_1"
         const val PREF_STARTUP_COUNT = "startupCount"
         const val PREF_HAS_DONATED = "hasDonated"
         const val PREF_LAST_DONATION_VERIFY_TIMESTAMP = "lastDonationVerifyTimestamp"

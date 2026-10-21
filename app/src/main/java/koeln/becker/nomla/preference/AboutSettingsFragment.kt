@@ -79,7 +79,7 @@ class AboutSettingsFragment : NomlaPreferenceFragment(R.xml.settings_about) {
     }
 
     private fun versionSummary(): String = buildString {
-        append("${BuildConfig.VERSION_NAME} (code ${BuildConfig.VERSION_CODE})")
+        append("${getString(R.string.version)} ${BuildConfig.VERSION_NAME} (code ${BuildConfig.VERSION_CODE})")
         when (BuildConfig.FLAVOR) {
             "foss" -> append("\nFOSS flavor")
             "beta" -> {

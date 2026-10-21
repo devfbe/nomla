@@ -75,7 +75,7 @@ import kotlin.math.sqrt
  * `tools/room-test/room_test.py`, so it is compiled with every build but runs only when the
  * instrumentation argument `roomTest` is `true`, or, because Studio's run configurations cannot
  * pass arguments through its MCP, when the system property [ENABLE_PROPERTY] is `true`
- * (`adb shell setprop debug.mumla.roomtest true`; the host script sets and clears it).
+ * (`adb shell setprop debug.nomla.roomtest true`; the host script sets and clears it).
  * [ONLY_PROPERTY] (or the argument `roomTestOnly`) optionally limits the run to configurations
  * whose name contains one of its comma-separated parts.
  *
@@ -769,9 +769,9 @@ class RoomAcousticsDeviceTest {
         /** Provisional bounds, see [captureConfigurationsInARealRoom]. */
         const val MIN_APP_RETENTION_DB = -8.0
         const val MAX_APP_FALSE_OPEN_RISE = 0.01
-        const val ENABLE_PROPERTY = "debug.mumla.roomtest"
-        const val ONLY_PROPERTY = "debug.mumla.roomtest.only"
-        const val PULLED_PROPERTY = "debug.mumla.roomtest.pulled"
+        const val ENABLE_PROPERTY = "debug.nomla.roomtest"
+        const val ONLY_PROPERTY = "debug.nomla.roomtest.only"
+        const val PULLED_PROPERTY = "debug.nomla.roomtest.pulled"
         const val PULL_TIMEOUT_MS = 120_000L
         const val MAX_ECHO_ZEROS = 0.5
 

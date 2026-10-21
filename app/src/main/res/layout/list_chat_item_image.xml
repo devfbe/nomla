@@ -22,7 +22,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/chat_item_spacing"
-    style="@style/Widget.Mumla.CardView">
+    style="@style/Widget.Nomla.CardView">
 
     <LinearLayout
         android:id="@+id/list_chat_item_box"

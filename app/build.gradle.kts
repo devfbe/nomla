@@ -17,14 +17,14 @@
  */
 
 plugins {
-    id("mumla.android.application")
+    id("nomla.android.application")
 }
 
 // Signing configs live in gitignored Groovy scripts next to this file; beta overrides release.
 listOf("signing.gradle", "signing-beta.gradle").map(::file).filter { it.exists() }.forEach { apply(from = it) }
 
 base {
-    archivesName = "mumla"
+    archivesName = "nomla"
 }
 
 // --always because CI clones have no tags.
@@ -36,7 +36,7 @@ android {
     namespace = "koeln.becker.nomla"
 
     defaultConfig {
-        applicationId = "se.lublin.mumla"
+        applicationId = "koeln.becker.nomla"
         // Remember: app_news_items_vX_Y_Z in src/main/res/values/strings.xml
         // and NEWS_ITEMS in src/main/java/koeln/becker/nomla/ui/DialogUtils.kt
         //     code:XYYZZbb (bb for build)
@@ -57,19 +57,19 @@ android {
     productFlavors {
         create("goog") {
             dimension = "release"
-            applicationId = "se.lublin.mumla"
+            applicationId = "koeln.becker.nomla"
         }
         create("foss") {
             dimension = "release"
-            applicationId = "se.lublin.mumla"
+            applicationId = "koeln.becker.nomla"
         }
         create("donation") {
             dimension = "release"
-            applicationId = "se.lublin.mumla.donation"
+            applicationId = "koeln.becker.nomla.donation"
         }
         create("beta") {
             dimension = "release"
-            applicationId = "se.lublin.mumla.beta"
+            applicationId = "koeln.becker.nomla.beta"
         }
     }
 
@@ -97,7 +97,7 @@ android {
     }
 
     lint {
-        // Plural forms in translations belong to Weblate: reported, not fatal.
+        // Plural forms missing from a translation are reported, not fatal.
         warning += "MissingQuantity"
         // A broken android:dataExtractionRules reference would silently re-enable cloud backup of
         // server passwords and the client certificate.

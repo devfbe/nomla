@@ -1,6 +1,6 @@
 # Third-party notices
 
-Mumla is licensed under the GNU GPL v3 (see `LICENSE`). It bundles or links the
+Nomla is licensed under the GNU GPL v3 or later (see `LICENSE`). It bundles or links the
 following third-party components. Every entry is GPLv3-compatible.
 
 | Component | Version | License | Source |

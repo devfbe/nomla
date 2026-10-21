@@ -18,6 +18,6 @@
 
 <!-- Opens the audio panel, see AudioPanelMenu. Ordered after the screens' own items. -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:mumla="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/menu_audio_panel" android:title="@string/audio_panel" android:icon="@drawable/ic_action_audio_device" mumla:showAsAction="ifRoom" android:orderInCategory="50"/>
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/menu_audio_panel" android:title="@string/audio_panel" android:icon="@drawable/ic_action_audio_device" app:showAsAction="ifRoom" android:orderInCategory="50"/>
 </menu>

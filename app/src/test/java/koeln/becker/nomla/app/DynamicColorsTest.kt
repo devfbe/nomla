@@ -34,7 +34,7 @@ import koeln.becker.nomla.Settings
 /** Dynamic colour is opt-in: activities keep the brand scheme until the setting is on. */
 @RunWith(RobolectricTestRunner::class)
 class DynamicColorsTest {
-    /** Themed by the manifest's application theme, as every Mumla activity is. */
+    /** Themed by the manifest's application theme, as every Nomla activity is. */
     class PlainActivity : AppCompatActivity()
 
     private val preferences = PreferenceManager.getDefaultSharedPreferences(ApplicationProvider.getApplicationContext())

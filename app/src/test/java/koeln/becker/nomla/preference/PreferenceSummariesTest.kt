@@ -43,7 +43,7 @@ class PreferenceSummariesTest {
     @Test
     fun everySummaryIsShort() {
         val tooLong = SETTINGS_SCREENS.flatMap(::summaries)
-            .filter { (name, text) -> name != LEGAL_NOTICE && text.length > MAX_LENGTH }
+            .filter { (_, text) -> text.length > MAX_LENGTH }
         assertWithMessage("too long").that(tooLong).isEmpty()
     }
 
@@ -56,8 +56,5 @@ class PreferenceSummariesTest {
     private companion object {
         const val ANDROID_NS = "http://schemas.android.com/apk/res/android"
         const val MAX_LENGTH = 60
-
-        /** The licence notice in About is read in full, not scanned. */
-        const val LEGAL_NOTICE = "copyright"
     }
 }

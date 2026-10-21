@@ -19,7 +19,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  */
 
 plugins {
-    id("mumla.android.library")
+    id("nomla.android.library")
 }
 
 android {

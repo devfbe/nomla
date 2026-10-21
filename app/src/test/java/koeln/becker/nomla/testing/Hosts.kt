@@ -41,7 +41,7 @@ private const val TALL_LIST_HEIGHT = 4000
 /** An activity in the app theme, for fragments that need nothing from their host. */
 open class ThemedActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.Theme_Mumla)
+        setTheme(R.style.Theme_Nomla)
         super.onCreate(savedInstanceState)
     }
 }

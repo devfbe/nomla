@@ -121,7 +121,7 @@ class ManifestAuditTest {
     }
 
     @Test
-    fun mumlaServiceIsNotExportedAndDeclaresOnlyTheMicrophoneType() {
+    fun nomlaServiceIsNotExportedAndDeclaresOnlyTheMicrophoneType() {
         val info = pm.getServiceInfo(ComponentName(context, NomlaService::class.java), 0)
 
         assertThat(info.foregroundServiceType).isEqualTo(ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE)
@@ -146,7 +146,7 @@ class ManifestAuditTest {
 
     /**
      * Our own components are opened by class. An intent filter on a component nobody else may
-     * start only invites implicit intents, which can resolve to another installed Mumla variant
+     * start only invites implicit intents, which can resolve to another installed Nomla variant
      * that declares the same actions. Exported components keep their filters (launcher, mumble://
      * links, the quick settings tile).
      */

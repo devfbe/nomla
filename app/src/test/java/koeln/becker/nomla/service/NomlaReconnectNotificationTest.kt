@@ -87,7 +87,7 @@ class NomlaReconnectNotificationTest {
 
         val n = posted()!!
         assertThat(n.extras.getString(Notification.EXTRA_TITLE))
-            .isEqualTo(context.getString(R.string.mumlaDisconnected))
+            .isEqualTo(context.getString(R.string.nomlaDisconnected))
         assertThat(n.extras.getString(Notification.EXTRA_TEXT)).isEqualTo("socket reset")
         assertThat(n.smallIcon.resId).isEqualTo(R.drawable.ic_stat_notify)
         @Suppress("DEPRECATION")

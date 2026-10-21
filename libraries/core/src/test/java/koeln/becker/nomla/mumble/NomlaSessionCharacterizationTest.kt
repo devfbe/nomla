@@ -103,7 +103,7 @@ class NomlaSessionCharacterizationTest {
         val lock = ShadowPowerManager.getLatestWakeLock()
         assertThat(lock).isNotNull()
         assertThat(lock.isHeld).isFalse()
-        assertThat(shadowOf(lock).getTag()).isEqualTo("Humla:Session")
+        assertThat(shadowOf(lock).getTag()).isEqualTo("Nomla:Session")
     }
 
     /** The configured server is the one the connection opens a socket to. */

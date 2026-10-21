@@ -1,5 +1,5 @@
 {
-  description = "Mumla Android development environment with Nix flakes";
+  description = "Nomla Android development environment with Nix flakes";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -80,7 +80,7 @@
           echo "  JAVA_HOME: $JAVA_HOME"
         '';
 
-        studioLauncher = pkgs.writeShellScriptBin "mumla-android-studio" ''
+        studioLauncher = pkgs.writeShellScriptBin "nomla-android-studio" ''
           export PATH="${pkgs.lib.makeBinPath buildInputs}:$PATH"
           ${shellHook}
           exec ${androidStudio}/bin/android-studio "$@"
@@ -96,7 +96,7 @@
             { name = "${name}.onnx"; path = pkgs.fetchurl { url = "${url}.onnx"; hash = onnxHash; }; }
             { name = "${name}.onnx.json"; path = pkgs.fetchurl { url = "${url}.onnx.json"; hash = jsonHash; }; }
           ];
-        piperVoices = pkgs.linkFarm "mumla-piper-voices" (
+        piperVoices = pkgs.linkFarm "nomla-piper-voices" (
           piperVoice "de/de_DE/thorsten/medium/de_DE-thorsten-medium"
             "sha256-fmR2LY5RGLtXjy7qYgfho1qODDBZUBC2ZvmD/Ie7eBk="
             "sha256-l0re55BTOtsnOhrIj0kCfSobjw8s9JBZVKR5HnkmToU="
@@ -113,7 +113,7 @@
 
         # Writes libraries/core/src/testSpeech/speech/*.wav + MANIFEST.txt; run from the checkout's root.
         speechCorpus = pkgs.writeShellApplication {
-          name = "mumla-speech-corpus";
+          name = "nomla-speech-corpus";
           runtimeInputs = with pkgs; [ piper-tts sox coreutils gnused ];
           text = ''
             export PIPER_VOICES="${piperVoices}"
@@ -124,7 +124,7 @@
 
         # The voice the app ships for its double-talk self-test: MIT-licensed, trained from scratch
         # on the public-domain LJ Speech dataset, so it may be redistributed inside the APK.
-        selftestVoice = pkgs.linkFarm "mumla-selftest-voice" (
+        selftestVoice = pkgs.linkFarm "nomla-selftest-voice" (
           piperVoice "en/en_US/ljspeech/medium/en_US-ljspeech-medium"
             "sha256-b1KnUeI0mr56dnNesJ3Bh1KYx36iNC/9L+95/4G4fyI="
             "sha256-FB1hLMCpXtfvwcqTa4RcI2SWfy6SF8Xb/PafxNbGWGA="
@@ -133,7 +133,7 @@
         # Writes app/src/main/res/raw/double_talk_voice.ogg + tools/selftest-clip/MANIFEST.txt;
         # run from the checkout's root.
         selftestClip = pkgs.writeShellApplication {
-          name = "mumla-selftest-clip";
+          name = "nomla-selftest-clip";
           runtimeInputs = with pkgs; [ piper-tts sox opusTools coreutils gnused ];
           text = ''
             export PIPER_VOICES="${selftestVoice}"
@@ -143,12 +143,12 @@
         };
       in {
         devShells.default = pkgs.mkShell {
-          name = "mumla-android-dev";
+          name = "nomla-android-dev";
           inherit buildInputs shellHook;
         };
 
         devShells.studio = pkgs.mkShell {
-          name = "mumla-android-studio";
+          name = "nomla-android-studio";
           buildInputs = buildInputs ++ [ androidStudio ];
           inherit shellHook;
         };
@@ -159,19 +159,19 @@
         # tools on PATH), so a Gradle sync inside Studio behaves like the command-line build.
         apps.android-studio = {
           type = "app";
-          program = "${studioLauncher}/bin/mumla-android-studio";
+          program = "${studioLauncher}/bin/nomla-android-studio";
         };
 
         # `nix run .#speech-corpus` regenerates the device tests' speech clips (commit the result).
         apps.speech-corpus = {
           type = "app";
-          program = "${speechCorpus}/bin/mumla-speech-corpus";
+          program = "${speechCorpus}/bin/nomla-speech-corpus";
         };
 
         # `nix run .#selftest-clip` regenerates the self-test's voice clip (commit the result).
         apps.selftest-clip = {
           type = "app";
-          program = "${selftestClip}/bin/mumla-selftest-clip";
+          program = "${selftestClip}/bin/nomla-selftest-clip";
         };
       }
     );

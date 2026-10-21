@@ -68,7 +68,7 @@ class ChatImageHttpTest {
     private fun client(
         policy: AddressPolicy = onlyTheTestServer,
         maxBytes: Long = DEFAULT_MAX_IMAGE_BYTES,
-    ): OkHttpClient = chatImageHttpClient({ allowed }, "Mumla/test", policy, tableDns, maxBytes)
+    ): OkHttpClient = chatImageHttpClient({ allowed }, "Nomla/test", policy, tableDns, maxBytes)
 
     private fun url(path: String, host: String = "images.test"): HttpUrl =
         server.url(path).newBuilder().host(host).build()
@@ -233,7 +233,7 @@ class ChatImageHttpTest {
         server.enqueue(redirect("/b.png"))
         server.enqueue(image())
         var asked = 0
-        val client = chatImageHttpClient({ ++asked == 1 }, "Mumla/test", onlyTheTestServer, tableDns)
+        val client = chatImageHttpClient({ ++asked == 1 }, "Nomla/test", onlyTheTestServer, tableDns)
         assertThat(client.refusal(url("/a.png"))).isEqualTo(ImageError.EXTERNAL_DISABLED)
         assertThat(server.requestCount).isEqualTo(1)
     }
@@ -246,13 +246,13 @@ class ChatImageHttpTest {
         client.get(url("/a.png"))
         client.get(url("/b.png"))
 
-        assertThat(server.takeRequest().headers["User-Agent"]).isEqualTo("Mumla/test")
+        assertThat(server.takeRequest().headers["User-Agent"]).isEqualTo("Nomla/test")
         assertThat(server.takeRequest().headers["Cookie"]).isNull()
     }
 
     @Test
     fun timeoutsProxyRedirectsAndCacheAreAsIntended() {
-        val client = chatImageHttpClient({ true }, "Mumla/test")
+        val client = chatImageHttpClient({ true }, "Nomla/test")
         assertThat(client.connectTimeoutMillis).isEqualTo(5_000)
         assertThat(client.readTimeoutMillis).isEqualTo(10_000)
         assertThat(client.callTimeoutMillis).isEqualTo(20_000)

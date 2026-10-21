@@ -4,8 +4,8 @@ Copyright (C) 2026 The Nomla Authors (see AUTHORS)
 Nomla is a Mumble voice-chat client for Android. It is a port of Mumla
 (https://gitlab.com/quite/mumla, Daniel Lublin and contributors), which is a
 fork of Plumble (https://github.com/acomminos/Plumble, Andrew Comminos). Its
-protocol and audio library, Humla (libraries/core, libraries/protocol),
-comes from Humla (https://gitlab.com/quite/humla, Daniel Lublin and
+protocol and audio library (libraries/core, libraries/protocol) comes from
+Humla (https://gitlab.com/quite/humla, Daniel Lublin and
 contributors), a fork of Jumble (https://github.com/acomminos/Jumble, Andrew
 Comminos). Nomla has been almost completely rewritten, from Java to Kotlin;
 files derived from Mumla, Humla, Plumble or Jumble keep the copyright notices

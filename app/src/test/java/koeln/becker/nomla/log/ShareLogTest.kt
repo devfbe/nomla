@@ -64,7 +64,7 @@ class ShareLogTest {
         val uri = requireNotNull(IntentCompat.getParcelableExtra(send, Intent.EXTRA_STREAM, Uri::class.java))
         assertThat(send.clipData!!.getItemAt(0).uri).isEqualTo(uri)
         val text = activity.contentResolver.openInputStream(uri)!!.use { it.readBytes().decodeToString() }
-        assertThat(text).startsWith("Mumla ")
+        assertThat(text).startsWith("Nomla ")
         assertThat(text).contains("I/ShareLogTest")
         assertThat(text).contains("password=<redacted> to example.org")
         assertThat(text).doesNotContain("hunter2")

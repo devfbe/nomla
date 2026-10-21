@@ -17,7 +17,7 @@
  */
 
 plugins {
-    id("mumla.jvm.library")
+    id("nomla.jvm.library")
     `java-test-fixtures`
     alias(libs.plugins.protobuf)
 }

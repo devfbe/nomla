@@ -65,10 +65,10 @@ class MumbleVersionTest {
 
     @Test
     fun `the client Version message carries both formats`() {
-        val msg = MumbleVersion.clientVersion("Mumla", "Android", "14")
+        val msg = MumbleVersion.clientVersion("Nomla", "Android", "14")
         assertThat(msg.versionV1).isEqualTo(0x010500)
         assertThat(msg.versionV2).isEqualTo(MumbleVersion.v2(1, 5, 0))
-        assertThat(msg.release).isEqualTo("Mumla")
+        assertThat(msg.release).isEqualTo("Nomla")
         assertThat(msg.os).isEqualTo("Android")
         assertThat(msg.osVersion).isEqualTo("14")
     }

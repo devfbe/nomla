@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         app:tabGravity="fill"
         app:tabMode="fixed"
-        app:tabTextAppearance="@style/TextAppearance.Mumla.ChannelTab" />
+        app:tabTextAppearance="@style/TextAppearance.Nomla.ChannelTab" />
 
     <LinearLayout
         android:id="@+id/control_bar_top"

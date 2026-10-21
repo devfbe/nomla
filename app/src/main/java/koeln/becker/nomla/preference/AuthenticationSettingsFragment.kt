@@ -26,7 +26,7 @@ import koeln.becker.nomla.R
 
 /**
  * The certificate rows open our own screens by class, set here because preference XML cannot
- * name the flavor's package. An action alone would resolve to another installed Mumla variant,
+ * name the flavor's package. An action alone would resolve to another installed Nomla variant,
  * which declares the same actions, and change that app's certificates instead.
  */
 class AuthenticationSettingsFragment : NomlaPreferenceFragment(R.xml.settings_authentication) {

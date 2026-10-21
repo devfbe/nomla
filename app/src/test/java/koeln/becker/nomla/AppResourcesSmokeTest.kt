@@ -37,6 +37,6 @@ class AppResourcesSmokeTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         // applicationId and app_name vary per flavor.
         assertThat(context.packageName).isEqualTo(BuildConfig.APPLICATION_ID)
-        assertThat(context.getString(R.string.app_name)).startsWith("Mumla")
+        assertThat(context.getString(R.string.app_name)).startsWith("Nomla")
     }
 }

@@ -123,7 +123,7 @@ class ImageShareExporterTest {
     @Test
     fun aHostileSourceCannotSteerTheExportOutOfTheSharedDirectory() {
         val hostile = listOf(
-            "../../../../data/data/se.lublin.mumla/databases/mumla.db",
+            "../../../../data/data/koeln.becker.nomla/databases/mumble.db",
             "/etc/passwd",
             "a/../../b.png",
             "..",

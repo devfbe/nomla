@@ -23,7 +23,7 @@
     <application>
         <provider
             android:name="koeln.becker.nomla.channel.ChannelSearchProvider"
-            android:authorities="se.lublin.mumla.channel.ChannelSearchProvider"
+            android:authorities="koeln.becker.nomla.channel.ChannelSearchProvider"
             android:exported="false" />
     </application>
 

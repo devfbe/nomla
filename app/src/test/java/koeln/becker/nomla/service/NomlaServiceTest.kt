@@ -191,7 +191,7 @@ class NomlaServiceTest {
     @Test
     fun connectingEntersTheForegroundWithTheConnectingTextAndNoActions() {
         assertThat(shadowOf(service).isForegroundStopped).isFalse()
-        assertThat(foregroundText()).isEqualTo(app.getString(R.string.mumlaConnecting))
+        assertThat(foregroundText()).isEqualTo(app.getString(R.string.nomlaConnecting))
         assertThat(postedActions()).isEmpty()
     }
 
@@ -203,7 +203,7 @@ class NomlaServiceTest {
         installSession(mockk<INomlaSession>(relaxed = true).also { it.stubState(SessionState.Connecting) })
         idleMainLooper()
 
-        assertThat(foregroundText()).isEqualTo(app.getString(R.string.mumlaConnecting) + " (Tor)")
+        assertThat(foregroundText()).isEqualTo(app.getString(R.string.nomlaConnecting) + " (Tor)")
     }
 
     @Test
@@ -309,7 +309,7 @@ class NomlaServiceTest {
         idleMainLooper()
 
         assertThat(shadowOf(service).isStoppedBySelf).isFalse()
-        assertThat(foregroundText()).isEqualTo(app.getString(R.string.mumlaConnecting))
+        assertThat(foregroundText()).isEqualTo(app.getString(R.string.nomlaConnecting))
     }
 
     /** The replaced session's end is not this service's to render. */
@@ -896,7 +896,7 @@ class NomlaServiceTest {
 
     private fun proximityLockHeld(): Boolean {
         val lock = service.proximityLock
-        return lock != null && lock.isHeld && shadowOf(lock).tag == "Mumla:Proximity" &&
+        return lock != null && lock.isHeld && shadowOf(lock).tag == "Nomla:Proximity" &&
             ShadowPowerManager.getLatestWakeLock() === lock
     }
 

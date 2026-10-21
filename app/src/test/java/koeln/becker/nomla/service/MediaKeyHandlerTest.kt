@@ -161,7 +161,7 @@ class MediaKeyHandlerTest {
         assertNeitherHalfOfAPressIsConsumed(KeyEvent.KEYCODE_HEADSETHOOK)
     }
 
-    /** Same contract while disconnected: Mumla has no business claiming any part of the gesture. */
+    /** Same contract while disconnected: Nomla has no business claiming any part of the gesture. */
     @Test
     fun ignoredWhileDisconnected() {
         target.isConnected = false

@@ -1102,7 +1102,7 @@ class ChannelChatFragmentTest {
     @GraphicsMode(GraphicsMode.Mode.NATIVE)
     fun aPickedPhotoIsPreparedAndShownForConfirmation() {
         launch()
-        val uri = Uri.parse("content://se.lublin.mumla.test/photo.jpg")
+        val uri = Uri.parse("content://koeln.becker.nomla.test/photo.jpg")
         registerImage(uri, TestImages.jpeg(1200, 900))
         fragment.onImagePickResult(uri)
         assertThat(progress.visibility).isEqualTo(View.VISIBLE)
@@ -1122,7 +1122,7 @@ class ChannelChatFragmentTest {
     @GraphicsMode(GraphicsMode.Mode.NATIVE)
     fun aPickedFileThatIsNotAnImageIsReportedAndOpensNoDialog() {
         launch()
-        val uri = Uri.parse("content://se.lublin.mumla.test/notes.txt")
+        val uri = Uri.parse("content://koeln.becker.nomla.test/notes.txt")
         registerImage(uri, "definitely not an image".toByteArray())
         fragment.onImagePickResult(uri)
         drainMainUntil { activity.snackbarText() != null }
@@ -1135,7 +1135,7 @@ class ChannelChatFragmentTest {
     fun aPickedImageWithNoSessionIsDroppedBeforeAnythingIsDecoded() {
         launch()
         unbind()
-        fragment.onImagePickResult(Uri.parse("content://se.lublin.mumla.test/x.jpg"))
+        fragment.onImagePickResult(Uri.parse("content://koeln.becker.nomla.test/x.jpg"))
         idleMainLooper()
         assertThat(progress.visibility).isEqualTo(View.GONE)
         assertThat(ShadowDialog.getLatestDialog()).isNull()
@@ -1145,7 +1145,7 @@ class ChannelChatFragmentTest {
     fun aPickedImageWhileDisconnectedIsDroppedBeforeAnythingIsDecoded() {
         launch()
         disconnect()
-        fragment.onImagePickResult(Uri.parse("content://se.lublin.mumla.test/x.jpg"))
+        fragment.onImagePickResult(Uri.parse("content://koeln.becker.nomla.test/x.jpg"))
         idleMainLooper()
         assertThat(progress.visibility).isEqualTo(View.GONE)
         assertThat(ShadowDialog.getLatestDialog()).isNull()

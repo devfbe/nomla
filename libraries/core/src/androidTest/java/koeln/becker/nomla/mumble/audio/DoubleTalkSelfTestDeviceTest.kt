@@ -51,7 +51,7 @@ import kotlin.math.sqrt
  *
  * **Manual test, skipped unless enabled**, like `RoomAcousticsDeviceTest`: it needs the PC speaker
  * and `tools/room-test/room_test.py --selftest`, which sets [ENABLE_PROPERTY]
- * (`debug.mumla.selftest`), plays `near_en_f.wav` once on every `SELFTEST_TRIGGER` line (tag [TAG])
+ * (`debug.nomla.selftest`), plays `near_en_f.wav` once on every `SELFTEST_TRIGGER` line (tag [TAG])
  * and clears the property at `SELFTEST_DONE`. The instrumentation argument `selfTest=true` works
  * too. Setup: phone next to the PC speaker, no headset, a quiet room.
  *
@@ -188,7 +188,7 @@ class DoubleTalkSelfTestDeviceTest {
 
     private companion object {
         const val TAG = "SelfTest"
-        const val ENABLE_PROPERTY = "debug.mumla.selftest"
+        const val ENABLE_PROPERTY = "debug.nomla.selftest"
         const val APP_ONSET_FRAMES = 2
         const val TALK_SECONDS = 14L
         const val MS_PER_SECOND = 1000L

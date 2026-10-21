@@ -19,18 +19,18 @@ The phone lies next to the PC speaker. This script
 1. builds the near-end file: the Piper clip near_en_f.wav, silence, and the same clip again
    NEAR_B_OFFSET_SECONDS after the first copy's start (the test finds the first copy with a
    matched filter and takes the second from this offset, so both must agree);
-2. enables the test (adb shell setprop debug.mumla.roomtest true, and optionally
-   debug.mumla.roomtest.only for a subset of configurations);
+2. enables the test (adb shell setprop debug.nomla.roomtest true, and optionally
+   debug.nomla.roomtest.only for a subset of configurations);
 3. watches logcat (tag RoomTest) and plays the file on the PC's analog output with pw-play on every
    ROOM_TRIGGER line, until ROOM_DONE;
 4. pulls the recordings and results.csv from the phone while the test waits for it (Studio
    uninstalls the test APK, and its files, when the run ends), then lets the test finish by setting
-   debug.mumla.roomtest.pulled and clears the properties.
+   debug.nomla.roomtest.pulled and clears the properties.
 
 Start this script first, then RoomAcousticsDeviceTest from Android Studio. Uses only the Python
 standard library, adb and pw-play. The clip is read with `git show`, so the checkout stays untouched.
 
-With --selftest it drives DoubleTalkSelfTestDeviceTest instead: it sets debug.mumla.selftest, plays
+With --selftest it drives DoubleTalkSelfTestDeviceTest instead: it sets debug.nomla.selftest, plays
 the plain clip once on every SELFTEST_TRIGGER line (tag SelfTest) and stops at SELFTEST_DONE; that
 test writes no files, so nothing is pulled.
 """
@@ -46,10 +46,10 @@ import wave
 
 NEAR_CLIP = "libraries/core/src/testSpeech/speech/near_en_f.wav"
 NEAR_B_OFFSET_SECONDS = 26  # RoomAcousticsDeviceTest.NEAR_B_OFFSET_SECONDS
-ENABLE_PROPERTY = "debug.mumla.roomtest"
-ONLY_PROPERTY = "debug.mumla.roomtest.only"
-PULLED_PROPERTY = "debug.mumla.roomtest.pulled"
-SELFTEST_PROPERTY = "debug.mumla.selftest"
+ENABLE_PROPERTY = "debug.nomla.roomtest"
+ONLY_PROPERTY = "debug.nomla.roomtest.only"
+PULLED_PROPERTY = "debug.nomla.roomtest.pulled"
+SELFTEST_PROPERTY = "debug.nomla.selftest"
 DEVICE_DIR = "/sdcard/Android/data/koeln.becker.nomla.mumble.test/files/room"
 DEFAULT_SINK = "alsa_output.pci-0000_00_1f.3.analog-stereo"
 

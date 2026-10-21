@@ -33,5 +33,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "mumla"
+rootProject.name = "nomla"
 include(":libraries:protocol", ":libraries:core", ":app")

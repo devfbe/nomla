@@ -24,7 +24,7 @@ import koeln.becker.nomla.Settings
 import koeln.becker.nomla.util.BatteryOptimization
 
 /**
- * Offers once to exempt Mumla from battery optimisation, so the connection survives in the
+ * Offers once to exempt Nomla from battery optimisation, so the connection survives in the
  * background. Only an answer counts as asked: a prompt dismissed with the activity comes back.
  * Main thread only.
  */
@@ -34,7 +34,7 @@ class BatteryOptimizationPrompt(
 ) {
     private var dialog: AlertDialog? = null
 
-    /** Shows the offer unless it was answered before, is showing, or Mumla is exempt already. */
+    /** Shows the offer unless it was answered before, is showing, or Nomla is exempt already. */
     fun offerIfNeeded() {
         if (settings.isBatteryOptimizationAsked || dialog?.isShowing == true) return
         if (BatteryOptimization.isExempt(activity)) return

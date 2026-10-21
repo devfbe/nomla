@@ -64,7 +64,7 @@ class ChatImageLoaderTest {
     private fun loader(maxBytes: Long = DEFAULT_MAX_IMAGE_BYTES): ChatImageLoader {
         val http = chatImageHttpClient(
             networkAllowed = { externalAllowed },
-            userAgent = "Mumla/test",
+            userAgent = "Nomla/test",
             policy = AddressPolicy { it.isLoopbackAddress },
             maxBytes = maxBytes,
         )
@@ -100,7 +100,7 @@ class ChatImageLoaderTest {
         assertThat(loader.loadThumbnail(url(), 240, 240).size()).isEqualTo(240 to 240)
 
         assertThat(server.requestCount).isEqualTo(1)
-        assertThat(server.takeRequest().headers["User-Agent"]).isEqualTo("Mumla/test")
+        assertThat(server.takeRequest().headers["User-Agent"]).isEqualTo("Nomla/test")
     }
 
     @Test

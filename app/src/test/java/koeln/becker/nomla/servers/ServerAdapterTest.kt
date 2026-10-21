@@ -44,7 +44,7 @@ import java.util.concurrent.atomic.AtomicInteger
 @RunWith(RobolectricTestRunner::class)
 class ServerAdapterTest {
     private val context: Context =
-        ContextThemeWrapper(ApplicationProvider.getApplicationContext<Context>(), R.style.Theme_Mumla)
+        ContextThemeWrapper(ApplicationProvider.getApplicationContext<Context>(), R.style.Theme_Nomla)
     private val parent = FrameLayout(context)
     private val dispatcher = StandardTestDispatcher()
     private val scope = TestScope(dispatcher)

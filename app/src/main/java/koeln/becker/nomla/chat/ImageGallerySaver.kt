@@ -30,7 +30,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 /**
- * Saves image bytes to the shared "Pictures/Mumla" gallery album via MediaStore (no permission on
+ * Saves image bytes to the shared "Pictures/Nomla" gallery album via MediaStore (no permission on
  * API 29+). The row is inserted with IS_PENDING=1, written, then published with IS_PENDING=0; on any
  * failure the row is deleted again (a row orphaned by process death expires by MediaStore's own
  * pending-row cleanup). Type and extension come from the content ([ImageShareExporter.typeOf]),
@@ -90,7 +90,7 @@ class ImageGallerySaver(
     }
 
     companion object {
-        val RELATIVE_PATH: String = Environment.DIRECTORY_PICTURES + "/Mumla"
+        val RELATIVE_PATH: String = Environment.DIRECTORY_PICTURES + "/Nomla"
 
         /** Whether [save] would take [bytes]; the viewer offers saving only then. */
         fun canSave(bytes: ByteArray): Boolean = isImageType(ImageShareExporter.typeOf(bytes).second)
@@ -106,6 +106,6 @@ class ImageGallerySaver(
 
         @VisibleForTesting
         internal fun fileName(millis: Long, zone: ZoneId, extension: String): String =
-            "Mumla_" + NAME_FORMAT.format(Instant.ofEpochMilli(millis).atZone(zone)) + "." + extension
+            "Nomla_" + NAME_FORMAT.format(Instant.ofEpochMilli(millis).atZone(zone)) + "." + extension
     }
 }

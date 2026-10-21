@@ -96,10 +96,10 @@ class Pkcs12CertificatesTest {
         val viaNull = Pkcs12Certificates.load(exported, null)
         val viaEmpty = Pkcs12Certificates.load(ByteArrayInputStream(exported), CharArray(0))
         for (store in listOf(viaNull, viaEmpty)) {
-            assertThat(store.aliases().toList()).containsExactly("Humla Key")
-            assertThat(store.getCertificate("Humla Key").encoded).isEqualTo(generated.encoded)
-            assertThat(store.getKey("Humla Key", CharArray(0)).encoded)
-                .isEqualTo(source.getKey("Humla Key", CharArray(0)).encoded)
+            assertThat(store.aliases().toList()).containsExactly("Nomla Key")
+            assertThat(store.getCertificate("Nomla Key").encoded).isEqualTo(generated.encoded)
+            assertThat(store.getKey("Nomla Key", CharArray(0)).encoded)
+                .isEqualTo(source.getKey("Nomla Key", CharArray(0)).encoded)
         }
     }
 
@@ -153,8 +153,8 @@ class Pkcs12CertificatesTest {
 
         val store = Pkcs12Certificates.load(out.toByteArray(), "")
 
-        assertThat(store.getCertificate("Humla Key").encoded).isEqualTo(generated.encoded)
-        assertThat(store.getKey("Humla Key", CharArray(0))).isInstanceOf(RSAPrivateKey::class.java)
+        assertThat(store.getCertificate("Nomla Key").encoded).isEqualTo(generated.encoded)
+        assertThat(store.getKey("Nomla Key", CharArray(0))).isInstanceOf(RSAPrivateKey::class.java)
     }
 
     /**

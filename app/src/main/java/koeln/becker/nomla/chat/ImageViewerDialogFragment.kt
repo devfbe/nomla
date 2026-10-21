@@ -50,7 +50,7 @@ import java.io.IOException
  * ([ImageGallerySaver]), needs no permission and does not use the FileProvider.
  *
  * `FileProvider.getUriForFile` throws for files outside `file_provider_paths.xml`, which must keep
- * publishing [ImageShareExporter]'s directory. Fullscreen comes from `Theme.Mumla.ImageViewer`
+ * publishing [ImageShareExporter]'s directory. Fullscreen comes from `Theme.Nomla.ImageViewer`
  * (`windowIsFloating=false`). No timeout here: the image HTTP client has its own total budget.
  *
  * An [Action] in the arguments (a save or share picked from the chat log) runs once the picture is
@@ -65,7 +65,7 @@ class ImageViewerDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_FRAME, R.style.Theme_Mumla_ImageViewer)
+        setStyle(STYLE_NO_FRAME, R.style.Theme_Nomla_ImageViewer)
     }
 
     override fun onStart() {

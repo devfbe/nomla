@@ -106,7 +106,7 @@ class SettingsStructureTest {
 
     /**
      * A row opens either one of our own screens by class or a web page. An action alone may
-     * resolve to another installed Mumla variant, which declares the same actions.
+     * resolve to another installed Nomla variant, which declares the same actions.
      */
     @Test
     fun `no row opens a screen by an action alone`() {

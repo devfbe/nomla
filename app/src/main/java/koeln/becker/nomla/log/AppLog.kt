@@ -31,7 +31,7 @@ import java.io.File
 
 private const val CAPACITY = 2000
 private const val DIRECTORY = "shared_logs"
-private const val FILE_NAME = "mumla-log.txt"
+private const val FILE_NAME = "nomla-log.txt"
 
 /** The process's developer log: logcat, plus the recent lines the user can share. */
 object AppLog {
@@ -45,7 +45,7 @@ object AppLog {
 
     /** What "Share log" sends: the app and device, then the buffer, redacted. */
     fun report(): String = LogRedaction.redact(
-        "Mumla ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE}, ${BuildConfig.FLAVOR}), " +
+        "Nomla ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE}, ${BuildConfig.FLAVOR}), " +
             "Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT}), " +
             "${Build.MANUFACTURER} ${Build.MODEL}\n\n" +
             buffer.dump(),

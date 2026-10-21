@@ -45,7 +45,7 @@ interface SecretCipher {
 object KeystoreSecretCipher : SecretCipher {
     private const val TAG = "KeystoreSecretCipher"
     private const val PROVIDER = "AndroidKeyStore"
-    private const val ALIAS = "mumla_db_secrets"
+    private const val ALIAS = "nomla_db_secrets"
     private const val TRANSFORMATION = "AES/GCM/NoPadding"
     private const val IV_LENGTH = 12
     private const val TAG_BITS = 128

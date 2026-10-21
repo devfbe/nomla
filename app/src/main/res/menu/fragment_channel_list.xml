@@ -17,6 +17,6 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:mumla="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/menu_search" android:title="@string/search" mumla:actionViewClass="androidx.appcompat.widget.SearchView" mumla:showAsAction="ifRoom|collapseActionView" android:icon="@drawable/ic_action_search"></item>
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/menu_search" android:title="@string/search" app:actionViewClass="androidx.appcompat.widget.SearchView" app:showAsAction="ifRoom|collapseActionView" android:icon="@drawable/ic_action_search"></item>
 </menu>

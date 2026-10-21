@@ -17,37 +17,26 @@
 
 package koeln.becker.nomla.app
 
-import android.content.Intent
-import android.widget.TextView
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.Shadows.shadowOf
-import koeln.becker.nomla.R
-import koeln.becker.nomla.databinding.ActivityMainBinding
 import koeln.becker.nomla.testing.ThemedActivity
-import koeln.becker.nomla.testing.laidOutRows
 
-/** The foss flavor's drawer has a donation row. */
+/**
+ * The foss flavor's drawer has no donation row: the one inherited from Mumla went to Mumla's
+ * author, and Nomla has no donation page of its own. [MainDrawer] shows the row only when the
+ * flavor defines both resources it looks up by name.
+ */
 @RunWith(RobolectricTestRunner::class)
 class MainDrawerDonationTest {
     private val activity = Robolectric.buildActivity(ThemedActivity::class.java).setup().get()
-    private val binding = ActivityMainBinding.inflate(activity.layoutInflater).also { activity.setContentView(it.root) }
-
-    init {
-        MainDrawer(activity, binding.drawerLayout, binding.leftDrawer, binding.toolbar, { null }, { })
-    }
 
     @Test
-    fun theDonationRowOpensTheDonationLink() {
-        val donate = binding.leftDrawer.laidOutRows()
-            .single { (it as? TextView)?.text == activity.getString(R.string.donate_foss) }
-        donate.performClick()
-
-        val started = shadowOf(activity).nextStartedActivity
-        assertThat(started.action).isEqualTo(Intent.ACTION_VIEW)
-        assertThat(started.dataString).isEqualTo(activity.getString(R.string.donate_link_foss))
+    fun theDrawerHasNoDonationLink() {
+        val resources = activity.resources
+        assertThat(resources.getIdentifier("donate_link_foss", "string", activity.packageName)).isEqualTo(0)
+        assertThat(resources.getIdentifier("list_drawer_headerdonate_foss", "xml", activity.packageName)).isEqualTo(0)
     }
 }
