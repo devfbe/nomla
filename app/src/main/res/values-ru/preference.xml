@@ -150,4 +150,21 @@
     <string name="about_third_party_notices">Уведомления о сторонних компонентах</string>
     <string name="about_third_party_notices_summary">Лицензии встроенных библиотек (ссылка)</string>
     <string name="about_memorial">Памяти Андреаса Мандалки (Natenom), чьи руководства, серверы и терпение помогли столь многим людям найти путь к Mumble.</string>
+    <string name="speakingAndAudio">Речь и звук</string>
+    <string name="chatAndNotifications">Чат и уведомления</string>
+    <string name="connection">Подключение</string>
+    <string name="accountAndCertificates">Аккаунт и сертификаты</string>
+    <string name="echoCancellationVoiceCallSource">Эхоподавление на микрофоне звонков</string>
+    <string name="echoCancellationVoiceCallSourceSum">Добавляет обработку звонков телефона. Может обрывать речь</string>
+    <string name="holdToWhisperSum">Шептать только пока удерживается кнопка шёпота</string>
+    <string name="controlBarPosition">Положение панели управления</string>
+    <string name="controlBarPositionTop">Сверху</string>
+    <string name="controlBarPositionBottom">Снизу</string>
+    <string name="unitPercent">%1$d %%</string>
+    <string name="unitMilliseconds">%1$d мс</string>
+    <string name="unitKilobitsPerSecond">%1$d Кбит/с</string>
+    <string name="unitDp">%1$d dp</string>
+    <string name="unitHertz">%1$d Гц</string>
+    <string name="unitDbfsBelow">−%1$d dBFS</string>
+    <string name="audioSampleRateUnsupported">%1$s (не поддерживается)</string>
 </resources>

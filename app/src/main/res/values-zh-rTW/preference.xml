@@ -147,4 +147,21 @@
     <string name="about_third_party_notices">第三方聲明</string>
     <string name="about_third_party_notices_summary">內含函式庫的授權條款（網頁連結）</string>
     <string name="about_memorial">謹以此紀念 Andreas Mandalka（Natenom），他的指南、伺服器與耐心幫助許多人找到通往 Mumble 的道路。</string>
+    <string name="speakingAndAudio">發話與音訊</string>
+    <string name="chatAndNotifications">聊天與通知</string>
+    <string name="connection">連線</string>
+    <string name="accountAndCertificates">帳號與憑證</string>
+    <string name="echoCancellationVoiceCallSource">在通話麥克風上進行回音消除</string>
+    <string name="echoCancellationVoiceCallSourceSum">如以往加入手機的通話處理，可能使語音斷續</string>
+    <string name="holdToWhisperSum">只在按住廣播按鈕時廣播</string>
+    <string name="controlBarPosition">控制列位置</string>
+    <string name="controlBarPositionTop">頂端</string>
+    <string name="controlBarPositionBottom">底部</string>
+    <string name="unitPercent">%1$d%%</string>
+    <string name="unitMilliseconds">%1$d ms</string>
+    <string name="unitKilobitsPerSecond">%1$d kbit/s</string>
+    <string name="unitDp">%1$d dp</string>
+    <string name="unitHertz">%1$d Hz</string>
+    <string name="unitDbfsBelow">−%1$d dBFS</string>
+    <string name="audioSampleRateUnsupported">%1$s (不支援)</string>
 </resources>

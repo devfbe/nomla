@@ -11,4 +11,6 @@
     <string name="no_target_server">لم يُضبط أي خادم لهذا الاتصال.</string>
     <string name="udp_warning_thread_failed">فشل اتصال UDP. يُنقل الصوت عبر نفق TCP بينما تُعاد محاولة UDP.</string>
     <string name="audio_route_refused">رفض هذا الجهاز تبديل جهاز الصوت. يبقى الصوت حيث كان.</string>
+    <string name="audio_max_bandwidth">أقصى عرض نطاق شبكي للخادم هو %1$d kbit/s فقط. تُضبط جودة الصوت على %2$d kbit/s (%3$d ms).</string>
+    <string name="codec_warning_no_opus">لا يدعم هذا الخادم ترميز Opus. لن يعمل الصوت.</string>
 </resources>

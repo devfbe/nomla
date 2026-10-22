@@ -12,4 +12,5 @@
     <string name="no_target_server">Δεν έχει οριστεί διακομιστής για αυτή τη σύνδεση.</string>
     <string name="udp_warning_thread_failed">Η σύνδεση UDP απέτυχε. Η φωνή μεταδίδεται μέσω σήραγγας TCP ενώ επιχειρείται ξανά το UDP.</string>
     <string name="audio_route_refused">Αυτή η συσκευή αρνήθηκε να αλλάξει τη συσκευή ήχου. Ο ήχος παραμένει εκεί που ήταν.</string>
+    <string name="codec_warning_no_opus">Αυτός ο διακομιστής δεν υποστηρίζει τον κωδικοποιητή Opus. Η φωνή δεν θα λειτουργεί.</string>
 </resources>

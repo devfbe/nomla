@@ -147,4 +147,21 @@
     <string name="about_third_party_notices">ประกาศของบุคคลที่สาม</string>
     <string name="about_third_party_notices_summary">สัญญาอนุญาตของไลบรารีที่รวมมา (ลิงก์เว็บไซต์)</string>
     <string name="about_memorial">เพื่อรำลึกถึง Andreas Mandalka (Natenom) ผู้ซึ่งคู่มือ เซิร์ฟเวอร์ และความอดทนของเขาช่วยให้ผู้คนมากมายได้พบหนทางสู่ Mumble</string>
+    <string name="speakingAndAudio">การพูดและเสียง</string>
+    <string name="chatAndNotifications">แชทและการแจ้งเตือน</string>
+    <string name="connection">การเชื่อมต่อ</string>
+    <string name="accountAndCertificates">บัญชีและใบรับรอง</string>
+    <string name="echoCancellationVoiceCallSource">ตัดเสียงสะท้อนผ่านไมโครโฟนสำหรับการโทร</string>
+    <string name="echoCancellationVoiceCallSourceSum">เพิ่มการประมวลผลการโทรของโทรศัพท์แบบเดิม อาจทำให้เสียงขาด</string>
+    <string name="holdToWhisperSum">ตะโกนเฉพาะตอนที่กดปุ่มตะโกนค้างไว้</string>
+    <string name="controlBarPosition">ตำแหน่งแถบควบคุม</string>
+    <string name="controlBarPositionTop">ด้านบน</string>
+    <string name="controlBarPositionBottom">ด้านล่าง</string>
+    <string name="unitPercent">%1$d%%</string>
+    <string name="unitMilliseconds">%1$d ms</string>
+    <string name="unitKilobitsPerSecond">%1$d kbit/s</string>
+    <string name="unitDp">%1$d dp</string>
+    <string name="unitHertz">%1$d Hz</string>
+    <string name="unitDbfsBelow">−%1$d dBFS</string>
+    <string name="audioSampleRateUnsupported">%1$s (ไม่รองรับ)</string>
 </resources>

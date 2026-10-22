@@ -147,4 +147,21 @@
     <string name="about_third_party_notices">Üçüncü taraf bildirimleri</string>
     <string name="about_third_party_notices_summary">Dahil edilen kütüphanelerin lisansları (web bağlantısı)</string>
     <string name="about_memorial">Rehberleri, sunucuları ve sabrıyla pek çok insanın Mumble\'a giden yolu bulmasına yardım eden Andreas Mandalka\'nın (Natenom) anısına.</string>
+    <string name="speakingAndAudio">Konuşma ve ses</string>
+    <string name="chatAndNotifications">Sohbet ve bildirimler</string>
+    <string name="connection">Bağlantı</string>
+    <string name="accountAndCertificates">Hesap ve sertifikalar</string>
+    <string name="echoCancellationVoiceCallSource">Arama mikrofonunda yankı giderme</string>
+    <string name="echoCancellationVoiceCallSourceSum">Telefonun arama işlemesini ekler; konuşmayı kesebilir</string>
+    <string name="holdToWhisperSum">Yalnızca fısıltı düğmesi basılıyken fısılda</string>
+    <string name="controlBarPosition">Denetim çubuğu konumu</string>
+    <string name="controlBarPositionTop">Üst</string>
+    <string name="controlBarPositionBottom">Alt</string>
+    <string name="unitPercent">%%%1$d</string>
+    <string name="unitMilliseconds">%1$d ms</string>
+    <string name="unitKilobitsPerSecond">%1$d kbit/s</string>
+    <string name="unitDp">%1$d dp</string>
+    <string name="unitHertz">%1$d Hz</string>
+    <string name="unitDbfsBelow">−%1$d dBFS</string>
+    <string name="audioSampleRateUnsupported">%1$s (desteklenmiyor)</string>
 </resources>

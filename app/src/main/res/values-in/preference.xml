@@ -145,4 +145,23 @@
     <string name="about_third_party_notices">Pemberitahuan pihak ketiga</string>
     <string name="about_third_party_notices_summary">Lisensi pustaka yang disertakan (link web)</string>
     <string name="about_memorial">Untuk mengenang Andreas Mandalka (Natenom), yang panduan, server, dan kesabarannya telah membantu begitu banyak orang menemukan jalan ke Mumble.</string>
+    <string name="language_system">Bawaan sistem</string>
+    <string name="speakingAndAudio">Bicara &amp; audio</string>
+    <string name="chatAndNotifications">Chat &amp; notifikasi</string>
+    <string name="connection">Koneksi</string>
+    <string name="accountAndCertificates">Akun &amp; sertifikat</string>
+    <string name="language">Bahasa</string>
+    <string name="echoCancellationVoiceCallSource">Peredam gema pada mikrofon panggilan</string>
+    <string name="echoCancellationVoiceCallSourceSum">Menambah pemrosesan panggilan ponsel. Suara bisa terpotong</string>
+    <string name="holdToWhisperSum">Shout hanya selama tombol shout ditahan</string>
+    <string name="controlBarPosition">Posisi bar kontrol</string>
+    <string name="controlBarPositionTop">Atas</string>
+    <string name="controlBarPositionBottom">Bawah</string>
+    <string name="unitPercent">%1$d%%</string>
+    <string name="unitMilliseconds">%1$d ms</string>
+    <string name="unitKilobitsPerSecond">%1$d kbit/s</string>
+    <string name="unitDp">%1$d dp</string>
+    <string name="unitHertz">%1$d Hz</string>
+    <string name="unitDbfsBelow">−%1$d dBFS</string>
+    <string name="audioSampleRateUnsupported">%1$s (tidak didukung)</string>
 </resources>

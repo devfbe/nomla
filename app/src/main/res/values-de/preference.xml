@@ -152,4 +152,19 @@
     <string name="about_third_party_notices">Hinweise zu Drittkomponenten</string>
     <string name="about_third_party_notices_summary">Lizenzen der enthaltenen Bibliotheken (Weblink)</string>
     <string name="about_memorial">In Gedenken an Andreas Mandalka (Natenom), dessen Anleitungen, Server und Geduld so vielen Menschen den Weg zu Mumble gezeigt haben.</string>
+    <string name="speakingAndAudio">Sprechen &amp; Audio</string>
+    <string name="chatAndNotifications">Chat &amp; Benachrichtigungen</string>
+    <string name="connection">Verbindung</string>
+    <string name="accountAndCertificates">Konto &amp; Zertifikate</string>
+    <string name="holdToWhisperSum">Nur flüstern, solange der Flüsterknopf gehalten wird</string>
+    <string name="controlBarPosition">Position der Steuerleiste</string>
+    <string name="controlBarPositionTop">Oben</string>
+    <string name="controlBarPositionBottom">Unten</string>
+    <string name="unitPercent">%1$d %%</string>
+    <string name="unitMilliseconds">%1$d ms</string>
+    <string name="unitKilobitsPerSecond">%1$d kbit/s</string>
+    <string name="unitDp">%1$d dp</string>
+    <string name="unitHertz">%1$d Hz</string>
+    <string name="unitDbfsBelow">−%1$d dBFS</string>
+    <string name="audioSampleRateUnsupported">%1$s (nicht unterstützt)</string>
 </resources>

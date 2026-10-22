@@ -12,4 +12,5 @@
     <string name="no_target_server">Nie skonfigurowano serwera dla tego połączenia.</string>
     <string name="udp_warning_thread_failed">Połączenie UDP nie powiodło się. Głos jest przesyłany tunelem przez TCP, a UDP jest ponawiane.</string>
     <string name="audio_route_refused">To urządzenie odmówiło przełączenia urządzenia audio. Dźwięk pozostaje tam, gdzie był.</string>
+    <string name="codec_warning_no_opus">Ten serwer nie obsługuje kodeka Opus. Głos nie będzie działać.</string>
 </resources>

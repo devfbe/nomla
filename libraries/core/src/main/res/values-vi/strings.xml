@@ -11,4 +11,6 @@
     <string name="no_target_server">Chưa cấu hình máy chủ cho kết nối này.</string>
     <string name="udp_warning_thread_failed">Kết nối UDP bị lỗi. Giọng nói được truyền qua TCP trong khi thử lại UDP.</string>
     <string name="audio_route_refused">Thiết bị này từ chối chuyển thiết bị âm thanh. Âm thanh vẫn ở chỗ cũ.</string>
+    <string name="audio_max_bandwidth">Băng thông mạng tối đa của máy chủ chỉ là %1$d kbit/s. Đang điều chỉnh chất lượng âm thanh xuống %2$d kbit/s (%3$d ms).</string>
+    <string name="codec_warning_no_opus">Máy chủ này không hỗ trợ codec Opus. Giọng nói sẽ không hoạt động.</string>
 </resources>

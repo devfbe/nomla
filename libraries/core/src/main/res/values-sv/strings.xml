@@ -12,4 +12,5 @@
     <string name="no_target_server">Ingen server har konfigurerats för den här anslutningen.</string>
     <string name="udp_warning_thread_failed">UDP-anslutningen misslyckades. Rösten tunnlas via TCP medan UDP försöks igen.</string>
     <string name="audio_route_refused">Enheten vägrade att byta ljudenhet. Ljudet stannar där det var.</string>
+    <string name="codec_warning_no_opus">Den här servern stöder inte Opus-kodeken. Röst kommer inte att fungera.</string>
 </resources>

@@ -147,4 +147,21 @@
     <string name="about_third_party_notices">Meddelanden om tredje part</string>
     <string name="about_third_party_notices_summary">Licenser för de medföljande biblioteken (webblänk)</string>
     <string name="about_memorial">Till minne av Andreas Mandalka (Natenom), vars guider, servrar och tålamod hjälpte så många att hitta vägen till Mumble.</string>
+    <string name="speakingAndAudio">Tal &amp; ljud</string>
+    <string name="chatAndNotifications">Chatt &amp; aviseringar</string>
+    <string name="connection">Anslutning</string>
+    <string name="accountAndCertificates">Konto &amp; certifikat</string>
+    <string name="echoCancellationVoiceCallSource">Ekoreducering på samtalsmikrofonen</string>
+    <string name="echoCancellationVoiceCallSourceSum">Lägger till telefonens samtalsbehandling; kan hacka talet</string>
+    <string name="holdToWhisperSum">Viska bara medan viskknappen hålls ned</string>
+    <string name="controlBarPosition">Kontrollfältets placering</string>
+    <string name="controlBarPositionTop">Överst</string>
+    <string name="controlBarPositionBottom">Nederst</string>
+    <string name="unitPercent">%1$d %%</string>
+    <string name="unitMilliseconds">%1$d ms</string>
+    <string name="unitKilobitsPerSecond">%1$d kbit/s</string>
+    <string name="unitDp">%1$d dp</string>
+    <string name="unitHertz">%1$d Hz</string>
+    <string name="unitDbfsBelow">−%1$d dBFS</string>
+    <string name="audioSampleRateUnsupported">%1$s (stöds inte)</string>
 </resources>

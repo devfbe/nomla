@@ -150,4 +150,21 @@
     <string name="about_third_party_notices">Avvisi di terze parti</string>
     <string name="about_third_party_notices_summary">Licenze delle librerie incluse (collegamento web)</string>
     <string name="about_memorial">In memoria di Andreas Mandalka (Natenom), le cui guide, i cui server e la cui pazienza hanno aiutato tante persone a trovare la strada verso Mumble.</string>
+    <string name="speakingAndAudio">Voce e audio</string>
+    <string name="chatAndNotifications">Chat e notifiche</string>
+    <string name="connection">Connessione</string>
+    <string name="accountAndCertificates">Account e certificati</string>
+    <string name="echoCancellationVoiceCallSource">Cancellazione dell\'eco sul microfono di chiamata</string>
+    <string name="echoCancellationVoiceCallSourceSum">Aggiunge l\'elaborazione chiamate del telefono. Può troncare</string>
+    <string name="holdToWhisperSum">Sussurra solo tenendo premuto il pulsante sussurro</string>
+    <string name="controlBarPosition">Posizione della barra dei controlli</string>
+    <string name="controlBarPositionTop">In alto</string>
+    <string name="controlBarPositionBottom">In basso</string>
+    <string name="unitPercent">%1$d%%</string>
+    <string name="unitMilliseconds">%1$d ms</string>
+    <string name="unitKilobitsPerSecond">%1$d kbit/s</string>
+    <string name="unitDp">%1$d dp</string>
+    <string name="unitHertz">%1$d Hz</string>
+    <string name="unitDbfsBelow">−%1$d dBFS</string>
+    <string name="audioSampleRateUnsupported">%1$s (non supportata)</string>
 </resources>

@@ -144,4 +144,24 @@
     <string name="about_third_party_notices">Thông báo của bên thứ ba</string>
     <string name="about_third_party_notices_summary">Giấy phép của các thư viện đi kèm (liên kết web)</string>
     <string name="about_memorial">Tưởng nhớ Andreas Mandalka (Natenom), người mà những hướng dẫn, máy chủ và sự kiên nhẫn đã giúp biết bao người tìm đến với Mumble.</string>
+    <string name="theme_system">Mặc định của hệ thống</string>
+    <string name="language_system">Mặc định của hệ thống</string>
+    <string name="speakingAndAudio">Nói &amp; âm thanh</string>
+    <string name="chatAndNotifications">Chat &amp; thông báo</string>
+    <string name="connection">Kết nối</string>
+    <string name="accountAndCertificates">Tài khoản &amp; chứng chỉ</string>
+    <string name="language">Ngôn ngữ</string>
+    <string name="echoCancellationVoiceCallSource">Khử tiếng vọng trên micro cuộc gọi</string>
+    <string name="echoCancellationVoiceCallSourceSum">Thêm xử lý cuộc gọi của điện thoại như trước. Có thể ngắt quãng</string>
+    <string name="holdToWhisperSum">Chỉ thì thầm khi đang giữ nút thì thầm</string>
+    <string name="controlBarPosition">Vị trí thanh điều khiển</string>
+    <string name="controlBarPositionTop">Trên cùng</string>
+    <string name="controlBarPositionBottom">Dưới cùng</string>
+    <string name="unitPercent">%1$d%%</string>
+    <string name="unitMilliseconds">%1$d ms</string>
+    <string name="unitKilobitsPerSecond">%1$d kbit/s</string>
+    <string name="unitDp">%1$d dp</string>
+    <string name="unitHertz">%1$d Hz</string>
+    <string name="unitDbfsBelow">−%1$d dBFS</string>
+    <string name="audioSampleRateUnsupported">%1$s (không hỗ trợ)</string>
 </resources>

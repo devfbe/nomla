@@ -12,4 +12,5 @@
     <string name="no_target_server">Nu a fost configurat niciun server pentru această conexiune.</string>
     <string name="udp_warning_thread_failed">Conexiunea UDP a eșuat. Vocea trece prin TCP cât timp se reîncearcă UDP.</string>
     <string name="audio_route_refused">Acest dispozitiv a refuzat să schimbe dispozitivul audio. Sunetul rămâne unde era.</string>
+    <string name="codec_warning_no_opus">Acest server nu acceptă codecul Opus. Vocea nu va funcționa.</string>
 </resources>

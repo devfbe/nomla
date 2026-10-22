@@ -144,4 +144,24 @@
     <string name="about_third_party_notices">Avisos de tercers</string>
     <string name="about_third_party_notices_summary">Llicències de les biblioteques incloses (enllaç web)</string>
     <string name="about_memorial">En memòria d\'Andreas Mandalka (Natenom), les guies, els servidors i la paciència del qual van ajudar tantes persones a trobar el camí cap al Mumble.</string>
+    <string name="theme_system">Predeterminat del sistema</string>
+    <string name="language_system">Predeterminat del sistema</string>
+    <string name="speakingAndAudio">Veu i àudio</string>
+    <string name="chatAndNotifications">Xat i notificacions</string>
+    <string name="connection">Connexió</string>
+    <string name="accountAndCertificates">Compte i certificats</string>
+    <string name="language">Idioma</string>
+    <string name="echoCancellationVoiceCallSource">Cancel·lació d\'eco al micròfon de trucada</string>
+    <string name="echoCancellationVoiceCallSourceSum">Afegeix el processament de trucada del telèfon. Pot tallar</string>
+    <string name="holdToWhisperSum">Xiuxiueja només mentre manteniu premut el botó</string>
+    <string name="controlBarPosition">Posició de la barra de control</string>
+    <string name="controlBarPositionTop">A dalt</string>
+    <string name="controlBarPositionBottom">A baix</string>
+    <string name="unitPercent">%1$d %%</string>
+    <string name="unitMilliseconds">%1$d ms</string>
+    <string name="unitKilobitsPerSecond">%1$d kbit/s</string>
+    <string name="unitDp">%1$d dp</string>
+    <string name="unitHertz">%1$d Hz</string>
+    <string name="unitDbfsBelow">−%1$d dBFS</string>
+    <string name="audioSampleRateUnsupported">%1$s (no compatible)</string>
 </resources>

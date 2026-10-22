@@ -12,4 +12,5 @@
     <string name="no_target_server">Для цього з’єднання не задано сервер.</string>
     <string name="udp_warning_thread_failed">Збій UDP-з’єднання. Голос передається через TCP, доки UDP під’єднується знову.</string>
     <string name="audio_route_refused">Пристрій відмовився перемкнути аудіопристрій. Звук залишається там, де був.</string>
+    <string name="codec_warning_no_opus">Цей сервер не підтримує кодек Opus. Голосовий зв’язок не працюватиме.</string>
 </resources>

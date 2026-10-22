@@ -144,4 +144,24 @@
     <string name="about_third_party_notices">மூன்றாம் தரப்பு அறிவிப்புகள்</string>
     <string name="about_third_party_notices_summary">உள்ளடக்கிய நூலகங்களின் உரிமங்கள் (வலை இணைப்பு)</string>
     <string name="about_memorial">Andreas Mandalka (Natenom) அவர்களின் நினைவாக. அவரது வழிகாட்டிகள், சேவையகங்கள் மற்றும் பொறுமை பலருக்கு Mumble-க்கான வழியைக் காட்டின.</string>
+    <string name="theme_system">கணினி இயல்புநிலை</string>
+    <string name="language_system">கணினி இயல்புநிலை</string>
+    <string name="speakingAndAudio">பேச்சு &amp; ஒலி</string>
+    <string name="chatAndNotifications">அரட்டை &amp; அறிவிப்புகள்</string>
+    <string name="connection">இணைப்பு</string>
+    <string name="accountAndCertificates">கணக்கு &amp; சான்றிதழ்கள்</string>
+    <string name="language">மொழி</string>
+    <string name="echoCancellationVoiceCallSource">அழைப்பு ஓரியில் எதிரொலி நீக்கம்</string>
+    <string name="echoCancellationVoiceCallSourceSum">முன்புபோல் அழைப்புச் செயலாக்கம்; பேச்சு துண்டாகலாம்</string>
+    <string name="holdToWhisperSum">கத்து பொத்தானைப் பிடிக்கும்போது மட்டும் கத்து</string>
+    <string name="controlBarPosition">கட்டுப்பாட்டுப் பட்டையின் இடம்</string>
+    <string name="controlBarPositionTop">மேலே</string>
+    <string name="controlBarPositionBottom">கீழே</string>
+    <string name="unitPercent">%1$d%%</string>
+    <string name="unitMilliseconds">%1$d ms</string>
+    <string name="unitKilobitsPerSecond">%1$d kbit/s</string>
+    <string name="unitDp">%1$d dp</string>
+    <string name="unitHertz">%1$d Hz</string>
+    <string name="unitDbfsBelow">−%1$d dBFS</string>
+    <string name="audioSampleRateUnsupported">%1$s (ஆதரிக்கப்படவில்லை)</string>
 </resources>

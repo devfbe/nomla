@@ -12,4 +12,5 @@
     <string name="no_target_server">この接続にはサーバーが設定されていません。</string>
     <string name="udp_warning_thread_failed">UDP 接続に失敗しました。UDP を再試行している間、音声は TCP 経由でトンネリングされます。</string>
     <string name="audio_route_refused">このデバイスはオーディオデバイスの切り替えを拒否しました。音声は元の出力のままです。</string>
+    <string name="codec_warning_no_opus">このサーバーは Opus コーデックに対応していません。音声は機能しません。</string>
 </resources>

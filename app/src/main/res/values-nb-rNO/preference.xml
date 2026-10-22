@@ -144,4 +144,24 @@
     <string name="about_third_party_notices">Merknader fra tredjeparter</string>
     <string name="about_third_party_notices_summary">Lisenser for de medfølgende bibliotekene (nettlenke)</string>
     <string name="about_memorial">Til minne om Andreas Mandalka (Natenom), hvis veiledninger, tjenere og tålmodighet hjalp så mange med å finne veien til Mumble.</string>
+    <string name="theme_system">Systemstandard</string>
+    <string name="language_system">Systemstandard</string>
+    <string name="speakingAndAudio">Tale og lyd</string>
+    <string name="chatAndNotifications">Sludring og merknader</string>
+    <string name="connection">Tilkobling</string>
+    <string name="accountAndCertificates">Konto og sertifikater</string>
+    <string name="language">Språk</string>
+    <string name="echoCancellationVoiceCallSource">Ekkodemping på samtalemikrofonen</string>
+    <string name="echoCancellationVoiceCallSourceSum">Legger til telefonens samtalebehandling; kan hakke</string>
+    <string name="holdToWhisperSum">Hvisk bare mens du holder hviskeknappen inne</string>
+    <string name="controlBarPosition">Plassering av kontrollinjen</string>
+    <string name="controlBarPositionTop">Øverst</string>
+    <string name="controlBarPositionBottom">Nederst</string>
+    <string name="unitPercent">%1$d %%</string>
+    <string name="unitMilliseconds">%1$d ms</string>
+    <string name="unitKilobitsPerSecond">%1$d kbit/s</string>
+    <string name="unitDp">%1$d dp</string>
+    <string name="unitHertz">%1$d Hz</string>
+    <string name="unitDbfsBelow">−%1$d dBFS</string>
+    <string name="audioSampleRateUnsupported">%1$s (støttes ikke)</string>
 </resources>

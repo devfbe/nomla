@@ -12,4 +12,5 @@
     <string name="no_target_server">ไม่ได้กำหนดเซิฟเวอร์สำหรับการเชื่อมต่อนี้</string>
     <string name="udp_warning_thread_failed">การเชื่อมต่อ UDP ล้มเหลว เสียงจะส่งผ่าน TCP ระหว่างที่ลอง UDP ใหม่</string>
     <string name="audio_route_refused">อุปกรณ์นี้ไม่ยอมสลับอุปกรณ์เสียง เสียงยังคงอยู่ที่เดิม</string>
+    <string name="codec_warning_no_opus">เซิฟเวอร์นี้ไม่รองรับตัวแปลงสัญญาณ Opus เสียงจะใช้งานไม่ได้</string>
 </resources>

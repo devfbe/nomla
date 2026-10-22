@@ -144,4 +144,24 @@
     <string name="about_third_party_notices">Harmadik felek közleményei</string>
     <string name="about_third_party_notices_summary">A mellékelt könyvtárak licencei (webes link)</string>
     <string name="about_memorial">Andreas Mandalka (Natenom) emlékére, akinek útmutatói, szerverei és türelme oly sok embernek segítettek megtalálni az utat a Mumble-hoz.</string>
+    <string name="theme_system">Rendszer alapértelmezése</string>
+    <string name="language_system">Rendszer alapértelmezése</string>
+    <string name="speakingAndAudio">Beszéd és hang</string>
+    <string name="chatAndNotifications">Csevegés és értesítések</string>
+    <string name="connection">Kapcsolat</string>
+    <string name="accountAndCertificates">Fiók és tanúsítványok</string>
+    <string name="language">Nyelv</string>
+    <string name="echoCancellationVoiceCallSource">Visszhangszűrés a hívásmikrofonon</string>
+    <string name="echoCancellationVoiceCallSourceSum">A telefon hívásfeldolgozása, mint korábban. Szaggathat</string>
+    <string name="holdToWhisperSum">Csak a suttogás gomb nyomva tartása alatt suttog</string>
+    <string name="controlBarPosition">Vezérlősáv helye</string>
+    <string name="controlBarPositionTop">Fent</string>
+    <string name="controlBarPositionBottom">Lent</string>
+    <string name="unitPercent">%1$d%%</string>
+    <string name="unitMilliseconds">%1$d ms</string>
+    <string name="unitKilobitsPerSecond">%1$d kbit/s</string>
+    <string name="unitDp">%1$d dp</string>
+    <string name="unitHertz">%1$d Hz</string>
+    <string name="unitDbfsBelow">−%1$d dBFS</string>
+    <string name="audioSampleRateUnsupported">%1$s (nem támogatott)</string>
 </resources>

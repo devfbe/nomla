@@ -147,4 +147,24 @@
     <string name="about_third_party_notices">Mentions des tiers</string>
     <string name="about_third_party_notices_summary">Licences des bibliothèques incluses (lien web)</string>
     <string name="about_memorial">En mémoire d\'Andreas Mandalka (Natenom), dont les guides, les serveurs et la patience ont aidé tant de personnes à trouver le chemin de Mumble.</string>
+    <string name="theme_system">Valeur par défaut du système</string>
+    <string name="language_system">Valeur par défaut du système</string>
+    <string name="speakingAndAudio">Parole et audio</string>
+    <string name="chatAndNotifications">Discussion et notifications</string>
+    <string name="connection">Connexion</string>
+    <string name="accountAndCertificates">Compte et certificats</string>
+    <string name="language">Langue</string>
+    <string name="echoCancellationVoiceCallSource">Annulation d\'écho sur le micro d\'appel</string>
+    <string name="echoCancellationVoiceCallSourceSum">Traitement d\'appel du téléphone, comme avant. Peut hacher</string>
+    <string name="holdToWhisperSum">Chuchoter uniquement en maintenant le bouton de chuchotement</string>
+    <string name="controlBarPosition">Position de la barre de commandes</string>
+    <string name="controlBarPositionTop">En haut</string>
+    <string name="controlBarPositionBottom">En bas</string>
+    <string name="unitPercent">%1$d %%</string>
+    <string name="unitMilliseconds">%1$d ms</string>
+    <string name="unitKilobitsPerSecond">%1$d kbit/s</string>
+    <string name="unitDp">%1$d dp</string>
+    <string name="unitHertz">%1$d Hz</string>
+    <string name="unitDbfsBelow">−%1$d dBFS</string>
+    <string name="audioSampleRateUnsupported">%1$s (non pris en charge)</string>
 </resources>

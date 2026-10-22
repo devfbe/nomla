@@ -12,4 +12,5 @@
     <string name="no_target_server">此连接未配置服务器。</string>
     <string name="udp_warning_thread_failed">UDP 连接失败。在重试 UDP 期间，语音将通过 TCP 隧道传输。</string>
     <string name="audio_route_refused">此设备拒绝切换音频设备。音频保持不变。</string>
+    <string name="codec_warning_no_opus">此服务器不支持 Opus 编解码器。语音将无法使用。</string>
 </resources>

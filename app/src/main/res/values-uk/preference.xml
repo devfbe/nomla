@@ -144,4 +144,24 @@
     <string name="about_third_party_notices">Повідомлення про сторонні компоненти</string>
     <string name="about_third_party_notices_summary">Ліцензії вбудованих бібліотек (посилання)</string>
     <string name="about_memorial">Пам\'яті Андреаса Мандалки (Natenom), чиї посібники, сервери й терпіння допомогли стільком людям знайти шлях до Mumble.</string>
+    <string name="theme_system">Системна</string>
+    <string name="language_system">Системна</string>
+    <string name="speakingAndAudio">Мовлення і звук</string>
+    <string name="chatAndNotifications">Чат і сповіщення</string>
+    <string name="connection">Підключення</string>
+    <string name="accountAndCertificates">Обліковий запис і сертифікати</string>
+    <string name="language">Мова</string>
+    <string name="echoCancellationVoiceCallSource">Придушення луни на мікрофоні дзвінків</string>
+    <string name="echoCancellationVoiceCallSourceSum">Додає обробку дзвінків телефона. Може обривати мовлення</string>
+    <string name="holdToWhisperSum">Шепотіти лише доки утримується кнопка шепоту</string>
+    <string name="controlBarPosition">Розташування панелі керування</string>
+    <string name="controlBarPositionTop">Зверху</string>
+    <string name="controlBarPositionBottom">Знизу</string>
+    <string name="unitPercent">%1$d%%</string>
+    <string name="unitMilliseconds">%1$d мс</string>
+    <string name="unitKilobitsPerSecond">%1$d кбіт/с</string>
+    <string name="unitDp">%1$d dp</string>
+    <string name="unitHertz">%1$d Гц</string>
+    <string name="unitDbfsBelow">−%1$d dBFS</string>
+    <string name="audioSampleRateUnsupported">%1$s (не підтримується)</string>
 </resources>

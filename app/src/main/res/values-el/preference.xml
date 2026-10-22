@@ -144,4 +144,24 @@
     <string name="about_third_party_notices">Σημειώσεις τρίτων</string>
     <string name="about_third_party_notices_summary">Άδειες των ενσωματωμένων βιβλιοθηκών (σύνδεσμος ιστού)</string>
     <string name="about_memorial">Στη μνήμη του Andreas Mandalka (Natenom), του οποίου οι οδηγοί, οι διακομιστές και η υπομονή βοήθησαν τόσους ανθρώπους να βρουν τον δρόμο τους προς το Mumble.</string>
+    <string name="theme_system">Προεπιλογή συστήματος</string>
+    <string name="language_system">Προεπιλογή συστήματος</string>
+    <string name="speakingAndAudio">Ομιλία &amp; ήχος</string>
+    <string name="chatAndNotifications">Συζήτηση &amp; ειδοποιήσεις</string>
+    <string name="connection">Σύνδεση</string>
+    <string name="accountAndCertificates">Λογαριασμός &amp; πιστοποιητικά</string>
+    <string name="language">Γλώσσα</string>
+    <string name="echoCancellationVoiceCallSource">Ακύρωση ηχούς στο μικρόφωνο κλήσεων</string>
+    <string name="echoCancellationVoiceCallSourceSum">Επεξεργασία κλήσεων του τηλεφώνου, όπως πριν· ίσως κόβει</string>
+    <string name="holdToWhisperSum">Ψίθυρος μόνο όσο κρατάτε πατημένο το κουμπί ψιθύρου</string>
+    <string name="controlBarPosition">Θέση γραμμής ελέγχου</string>
+    <string name="controlBarPositionTop">Επάνω</string>
+    <string name="controlBarPositionBottom">Κάτω</string>
+    <string name="unitPercent">%1$d%%</string>
+    <string name="unitMilliseconds">%1$d ms</string>
+    <string name="unitKilobitsPerSecond">%1$d kbit/s</string>
+    <string name="unitDp">%1$d dp</string>
+    <string name="unitHertz">%1$d Hz</string>
+    <string name="unitDbfsBelow">−%1$d dBFS</string>
+    <string name="audioSampleRateUnsupported">%1$s (δεν υποστηρίζεται)</string>
 </resources>

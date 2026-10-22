@@ -144,4 +144,24 @@
     <string name="about_third_party_notices">Avisos de terceiros</string>
     <string name="about_third_party_notices_summary">Licenças das bibliotecas incluídas (link da web)</string>
     <string name="about_memorial">Em memória de Andreas Mandalka (Natenom), cujos guias, servidores e paciência ajudaram tantas pessoas a encontrar o caminho até o Mumble.</string>
+    <string name="theme_system">Padrão do sistema</string>
+    <string name="language_system">Padrão do sistema</string>
+    <string name="speakingAndAudio">Fala e áudio</string>
+    <string name="chatAndNotifications">Chat e notificações</string>
+    <string name="connection">Conexão</string>
+    <string name="accountAndCertificates">Conta e certificados</string>
+    <string name="language">Idioma</string>
+    <string name="echoCancellationVoiceCallSource">Cancelamento de eco no microfone de chamada</string>
+    <string name="echoCancellationVoiceCallSourceSum">Adiciona o processamento de chamada; pode cortar a fala</string>
+    <string name="holdToWhisperSum">Sussurrar só enquanto segura o botão de sussurro</string>
+    <string name="controlBarPosition">Posição da barra de controles</string>
+    <string name="controlBarPositionTop">Em cima</string>
+    <string name="controlBarPositionBottom">Embaixo</string>
+    <string name="unitPercent">%1$d%%</string>
+    <string name="unitMilliseconds">%1$d ms</string>
+    <string name="unitKilobitsPerSecond">%1$d kbit/s</string>
+    <string name="unitDp">%1$d dp</string>
+    <string name="unitHertz">%1$d Hz</string>
+    <string name="unitDbfsBelow">−%1$d dBFS</string>
+    <string name="audioSampleRateUnsupported">%1$s (não suportado)</string>
 </resources>

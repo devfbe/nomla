@@ -150,4 +150,21 @@
     <string name="about_third_party_notices">第三方声明</string>
     <string name="about_third_party_notices_summary">所含库的许可证（网页链接）</string>
     <string name="about_memorial">谨以此纪念 Andreas Mandalka（Natenom），他的指南、服务器和耐心帮助了许多人找到通往 Mumble 的道路。</string>
+    <string name="speakingAndAudio">发言与音频</string>
+    <string name="chatAndNotifications">聊天与通知</string>
+    <string name="connection">连接</string>
+    <string name="accountAndCertificates">账户与证书</string>
+    <string name="echoCancellationVoiceCallSource">在通话麦克风上进行回声消除</string>
+    <string name="echoCancellationVoiceCallSourceSum">像以前一样加入手机的通话处理，可能会使语音断续</string>
+    <string name="holdToWhisperSum">仅在按住呼喊按钮时呼喊</string>
+    <string name="controlBarPosition">控制栏位置</string>
+    <string name="controlBarPositionTop">顶部</string>
+    <string name="controlBarPositionBottom">底部</string>
+    <string name="unitPercent">%1$d%%</string>
+    <string name="unitMilliseconds">%1$d ms</string>
+    <string name="unitKilobitsPerSecond">%1$d kbit/s</string>
+    <string name="unitDp">%1$d dp</string>
+    <string name="unitHertz">%1$d Hz</string>
+    <string name="unitDbfsBelow">−%1$d dBFS</string>
+    <string name="audioSampleRateUnsupported">%1$s（不支持）</string>
 </resources>

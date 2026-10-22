@@ -12,4 +12,5 @@
     <string name="no_target_server">Bu bağlantı için bir sunucu yapılandırılmadı.</string>
     <string name="udp_warning_thread_failed">UDP bağlantısı başarısız oldu. UDP yeniden denenirken ses TCP üzerinden tünelleniyor.</string>
     <string name="audio_route_refused">Bu cihaz ses cihazını değiştirmeyi reddetti. Ses olduğu yerde kalır.</string>
+    <string name="codec_warning_no_opus">Bu sunucu Opus codec\'ini desteklemiyor. Ses çalışmayacak.</string>
 </resources>

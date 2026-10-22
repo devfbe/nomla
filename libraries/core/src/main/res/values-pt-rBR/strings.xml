@@ -11,4 +11,6 @@
     <string name="no_target_server">Nenhum servidor foi configurado para esta conexão.</string>
     <string name="udp_warning_thread_failed">A conexão UDP falhou. A voz é transmitida por TCP enquanto o UDP é tentado novamente.</string>
     <string name="audio_route_refused">Este dispositivo se recusou a trocar o dispositivo de áudio. O áudio continua onde estava.</string>
+    <string name="audio_max_bandwidth">A largura de banda máxima da rede do servidor é de apenas %1$d kbit/s. Ajustando a qualidade de áudio para %2$d kbit/s (%3$d ms).</string>
+    <string name="codec_warning_no_opus">Este servidor não é compatível com o codec Opus. A voz não vai funcionar.</string>
 </resources>

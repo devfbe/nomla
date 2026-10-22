@@ -11,4 +11,6 @@
     <string name="no_target_server">Ulac aqeddac yettwasewlen i tuqqna-a.</string>
     <string name="udp_warning_thread_failed">Tuqqna UDP tecceḍ. Taɣect tettɛeddi s TCP skud UDP yettwaɛraḍ tikkelt-nniḍen.</string>
     <string name="audio_route_refused">Ibenk-a yugi ad ibeddel ibenk n imesli. Imesli yeqqim anida yella.</string>
+    <string name="audio_max_bandwidth">Tehri tafellayt n tesfift n uẓeṭṭa n uqeddac d %1$d kbit/s kan. Taɣara n imesli tettwaṣeggem ɣer %2$d kbit/s (%3$d ms).</string>
+    <string name="codec_warning_no_opus">Aqeddac-a ur yessefrak ara akudak Opus. Taɣect ur tetteddu ara.</string>
 </resources>

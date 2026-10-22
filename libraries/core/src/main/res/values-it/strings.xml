@@ -12,4 +12,5 @@
     <string name="no_target_server">Nessun server configurato per questa connessione.</string>
     <string name="udp_warning_thread_failed">La connessione UDP non è riuscita. La voce passa tramite TCP mentre si ritenta con UDP.</string>
     <string name="audio_route_refused">Questo dispositivo ha rifiutato di cambiare il dispositivo audio. L\'audio resta dov\'era.</string>
+    <string name="codec_warning_no_opus">Questo server non supporta il codec Opus. La voce non funzionerà.</string>
 </resources>

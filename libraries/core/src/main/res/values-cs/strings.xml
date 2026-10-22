@@ -12,4 +12,5 @@
     <string name="no_target_server">Pro toto připojení nebyl nastaven žádný server.</string>
     <string name="udp_warning_thread_failed">Spojení UDP selhalo. Hlas se tuneluje přes TCP, zatímco se UDP zkouší znovu.</string>
     <string name="audio_route_refused">Toto zařízení odmítlo přepnout zvukové zařízení. Zvuk zůstává tam, kde byl.</string>
+    <string name="codec_warning_no_opus">Tento server nepodporuje kodek Opus. Hlas nebude fungovat.</string>
 </resources>

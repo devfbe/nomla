@@ -12,4 +12,5 @@
     <string name="no_target_server">Ehhez a kapcsolathoz nincs szerver beállítva.</string>
     <string name="udp_warning_thread_failed">Az UDP-kapcsolat megszakadt. A hang TCP-n keresztül halad, amíg az UDP újrapróbálása folyik.</string>
     <string name="audio_route_refused">Ez az eszköz megtagadta a hangeszköz váltását. A hang ott marad, ahol volt.</string>
+    <string name="codec_warning_no_opus">Ez a szerver nem támogatja az Opus kodeket. A hang nem fog működni.</string>
 </resources>

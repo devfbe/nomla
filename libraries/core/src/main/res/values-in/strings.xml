@@ -12,4 +12,5 @@
     <string name="no_target_server">Tidak ada server yang dikonfigurasi untuk koneksi ini.</string>
     <string name="udp_warning_thread_failed">Koneksi UDP gagal. Suara disalurkan melalui TCP sementara UDP dicoba ulang.</string>
     <string name="audio_route_refused">Perangkat ini menolak mengganti perangkat audio. Audio tetap di tempat sebelumnya.</string>
+    <string name="codec_warning_no_opus">Server ini tidak mendukung kodek Opus. Suara tidak akan berfungsi.</string>
 </resources>
