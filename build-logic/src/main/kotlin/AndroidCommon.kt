@@ -65,8 +65,10 @@ internal fun Project.configureAndroidCommon(android: CommonExtension) {
         lint.apply {
             abortOnError = true
             // InvalidPackage: BouncyCastle references javax.naming / java.awt classes Android lacks
-            // and never reaches. MissingTranslation: an untranslated string falls back to English.
-            disable += setOf("InvalidPackage", "MissingTranslation")
+            // and never reaches.
+            disable += "InvalidPackage"
+            // Every locale carries every string; constants are marked translatable="false".
+            error += "MissingTranslation"
             explainIssues = true
             ignoreWarnings = false
             quiet = false

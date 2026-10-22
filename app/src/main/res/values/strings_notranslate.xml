@@ -18,7 +18,7 @@
 
 <!-- Here be constants. These resources do NOT need translation. -->
 <resources>
-    <string name="app_name">Nomla</string>
-    <string name="notification_message">%1$s: %2$s</string>
-    <string name="certificate_export_format">nomla_%s.p12</string>
+    <string name="app_name" translatable="false">Nomla</string>
+    <string name="notification_message" translatable="false">%1$s: %2$s</string>
+    <string name="certificate_export_format" translatable="false">nomla_%s.p12</string>
 </resources>

@@ -86,6 +86,7 @@ tasks.register("verify") {
         ":app:assembleFossDebugAndroidTest",
         ":app:lintFossDebug",
         ":app:detekt",
+        ":libraries:core:lintDebug",
         ":libraries:core:testDebugUnitTest",
         ":libraries:core:assembleDebugAndroidTest",
         ":libraries:core:detekt",
