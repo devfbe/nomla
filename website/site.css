@@ -331,3 +331,73 @@ footer p { margin: 0.3rem 0; }
   .values { grid-template-columns: 1fr; }
   .values dd { margin-bottom: 0.35rem; }
 }
+
+/* ---------- site header and navigation ---------- */
+
+.site-head { background: var(--nomla); color: var(--on-nomla); }
+.site-head .wrap {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.5rem;
+  padding-block: 0.8rem;
+}
+.brand {
+  display: inline-flex; align-items: center; gap: 0.55rem;
+  color: var(--on-nomla); text-decoration: none; font-weight: 800; font-size: 1.35rem;
+  letter-spacing: -0.02em;
+}
+.brand svg { width: 2.1rem; height: auto; color: var(--on-nomla); }
+.site-nav { flex: 1 1 auto; }
+.site-nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.15rem 0.4rem; }
+.site-nav a {
+  display: block; color: var(--on-nomla); text-decoration: none; font-weight: 600;
+  padding: 0.35rem 0.7rem; border-radius: 999px;
+}
+.site-nav a:hover { text-decoration: underline; }
+.site-nav a[aria-current="page"], .site-nav a[aria-current="true"] { background: rgb(255 255 255 / 0.18); }
+.site-head .topbar { margin-left: auto; }
+
+.hero.hero-start { padding-top: 0; }
+.hero-start .hero-body { padding-top: clamp(1.5rem, 5vw, 3.5rem); }
+
+.page-head { background: var(--nomla); color: var(--on-nomla); padding-block: clamp(2rem, 6vw, 4rem); }
+.page-head h1 { margin: 0; font-size: clamp(2.6rem, 8vw, 5.5rem); line-height: 0.95; letter-spacing: -0.035em; font-weight: 800; }
+.page-head p { margin: 1rem 0 0; font-size: clamp(1.1rem, 2.2vw, 1.4rem); max-width: 46ch; }
+.page-head a { color: var(--on-nomla); }
+
+/* ---------- what is it ---------- */
+
+.what { display: grid; gap: 2rem 4rem; grid-template-columns: minmax(0, 1fr); }
+.what .say { font-size: clamp(1.2rem, 2.2vw, 1.45rem); line-height: 1.5; margin: 0 0 1rem; }
+.what ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.25rem; }
+.what li strong { display: block; font-size: 1.15rem; }
+.what li span { color: var(--ink-soft); }
+@media (min-width: 900px) { .what { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); } }
+
+/* ---------- step-by-step guides ---------- */
+
+.steps { list-style: none; margin: 0; padding: 0; counter-reset: step; max-width: 50rem; }
+.steps > li {
+  counter-increment: step;
+  display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: 0 1.1rem;
+  padding: 1.4rem 0; border-top: 1px solid var(--rule);
+}
+.steps > li:last-child { border-bottom: 1px solid var(--rule); }
+.steps > li::before {
+  content: counter(step);
+  font-size: 2.2rem; font-weight: 800; line-height: 1; color: var(--nomla-deep);
+}
+.steps h3 { font-size: 1.25rem; margin: 0 0 0.35rem; }
+.steps p { margin: 0 0 0.5rem; }
+.steps p:last-child { margin-bottom: 0; }
+.ui { font-weight: 700; }           /* a label exactly as the app shows it */
+.tip { color: var(--ink-soft); font-size: 0.95rem; }
+
+.more {
+  display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  max-width: 60rem;
+}
+.more a {
+  display: block; padding: 1.1rem 1.25rem; border: 2px solid var(--nomla-deep); border-radius: 6px;
+  text-decoration: none; color: var(--ink);
+}
+.more a strong { display: block; color: var(--nomla-deep); font-size: 1.15rem; }
+.more a:hover strong { text-decoration: underline; }

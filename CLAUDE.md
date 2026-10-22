@@ -74,10 +74,15 @@ logs every decision to `.claude/logs/ide-first.jsonl`. Build output, `.claude/`,
 `website/` is the project website, served at https://becker.koeln/nomla/: static HTML, CSS and JS,
 no build step, self-hosted fonts, nothing loaded from other servers. Every content pair exists in
 German and English (`lang="de"` / `lang="en"`), and both are kept in step.
+`index.html` greets newcomers (what Nomla is, then installing and setting it up step by step);
+`technik.html` holds the technical details. Both pages carry the same header and navigation.
 
 - **Keep it current.** Every change to Nomla that the page describes (features, audio chain values,
   security, architecture, toolchain and library versions, test counts) updates `website/` in the
   same task. Values on the page are the ones in the code; check them there, never from memory.
+- **The setup guide quotes the app.** Labels in `index.html` (`<span class="ui">`) are the app's
+  strings in that language, exactly as a phone shows them. A changed label, dialog or first-run
+  flow updates the guide in the same task.
 - **New beta = new download.** When a beta APK is published, the download link and the version in
   `website/index.html` point to it.
 - **Deploy after every change** to `website/`, once it is committed: publish the directory to

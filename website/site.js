@@ -11,7 +11,8 @@
   function setLang(lang, remember) {
     root.setAttribute("data-ui", lang);
     root.lang = lang;
-    document.title = lang === "de" ? "Nomla – Mumble für Android" : "Nomla – Mumble for Android";
+    var title = root.getAttribute("data-title-" + lang);
+    if (title) document.title = title;
     document.querySelectorAll("[data-set-lang]").forEach(function (b) {
       b.setAttribute("aria-pressed", String(b.getAttribute("data-set-lang") === lang));
     });
