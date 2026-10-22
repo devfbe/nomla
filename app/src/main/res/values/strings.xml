@@ -452,7 +452,7 @@
     <string name="battery_optimization_unrestricted">Unrestricted</string>
     <string name="battery_optimization_optimized">Optimized – tap to allow background use</string>
     <string name="battery_optimization_prompt_title">Keep Nomla connected in the background?</string>
-    <string name="battery_optimization_prompt_message">Battery optimization can close Nomla while the screen is off, which drops you from the server. Allow Nomla to run in the background to stay connected. You can change this later under Settings › General › Background connection.</string>
+    <string name="battery_optimization_prompt_message">Battery optimization can close Nomla while the screen is off, which drops you from the server. Allow Nomla to run in the background to stay connected. You can change this later under Settings › Connection › Background connection.</string>
     <string name="battery_optimization_prompt_decline">Not now</string>
     <string name="rnnoise_strength">Maximum noise reduction</string>
     <string name="rnnoise_strength_sum">Higher: less noise. Eases while you talk over others</string>

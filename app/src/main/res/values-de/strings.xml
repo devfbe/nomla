@@ -332,7 +332,7 @@
     <string name="battery_optimization_unrestricted">Nicht eingeschränkt</string>
     <string name="battery_optimization_optimized">Optimiert – tippen, um Hintergrundnutzung zu erlauben</string>
     <string name="battery_optimization_prompt_title">Nomla im Hintergrund verbunden halten?</string>
-    <string name="battery_optimization_prompt_message">Die Akkuoptimierung kann Nomla bei ausgeschaltetem Bildschirm beenden, wodurch Sie vom Server getrennt werden. Erlauben Sie Nomla, im Hintergrund zu laufen, um verbunden zu bleiben. Sie können das später unter Einstellungen › Allgemein › Verbindung im Hintergrund ändern.</string>
+    <string name="battery_optimization_prompt_message">Die Akkuoptimierung kann Nomla bei ausgeschaltetem Bildschirm beenden, wodurch Sie vom Server getrennt werden. Erlauben Sie Nomla, im Hintergrund zu laufen, um verbunden zu bleiben. Sie können das später unter Einstellungen › Verbindung › Verbindung im Hintergrund ändern.</string>
     <string name="battery_optimization_prompt_decline">Nicht jetzt</string>
     <plurals name="unread_messages">
         <item quantity="one">%d ungelesene Nachricht</item>
