@@ -53,19 +53,41 @@
             android:text="@string/server_list_empty"
             android:textAppearance="?attr/textAppearanceTitleLarge" />
 
+        <!-- The quick start leads; adding or browsing servers comes second. -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/server_list_empty_quick_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:minHeight="56dp"
+            android:paddingHorizontal="32dp"
+            android:text="@string/quick_start"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            app:icon="@drawable/ic_action_microphone" />
+
         <TextView
+            android:id="@+id/server_list_empty_quick_start_hint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="center"
-            android:text="@string/server_list_empty_hint"
             android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:gravity="center"
+            android:text="@string/server_list_empty_hint"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?android:attr/textColorSecondary" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/server_list_empty_add"
+            style="?attr/materialButtonOutlinedStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:text="@string/server_add"
             app:icon="@drawable/ic_action_add_dark" />
 

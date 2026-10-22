@@ -36,6 +36,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.R
+import koeln.becker.nomla.app.QuickStartServer
 import koeln.becker.nomla.databinding.FragmentServerListBinding
 import koeln.becker.nomla.util.appViewModels
 import koeln.becker.nomla.ui.ServerRequest
@@ -44,8 +45,9 @@ import koeln.becker.nomla.ui.showConfirmDialog
 
 /**
  * Displays the favourite servers, and lets the user connect to, add and edit them. Without any, it
- * offers to add one or to browse the public servers, which it asks the activity for with a
- * fragment result under [REQUEST_BROWSE_PUBLIC].
+ * offers "Just talk" first, then to add one or to browse the public servers; it asks the activity
+ * for the quick start and the public servers with fragment results under [REQUEST_QUICK_START]
+ * and [REQUEST_BROWSE_PUBLIC].
  */
 class FavouriteServerListFragment :
     Fragment(),
@@ -68,6 +70,8 @@ class FavouriteServerListFragment :
         binding.serverListAdd.setOnClickListener { showEditDialog(null, ServerEditFragment.Mode.ADD) }
         binding.serverListEmptyAdd.setOnClickListener { showEditDialog(null, ServerEditFragment.Mode.ADD) }
         binding.serverListEmptyBrowse.setOnClickListener { setFragmentResult(REQUEST_BROWSE_PUBLIC, Bundle.EMPTY) }
+        binding.serverListEmptyQuickStart.setOnClickListener { setFragmentResult(REQUEST_QUICK_START, Bundle.EMPTY) }
+        binding.serverListEmptyQuickStartHint.text = QuickStartServer.hint(requireContext())
         val adapter = FavouriteServerAdapter(this, favourites.pings) {
             connectRequests.request(ServerRequest.Favourite(it))
         }
@@ -125,5 +129,6 @@ class FavouriteServerListFragment :
 
     companion object {
         const val REQUEST_BROWSE_PUBLIC = "browse_public_servers"
+        const val REQUEST_QUICK_START = "quick_start"
     }
 }

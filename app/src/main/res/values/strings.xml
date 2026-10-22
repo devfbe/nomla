@@ -84,6 +84,15 @@
     <string name="server_list_empty">No favorite servers yet</string>
     <string name="server_list_empty_hint">Add a server you know, or pick one from the public list.</string>
     <string name="server_list_browse_public">Browse public servers</string>
+    <string name="quick_start">Just talk</string>
+    <!-- %1$s: the host of the quick-start server -->
+    <string name="quick_start_hint">No setup needed: join the open meeting point at %1$s. It\'s public, so everyone in the channel can hear you.</string>
+    <string name="quick_start_name_title">What should the others call you?</string>
+    <string name="quick_start_name_hint">Your name</string>
+    <string name="quick_start_name_invalid">Enter a name without spaces or special characters.</string>
+    <string name="quick_start_go">Let\'s go</string>
+    <!-- %1$s: the name of the quick-start server, e.g. coding4.coffee -->
+    <string name="quick_start_server_label">%1$s meeting point</string>
     <string name="server_add">Add server</string>
     <string name="server_connect_only">Connect only</string>
     <string name="server_save_and_connect">Save &amp; connect</string>

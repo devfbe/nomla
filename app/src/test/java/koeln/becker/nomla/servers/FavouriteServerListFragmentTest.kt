@@ -33,6 +33,7 @@ import org.robolectric.shadows.ShadowDialog
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
+import koeln.becker.nomla.app.QuickStartServer
 import koeln.becker.nomla.testing.ServiceHostActivity
 import koeln.becker.nomla.testing.drainMainUntil
 import koeln.becker.nomla.testing.host
@@ -54,6 +55,8 @@ class FavouriteServerListFragmentTest {
     private val FavouriteServerListFragment.grid: RecyclerView get() = find(R.id.server_list_grid) as RecyclerView
     private val FavouriteServerListFragment.empty: View get() = find(R.id.server_list_grid_empty)
     private val FavouriteServerListFragment.fab: View get() = find(R.id.server_list_add)
+    private val FavouriteServerListFragment.quickStart: TextView
+        get() = find(R.id.server_list_empty_quick_start) as TextView
 
     private fun FavouriteServerListFragment.click(id: Int) {
         find(id).performClick()
@@ -99,6 +102,41 @@ class FavouriteServerListFragmentTest {
         fragment.click(R.id.server_list_empty_browse)
 
         assertThat(asked).isEqualTo(1)
+    }
+
+    @Test
+    fun `the empty state offers to just talk, labelled and explained`() {
+        val fragment = show(emptyList())
+
+        assertThat(fragment.quickStart.isShown).isTrue()
+        assertThat(fragment.quickStart.text.toString()).isEqualTo(activity.getString(R.string.quick_start))
+        // The label TalkBack reads is the button's text, not a description that hides it.
+        assertThat(fragment.quickStart.contentDescription).isNull()
+        val hint = fragment.find(R.id.server_list_empty_quick_start_hint) as TextView
+        assertThat(hint.isShown).isTrue()
+        assertThat(hint.text.toString()).isEqualTo(QuickStartServer.hint(activity))
+        assertThat(hint.text.toString()).contains("mumble.coding4.coffee")
+    }
+
+    @Test
+    fun `the just talk button asks for the quick start`() {
+        var asked = 0
+        activity.supportFragmentManager.setFragmentResultListener(
+            FavouriteServerListFragment.REQUEST_QUICK_START,
+            activity,
+        ) { _, _ -> asked++ }
+        val fragment = show(emptyList())
+
+        fragment.click(R.id.server_list_empty_quick_start)
+
+        assertThat(asked).isEqualTo(1)
+    }
+
+    @Test
+    fun `with servers there is no just talk button`() {
+        val fragment = show(listOf(server))
+
+        assertThat(fragment.quickStart.isShown).isFalse()
     }
 
     @Test

@@ -38,6 +38,7 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.withStarted
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.collectLatest
@@ -100,6 +101,7 @@ class NomlaActivity :
     private lateinit var dialogs: ConnectionDialogs
     private lateinit var connectFlow: ConnectFlow
     private lateinit var batteryPrompt: BatteryOptimizationPrompt
+    private lateinit var quickStart: QuickStart
 
     /** The dynamic colour setting this activity was themed with. */
     private var themedWithDynamicColors = false
@@ -134,6 +136,13 @@ class NomlaActivity :
         ConnectionBanner(this, binding.connectionBanner, settings, sessions)
         connectFlow = ConnectFlow(this, settings, sessions)
         batteryPrompt = BatteryOptimizationPrompt(this, settings)
+        quickStart = QuickStart(
+            settings,
+            repository,
+            QuickStartServer.label(this),
+            generateCertificate = { generateDefaultCertificate() != null },
+            connect = ::connectToQuickStart,
+        )
         addMenuProvider(AudioPanelMenu(supportFragmentManager))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeButtonEnabled(true)
@@ -163,6 +172,12 @@ class NomlaActivity :
         }
         fragments.setFragmentResultListener(FavouriteServerListFragment.REQUEST_BROWSE_PUBLIC, this) { _, _ ->
             showDrawerFragment(DrawerAdapter.ITEM_PUBLIC)
+        }
+        fragments.setFragmentResultListener(FavouriteServerListFragment.REQUEST_QUICK_START, this) { _, _ ->
+            startQuickStart()
+        }
+        fragments.setFragmentResultListener(QuickStartNameFragment.REQUEST_KEY, this) { _, result ->
+            lifecycleScope.launch { quickStart.join(QuickStartNameFragment.nickname(result)) }
         }
         lifecycleScope.launch {
             connectRequests.requested.collect { request ->
@@ -349,13 +364,13 @@ class NomlaActivity :
         return super.onKeyUp(keyCode, event)
     }
 
-    /** Offers to generate a client certificate, unless one is set up already. */
+    /** Offers to generate a client certificate or to just talk, unless a certificate is set up already. */
     private fun showFirstRunGuide() {
         if (settings.isUsingCertificate) {
             settings.isFirstRun = false
             return
         }
-        var message = getString(R.string.first_run_generate_certificate)
+        var message = getString(R.string.first_run_generate_certificate) + "\n\n" + QuickStartServer.hint(this)
         if (BuildConfig.FLAVOR == "donation") message = getString(R.string.donation_thanks) + "\n\n" + message
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.first_run_generate_certificate_title)
@@ -364,7 +379,33 @@ class NomlaActivity :
                 lifecycleScope.launch { generateDefaultCertificate() }
                 settings.isFirstRun = false
             }
+            .setNegativeButton(R.string.quick_start) { _, _ ->
+                settings.isFirstRun = false
+                startQuickStart()
+            }
             .show()
+    }
+
+    /** "Just talk": a certificate if there is none, then the nickname dialog, whose result joins. */
+    private fun startQuickStart() {
+        lifecycleScope.launch {
+            if (!quickStart.prepare()) return@launch
+            // The generation may outlast the screen being in front.
+            withStarted {
+                if (supportFragmentManager.findFragmentByTag(QuickStartNameFragment.TAG) == null) {
+                    QuickStartNameFragment().show(supportFragmentManager, QuickStartNameFragment.TAG)
+                }
+            }
+        }
+    }
+
+    /** Connects to the stored quick-start [server], showing it among the favourites meanwhile. */
+    private fun connectToQuickStart(server: Server) {
+        val started = lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
+        if (started && supportFragmentManager.findFragmentById(R.id.content_frame) is FavouriteServerListFragment) {
+            showDrawerFragment(DrawerAdapter.ITEM_FAVOURITES)
+        }
+        connectFlow.connect(server)
     }
 
     private fun showDrawerFragment(id: Int) {

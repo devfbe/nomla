@@ -135,7 +135,7 @@ class Settings private constructor(private val context: Context) {
         defaultCertificateId = NO_CERTIFICATE
     }
 
-    val defaultUsername: String by pref(DEFAULT_USERNAME)
+    var defaultUsername: String by pref(DEFAULT_USERNAME)
 
     val isPushToTalkToggle: Boolean by pref(PTT_TOGGLE)
 
