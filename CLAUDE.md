@@ -46,8 +46,8 @@ and more accurate than shell tools, and they keep the IDE, its index and the dis
    waitForExit: false)` returns a `fullOutputPath`; wait until it shows `BUILD SUCCESSFUL` or
    `BUILD FAILED` (e.g. `until grep -qE "BUILD (SUCCESSFUL|FAILED)" <path>; do sleep 3; done`).
    A long `waitForExit: true` call times out while the build keeps running.
-6. **No worktrees.** The IDE indexes only this checkout. Work here on a feature branch from
-   `modernization`, one agent at a time. The hook blocks creating or editing worktrees.
+6. **No worktrees.** The IDE indexes only this checkout. Work here on `main`, one agent at a
+   time. The hook blocks creating or editing worktrees.
 
 A PreToolUse hook (`.claude/hooks/ide-first.py`) enforces rules 1, 2, 5 and 6 while the IDE is
 reachable (command-line Gradle, Edit/Write on sources, shell text tools on sources, worktrees) and
