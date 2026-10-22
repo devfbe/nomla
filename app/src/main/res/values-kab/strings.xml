@@ -149,6 +149,13 @@
     <string name="server_list_empty">Ulac yakan iqeddacen inenyafen</string>
     <string name="server_list_empty_hint">Rnu aqeddac i tessneḍ, neɣ fren yiwen seg tebdart tazayezt.</string>
     <string name="server_list_browse_public">Inig deg yiqeddacen izuyaz</string>
+    <string name="quick_start">Mmeslay kan</string>
+    <string name="quick_start_hint">War asesteb: kcem ɣer wadeg n temlilit yeldin %1$s. D azayez: akk wid yellan deg ubadu zemren ad k-slen.</string>
+    <string name="quick_start_name_title">Amek ara k-semmin wiyaḍ?</string>
+    <string name="quick_start_name_hint">Isem-ik</string>
+    <string name="quick_start_name_invalid">Sekcem isem war tallunin neɣ isekkilen uzzigen.</string>
+    <string name="quick_start_go">Yya ad nebdu</string>
+    <string name="quick_start_server_label">Adeg n temlilit %1$s</string>
     <string name="server_add">Rnu aqeddac</string>
     <string name="server_connect_only">Tuqqna kan</string>
     <string name="server_save_and_connect">Sekles syen qqen</string>

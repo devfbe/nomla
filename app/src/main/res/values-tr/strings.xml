@@ -248,6 +248,13 @@
     <string name="server_list_empty">Henüz sık kullanılan sunucu yok</string>
     <string name="server_list_empty_hint">Bildiğiniz bir sunucuyu ekleyin veya genel listeden birini seçin.</string>
     <string name="server_list_browse_public">Genel sunuculara göz at</string>
+    <string name="quick_start">Hemen konuşun</string>
+    <string name="quick_start_hint">Kurulum gerekmez: açık buluşma noktası %1$s sunucusuna katılın. Herkese açıktır: kanaldaki herkes sizi duyabilir.</string>
+    <string name="quick_start_name_title">Diğerleri size nasıl hitap etsin?</string>
+    <string name="quick_start_name_hint">Adınız</string>
+    <string name="quick_start_name_invalid">Boşluk veya özel karakter içermeyen bir ad girin.</string>
+    <string name="quick_start_go">Haydi başlayalım</string>
+    <string name="quick_start_server_label">%1$s buluşma noktası</string>
     <string name="server_add">Sunucu ekle</string>
     <string name="server_connect_only">Yalnızca bağlan</string>
     <string name="server_save_and_connect">Kaydet ve bağlan</string>

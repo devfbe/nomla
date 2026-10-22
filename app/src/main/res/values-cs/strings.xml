@@ -230,6 +230,13 @@
     <string name="server_list_empty">Zatím žádné oblíbené servery</string>
     <string name="server_list_empty_hint">Přidejte server, který znáte, nebo si vyberte z veřejného seznamu.</string>
     <string name="server_list_browse_public">Procházet veřejné servery</string>
+    <string name="quick_start">Prostě mluvit</string>
+    <string name="quick_start_hint">Bez nastavování: připojte se k otevřenému místu setkání %1$s. Je veřejné, takže vás uslyší všichni v kanálu.</string>
+    <string name="quick_start_name_title">Jak vám mají ostatní říkat?</string>
+    <string name="quick_start_name_hint">Vaše jméno</string>
+    <string name="quick_start_name_invalid">Zadejte jméno bez mezer a zvláštních znaků.</string>
+    <string name="quick_start_go">Jdeme na to</string>
+    <string name="quick_start_server_label">Místo setkání %1$s</string>
     <string name="server_add">Přidat server</string>
     <string name="server_connect_only">Jen připojit</string>
     <string name="server_save_and_connect">Uložit a připojit</string>

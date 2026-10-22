@@ -136,6 +136,13 @@
     <string name="server_list_empty">Ingen favoritservere endnu</string>
     <string name="server_list_empty_hint">Tilføj en server, du kender, eller vælg en fra den offentlige liste.</string>
     <string name="server_list_browse_public">Gennemse offentlige servere</string>
+    <string name="quick_start">Bare snak</string>
+    <string name="quick_start_hint">Uden opsætning: Gå ind på det åbne mødested %1$s. Det er offentligt, så alle i kanalen kan høre dig.</string>
+    <string name="quick_start_name_title">Hvad skal de andre kalde dig?</string>
+    <string name="quick_start_name_hint">Dit navn</string>
+    <string name="quick_start_name_invalid">Skriv et navn uden mellemrum og specialtegn.</string>
+    <string name="quick_start_go">Kom i gang</string>
+    <string name="quick_start_server_label">%1$s-mødested</string>
     <string name="server_add">Tilføj server</string>
     <string name="server_connect_only">Forbind kun</string>
     <string name="server_save_and_connect">Gem og forbind</string>

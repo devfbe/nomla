@@ -215,6 +215,13 @@
     <string name="server_list_empty">Belum ada server favorit</string>
     <string name="server_list_empty_hint">Tambahkan server yang anda kenal, atau pilih dari daftar publik.</string>
     <string name="server_list_browse_public">Jelajahi server publik</string>
+    <string name="quick_start">Langsung bicara</string>
+    <string name="quick_start_hint">Tanpa pengaturan: gabung ke titik temu terbuka %1$s. Ini publik, jadi semua orang di channel dapat mendengar anda.</string>
+    <string name="quick_start_name_title">Anda ingin dipanggil apa?</string>
+    <string name="quick_start_name_hint">Nama anda</string>
+    <string name="quick_start_name_invalid">Masukkan nama tanpa spasi atau karakter khusus.</string>
+    <string name="quick_start_go">Ayo mulai</string>
+    <string name="quick_start_server_label">Titik temu %1$s</string>
     <string name="server_add">Tambah server</string>
     <string name="server_connect_only">Sambung saja</string>
     <string name="server_save_and_connect">Simpan &amp; sambung</string>

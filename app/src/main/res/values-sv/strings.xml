@@ -239,6 +239,13 @@
     <string name="server_list_empty">Inga favoritservrar än</string>
     <string name="server_list_empty_hint">Lägg till en server du känner till, eller välj en från den publika listan.</string>
     <string name="server_list_browse_public">Bläddra bland publika servrar</string>
+    <string name="quick_start">Bara prata</string>
+    <string name="quick_start_hint">Ingen inställning: gå med i den öppna mötesplatsen %1$s. Den är publik, så alla i kanalen kan höra dig.</string>
+    <string name="quick_start_name_title">Vad ska de andra kalla dig?</string>
+    <string name="quick_start_name_hint">Ditt namn</string>
+    <string name="quick_start_name_invalid">Ange ett namn utan mellanslag och specialtecken.</string>
+    <string name="quick_start_go">Kör igång</string>
+    <string name="quick_start_server_label">Mötesplatsen %1$s</string>
     <string name="server_add">Lägg till server</string>
     <string name="server_connect_only">Anslut bara</string>
     <string name="server_save_and_connect">Spara &amp; anslut</string>

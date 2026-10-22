@@ -210,6 +210,13 @@
     <string name="server_list_empty">இன்னும் பிடித்த சேவையகங்கள் இல்லை</string>
     <string name="server_list_empty_hint">உங்களுக்குத் தெரிந்த சேவையகத்தைச் சேர்க்கவும், அல்லது பொதுப் பட்டியலிலிருந்து ஒன்றைத் தேர்ந்தெடுக்கவும்.</string>
     <string name="server_list_browse_public">பொது சேவையகங்களை உலாவு</string>
+    <string name="quick_start">உடனே பேசுங்கள்</string>
+    <string name="quick_start_hint">அமைப்பு தேவையில்லை: திறந்த சந்திப்பு இடமான %1$s இல் சேருங்கள். இது பொதுவானது: தடத்தில் உள்ள அனைவரும் உங்களைக் கேட்க முடியும்.</string>
+    <string name="quick_start_name_title">மற்றவர்கள் உங்களை எப்படி அழைக்க வேண்டும்?</string>
+    <string name="quick_start_name_hint">உங்கள் பெயர்</string>
+    <string name="quick_start_name_invalid">இடைவெளிகள் அல்லது சிறப்பு எழுத்துகள் இல்லாத பெயரை உள்ளிடவும்.</string>
+    <string name="quick_start_go">தொடங்குவோம்</string>
+    <string name="quick_start_server_label">%1$s சந்திப்பு இடம்</string>
     <string name="server_add">சேவையகத்தைச் சேர்</string>
     <string name="server_connect_only">இணைக்க மட்டும்</string>
     <string name="server_save_and_connect">சேமித்து இணை</string>

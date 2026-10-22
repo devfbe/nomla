@@ -218,6 +218,13 @@
     <string name="server_list_empty">Még nincsenek kedvenc szerverek</string>
     <string name="server_list_empty_hint">Adj hozzá egy ismert szervert, vagy válassz egyet a nyilvános listából.</string>
     <string name="server_list_browse_public">Nyilvános szerverek böngészése</string>
+    <string name="quick_start">Csak beszélj</string>
+    <string name="quick_start_hint">Beállítás nélkül: lépj be a nyitott %1$s találkozóhelyre. Nyilvános, így a csatornában mindenki hall téged.</string>
+    <string name="quick_start_name_title">Hogyan szólítsanak a többiek?</string>
+    <string name="quick_start_name_hint">A neved</string>
+    <string name="quick_start_name_invalid">Adj meg egy nevet szóközök és különleges karakterek nélkül.</string>
+    <string name="quick_start_go">Gyerünk</string>
+    <string name="quick_start_server_label">%1$s találkozóhely</string>
     <string name="server_add">Szerver hozzáadása</string>
     <string name="server_connect_only">Csak csatlakozás</string>
     <string name="server_save_and_connect">Mentés és csatlakozás</string>

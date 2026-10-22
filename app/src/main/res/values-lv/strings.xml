@@ -87,6 +87,13 @@
     <string name="server_list_empty">Vēl nav iecienītāko serveru</string>
     <string name="server_list_empty_hint">Pievienojiet zināmu serveri vai izvēlieties kādu no publiskā saraksta.</string>
     <string name="server_list_browse_public">Pārlūkot publiskos serverus</string>
+    <string name="quick_start">Vienkārši runāt</string>
+    <string name="quick_start_hint">Bez iestatīšanas: pievienojieties atvērtajai tikšanās vietai %1$s. Tā ir publiska, tāpēc visi kanālā jūs dzirdēs.</string>
+    <string name="quick_start_name_title">Kā citiem jūs saukt?</string>
+    <string name="quick_start_name_hint">Jūsu vārds</string>
+    <string name="quick_start_name_invalid">Ievadiet vārdu bez atstarpēm un īpašām rakstzīmēm.</string>
+    <string name="quick_start_go">Aiziet!</string>
+    <string name="quick_start_server_label">%1$s tikšanās vieta</string>
     <string name="server_add">Pievienot serveri</string>
     <string name="server_connect_only">Tikai savienot</string>
     <string name="server_save_and_connect">Saglabāt un savienot</string>

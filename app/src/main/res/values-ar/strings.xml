@@ -195,6 +195,13 @@
     <string name="server_list_empty">لا توجد خوادم مفضلة بعد</string>
     <string name="server_list_empty_hint">أضف خادمًا تعرفه، أو اختر واحدًا من القائمة العامة.</string>
     <string name="server_list_browse_public">تصفّح الخوادم العامة</string>
+    <string name="quick_start">تحدّث فورًا</string>
+    <string name="quick_start_hint">بلا إعداد: انضم إلى نقطة الالتقاء المفتوحة %1$s. إنها عامة، لذا يسمعك كل من في القناة.</string>
+    <string name="quick_start_name_title">بماذا يناديك الآخرون؟</string>
+    <string name="quick_start_name_hint">اسمك</string>
+    <string name="quick_start_name_invalid">أدخل اسمًا بلا مسافات أو رموز خاصة.</string>
+    <string name="quick_start_go">هيا بنا</string>
+    <string name="quick_start_server_label">نقطة التقاء %1$s</string>
     <string name="server_add">أضف خادمًا</string>
     <string name="server_connect_only">اتصل فقط</string>
     <string name="server_save_and_connect">احفظ واتصل</string>

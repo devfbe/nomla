@@ -231,6 +231,13 @@
     <string name="server_list_empty">Encara no hi ha servidors preferits</string>
     <string name="server_list_empty_hint">Afegiu un servidor que conegueu o trieu-ne un de la llista pública.</string>
     <string name="server_list_browse_public">Explora els servidors públics</string>
+    <string name="quick_start">Parleu ara</string>
+    <string name="quick_start_hint">Sense configuració: entreu al punt de trobada obert %1$s. És públic: tothom al canal us pot sentir.</string>
+    <string name="quick_start_name_title">Com us han de dir els altres?</string>
+    <string name="quick_start_name_hint">El vostre nom</string>
+    <string name="quick_start_name_invalid">Escriviu un nom sense espais ni caràcters especials.</string>
+    <string name="quick_start_go">Som-hi</string>
+    <string name="quick_start_server_label">Punt de trobada %1$s</string>
     <string name="server_add">Afegeix un servidor</string>
     <string name="server_connect_only">Només connecta</string>
     <string name="server_save_and_connect">Desa i connecta</string>

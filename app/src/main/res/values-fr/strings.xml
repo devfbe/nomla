@@ -240,6 +240,13 @@
     <string name="server_list_empty">Aucun serveur favori pour l\'instant</string>
     <string name="server_list_empty_hint">Ajoutez un serveur que vous connaissez ou choisissez-en un dans la liste publique.</string>
     <string name="server_list_browse_public">Parcourir les serveurs publics</string>
+    <string name="quick_start">Parler tout de suite</string>
+    <string name="quick_start_hint">Sans configuration : rejoignez le point de rencontre ouvert %1$s. Il est public : tout le monde dans le salon peut vous entendre.</string>
+    <string name="quick_start_name_title">Comment les autres doivent-ils vous appeler ?</string>
+    <string name="quick_start_name_hint">Votre nom</string>
+    <string name="quick_start_name_invalid">Saisissez un nom sans espaces ni caractères spéciaux.</string>
+    <string name="quick_start_go">C\'est parti</string>
+    <string name="quick_start_server_label">Point de rencontre %1$s</string>
     <string name="server_add">Ajouter un serveur</string>
     <string name="server_connect_only">Se connecter uniquement</string>
     <string name="server_save_and_connect">Enregistrer et se connecter</string>

@@ -230,6 +230,13 @@
     <string name="server_list_empty">ยังไม่มีเซิฟเวอร์โปรด</string>
     <string name="server_list_empty_hint">เพิ่มเซิฟเวอร์ที่คุณรู้จัก หรือเลือกจากรายการสาธารณะ</string>
     <string name="server_list_browse_public">เรียกดูเซิฟเวอร์สาธารณะ</string>
+    <string name="quick_start">คุยเลย</string>
+    <string name="quick_start_hint">ไม่ต้องตั้งค่า: เข้าร่วมจุดนัดพบแบบเปิด %1$s ซึ่งเป็นสาธารณะ ทุกคนในแชนเนลจะได้ยินคุณ</string>
+    <string name="quick_start_name_title">อยากให้คนอื่นเรียกคุณว่าอะไร</string>
+    <string name="quick_start_name_hint">ชื่อของคุณ</string>
+    <string name="quick_start_name_invalid">ป้อนชื่อที่ไม่มีช่องว่างหรืออักขระพิเศษ</string>
+    <string name="quick_start_go">ไปกันเลย</string>
+    <string name="quick_start_server_label">จุดนัดพบ %1$s</string>
     <string name="server_add">เพิ่มเซิฟเวอร์</string>
     <string name="server_connect_only">เชื่อมต่ออย่างเดียว</string>
     <string name="server_save_and_connect">บันทึกและเชื่อมต่อ</string>

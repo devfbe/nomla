@@ -240,6 +240,13 @@
     <string name="server_list_empty">Избранных серверов пока нет</string>
     <string name="server_list_empty_hint">Добавьте знакомый сервер или выберите из публичного списка.</string>
     <string name="server_list_browse_public">Публичные серверы</string>
+    <string name="quick_start">Просто поговорить</string>
+    <string name="quick_start_hint">Без настройки: зайдите на открытое место встречи %1$s. Оно публичное: вас услышат все в канале.</string>
+    <string name="quick_start_name_title">Как вас будут называть другие?</string>
+    <string name="quick_start_name_hint">Ваше имя</string>
+    <string name="quick_start_name_invalid">Введите имя без пробелов и специальных символов.</string>
+    <string name="quick_start_go">Поехали</string>
+    <string name="quick_start_server_label">Место встречи %1$s</string>
     <string name="server_add">Добавить сервер</string>
     <string name="server_connect_only">Только подключиться</string>
     <string name="server_save_and_connect">Сохранить и подключиться</string>

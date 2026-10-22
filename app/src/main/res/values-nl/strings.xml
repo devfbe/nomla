@@ -218,6 +218,13 @@
     <string name="server_list_empty">Nog geen favoriete servers</string>
     <string name="server_list_empty_hint">Voeg een server toe die je kent, of kies er een uit de openbare lijst.</string>
     <string name="server_list_browse_public">Openbare servers bekijken</string>
+    <string name="quick_start">Gewoon praten</string>
+    <string name="quick_start_hint">Zonder instellen: ga naar het open ontmoetingspunt %1$s. Het is openbaar: iedereen in het kanaal kan je horen.</string>
+    <string name="quick_start_name_title">Hoe moeten de anderen je noemen?</string>
+    <string name="quick_start_name_hint">Je naam</string>
+    <string name="quick_start_name_invalid">Voer een naam in zonder spaties of speciale tekens.</string>
+    <string name="quick_start_go">Aan de slag</string>
+    <string name="quick_start_server_label">%1$s-ontmoetingspunt</string>
     <string name="server_add">Server toevoegen</string>
     <string name="server_connect_only">Alleen verbinden</string>
     <string name="server_save_and_connect">Opslaan &amp; verbinden</string>

@@ -191,6 +191,13 @@
     <string name="server_list_empty">お気に入りのサーバーはまだありません</string>
     <string name="server_list_empty_hint">知っているサーバーを追加するか、公開リストから選んでください。</string>
     <string name="server_list_browse_public">公開サーバーを見る</string>
+    <string name="quick_start">すぐに話す</string>
+    <string name="quick_start_hint">設定不要：オープンな集まり場 %1$s に参加します。公開の場なので、チャンネル内の全員にあなたの声が聞こえます。</string>
+    <string name="quick_start_name_title">ほかの人にどう呼ばれたいですか？</string>
+    <string name="quick_start_name_hint">あなたの名前</string>
+    <string name="quick_start_name_invalid">スペースや特殊文字を含まない名前を入力してください。</string>
+    <string name="quick_start_go">はじめる</string>
+    <string name="quick_start_server_label">%1$s の集まり場</string>
     <string name="server_add">サーバーを追加</string>
     <string name="server_connect_only">接続のみ</string>
     <string name="server_save_and_connect">保存して接続</string>

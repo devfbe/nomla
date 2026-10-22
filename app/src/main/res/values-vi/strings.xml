@@ -71,6 +71,13 @@
     <string name="server_list_empty">Chưa có máy chủ yêu thích</string>
     <string name="server_list_empty_hint">Thêm một máy chủ bạn biết, hoặc chọn một máy chủ từ danh sách công cộng.</string>
     <string name="server_list_browse_public">Duyệt máy chủ công cộng</string>
+    <string name="quick_start">Nói chuyện ngay</string>
+    <string name="quick_start_hint">Không cần thiết lập: vào điểm hẹn mở %1$s. Đây là nơi công cộng: mọi người trong kênh đều có thể nghe bạn.</string>
+    <string name="quick_start_name_title">Mọi người nên gọi bạn là gì?</string>
+    <string name="quick_start_name_hint">Tên của bạn</string>
+    <string name="quick_start_name_invalid">Nhập tên không có dấu cách hoặc ký tự đặc biệt.</string>
+    <string name="quick_start_go">Bắt đầu thôi</string>
+    <string name="quick_start_server_label">Điểm hẹn %1$s</string>
     <string name="server_add">Thêm máy chủ</string>
     <string name="server_connect_only">Chỉ kết nối</string>
     <string name="server_save_and_connect">Lưu &amp; kết nối</string>

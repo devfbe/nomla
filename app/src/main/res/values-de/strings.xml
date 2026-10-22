@@ -342,6 +342,13 @@
     <string name="server_list_empty">Noch keine Favoriten-Server</string>
     <string name="server_list_empty_hint">Fügen Sie einen bekannten Server hinzu oder wählen Sie einen aus der öffentlichen Liste.</string>
     <string name="server_list_browse_public">Öffentliche Server durchsuchen</string>
+    <string name="quick_start">Einfach reden</string>
+    <string name="quick_start_hint">Ohne Einrichtung direkt zum offenen Treffpunkt %1$s. Er ist öffentlich: Alle im Kanal können Sie hören.</string>
+    <string name="quick_start_name_title">Wie sollen die anderen Sie nennen?</string>
+    <string name="quick_start_name_hint">Ihr Name</string>
+    <string name="quick_start_name_invalid">Bitte einen Namen ohne Leerzeichen und Sonderzeichen eingeben.</string>
+    <string name="quick_start_go">Los geht\'s</string>
+    <string name="quick_start_server_label">%1$s Treffpunkt</string>
     <string name="server_add">Server hinzufügen</string>
     <string name="server_connect_only">Nur verbinden</string>
     <string name="server_save_and_connect">Speichern &amp; verbinden</string>

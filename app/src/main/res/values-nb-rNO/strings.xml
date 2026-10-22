@@ -230,6 +230,13 @@
     <string name="server_list_empty">Ingen favorittjenere ennå</string>
     <string name="server_list_empty_hint">Legg til en tjener du kjenner, eller velg en fra den offentlige listen.</string>
     <string name="server_list_browse_public">Bla gjennom offentlige tjenere</string>
+    <string name="quick_start">Bare snakk</string>
+    <string name="quick_start_hint">Uten oppsett: bli med på det åpne møtestedet %1$s. Det er offentlig, så alle i kanalen kan høre deg.</string>
+    <string name="quick_start_name_title">Hva skal de andre kalle deg?</string>
+    <string name="quick_start_name_hint">Navnet ditt</string>
+    <string name="quick_start_name_invalid">Skriv inn et navn uten mellomrom eller spesialtegn.</string>
+    <string name="quick_start_go">Sett i gang</string>
+    <string name="quick_start_server_label">%1$s-møtested</string>
     <string name="server_add">Legg til tjener</string>
     <string name="server_connect_only">Bare koble til</string>
     <string name="server_save_and_connect">Lagre og koble til</string>

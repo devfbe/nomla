@@ -229,6 +229,13 @@
     <string name="server_list_empty">Δεν υπάρχουν ακόμη αγαπημένοι διακομιστές</string>
     <string name="server_list_empty_hint">Προσθέστε έναν διακομιστή που γνωρίζετε ή επιλέξτε έναν από τη δημόσια λίστα.</string>
     <string name="server_list_browse_public">Περιήγηση στους δημόσιους διακομιστές</string>
+    <string name="quick_start">Απλώς μιλήστε</string>
+    <string name="quick_start_hint">Χωρίς ρυθμίσεις: μπείτε στο ανοιχτό σημείο συνάντησης %1$s. Είναι δημόσιο: όλοι στο κανάλι μπορούν να σας ακούσουν.</string>
+    <string name="quick_start_name_title">Πώς να σας αποκαλούν οι άλλοι;</string>
+    <string name="quick_start_name_hint">Το όνομά σας</string>
+    <string name="quick_start_name_invalid">Εισαγάγετε ένα όνομα χωρίς κενά ή ειδικούς χαρακτήρες.</string>
+    <string name="quick_start_go">Πάμε</string>
+    <string name="quick_start_server_label">Σημείο συνάντησης %1$s</string>
     <string name="server_add">Προσθήκη διακομιστή</string>
     <string name="server_connect_only">Μόνο σύνδεση</string>
     <string name="server_save_and_connect">Αποθήκευση &amp; σύνδεση</string>

@@ -101,6 +101,13 @@
     <string name="server_list_empty">Încă nu ai servere favorite</string>
     <string name="server_list_empty_hint">Adaugă un server cunoscut sau alege unul din lista publică.</string>
     <string name="server_list_browse_public">Răsfoiește serverele publice</string>
+    <string name="quick_start">Vorbește acum</string>
+    <string name="quick_start_hint">Fără configurare: intră în punctul de întâlnire deschis %1$s. Este public: toți cei din canal te pot auzi.</string>
+    <string name="quick_start_name_title">Cum să-ți spună ceilalți?</string>
+    <string name="quick_start_name_hint">Numele tău</string>
+    <string name="quick_start_name_invalid">Introdu un nume fără spații sau caractere speciale.</string>
+    <string name="quick_start_go">Să mergem</string>
+    <string name="quick_start_server_label">Punctul de întâlnire %1$s</string>
     <string name="server_add">Adaugă server</string>
     <string name="server_connect_only">Doar conectare</string>
     <string name="server_save_and_connect">Salvează și conectează</string>

@@ -221,6 +221,13 @@
     <string name="server_list_empty">Aún no hay servidores favoritos</string>
     <string name="server_list_empty_hint">Añade un servidor que conozcas o elige uno de la lista pública.</string>
     <string name="server_list_browse_public">Explorar servidores públicos</string>
+    <string name="quick_start">Hablar ya</string>
+    <string name="quick_start_hint">Sin configuración: únete al punto de encuentro abierto %1$s. Es público: todos en el canal pueden oírte.</string>
+    <string name="quick_start_name_title">¿Cómo quieres que te llamen los demás?</string>
+    <string name="quick_start_name_hint">Tu nombre</string>
+    <string name="quick_start_name_invalid">Escribe un nombre sin espacios ni caracteres especiales.</string>
+    <string name="quick_start_go">¡Vamos!</string>
+    <string name="quick_start_server_label">Punto de encuentro %1$s</string>
     <string name="server_add">Añadir servidor</string>
     <string name="server_connect_only">Solo conectar</string>
     <string name="server_save_and_connect">Guardar y conectar</string>

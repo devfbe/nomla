@@ -239,6 +239,13 @@
     <string name="server_list_empty">暂无收藏的服务器</string>
     <string name="server_list_empty_hint">添加您知道的服务器，或从公共列表中选择一个。</string>
     <string name="server_list_browse_public">浏览公共服务器</string>
+    <string name="quick_start">直接聊</string>
+    <string name="quick_start_hint">无需设置：加入开放的聚会点 %1$s。这里是公开的，频道中的所有人都能听到您。</string>
+    <string name="quick_start_name_title">其他人该怎么称呼您？</string>
+    <string name="quick_start_name_hint">您的名字</string>
+    <string name="quick_start_name_invalid">请输入不含空格和特殊字符的名字。</string>
+    <string name="quick_start_go">出发</string>
+    <string name="quick_start_server_label">%1$s 聚会点</string>
     <string name="server_add">添加服务器</string>
     <string name="server_connect_only">仅连接</string>
     <string name="server_save_and_connect">保存并连接</string>

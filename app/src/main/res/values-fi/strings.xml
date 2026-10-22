@@ -229,6 +229,13 @@
     <string name="server_list_empty">Ei vielä suosikkipalvelimia</string>
     <string name="server_list_empty_hint">Lisää tuntemasi palvelin tai valitse yksi julkisesta luettelosta.</string>
     <string name="server_list_browse_public">Selaa julkisia palvelimia</string>
+    <string name="quick_start">Puhu heti</string>
+    <string name="quick_start_hint">Ei asetuksia: liity avoimeen kohtaamispaikkaan %1$s. Se on julkinen, joten kaikki kanavalla kuulevat sinut.</string>
+    <string name="quick_start_name_title">Miksi muut saavat kutsua sinua?</string>
+    <string name="quick_start_name_hint">Nimesi</string>
+    <string name="quick_start_name_invalid">Anna nimi ilman välilyöntejä tai erikoismerkkejä.</string>
+    <string name="quick_start_go">Mennään</string>
+    <string name="quick_start_server_label">%1$s-kohtaamispaikka</string>
     <string name="server_add">Lisää palvelin</string>
     <string name="server_connect_only">Vain yhdistä</string>
     <string name="server_save_and_connect">Tallenna ja yhdistä</string>

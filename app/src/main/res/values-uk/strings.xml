@@ -233,6 +233,13 @@
     <string name="server_list_empty">Обраних серверів поки немає</string>
     <string name="server_list_empty_hint">Додайте відомий вам сервер або виберіть із публічного списку.</string>
     <string name="server_list_browse_public">Публічні сервери</string>
+    <string name="quick_start">Просто поговорити</string>
+    <string name="quick_start_hint">Без налаштування: заходьте на відкрите місце зустрічі %1$s. Воно публічне: вас почують усі в каналі.</string>
+    <string name="quick_start_name_title">Як вас називатимуть інші?</string>
+    <string name="quick_start_name_hint">Ваше ім\'я</string>
+    <string name="quick_start_name_invalid">Введіть ім\'я без пробілів і спеціальних символів.</string>
+    <string name="quick_start_go">Поїхали</string>
+    <string name="quick_start_server_label">Місце зустрічі %1$s</string>
     <string name="server_add">Додати сервер</string>
     <string name="server_connect_only">Лише підключитися</string>
     <string name="server_save_and_connect">Зберегти й підключитися</string>

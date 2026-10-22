@@ -222,6 +222,13 @@
     <string name="server_list_empty">尚無收藏的伺服器</string>
     <string name="server_list_empty_hint">新增你知道的伺服器，或從公共清單中挑選一個。</string>
     <string name="server_list_browse_public">瀏覽公共伺服器</string>
+    <string name="quick_start">直接聊</string>
+    <string name="quick_start_hint">免設定：加入開放的聚會點 %1$s。這裡是公開的，頻道中的所有人都聽得到你。</string>
+    <string name="quick_start_name_title">其他人要怎麼稱呼你？</string>
+    <string name="quick_start_name_hint">你的名字</string>
+    <string name="quick_start_name_invalid">請輸入不含空白或特殊字元的名字。</string>
+    <string name="quick_start_go">出發</string>
+    <string name="quick_start_server_label">%1$s 聚會點</string>
     <string name="server_add">新增伺服器</string>
     <string name="server_connect_only">僅連線</string>
     <string name="server_save_and_connect">儲存並連線</string>
