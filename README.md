@@ -4,6 +4,7 @@
 
 Nomla is a [Mumble](https://www.mumble.info/) voice-chat client for Android. It
 runs on Android 12 (API 31) and later.
+Website: https://becker.koeln/nomla/
 
 Nomla was ported from [Mumla](https://gitlab.com/quite/mumla) and almost
 completely rewritten, from Java to Kotlin. Credit goes to the projects it comes
@@ -73,6 +74,8 @@ If you get an error running out of Java heap space, try raising the `-Xmx` in
   `gradle/libs.versions.toml`.
 - `branding/` — the logo (`nomla.svg`, a 512×512 PNG for stores, and the original
   artwork).
+- `website/` — the project website at https://becker.koeln/nomla/ (static, German
+  and English).
 - `NOTICE.md` — third-party components and licenses.
 - `docs/audio-testing.md` — the audio test suite: what each test proves, the Piper
   speech corpus, how to run the device and room tests, and what they measured.

@@ -68,3 +68,18 @@ logs every decision to `.claude/logs/ide-first.jsonl`. Build output, `.claude/`,
 - A task is only done when its `verify` run is green; an agent never reports success on a verify it
   did not see finish.
 - Every subagent report lists its MCP calls per tool and any fallback to Gradle or shell tools.
+
+## Website
+
+`website/` is the project website, served at https://becker.koeln/nomla/: static HTML, CSS and JS,
+no build step, self-hosted fonts, nothing loaded from other servers. Every content pair exists in
+German and English (`lang="de"` / `lang="en"`), and both are kept in step.
+
+- **Keep it current.** Every change to Nomla that the page describes (features, audio chain values,
+  security, architecture, toolchain and library versions, test counts) updates `website/` in the
+  same task. Values on the page are the ones in the code; check them there, never from memory.
+- **New beta = new download.** When a beta APK is published, the download link and the version in
+  `website/index.html` point to it.
+- **Deploy after every change** to `website/`, once it is committed: publish the directory to
+  https://becker.koeln/nomla/ and check that the page and its assets load. How to deploy is not
+  documented in this repository; ask the owner if you do not know.
