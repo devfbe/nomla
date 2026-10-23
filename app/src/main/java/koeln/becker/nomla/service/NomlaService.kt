@@ -49,7 +49,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.audio.TransmitMode
-import koeln.becker.nomla.mumble.model.Message
 import koeln.becker.nomla.mumble.model.TalkState
 import koeln.becker.nomla.mumble.session.DisconnectReason
 import koeln.becker.nomla.mumble.session.NomlaEvent
@@ -58,22 +57,21 @@ import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.chat.NoticeFormatter
-import koeln.becker.nomla.chat.outgoingMessageHtml
 import koeln.becker.nomla.service.ipc.TalkBroadcastReceiver
 import koeln.becker.nomla.session.PushToTalk
 import koeln.becker.nomla.session.SelfSummary
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.session.isConnected
 import koeln.becker.nomla.session.serverName
-import koeln.becker.nomla.util.HtmlUtils
 import koeln.becker.nomla.util.changes
 import koeln.becker.nomla.util.collectEvents
 
 /**
  * The foreground service that anchors a session while the app is in the background: it holds the
  * microphone foreground notification and the media session, and hosts what a session shows outside
- * the app (overlay, hot corner, chat notifications, text-to-speech, the reconnect prompt). It
- * observes the [SessionManager]'s current session and stops itself once none is active.
+ * the app (overlay, hot corner, chat notifications and text-to-speech through [ChatAlerts], the
+ * reconnect prompt). It observes the [SessionManager]'s current session and stops itself once none
+ * is active.
  */
 @Suppress("TooManyFunctions") // Framework and notification callbacks, each delegating.
 class NomlaService :
@@ -87,7 +85,7 @@ class NomlaService :
 
     /** One per service life; its [NomlaConnectionNotification.isForeground] is the foreground state. */
     private lateinit var notification: NomlaConnectionNotification
-    private lateinit var messageNotification: NomlaMessageNotification
+    private lateinit var chatAlerts: ChatAlerts
     private lateinit var reconnectPrompt: NomlaReconnectNotification
     private var reconnectPromptShown = false
 
@@ -107,11 +105,13 @@ class NomlaService :
     internal var proximityLock: PowerManager.WakeLock? = null
         private set
 
+    /** Text-to-speech, see [ChatAlerts.tts]. */
     @VisibleForTesting
-    internal var tts: TextToSpeech? = null
-    private val ttsInitListener = TextToSpeech.OnInitListener { status ->
-        if (status == TextToSpeech.ERROR) sessions.chat.warnOnce(getString(R.string.tts_failed))
-    }
+    internal var tts: TextToSpeech?
+        get() = chatAlerts.tts
+        set(value) {
+            chatAlerts.tts = value
+        }
 
     @VisibleForTesting
     internal lateinit var hotCorner: NomlaHotCorner
@@ -149,11 +149,11 @@ class NomlaService :
         setTheme(R.style.Theme_Nomla)
 
         notification = NomlaConnectionNotification.create(this, "", this)
-        messageNotification = NomlaMessageNotification(this)
+        chatAlerts = ChatAlerts(this, sessions, settings)
         reconnectPrompt = NomlaReconnectNotification(this, this)
         channelOverlay = NomlaOverlay(this, sessions)
         hotCorner = NomlaHotCorner(this, settings.hotCornerGravity, hotCornerListener)
-        if (settings.isTextToSpeechEnabled) tts = TextToSpeech(this, ttsInitListener)
+        chatAlerts.applyTextToSpeechPreference()
         talkReceiver = TalkBroadcastReceiver(sessions) { settings.isExternalPushToTalkAllowed }
         mediaSession = NomlaMediaSession(this, SessionMediaKeyTarget(sessions), settings).also {
             it.attach(sessions.state)
@@ -167,7 +167,7 @@ class NomlaService :
             sessions.errorShown.collect { shown -> if (shown) hideReconnectPrompt() }
         }
         serviceScope.launch(start = CoroutineStart.UNDISPATCHED) {
-            sessions.appVisible.collect { visible -> if (visible) messageNotification.dismiss() }
+            sessions.appVisible.collect { visible -> if (visible) chatAlerts.dismiss() }
         }
         serviceScope.launch(start = CoroutineStart.UNDISPATCHED) {
             sessions.session.collectLatest { session -> if (session != null) follow(session) }
@@ -216,7 +216,7 @@ class NomlaService :
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
-            NomlaMessageNotification.ACTION_REPLY -> onChatReply(intent)
+            NomlaMessageNotification.ACTION_REPLY -> chatAlerts.onChatReply(intent)
             ACTION_TOGGLE_OVERLAY -> toggleOverlay()
         }
         handler.post(stopIfIdle)
@@ -234,8 +234,7 @@ class NomlaService :
         unregisterTalkReceiver()
         // Null-checked: built last in onCreate, so an earlier throw leaves it null.
         mediaSession?.detach()
-        tts?.shutdown()
-        messageNotification.dismiss()
+        chatAlerts.release()
         setProximitySensorOn(false)
         channelOverlay.hide()
         hotCorner.isShown = false
@@ -275,7 +274,7 @@ class NomlaService :
                 showConnectionNotification(getString(R.string.connection_lost_reconnecting), cancelReconnect = true)
             is SessionState.Disconnected -> {
                 notification.hide()
-                messageNotification.dismiss()
+                chatAlerts.dismiss()
                 val reason = state.reason?.takeIf { it.isReported }
                 if (reason != null && !sessions.appVisible.value && !sessions.errorShown.value) {
                     showReconnectPrompt(notices.disconnectReason(reason) + torSuffix())
@@ -322,7 +321,7 @@ class NomlaService :
 
     private fun onEvent(session: Session, event: NomlaEvent) {
         when (event) {
-            is NomlaEvent.TextMessage -> onTextMessage(session, event.message)
+            is NomlaEvent.TextMessage -> chatAlerts.onTextMessage(session, event.message)
             is NomlaEvent.PermissionDenied ->
                 if (notification.isForeground && !sessions.appVisible.value) notification.show()
             else -> Unit
@@ -341,30 +340,6 @@ class NomlaService :
         microphoneBlocked = blocked
         if (blocked) sessions.chat.warnOnce(getString(R.string.microphone_blocked))
         if (session.state.value == SessionState.Connected) renderSessionState(session, SessionState.Connected)
-    }
-
-    private fun onTextMessage(session: Session, message: Message) {
-        val strippedMessage = HtmlUtils.toPlainText(message.message)
-        val ttsMessage = if (settings.isShortTextToSpeechMessagesEnabled) {
-            HtmlUtils.toPlainTextWithShortLinks(message.message) { host ->
-                getString(R.string.chat_message_tts_short_link, host)
-            }
-        } else {
-            strippedMessage
-        }
-        val sender = notices.senderName(message)
-        val formattedTtsMessage = getString(R.string.notification_message, sender, ttsMessage)
-
-        // tts is non-null exactly while the setting is on (the preference listener owns it).
-        val tts = tts
-        val deafened = session.model.value?.self?.isSelfDeafened
-        if (tts != null && formattedTtsMessage.length <= TTS_THRESHOLD && deafened == false) {
-            @Suppress("DEPRECATION")
-            tts.speak(formattedTtsMessage, TextToSpeech.QUEUE_ADD, null)
-        }
-
-        // Every message notifies while enabled; there is no per-sender filter yet.
-        if (settings.isChatNotifyEnabled) messageNotification.show(sender, strippedMessage, conversation(session))
     }
 
     private fun onStartedTalking(session: Session) {
@@ -402,37 +377,6 @@ class NomlaService :
         talkReceiverRegistered = false
     }
 
-    /** Our name, the channel a reply goes to and the server, for the chat notification. */
-    private fun conversation(session: Session): NomlaMessageNotification.Conversation {
-        val model = session.model.value
-        return NomlaMessageNotification.Conversation(
-            self = model?.self?.name,
-            channel = model?.selfChannel?.name,
-            server = session.serverName,
-        )
-    }
-
-    /**
-     * Sends the chat notification's inline reply to our channel. The notification is re-posted in
-     * any case, or it would keep waiting for the send; without a session it is removed instead.
-     */
-    private fun onChatReply(intent: Intent) {
-        val reply = NomlaMessageNotification.replyText(intent)?.trim()
-        val session = sessions.connected
-        val channel = session?.model?.value?.selfChannel
-        if (session == null || channel == null) {
-            messageNotification.dismiss()
-            return
-        }
-        if (reply.isNullOrEmpty()) {
-            messageNotification.refresh()
-            return
-        }
-        val html = outgoingMessageHtml(reply, settings.isMarkdownEnabled)
-        session.actions.sendChannelTextMessage(channel.id, html, false)
-        messageNotification.showReply(reply, conversation(session))
-    }
-
     @VisibleForTesting
     internal fun onPreferenceChanged(key: String) {
         when (key) {
@@ -442,17 +386,7 @@ class NomlaService :
                 hotCorner.gravity = settings.hotCornerGravity
                 hotCorner.isShown = sessions.connected != null && settings.isHotCornerEnabled
             }
-            Settings.USE_TTS.key -> applyTextToSpeechPreference()
-        }
-    }
-
-    private fun applyTextToSpeechPreference() {
-        val current = tts
-        if (current == null && settings.isTextToSpeechEnabled) {
-            tts = TextToSpeech(this, ttsInitListener)
-        } else if (current != null && !settings.isTextToSpeechEnabled) {
-            current.shutdown()
-            tts = null
+            Settings.USE_TTS.key -> chatAlerts.applyTextToSpeechPreference()
         }
     }
 
@@ -502,7 +436,8 @@ class NomlaService :
     companion object {
         private const val TAG = "NomlaService"
 
-        const val TTS_THRESHOLD = 250 // Maximum number of characters to read
+        /** Maximum number of characters to read, see [ChatAlerts.TTS_THRESHOLD]. */
+        const val TTS_THRESHOLD = ChatAlerts.TTS_THRESHOLD
 
         private const val ACTION_TOGGLE_OVERLAY = "koeln.becker.nomla.action.TOGGLE_OVERLAY"
 
