@@ -64,7 +64,9 @@ class ChannelFragmentAccessibilityTest {
 
     @Before
     fun setUp() {
-        preferences.edit(commit = true) { putString(Settings.INPUT_METHOD.key, TransmitMode.PUSH_TO_TALK.preferenceValue) }
+        preferences.edit(commit = true) {
+            putString(Settings.INPUT_METHOD.key, TransmitMode.PUSH_TO_TALK.preferenceValue)
+        }
         session = mockk(relaxed = true)
         audio = session.stubAudio()
         session.stubModel(serverState(self = SESSION) { channel(0, "Root"); user(SESSION, "me") })

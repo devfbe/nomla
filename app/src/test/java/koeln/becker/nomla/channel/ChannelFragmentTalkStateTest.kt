@@ -66,7 +66,9 @@ class ChannelFragmentTalkStateTest {
     fun setUp() {
         // Voice activity (the default) hides the talk view, and `touch` dispatches straight at the
         // view regardless, so push-to-talk must be set explicitly.
-        preferences.edit(commit = true) { putString(Settings.INPUT_METHOD.key, TransmitMode.PUSH_TO_TALK.preferenceValue) }
+        preferences.edit(commit = true) {
+            putString(Settings.INPUT_METHOD.key, TransmitMode.PUSH_TO_TALK.preferenceValue)
+        }
         session = mockk(relaxed = true)
         audio = session.stubAudio()
         session.stubModel(serverState(self = 1) { channel(0, "Root"); user(1, "me") })
