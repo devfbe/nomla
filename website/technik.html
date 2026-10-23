@@ -255,8 +255,8 @@ fill="currentColor" stroke="none">
     <div class="modules">
       <div class="module">
         <h3><code>app</code></h3>
-        <p lang="de">Oberfläche (Android Views, Material), Vordergrund-Dienst, Einstellungen, Datenbank (SQLite, Schema 10). Abhängigkeiten von Hand verdrahtet, ohne DI-Framework.</p>
-        <p lang="en">User interface (Android Views, Material), foreground service, settings, database (SQLite, schema 10). Dependencies wired by hand, no DI framework.</p>
+        <p lang="de">Oberfläche (Android Views, Material), Vordergrund-Dienst, Einstellungen, Datenbank (SQLite, Schema 10). Abhängigkeiten von Hand verdrahtet, ohne DI-Framework: Was die ganze App teilt, hält ein einziger Container der Application, und Tests tauschen Teile nur dort aus.</p>
+        <p lang="en">User interface (Android Views, Material), foreground service, settings, database (SQLite, schema 10). Dependencies wired by hand, no DI framework: what the whole app shares lives in one container held by the Application, and tests swap parts there and nowhere else.</p>
         <div class="module">
           <h3><code>libraries/core</code></h3>
           <p lang="de">Die Sitzung mit einem Server als einfaches Objekt, Zustand als Kotlin Flows, Audio-Kette, Audio-Routing und die native Bibliothek <code>libnomla_native.so</code> (C++17, NDK, arm64, armv7, x86_64), die nur <code>JNI_OnLoad</code> exportiert.</p>
