@@ -336,9 +336,10 @@ class VoiceActivityDetectorTest {
             }
             expectedOn = detected || (everDetected && nowNanos < expectedDeadline)
 
+            val stayedOn = wasOn && expectedOn
             if (!wasOn && expectedOn) started++
-            if (wasOn && expectedOn && detected && score < config.startThreshold) keptByStop++
-            if (wasOn && expectedOn && !detected) keptByHold++
+            if (stayedOn && detected && score < config.startThreshold) keptByStop++
+            if (stayedOn && !detected) keptByHold++
             if (wasOn && !expectedOn) stopped++
 
             val actual = d.isVoice(EMPTY_FRAME, 0, score)

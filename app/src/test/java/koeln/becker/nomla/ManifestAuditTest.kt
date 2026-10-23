@@ -192,14 +192,11 @@ class ManifestAuditTest {
         var sawDeviceTransfer = false
         val parser = context.resources.getXml(resourceId)
         while (parser.eventType != XmlPullParser.END_DOCUMENT) {
-            if (parser.eventType == XmlPullParser.START_TAG) {
-                when (parser.name) {
-                    "device-transfer" -> sawDeviceTransfer = true
-                    "exclude" ->
-                        if (parser.getAttributeValue(null, "domain") == "root") {
-                            sawCloudBackupRootExclude = true
-                        }
-                }
+            val isStart = parser.eventType == XmlPullParser.START_TAG
+            when {
+                isStart && parser.name == "device-transfer" -> sawDeviceTransfer = true
+                isStart && parser.name == "exclude" && parser.getAttributeValue(null, "domain") == "root" ->
+                    sawCloudBackupRootExclude = true
             }
             parser.next()
         }

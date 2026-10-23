@@ -236,8 +236,9 @@ class SessionSettingsSyncTest {
         val keys = mutableSetOf<String>()
         val parser = context.resources.getXml(R.xml.settings_audio)
         while (parser.next() != XmlPullParser.END_DOCUMENT) {
-            if (parser.eventType != XmlPullParser.START_TAG) continue
-            keys += parser.getAttributeValue(ANDROID_NS, "key") ?: continue
+            val isStart = parser.eventType == XmlPullParser.START_TAG
+            val key = if (isStart) parser.getAttributeValue(ANDROID_NS, "key") else null
+            if (key != null) keys += key
         }
 
         assertThat(keys.filterNot { it in SessionSettings.AUDIO_KEYS || it in exempt }).isEmpty()

@@ -9,8 +9,6 @@
     <ID>LongParameterList:InputLevelMeterPreferenceTest.kt$InputLevelMeterPreferenceTest$( levelDbfs: Float = -30f, floorDbfs: Float? = -45f, speechDbfs: Float? = -20f, thresholdDbfs: Float? = -32f, voice: Boolean = true, holding: Boolean = false, tooClose: Boolean = false, )</ID>
     <ID>LongParameterList:ServerInfoResponse.kt$ServerInfoResponse$( val server: Server?, val version: Int, val identifier: Long, val currentUsers: Int, val maximumUsers: Int, val allowedBandwidth: Int, val latency: Int, val isDummy: Boolean, )</ID>
     <ID>LongParameterList:ZoomState.kt$ZoomState$( factor: Float, focusX: Float, focusY: Float, viewWidth: Float, viewHeight: Float, imageWidth: Float, imageHeight: Float, )</ID>
-    <ID>LoopWithTooManyJumpStatements:SessionSettingsSyncTest.kt$SessionSettingsSyncTest$while</ID>
-    <ID>NestedBlockDepth:ManifestAuditTest.kt$ManifestAuditTest$@Test fun theBackupRulesFileExcludesCloudBackupButNotDeviceTransfer()</ID>
     <ID>ReturnCount:ChatImageLoader.kt$ChatImageLoader$suspend fun loadThumbnail(source: String, maxWidth: Int, maxHeight: Int): ImageResult</ID>
     <ID>TooManyFunctions:AudioSettingsFragment.kt$AudioSettingsFragment : NomlaPreferenceFragment</ID>
     <ID>TooManyFunctions:ChannelChatFragment.kt$ChannelChatFragment : FragmentMenuProvider</ID>
