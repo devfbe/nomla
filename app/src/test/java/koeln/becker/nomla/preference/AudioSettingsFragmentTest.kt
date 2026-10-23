@@ -34,6 +34,7 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
+import koeln.becker.nomla.mumble.audio.capture.NoiseSuppressionMode
 import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.testutil.TestCaptureSource
 import koeln.becker.nomla.mumble.testutil.TestPlaybackSink
@@ -181,7 +182,7 @@ class AudioSettingsFragmentTest {
 
     @Test
     fun `the noise reduction strength and its reset are shown only with rnnoise`() {
-        Settings.getInstance(app).noiseSuppressionMethod = "speex"
+        Settings.getInstance(app).noiseSuppressionMode = NoiseSuppressionMode.SPEEX
         val audio = openAudio()
         assertThat(audio.strength().isVisible).isFalse()
         assertThat(audio.reset().isVisible).isFalse()

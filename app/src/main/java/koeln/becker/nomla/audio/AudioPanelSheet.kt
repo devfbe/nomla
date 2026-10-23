@@ -116,7 +116,7 @@ class AudioPanelSheet : BottomSheetDialogFragment() {
         }
         binding.audioPanelNoise.addOnButtonCheckedListener { _, id, checked ->
             val mode = NOISE_MODES[id]
-            if (checked && !applyingSettings && mode != null) settings.noiseSuppressionMethod = mode.preferenceValue
+            if (checked && !applyingSettings && mode != null) settings.noiseSuppressionMode = mode
         }
         binding.audioPanelMicToggle.setOnClickListener {
             if (micCheck?.isRunning == true) stopMicCheck() else microphone.run()

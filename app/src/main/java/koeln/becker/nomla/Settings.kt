@@ -178,11 +178,13 @@ class Settings private constructor(private val context: Context) {
 
     val isPttSoundEnabled: Boolean by pref(PTT_SOUND)
 
-    /** One of the `noiseSuppressionValues`; the quick menu writes it as well as the settings screen. */
-    var noiseSuppressionMethod: String by pref(NOISE_SUPPRESSION_METHOD)
-
-    val noiseSuppressionMode: NoiseSuppressionMode
-        get() = NoiseSuppressionMode.fromPreferenceValue(noiseSuppressionMethod)
+    /**
+     * Stored as its [NoiseSuppressionMode.preferenceValue], one of the `noiseSuppressionValues`; the
+     * quick menu writes it as well as the settings screen.
+     */
+    var noiseSuppressionMode: NoiseSuppressionMode
+        get() = NoiseSuppressionMode.fromPreferenceValue(preferences.read(NOISE_SUPPRESSION_METHOD))
+        set(value) = preferences.edit { write(NOISE_SUPPRESSION_METHOD, value.preferenceValue) }
 
     /** Anything outside [PipelineSettings.SPEEX_NOISE_SUPPRESS_DB] is the default. */
     val speexNoiseSuppressDb: Int

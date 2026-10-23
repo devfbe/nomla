@@ -45,6 +45,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.audio.capture.NoiseSuppressionMode
 import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.audio.routing.CommunicationDevice
 import koeln.becker.nomla.mumble.audio.routing.PreferredAudioDevice
@@ -206,7 +207,7 @@ class AudioPanelSheetTest {
 
     @Test
     fun theNoiseSuppressionButtonsWriteTheSetting() {
-        settings.noiseSuppressionMethod = "rnnoise"
+        settings.noiseSuppressionMode = NoiseSuppressionMode.RNNOISE
         launch(DrawerAdapter.ITEM_FAVOURITES)
         val panel = openPanel()
         assertThat(panel.find<MaterialButtonToggleGroup>(R.id.audio_panel_noise).checkedButtonId)
@@ -214,7 +215,7 @@ class AudioPanelSheetTest {
 
         panel.find<MaterialButton>(R.id.audio_panel_noise_none).performClick()
 
-        assertThat(settings.noiseSuppressionMethod).isEqualTo("none")
+        assertThat(settings.noiseSuppressionMode).isEqualTo(NoiseSuppressionMode.NONE)
     }
 
     /** Without a connection a choice is only saved: routing would duck every other app's audio. */

@@ -56,12 +56,28 @@ class SettingsAudioTest {
         val listener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key -> written += key }
         prefs.registerOnSharedPreferenceChangeListener(listener)
         try {
-            settings.noiseSuppressionMethod = "speex"
+            settings.noiseSuppressionMode = NoiseSuppressionMode.SPEEX
             idleMainLooper()
         } finally {
             prefs.unregisterOnSharedPreferenceChangeListener(listener)
         }
         assertThat(written).containsExactly(Settings.NOISE_SUPPRESSION_METHOD.key)
+    }
+
+    /** The mode is stored as its preference value, so installs keep what they had chosen. */
+    @Test
+    fun `noise suppression round-trips through its stored preference value`() {
+        for (mode in NoiseSuppressionMode.entries) {
+            settings.noiseSuppressionMode = mode
+            assertThat(prefs.getString(Settings.NOISE_SUPPRESSION_METHOD.key, null)).isEqualTo(mode.preferenceValue)
+            assertThat(settings.noiseSuppressionMode).isEqualTo(mode)
+        }
+        assertThat(NoiseSuppressionMode.entries.map { it.preferenceValue })
+            .containsExactly("none", "speex", "rnnoise")
+        prefs.edit().putString(Settings.NOISE_SUPPRESSION_METHOD.key, "loud").commit()
+        assertThat(settings.noiseSuppressionMode).isEqualTo(NoiseSuppressionMode.SPEEX)
+        prefs.edit().remove(Settings.NOISE_SUPPRESSION_METHOD.key).commit()
+        assertThat(settings.noiseSuppressionMode).isEqualTo(NoiseSuppressionMode.RNNOISE)
     }
 
     @Test
