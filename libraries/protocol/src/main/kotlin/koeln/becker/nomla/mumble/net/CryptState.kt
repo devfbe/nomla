@@ -23,6 +23,17 @@ import javax.crypto.spec.SecretKeySpec
 /**
  * OCB2-AES128 for the voice channel, after Mumble's `CryptStateOCB2`. The OCB patent is licensed
  * free of charge for OSI-certified open source software (http://www.cs.ucdavis.edu/~rogaway/ocb/license.htm).
+ *
+ * Threading: three threads share one instance. The UDP receive loop calls [decrypt] and the resync
+ * timing ([lastGoodElapsed], [lastRequestElapsed], [resetLastRequestTime]); the audio thread calls
+ * [encrypt]; the protocol context calls [setKeys], [setDecryptIV], [encryptIV] and reads the
+ * counters for pings and the UDP health check.
+ * - The keys, the IVs and the decrypt history are guarded by this instance's monitor: every method
+ *   that touches them is `@Synchronized`, one uncontended lock per voice packet.
+ * - [good], [late], [lost], [isValid] and the two timestamps are written by one thread at a time
+ *   ([decrypt] under the monitor, [setKeys] once, the receive loop) and read by others without the
+ *   monitor, so they are `@Volatile`: a reader sees the last write, never a torn or stale value.
+ * - [resync] and the remote counters are confined to the protocol context.
  */
 internal class CryptState {
     private var encryptIv = ByteArray(AES_BLOCK_SIZE)
@@ -30,22 +41,25 @@ internal class CryptState {
     private val decryptHistory = ByteArray(IV_RANGE)
     private lateinit var encryptCipher: Cipher
     private lateinit var decryptCipher: Cipher
-    private var lastGoodStart = 0L
-    private var lastRequestStart = 0L
+    @Volatile private var lastGoodStart = 0L
+    @Volatile private var lastRequestStart = 0L
 
-    /** Packets this side decrypted, received late, lost, and resyncs it asked for. */
-    internal var good = 0
-    internal var late = 0
-    internal var lost = 0
+    /** Packets this side decrypted, received late, lost; written in [decrypt], read by any thread. */
+    @Volatile internal var good = 0
+    @Volatile internal var late = 0
+    @Volatile internal var lost = 0
+
+    /** Resyncs this side asked for; protocol context only. */
     internal var resync = 0
 
-    /** The same counters as the server reported them for its side. */
+    /** The same counters as the server reported them for its side; protocol context only. */
     internal var remoteGood = 0
     internal var remoteLate = 0
     internal var remoteLost = 0
     internal var remoteResync = 0
 
-    /** True once [setKeys] has run. */
+    /** True once [setKeys] has run; read by any thread. */
+    @Volatile
     var isValid = false
         private set
 

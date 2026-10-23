@@ -21,6 +21,7 @@ import com.google.common.truth.Truth.assertThat
 import com.google.common.truth.Truth.assertWithMessage
 import org.junit.Test
 import koeln.becker.nomla.mumble.testutil.bytes
+import java.lang.reflect.Modifier
 
 /** OCB2-AES128 behaviour as Mumble's `CryptStateOCB2` and its `TestCrypt` suite define it. */
 class CryptStateTest {
@@ -235,5 +236,18 @@ class CryptStateTest {
         assertWithMessage("IV restored after the late packet").that(dec.decryptIV).isEqualTo(enc.encryptIV)
         assertWithMessage("replayed").that(dec.accepts(beforeWrap)).isFalse()
         assertThat(dec.accepts(enc.encrypt(secret, 10))).isTrue()
+    }
+
+    /**
+     * The UDP receive thread writes these, under the monitor; the protocol context (pings, the UDP
+     * health check) and the audio thread (sending) read them without it. Only a volatile field
+     * gives those reads a happens-before edge to the last write.
+     */
+    @Test
+    fun `the state other threads read is volatile`() {
+        for (name in listOf("good", "late", "lost", "isValid", "lastGoodStart", "lastRequestStart")) {
+            val field = CryptState::class.java.getDeclaredField(name)
+            assertWithMessage("$name is volatile").that(Modifier.isVolatile(field.modifiers)).isTrue()
+        }
     }
 }
