@@ -55,23 +55,19 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import koeln.becker.nomla.R
 import koeln.becker.nomla.chat.ChatAdapter
 import koeln.becker.nomla.chat.ChatContentParser
 import koeln.becker.nomla.chat.ChatImageLoaders
 import koeln.becker.nomla.chat.IChatMessage
-import koeln.becker.nomla.chat.ImageFetchException
-import koeln.becker.nomla.chat.ImageGallerySaver
-import koeln.becker.nomla.chat.ImageShareExporter
+import koeln.becker.nomla.chat.ImageActionFeedback
 import koeln.becker.nomla.chat.ImageSource
 import koeln.becker.nomla.chat.ImageViewerDialogFragment
-import koeln.becker.nomla.chat.shareChooser
-import koeln.becker.nomla.chat.viewSaved
+import koeln.becker.nomla.chat.saveChatImage
+import koeln.becker.nomla.chat.shareChatImage
 import koeln.becker.nomla.databinding.FragmentChatBinding
 import koeln.becker.nomla.ui.showPermissionDeniedSnackbar
 import koeln.becker.nomla.ui.showSnackbar
-import java.io.IOException
 
 /** The image preview takes at most a third of the screen height. */
 private const val PREVIEW_SCREEN_FRACTION = 3
@@ -243,6 +239,9 @@ class ChannelChatFragment : Fragment(), MenuProvider {
     /** The open long-press menu, dismissed with the view. */
     private var imageMenu: PopupMenu? = null
 
+    /** Image save and share report at the bottom of the activity, above its bar. */
+    private val imageFeedback = ImageActionFeedback { text, action, onAction -> showSnackbar(text, action, onAction) }
+
     /** The long-press menu of a picture in the log, anchored to it. */
     @VisibleForTesting
     internal fun showImageMenu(source: String, anchor: View) {
@@ -273,18 +272,9 @@ class ChannelChatFragment : Fragment(), MenuProvider {
     internal fun saveImage(source: String) {
         if (view == null || imageAction?.isActive == true) return
         if (!ImageSource.isInline(source)) return openImageViewer(source, ImageViewerDialogFragment.Action.SAVE)
-        val context = requireContext()
-        val loader = ChatImageLoaders.get(context)
+        val loader = ChatImageLoaders.get(requireContext())
         imageAction = viewLifecycleOwner.lifecycleScope.launch {
-            try {
-                val bytes = loader.fetchBytes(source)
-                val saved = withContext(imageIoDispatcher) { ImageGallerySaver(context).save(bytes) }
-                showSnackbar(R.string.chat_image_saved, R.string.chat_image_view) { context.viewSaved(saved) }
-            } catch (_: ImageFetchException) {
-                showSnackbar(R.string.chat_image_save_failed)
-            } catch (_: IOException) {
-                showSnackbar(R.string.chat_image_save_failed)
-            }
+            saveChatImage(imageIoDispatcher, imageFeedback) { loader.fetchBytes(source) }
         }
     }
 
@@ -293,18 +283,9 @@ class ChannelChatFragment : Fragment(), MenuProvider {
     internal fun shareImage(source: String) {
         if (view == null || imageAction?.isActive == true) return
         if (!ImageSource.isInline(source)) return openImageViewer(source, ImageViewerDialogFragment.Action.SHARE)
-        val context = requireContext()
-        val loader = ChatImageLoaders.get(context)
+        val loader = ChatImageLoaders.get(requireContext())
         imageAction = viewLifecycleOwner.lifecycleScope.launch {
-            try {
-                val bytes = loader.fetchBytes(source)
-                val exported = withContext(imageIoDispatcher) { ImageShareExporter(context).export(source, bytes) }
-                startActivity(shareChooser(context, exported))
-            } catch (_: ImageFetchException) {
-                showSnackbar(R.string.chat_image_load_failed)
-            } catch (_: IOException) {
-                showSnackbar(R.string.chat_image_load_failed)
-            }
+            shareChatImage(imageIoDispatcher, source, imageFeedback) { loader.fetchBytes(source) }
         }
     }
 

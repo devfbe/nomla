@@ -31,13 +31,11 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.DialogImageViewerBinding
 import koeln.becker.nomla.ui.showSnackbar
 import koeln.becker.nomla.util.Edge
 import koeln.becker.nomla.util.padForSystemBars
-import java.io.IOException
 
 /**
  * Fullscreen viewer for one chat image; decodes at most [DECODE_SCALE] times the screen, which
@@ -62,6 +60,11 @@ class ImageViewerDialogFragment : DialogFragment() {
     /** Test seam: the dispatcher the share export and gallery save run on. Production code must not set this. */
     @VisibleForTesting
     internal var ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+
+    /** Save and share report in the viewer's own window, which would cover the activity's. */
+    private val feedback = ImageActionFeedback { text, action, onAction ->
+        showSnackbar(requireView(), getString(text), action, onAction = onAction)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -168,13 +171,9 @@ class ImageViewerDialogFragment : DialogFragment() {
     private fun shareImage(share: View, source: String, bytes: ByteArray) {
         // Debounce: two quick taps would write the same file path concurrently.
         share.isEnabled = false
-        val context = requireContext()
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val exported = withContext(ioDispatcher) { ImageShareExporter(context).export(source, bytes) }
-                startActivity(shareChooser(context, exported))
-            } catch (e: IOException) {
-                showSnackbar(requireView(), getString(R.string.chat_image_load_failed))
+                shareChatImage(ioDispatcher, source, feedback) { bytes }
             } finally {
                 share.isEnabled = true
             }
@@ -190,15 +189,9 @@ class ImageViewerDialogFragment : DialogFragment() {
     private fun saveImage(save: View, bytes: ByteArray) {
         // Debounce: two quick taps would save two copies.
         save.isEnabled = false
-        val context = requireContext()
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val saved = withContext(ioDispatcher) { ImageGallerySaver(context).save(bytes) }
-                showSnackbar(requireView(), getString(R.string.chat_image_saved), R.string.chat_image_view) {
-                    context.viewSaved(saved)
-                }
-            } catch (_: IOException) {
-                showSnackbar(requireView(), getString(R.string.chat_image_save_failed))
+                saveChatImage(ioDispatcher, feedback) { bytes }
             } finally {
                 save.isEnabled = true
             }
