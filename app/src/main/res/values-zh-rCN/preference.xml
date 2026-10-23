@@ -125,7 +125,6 @@
     <string name="vadStartSum">开始发送时的语音概率。</string>
     <string name="vadStop">停止阈值</string>
     <string name="vadStopSum">语音概率低于此值时停止发送。</string>
-    <string name="detectionThresholdMigration">从此版本开始，电平在降噪之后测量，因此旧设置对应的音量与以前不同。“自动”模式无需校准。</string>
     <string name="inputLevelMeter">输入电平</string>
     <string name="inputLevelMeterSum">实时显示麦克风电平，并标出背景和阈值。</string>
     <string name="inputLevelMeterUnavailable">麦克风不可用——缺少权限，或有其他应用正在使用。</string>

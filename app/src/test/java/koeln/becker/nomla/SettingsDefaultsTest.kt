@@ -63,7 +63,6 @@ class SettingsDefaultsTest {
     fun everyScreenDefaultIsThePrefsDefault() {
         val mismatches = SETTINGS_SCREENS.flatMap { screen ->
             defaults(screen).mapNotNull { (key, value) ->
-                if (key in UNSET_BY_DESIGN) return@mapNotNull null
                 val pref = prefs[key] ?: return@mapNotNull "$key: no Pref"
                 "$key: screen $value, Pref ${pref.default}".takeIf { pref.default?.toString() != value }
             }
@@ -73,8 +72,5 @@ class SettingsDefaultsTest {
 
     private companion object {
         const val ANDROID_NS = "http://schemas.android.com/apk/res/android"
-
-        /** Unset, the method follows the legacy `preprocessor_enabled` switch, which is on by default. */
-        val UNSET_BY_DESIGN = setOf(Settings.NOISE_SUPPRESSION_METHOD.key)
     }
 }

@@ -119,7 +119,6 @@
     <string name="vadStartSum">Імовірність мовлення, за якої починається передавання.</string>
     <string name="vadStop">Поріг завершення</string>
     <string name="vadStopSum">Імовірність мовлення, нижче якої передавання припиняється.</string>
-    <string name="detectionThresholdMigration">Починаючи з цієї версії рівень вимірюється після шумозаглушення, тому старе значення відповідає іншій гучності, ніж раніше. Режим «Автоматично» не потребує калібрування.</string>
     <string name="inputLevelMeter">Рівень входу</string>
     <string name="inputLevelMeterSum">Поточний рівень мікрофона з позначками фону та порогу.</string>
     <string name="inputLevelMeterUnavailable">Мікрофон недоступний — немає дозволу або його використовує інший застосунок.</string>

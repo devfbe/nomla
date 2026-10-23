@@ -152,17 +152,6 @@ class NomlaConnectionNotificationTest {
     }
 
     @Test
-    fun theChannelOfEarlierVersionsIsDeleted() {
-        notificationManager.createNotificationChannel(
-            android.app.NotificationChannel("connected_channel", "old", NotificationManager.IMPORTANCE_DEFAULT),
-        )
-
-        NomlaConnectionNotification.create(service, "Connecting", listener).show()
-
-        assertThat(notificationManager.getNotificationChannel("connected_channel")).isNull()
-    }
-
-    @Test
     fun theChannelIsCreatedWithTheConnectedLabelAtLowImportance() {
         NomlaConnectionNotification.create(service, "Connecting", listener).show()
 

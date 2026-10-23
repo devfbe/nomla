@@ -51,7 +51,6 @@
     <string name="vadStartSum">Runas varbūtība, pie kuras sākas sūtīšana.</string>
     <string name="vadStop">Beigu slieksnis</string>
     <string name="vadStopSum">Runas varbūtība, zem kuras sūtīšana beidzas.</string>
-    <string name="detectionThresholdMigration">Kopš šīs versijas līmenis tiek mērīts pēc trokšņu slāpēšanas, tāpēc vecais iestatījums nozīmē citu skaļumu nekā agrāk. Režīmam „Automātiski” kalibrēšana nav vajadzīga.</string>
     <string name="inputLevelMeter">Ievades līmenis</string>
     <string name="inputLevelMeterSum">Mikrofona līmenis reāllaikā ar fona un sliekšņa atzīmēm.</string>
     <string name="inputLevelMeterUnavailable">Mikrofons nav pieejams — trūkst atļaujas, vai to izmanto cita lietotne.</string>

@@ -40,7 +40,6 @@
     <string name="vadStartSum">احتمال الكلام الذي يبدأ عنده الإرسال.</string>
     <string name="vadStop">عتبة الإيقاف</string>
     <string name="vadStopSum">احتمال الكلام الذي يتوقف الإرسال تحته.</string>
-    <string name="detectionThresholdMigration">منذ هذا الإصدار يُقاس المستوى بعد كبت الضوضاء، لذا فإن الإعداد القديم يعني مستوى صوت مختلفًا عمّا كان عليه. الوضع «تلقائي» لا يحتاج إلى معايرة.</string>
     <string name="inputLevelMeter">مستوى الإدخال</string>
     <string name="inputLevelMeterSum">مستوى الميكروفون المباشر مع علامتي الخلفية والعتبة.</string>
     <string name="inputLevelMeterUnavailable">الميكروفون غير متاح — الإذن مفقود أو يستخدمه تطبيق آخر.</string>

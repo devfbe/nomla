@@ -124,7 +124,6 @@
     <string name="vadStartSum">Sprachwahrscheinlichkeit, ab der das Senden beginnt.</string>
     <string name="vadStop">Stoppschwelle</string>
     <string name="vadStopSum">Sprachwahrscheinlichkeit, unter der das Senden endet.</string>
-    <string name="detectionThresholdMigration">Seit dieser Version wird der Pegel nach der Rauschunterdrückung gemessen, daher entspricht eine alte Einstellung einer anderen Lautstärke als bisher. „Automatisch“ braucht keine Kalibrierung.</string>
     <string name="inputLevelMeter">Eingangspegel</string>
     <string name="inputLevelMeterSum">Live-Mikrofonpegel mit Hintergrund und Schwelle</string>
     <string name="inputLevelMeterUnavailable">Mikrofon nicht verfügbar – Berechtigung fehlt oder eine andere App verwendet es.</string>

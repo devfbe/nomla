@@ -122,7 +122,6 @@
     <string name="vadStartSum">開始傳送時的語音機率。</string>
     <string name="vadStop">停止門檻</string>
     <string name="vadStopSum">語音機率低於此值時停止傳送。</string>
-    <string name="detectionThresholdMigration">從此版本開始，音量會在降噪之後測量，因此舊設定對應的音量與以往不同。「自動」模式不需要校準。</string>
     <string name="inputLevelMeter">輸入音量</string>
     <string name="inputLevelMeterSum">即時顯示麥克風音量，並標示背景與門檻。</string>
     <string name="inputLevelMeterUnavailable">無法使用麥克風——缺少權限，或有其他應用程式正在使用。</string>

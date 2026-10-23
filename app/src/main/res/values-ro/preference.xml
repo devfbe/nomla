@@ -40,7 +40,6 @@
     <string name="vadStartSum">Probabilitatea de vorbire la care începe transmisia.</string>
     <string name="vadStop">Prag de oprire</string>
     <string name="vadStopSum">Probabilitatea de vorbire sub care transmisia se oprește.</string>
-    <string name="detectionThresholdMigration">Începând cu această versiune, nivelul este măsurat după reducerea zgomotului, așa că o setare veche înseamnă alt volum decât înainte. „Automat” nu necesită calibrare.</string>
     <string name="inputLevelMeter">Nivel de intrare</string>
     <string name="inputLevelMeterSum">Nivelul microfonului în timp real, cu marcajele pentru fundal și prag.</string>
     <string name="inputLevelMeterUnavailable">Microfon indisponibil — lipsește permisiunea sau îl folosește altă aplicație.</string>

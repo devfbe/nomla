@@ -122,7 +122,6 @@
     <string name="vadStartSum">Sannolikhet för tal där sändningen startar.</string>
     <string name="vadStop">Stopptröskel</string>
     <string name="vadStopSum">Sannolikhet för tal under vilken sändningen stoppas.</string>
-    <string name="detectionThresholdMigration">Från och med den här versionen mäts nivån efter brusreduceringen, så en gammal inställning motsvarar en annan volym än tidigare. ”Automatiskt” behöver ingen kalibrering.</string>
     <string name="inputLevelMeter">Ingångsnivå</string>
     <string name="inputLevelMeterSum">Mikrofonens nivå i realtid med markeringar för bakgrund och tröskel.</string>
     <string name="inputLevelMeterUnavailable">Mikrofonen är inte tillgänglig – behörighet saknas eller en annan app använder den.</string>

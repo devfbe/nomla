@@ -159,7 +159,6 @@ class SettingsStructureTest {
             "firstRun" to "set on first start",
             "certificateId" to "the certificate list, opened from Account & certificates",
             "newsShownVersions" to "the news dialog",
-            "preprocessor_enabled" to "legacy; read as the noise suppression default",
             "battery_optimization_asked" to "the battery prompt",
             "microphone_permission_asked" to "the permission gate",
             "notification_permission_asked" to "the permission gate",

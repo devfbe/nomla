@@ -119,7 +119,6 @@
     <string name="vadStartSum">Πιθανότητα ομιλίας από την οποία ξεκινά η μετάδοση.</string>
     <string name="vadStop">Όριο διακοπής</string>
     <string name="vadStopSum">Πιθανότητα ομιλίας κάτω από την οποία σταματά η μετάδοση.</string>
-    <string name="detectionThresholdMigration">Από αυτή την έκδοση το επίπεδο μετράται μετά την καταστολή θορύβου, οπότε μια παλιά ρύθμιση αντιστοιχεί σε διαφορετική ένταση από πριν. Το «Αυτόματα» δεν χρειάζεται βαθμονόμηση.</string>
     <string name="inputLevelMeter">Επίπεδο εισόδου</string>
     <string name="inputLevelMeterSum">Ζωντανό επίπεδο μικροφώνου με τα σημάδια περιβάλλοντος και ορίου.</string>
     <string name="inputLevelMeterUnavailable">Το μικρόφωνο δεν είναι διαθέσιμο — λείπει η άδεια ή το χρησιμοποιεί άλλη εφαρμογή.</string>

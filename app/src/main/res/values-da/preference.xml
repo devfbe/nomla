@@ -40,7 +40,6 @@
     <string name="vadStartSum">Talesandsynlighed, hvor afsendelsen starter.</string>
     <string name="vadStop">Stoptærskel</string>
     <string name="vadStopSum">Talesandsynlighed, under hvilken afsendelsen stopper.</string>
-    <string name="detectionThresholdMigration">Fra denne version måles niveauet efter støjdæmpningen, så en gammel indstilling svarer til en anden lydstyrke end før. \"Automatisk\" kræver ingen kalibrering.</string>
     <string name="inputLevelMeter">Indgangsniveau</string>
     <string name="inputLevelMeterSum">Live mikrofonniveau med mærker for baggrund og tærskel.</string>
     <string name="inputLevelMeterUnavailable">Mikrofonen er ikke tilgængelig – tilladelse mangler, eller en anden app bruger den.</string>

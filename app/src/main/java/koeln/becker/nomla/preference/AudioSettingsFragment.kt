@@ -88,11 +88,6 @@ open class AudioSettingsFragment : NomlaPreferenceFragment(R.xml.settings_audio)
             }
         applyVadDependents(currentVadMode())
 
-        // The preprocessor runs before the detector, so the classic slider now measures a
-        // processed frame; the summary says so.
-        findPreference<Preference>(Settings.THRESHOLD.key)?.summary =
-            getString(R.string.detectionThresholdSum) + "\n\n" + getString(R.string.detectionThresholdMigration)
-
         findPreference<Preference>(KEY_RECALIBRATE)?.setOnPreferenceClickListener {
             micCheck?.recalibrate()
             true

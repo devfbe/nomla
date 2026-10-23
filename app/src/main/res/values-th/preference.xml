@@ -122,7 +122,6 @@
     <string name="vadStartSum">ความน่าจะเป็นของเสียงพูดที่จะเริ่มส่ง</string>
     <string name="vadStop">เกณฑ์หยุด</string>
     <string name="vadStopSum">ความน่าจะเป็นของเสียงพูดที่ต่ำกว่านี้จะหยุดส่ง</string>
-    <string name="detectionThresholdMigration">ตั้งแต่เวอร์ชันนี้ ระดับเสียงจะวัดหลังการลดเสียงรบกวน ค่าเดิมจึงหมายถึงระดับเสียงที่ต่างจากเดิม โหมด \"อัตโนมัติ\" ไม่ต้องปรับเทียบ</string>
     <string name="inputLevelMeter">ระดับเสียงเข้า</string>
     <string name="inputLevelMeterSum">ระดับไมโครโฟนแบบสดพร้อมเครื่องหมายเสียงพื้นหลังและเกณฑ์</string>
     <string name="inputLevelMeterUnavailable">ใช้ไมโครโฟนไม่ได้ — ไม่มีสิทธิ์ หรือแอปอื่นกำลังใช้งานอยู่</string>

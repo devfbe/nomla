@@ -108,7 +108,6 @@
     <string name="vadStartSum">送信を開始する音声確率。</string>
     <string name="vadStop">停止閾値</string>
     <string name="vadStopSum">送信を停止する音声確率の下限。</string>
-    <string name="detectionThresholdMigration">このバージョンから、レベルはノイズ抑制の後に測定されます。そのため、以前の設定値は以前とは異なる音量を意味します。「自動」には調整は不要です。</string>
     <string name="inputLevelMeter">入力レベル</string>
     <string name="inputLevelMeterSum">背景と閾値のマーク付きのマイクのリアルタイムレベル。</string>
     <string name="inputLevelMeterUnavailable">マイクを使用できません — 権限がないか、別のアプリが使用中です。</string>

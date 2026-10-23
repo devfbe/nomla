@@ -122,7 +122,6 @@
     <string name="vadStartSum">Gönderimin başladığı konuşma olasılığı.</string>
     <string name="vadStop">Durma eşiği</string>
     <string name="vadStopSum">Altında gönderimin durduğu konuşma olasılığı.</string>
-    <string name="detectionThresholdMigration">Bu sürümden itibaren seviye gürültü bastırmadan sonra ölçülür; bu nedenle eski bir ayar eskisinden farklı bir ses seviyesine karşılık gelir. \"Otomatik\" kalibrasyon gerektirmez.</string>
     <string name="inputLevelMeter">Giriş seviyesi</string>
     <string name="inputLevelMeterSum">Arka plan ve eşik işaretleriyle canlı mikrofon seviyesi.</string>
     <string name="inputLevelMeterUnavailable">Mikrofon kullanılamıyor — izin eksik veya başka bir uygulama kullanıyor.</string>

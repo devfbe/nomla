@@ -119,7 +119,6 @@
     <string name="vadStartSum">Beszédvalószínűség, amelynél a küldés elindul.</string>
     <string name="vadStop">Leállítási küszöb</string>
     <string name="vadStopSum">Beszédvalószínűség, amely alatt a küldés leáll.</string>
-    <string name="detectionThresholdMigration">Ettől a verziótól a szintet a zajszűrés után mérjük, így egy régi beállítás más hangerőt jelent, mint korábban. Az „Automatikus” módhoz nem kell kalibráció.</string>
     <string name="inputLevelMeter">Bemeneti szint</string>
     <string name="inputLevelMeterSum">Élő mikrofonszint a háttér- és küszöbjelölőkkel.</string>
     <string name="inputLevelMeterUnavailable">A mikrofon nem érhető el – hiányzik az engedély, vagy egy másik alkalmazás használja.</string>

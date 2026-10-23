@@ -119,7 +119,6 @@
     <string name="vadStartSum">அனுப்புதல் தொடங்கும் பேச்சு நிகழ்தகவு.</string>
     <string name="vadStop">நிறுத்த வாசல்</string>
     <string name="vadStopSum">இதற்குக் கீழே அனுப்புதல் நிற்கும் பேச்சு நிகழ்தகவு.</string>
-    <string name="detectionThresholdMigration">இந்தப் பதிப்பு முதல் நிலை இரைச்சல் அடக்கத்திற்குப் பிறகு அளக்கப்படுகிறது, எனவே பழைய அமைப்பு முன்பை விட வேறு ஒலியளவைக் குறிக்கும். \"தானியங்கு\" க்கு அளவுத்திருத்தம் தேவையில்லை.</string>
     <string name="inputLevelMeter">உள்ளீட்டு நிலை</string>
     <string name="inputLevelMeterSum">பின்னணி மற்றும் வாசல் குறிகளுடன் நேரலை ஓரி நிலை.</string>
     <string name="inputLevelMeterUnavailable">ஓரி கிடைக்கவில்லை — இசைவு இல்லை, அல்லது வேறொரு செயலி அதைப் பயன்படுத்துகிறது.</string>

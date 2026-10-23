@@ -40,7 +40,6 @@
     <string name="vadStartSum">Puheen todennäköisyys, jossa lähettäminen alkaa.</string>
     <string name="vadStop">Lopetuskynnys</string>
     <string name="vadStopSum">Puheen todennäköisyys, jonka alittuessa lähettäminen loppuu.</string>
-    <string name="detectionThresholdMigration">Tästä versiosta alkaen taso mitataan kohinanvaimennuksen jälkeen, joten vanha asetus vastaa eri äänenvoimakkuutta kuin ennen. ”Automaattinen” ei tarvitse kalibrointia.</string>
     <string name="inputLevelMeter">Tulotaso</string>
     <string name="inputLevelMeterSum">Mikrofonin reaaliaikainen taso tausta- ja kynnysmerkkeineen.</string>
     <string name="inputLevelMeterUnavailable">Mikrofoni ei ole käytettävissä – lupa puuttuu tai toinen sovellus käyttää sitä.</string>

@@ -119,7 +119,6 @@
     <string name="vadStartSum">Talesannsynlighet der sendingen starter.</string>
     <string name="vadStop">Stoppterskel</string>
     <string name="vadStopSum">Talesannsynlighet der sendingen stopper under.</string>
-    <string name="detectionThresholdMigration">Fra og med denne versjonen måles nivået etter støydempingen, så en gammel innstilling betyr et annet lydnivå enn før. «Automatisk» trenger ingen kalibrering.</string>
     <string name="inputLevelMeter">Inngangsnivå</string>
     <string name="inputLevelMeterSum">Mikrofonnivå i sanntid med merkene for bakgrunn og terskel.</string>
     <string name="inputLevelMeterUnavailable">Mikrofonen er utilgjengelig — tilgang mangler, eller en annen app bruker den.</string>

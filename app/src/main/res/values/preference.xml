@@ -132,7 +132,6 @@
     <string name="vadStartSum">Speech probability at which sending starts.</string>
     <string name="vadStop">Stop threshold</string>
     <string name="vadStopSum">Speech probability below which sending stops.</string>
-    <string name="detectionThresholdMigration">Since this version the level is measured after noise suppression, so an old setting means a different volume than it used to. "Automatic" needs no calibration.</string>
 
     <string name="inputLevelMeter">Input level</string>
     <string name="inputLevelMeterSum">Live microphone level with background and threshold</string>

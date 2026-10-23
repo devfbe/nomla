@@ -40,7 +40,6 @@
     <string name="vadStartSum">Probabilidade de fala a partir da qual a transmissão começa.</string>
     <string name="vadStop">Limite de parada</string>
     <string name="vadStopSum">Probabilidade de fala abaixo da qual a transmissão para.</string>
-    <string name="detectionThresholdMigration">A partir desta versão, o nível é medido depois da supressão de ruído, então uma configuração antiga corresponde a um volume diferente de antes. \"Automático\" não precisa de calibração.</string>
     <string name="inputLevelMeter">Nível de entrada</string>
     <string name="inputLevelMeterSum">Nível do microfone em tempo real com as marcas de fundo e de limite.</string>
     <string name="inputLevelMeterUnavailable">Microfone indisponível — falta a permissão, ou outro aplicativo o está usando.</string>

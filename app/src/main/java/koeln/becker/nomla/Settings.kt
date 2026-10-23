@@ -20,7 +20,6 @@ package koeln.becker.nomla
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.media.AudioDeviceInfo
 import android.view.Gravity
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
@@ -43,29 +42,6 @@ import kotlin.reflect.KProperty
 class Settings private constructor(private val context: Context) {
 
     private val preferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-
-    /** Rewrites the keys older versions left behind. Runs once per process, on first use. */
-    private fun migrateLegacyKeys() {
-        // Obsolete keys, replaced by the audio chooser or dropped.
-        val legacy = listOf(
-            LEGACY_PREF_ECHO_CANCELLATION_METHOD, LEGACY_PREF_DISABLE_OPUS, LEGACY_PREF_HANDSET_MODE,
-            LEGACY_PREF_DEFAULT_OUTPUT,
-        ).filter(preferences::contains)
-        if (legacy.isEmpty()) return
-        // Both meant the earpiece; the newer choice wins over the older, a saved device over both.
-        val earpiece = !preferences.contains(AUDIO_DEVICE.key) &&
-            if (preferences.contains(LEGACY_PREF_DEFAULT_OUTPUT)) {
-                preferences.getString(LEGACY_PREF_DEFAULT_OUTPUT, null) == LEGACY_DEFAULT_OUTPUT_EARPIECE
-            } else {
-                preferences.getBoolean(LEGACY_PREF_HANDSET_MODE, false)
-            }
-        preferences.edit {
-            legacy.forEach(::remove)
-            if (earpiece) {
-                putString(AUDIO_DEVICE.key, encode(PreferredAudioDevice(AudioDeviceInfo.TYPE_BUILTIN_EARPIECE)))
-            }
-        }
-    }
 
     /** Reads and writes [pref] through to disk. */
     private fun <T : Any> pref(pref: Pref<T>) = object : ReadWriteProperty<Settings, T> {
@@ -202,17 +178,8 @@ class Settings private constructor(private val context: Context) {
 
     val isPttSoundEnabled: Boolean by pref(PTT_SOUND)
 
-    private val isPreprocessorEnabled: Boolean by pref(PREPROCESSOR_ENABLED)
-
-    /**
-     * The stored value, else what the legacy `preprocessor_enabled` checkbox decided. Writes only
-     * this key, not [PREPROCESSOR_ENABLED]: every written key triggers its own `configure`,
-     * and two would rebuild the audio chain twice with the mic dead in between.
-     */
-    var noiseSuppressionMethod: String
-        get() = preferences.getString(NOISE_SUPPRESSION_METHOD.key, null)
-            ?: if (isPreprocessorEnabled) "rnnoise" else "none"
-        set(value) = preferences.edit { putString(NOISE_SUPPRESSION_METHOD.key, value) }
+    /** One of the `noiseSuppressionValues`; the quick menu writes it as well as the settings screen. */
+    var noiseSuppressionMethod: String by pref(NOISE_SUPPRESSION_METHOD)
 
     val noiseSuppressionMode: NoiseSuppressionMode
         get() = NoiseSuppressionMode.fromPreferenceValue(noiseSuppressionMethod)
@@ -420,16 +387,9 @@ class Settings private constructor(private val context: Context) {
         /** Written by the audio chooser; see [preferredAudioDevice]. */
         val AUDIO_DEVICE: Pref<String?> = Pref("audio_device", null)
 
-        /** The speaker/earpiece list and the handset switch before it; migrated and removed on first read. */
-        private const val LEGACY_PREF_DEFAULT_OUTPUT = "default_output"
-        private const val LEGACY_DEFAULT_OUTPUT_EARPIECE = "earpiece"
-        private const val LEGACY_PREF_HANDSET_MODE = "handset_mode"
-
         val PTT_SOUND = Pref("ptt_sound", false)
 
-        val PREPROCESSOR_ENABLED = Pref("preprocessor_enabled", true)
-
-        val NOISE_SUPPRESSION_METHOD: Pref<String?> = Pref("noise_suppression_method", null)
+        val NOISE_SUPPRESSION_METHOD = Pref("noise_suppression_method", "rnnoise")
 
         /** Stored as a string because it is a ListPreference; -15/-25/-35. */
         val SPEEX_NOISE_SUPPRESS_DB = Pref("speex_noise_suppress_db", -25)
@@ -499,12 +459,6 @@ class Settings private constructor(private val context: Context) {
 
         private const val PREF_ECHO_CANCELLATION_PREFIX = "echo_cancellation_"
 
-        /** The global echo method the audio chooser replaced; removed on first read. */
-        private const val LEGACY_PREF_ECHO_CANCELLATION_METHOD = "echo_cancellation_method"
-
-        /** The "avoid Opus" checkbox; Opus is now always offered. Removed on first read. */
-        private const val LEGACY_PREF_DISABLE_OPUS = "disableOpus"
-
         /** The preference key of the echo-cancellation override for [category]. */
         fun echoCancellationKey(category: AudioDeviceCategory): String =
             PREF_ECHO_CANCELLATION_PREFIX + category.name.lowercase()
@@ -544,18 +498,14 @@ class Settings private constructor(private val context: Context) {
         private var instance: Settings? = null
 
         /**
-         * The settings of [context]'s application. Created, and the legacy keys migrated, on first
-         * use; a new application (as in tests) gets a new instance.
+         * The settings of [context]'s application, created on first use; a new application (as in
+         * tests) gets a new instance.
          */
         fun getInstance(context: Context): Settings {
             val app = context.applicationContext
             instance?.takeIf { it.context === app }?.let { return it }
             return synchronized(this) {
-                instance?.takeIf { it.context === app }
-                    ?: Settings(app).also {
-                        it.migrateLegacyKeys()
-                        instance = it
-                    }
+                instance?.takeIf { it.context === app } ?: Settings(app).also { instance = it }
             }
         }
     }

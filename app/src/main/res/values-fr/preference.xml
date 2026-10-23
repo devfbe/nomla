@@ -122,7 +122,6 @@
     <string name="vadStartSum">Probabilité de parole à partir de laquelle l\'émission commence.</string>
     <string name="vadStop">Seuil de fin</string>
     <string name="vadStopSum">Probabilité de parole en dessous de laquelle l\'émission s\'arrête.</string>
-    <string name="detectionThresholdMigration">Depuis cette version, le niveau est mesuré après la suppression du bruit : un ancien réglage correspond donc à un autre volume qu\'auparavant. Le mode « Automatique » ne nécessite aucun étalonnage.</string>
     <string name="inputLevelMeter">Niveau d\'entrée</string>
     <string name="inputLevelMeterSum">Niveau du microphone en direct, avec les repères du fond et du seuil.</string>
     <string name="inputLevelMeterUnavailable">Microphone indisponible : autorisation manquante ou utilisé par une autre application.</string>

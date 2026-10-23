@@ -122,7 +122,6 @@
     <string name="vadStartSum">Probabilidad de voz a partir de la cual empieza la transmisión.</string>
     <string name="vadStop">Umbral de parada</string>
     <string name="vadStopSum">Probabilidad de voz por debajo de la cual se detiene la transmisión.</string>
-    <string name="detectionThresholdMigration">Desde esta versión el nivel se mide después de la supresión de ruido, así que un ajuste antiguo corresponde a otro volumen que antes. «Automático» no necesita calibración.</string>
     <string name="inputLevelMeter">Nivel de entrada</string>
     <string name="inputLevelMeterSum">Nivel del micrófono en directo con las marcas de fondo y umbral.</string>
     <string name="inputLevelMeterUnavailable">Micrófono no disponible: falta el permiso u otra aplicación lo está usando.</string>

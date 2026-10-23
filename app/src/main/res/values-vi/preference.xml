@@ -119,7 +119,6 @@
     <string name="vadStartSum">Xác suất giọng nói mà tại đó bắt đầu gửi.</string>
     <string name="vadStop">Ngưỡng dừng</string>
     <string name="vadStopSum">Xác suất giọng nói mà dưới mức đó sẽ dừng gửi.</string>
-    <string name="detectionThresholdMigration">Từ phiên bản này, mức âm được đo sau khi khử tiếng ồn, nên một cài đặt cũ sẽ tương ứng với âm lượng khác trước. Chế độ \"Tự động\" không cần hiệu chỉnh.</string>
     <string name="inputLevelMeter">Mức đầu vào</string>
     <string name="inputLevelMeterSum">Mức micro trực tiếp cùng các mốc nền và ngưỡng.</string>
     <string name="inputLevelMeterUnavailable">Không dùng được micro — thiếu quyền hoặc ứng dụng khác đang dùng.</string>

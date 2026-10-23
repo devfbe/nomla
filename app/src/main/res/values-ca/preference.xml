@@ -119,7 +119,6 @@
     <string name="vadStartSum">Probabilitat de veu a partir de la qual comença la transmissió.</string>
     <string name="vadStop">Llindar d\'aturada</string>
     <string name="vadStopSum">Probabilitat de veu per sota de la qual s\'atura la transmissió.</string>
-    <string name="detectionThresholdMigration">Des d\'aquesta versió el nivell es mesura després de la supressió de soroll, de manera que un ajust antic correspon a un volum diferent del d\'abans. «Automàtic» no necessita calibratge.</string>
     <string name="inputLevelMeter">Nivell d\'entrada</string>
     <string name="inputLevelMeterSum">Nivell del micròfon en directe amb les marques de fons i de llindar.</string>
     <string name="inputLevelMeterUnavailable">Micròfon no disponible: falta el permís o una altra aplicació l\'està utilitzant.</string>

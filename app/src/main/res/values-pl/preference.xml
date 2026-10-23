@@ -125,7 +125,6 @@
     <string name="vadStartSum">Prawdopodobieństwo mowy, przy którym rozpoczyna się wysyłanie.</string>
     <string name="vadStop">Próg zakończenia</string>
     <string name="vadStopSum">Prawdopodobieństwo mowy, poniżej którego wysyłanie się kończy.</string>
-    <string name="detectionThresholdMigration">Od tej wersji poziom jest mierzony po tłumieniu szumów, więc stare ustawienie oznacza inną głośność niż wcześniej. Tryb „Automatyczny” nie wymaga kalibracji.</string>
     <string name="inputLevelMeter">Poziom wejściowy</string>
     <string name="inputLevelMeterSum">Bieżący poziom mikrofonu ze znacznikami tła i progu.</string>
     <string name="inputLevelMeterUnavailable">Mikrofon niedostępny — brak uprawnienia albo inna aplikacja go używa.</string>

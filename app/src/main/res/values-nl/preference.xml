@@ -106,7 +106,6 @@
     <string name="vadStartSum">Spraakwaarschijnlijkheid waarbij het verzenden begint.</string>
     <string name="vadStop">Stopdrempel</string>
     <string name="vadStopSum">Spraakwaarschijnlijkheid waaronder het verzenden stopt.</string>
-    <string name="detectionThresholdMigration">Sinds deze versie wordt het niveau na de ruisonderdrukking gemeten, dus een oude instelling betekent een ander volume dan vroeger. \"Automatisch\" hoeft niet gekalibreerd te worden.</string>
     <string name="inputLevelMeter">Invoerniveau</string>
     <string name="inputLevelMeterSum">Live microfoonniveau met de markeringen voor achtergrond en drempel.</string>
     <string name="inputLevelMeterUnavailable">Microfoon niet beschikbaar — toestemming ontbreekt, of een andere app gebruikt hem.</string>

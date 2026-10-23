@@ -120,7 +120,6 @@
     <string name="vadStartSum">Probabilitas suara bicara saat pengiriman dimulai.</string>
     <string name="vadStop">Batas berhenti</string>
     <string name="vadStopSum">Pengiriman berhenti jika probabilitas suara bicara di bawah nilai ini.</string>
-    <string name="detectionThresholdMigration">Sejak versi ini level diukur setelah peredam kebisingan, sehingga pengaturan lama berarti volume yang berbeda dari sebelumnya. \"Otomatis\" tidak perlu kalibrasi.</string>
     <string name="inputLevelMeter">Level input</string>
     <string name="inputLevelMeterSum">Level mikrofon langsung dengan tanda latar dan batas.</string>
     <string name="inputLevelMeterUnavailable">Mikrofon tidak tersedia — izin belum diberikan, atau aplikasi lain sedang memakainya.</string>

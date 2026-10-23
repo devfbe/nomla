@@ -33,12 +33,8 @@ object NotificationChannels {
     const val MESSAGES = "message_channel"
     const val RECONNECT = "reconnecting_channel"
 
-    /** The connection channel's id before its importance was lowered, which needed a new id. */
-    private const val LEGACY_CONNECTION = "connected_channel"
-
     fun create(context: Context) {
         val manager = context.getSystemService(NotificationManager::class.java)
-        manager.deleteNotificationChannel(LEGACY_CONNECTION)
         manager.createNotificationChannelGroup(
             NotificationChannelGroup(GROUP, context.getString(R.string.notification_group_server)),
         )

@@ -49,14 +49,6 @@ class SettingsAudioTest {
         assertThat(settings.noiseSuppressionMode).isEqualTo(NoiseSuppressionMode.NONE)
     }
 
-    @Test
-    fun `an installation that had switched the old preprocessor off keeps it off`() {
-        prefs.edit().putBoolean(Settings.PREPROCESSOR_ENABLED.key, false).commit()
-        assertThat(settings.noiseSuppressionMode).isEqualTo(NoiseSuppressionMode.NONE)
-        prefs.edit().putString(Settings.NOISE_SUPPRESSION_METHOD.key, "rnnoise").commit()
-        assertThat(settings.noiseSuppressionMode).isEqualTo(NoiseSuppressionMode.RNNOISE)
-    }
-
     /** One tap writes one key, so the audio chain is rebuilt once, not twice. */
     @Test
     fun `setting the noise suppression method writes exactly one key`() {
@@ -193,99 +185,6 @@ class SettingsAudioTest {
         prefs.edit().putString(Settings.AUDIO_DEVICE.key, "speaker").commit()
 
         assertThat(settings.preferredAudioDevice).isNull()
-    }
-
-    /** The old "output without a headset" becomes the saved device, once. */
-    @Test
-    fun `the earpiece as default output becomes the saved earpiece`() {
-        prefs.edit().putString("default_output", "earpiece").commit()
-
-        val migrated = Settings.getInstance(ApplicationProvider.getApplicationContext())
-
-        assertThat(migrated.preferredAudioDevice)
-            .isEqualTo(PreferredAudioDevice(AudioDeviceInfo.TYPE_BUILTIN_EARPIECE))
-        assertThat(prefs.contains("default_output")).isFalse()
-    }
-
-    /** The speaker was the automatic default all along, so nothing is saved for it. */
-    @Test
-    fun `the speaker as default output becomes automatic`() {
-        prefs.edit().putString("default_output", "speaker").commit()
-
-        val migrated = Settings.getInstance(ApplicationProvider.getApplicationContext())
-
-        assertThat(migrated.preferredAudioDevice).isNull()
-        assertThat(prefs.contains("default_output")).isFalse()
-    }
-
-    /** A device the user saved already is theirs; a stale default output does not win. */
-    @Test
-    fun `a saved audio device is not overwritten by the old default output`() {
-        prefs.edit()
-            .putString("default_output", "earpiece")
-            .putString(Settings.AUDIO_DEVICE.key, "${AudioDeviceInfo.TYPE_BUILTIN_SPEAKER}")
-            .commit()
-
-        val migrated = Settings.getInstance(ApplicationProvider.getApplicationContext())
-
-        assertThat(migrated.preferredAudioDevice)
-            .isEqualTo(PreferredAudioDevice(AudioDeviceInfo.TYPE_BUILTIN_SPEAKER))
-    }
-
-    /** Whoever had the handset mode on gets the earpiece saved, once. */
-    @Test
-    fun `handset mode becomes the saved earpiece`() {
-        prefs.edit().putBoolean("handset_mode", true).commit()
-
-        val migrated = Settings.getInstance(ApplicationProvider.getApplicationContext())
-
-        assertThat(migrated.preferredAudioDevice)
-            .isEqualTo(PreferredAudioDevice(AudioDeviceInfo.TYPE_BUILTIN_EARPIECE))
-        assertThat(prefs.contains("handset_mode")).isFalse()
-    }
-
-    @Test
-    fun `handset mode switched off leaves automatic and is removed`() {
-        prefs.edit().putBoolean("handset_mode", false).commit()
-
-        val migrated = Settings.getInstance(ApplicationProvider.getApplicationContext())
-
-        assertThat(migrated.preferredAudioDevice).isNull()
-        assertThat(prefs.contains("handset_mode")).isFalse()
-    }
-
-    /** A default output the user chose after the handset mode is theirs; the stale flag does not win. */
-    @Test
-    fun `a chosen default output is not overwritten by the old handset flag`() {
-        prefs.edit()
-            .putBoolean("handset_mode", true)
-            .putString("default_output", "speaker")
-            .commit()
-
-        val migrated = Settings.getInstance(ApplicationProvider.getApplicationContext())
-
-        assertThat(migrated.preferredAudioDevice).isNull()
-        assertThat(prefs.contains("handset_mode")).isFalse()
-    }
-
-    /** The obsolete global echo cancellation value is removed from disk, once. */
-    @Test
-    fun `the old echo cancellation method is removed from the preferences`() {
-        prefs.edit().putString("echo_cancellation_method", "system").commit()
-
-        Settings.getInstance(ApplicationProvider.getApplicationContext())
-
-        assertThat(prefs.contains("echo_cancellation_method")).isFalse()
-    }
-
-    /** Opus is always offered now; a stored "avoid Opus" choice is dropped rather than left behind. */
-    @Test
-    fun `the old avoid-opus choice is removed from the preferences`() {
-        prefs.edit().putBoolean("disableOpus", true).commit()
-
-        Settings.getInstance(ApplicationProvider.getApplicationContext())
-
-        assertThat(prefs.contains("disableOpus")).isFalse()
     }
 
     @Test

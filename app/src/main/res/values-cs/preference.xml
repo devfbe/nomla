@@ -52,7 +52,6 @@
     <string name="vadStartSum">Pravděpodobnost řeči, od které začíná vysílání.</string>
     <string name="vadStop">Práh ukončení</string>
     <string name="vadStopSum">Pravděpodobnost řeči, pod kterou vysílání končí.</string>
-    <string name="detectionThresholdMigration">Od této verze se úroveň měří až po potlačení šumu, takže staré nastavení znamená jinou hlasitost než dříve. Režim „Automaticky“ nepotřebuje kalibraci.</string>
     <string name="inputLevelMeter">Vstupní úroveň</string>
     <string name="inputLevelMeterSum">Živá úroveň mikrofonu se značkami pozadí a prahu.</string>
     <string name="inputLevelMeterUnavailable">Mikrofon není k dispozici – chybí oprávnění nebo ho používá jiná aplikace.</string>

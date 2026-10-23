@@ -125,7 +125,6 @@
     <string name="vadStartSum">Probabilità di voce alla quale inizia la trasmissione.</string>
     <string name="vadStop">Soglia di arresto</string>
     <string name="vadStopSum">Probabilità di voce sotto la quale la trasmissione si interrompe.</string>
-    <string name="detectionThresholdMigration">Da questa versione il livello viene misurato dopo la soppressione del rumore, quindi una vecchia impostazione corrisponde a un volume diverso da prima. \"Automatico\" non richiede calibrazione.</string>
     <string name="inputLevelMeter">Livello di ingresso</string>
     <string name="inputLevelMeterSum">Livello del microfono in tempo reale con i segni del fondo e della soglia.</string>
     <string name="inputLevelMeterUnavailable">Microfono non disponibile — permesso mancante, oppure un\'altra app lo sta usando.</string>
