@@ -77,9 +77,17 @@ fun Fragment.showSnackbar(@StringRes text: Int, @StringRes action: Int = 0, onAc
 
 /** For a permission the user denied: a snackbar whose action opens the app's system settings. */
 fun Activity.showPermissionDeniedSnackbar(@StringRes text: Int): Snackbar =
-    showSnackbar(text, R.string.open_settings) {
-        startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, "package:$packageName".toUri()))
-    }
+    showSnackbar(text, R.string.open_settings) { openAppSettings() }
+
+/**
+ * As [Activity.showPermissionDeniedSnackbar], in [view]'s window: a bottom sheet or dialog is a
+ * window of its own and would cover a snackbar at the bottom of the activity.
+ */
+fun showPermissionDeniedSnackbar(view: View, @StringRes text: Int): Snackbar =
+    showSnackbar(view, view.context.getString(text), R.string.open_settings) { view.context.openAppSettings() }
+
+private fun Context.openAppSettings() =
+    startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, "package:$packageName".toUri()))
 
 /**
  * Messages from where no screen is at hand (the service, app-wide listeners, screens that finish

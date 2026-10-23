@@ -43,6 +43,7 @@ import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.databinding.BottomSheetDoubleTalkTestBinding
 import koeln.becker.nomla.session.SessionManager
+import koeln.becker.nomla.ui.showPermissionDeniedSnackbar
 import koeln.becker.nomla.util.appViewModels
 import koeln.becker.nomla.util.changes
 import kotlin.math.roundToInt
@@ -65,7 +66,7 @@ class DoubleTalkTestSheet : BottomSheetDialogFragment() {
     private var dragging = false
 
     private val requestMicrophone = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) model.start()
+        if (granted) model.start() else explainMicrophoneDenied()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
@@ -143,6 +144,12 @@ class DoubleTalkTestSheet : BottomSheetDialogFragment() {
 
     private fun requestStart() {
         if (hasMicrophone()) model.start() else requestMicrophone.launch(Manifest.permission.RECORD_AUDIO)
+    }
+
+    /** As a connect explains it; in the sheet's own window, which would cover the activity's snackbar. */
+    private fun explainMicrophoneDenied() {
+        val view = view ?: return
+        showPermissionDeniedSnackbar(view, R.string.grant_perm_microphone)
     }
 
     private fun render(state: DoubleTalkTestUiState) {
