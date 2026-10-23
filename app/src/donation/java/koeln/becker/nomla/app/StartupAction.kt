@@ -21,7 +21,7 @@ package koeln.becker.nomla.app
 import android.app.Activity
 import koeln.becker.nomla.ui.maybeShowNewsDialog
 
-class StartupAction : IStartupAction {
+class StartupAction : FlavorStartupAction {
     override fun execute(activity: Activity) {
         maybeShowNewsDialog(activity)
     }

@@ -21,6 +21,6 @@ package koeln.becker.nomla.app
 import android.app.Activity
 
 /** What a flavor does once when the main screen starts (news, donation prompts). */
-fun interface IStartupAction {
+fun interface FlavorStartupAction {
     fun execute(activity: Activity)
 }

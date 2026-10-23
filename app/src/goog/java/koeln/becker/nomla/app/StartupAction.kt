@@ -40,7 +40,7 @@ import koeln.becker.nomla.ui.maybeShowNewsDialog
 import java.util.concurrent.TimeUnit
 
 /** Shows news, or else now and then asks for an in-app donation, and re-checks a donation made. */
-class StartupAction : IStartupAction {
+class StartupAction : FlavorStartupAction {
     private var billingClient: BillingClient? = null
 
     override fun execute(activity: Activity) {
