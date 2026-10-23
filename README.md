@@ -31,15 +31,22 @@ With [Nix](https://nixos.org/) installed and flakes enabled:
     nix develop
 
 The shell provides JDK 21, the Android SDK (platform 37.0, build-tools 37.0.0),
-NDK 29.0.14206865, SDK CMake 4.1.2, meson/ninja and `git`. Inside it:
+NDK 29.0.14206865 and SDK CMake 4.1.2 for the Android build, a host C/C++
+compiler with CMake and Ninja for the native host tests, `git` and Python.
+Inside it:
 
     ./gradlew assembleFossDebug      # F-Droid flavor
     ./gradlew assembleGoogDebug      # Google Play flavor (Play Billing)
-    ./gradlew test                   # unit tests of every module (JVM, Robolectric)
-    ./gradlew lintFossDebug lintGoogDebug lintDonationDebug lintBetaDebug \
-              :libraries:core:lintDebug
-    ./gradlew detekt                 # Kotlin static analysis against each module's baseline
-    ./gradlew verify                 # everything above that a change must pass
+    ./gradlew :libraries:core:nativeHostTests   # native tests on the host, plain and ASan/UBSan
+    ./gradlew verify                 # the pre-merge check
+
+`verify` assembles the foss, goog and beta debug and the foss release builds;
+runs the JVM unit tests (JUnit, Robolectric) of every module, the app's for foss
+debug only since the flavors share one test source set; builds the native tests
+for the host and runs them with ctest, also under ASan/UBSan; builds the device
+tests (running them needs a device); lints the foss, goog, donation and beta
+debug variants and `libraries/core`; and runs detekt against each module's
+baseline. CI runs exactly this.
 
 If you cloned without `--recursive`, run `git submodule update --init --recursive`
 first. `libraries/core` is an ordinary directory in this repository, not a
