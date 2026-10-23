@@ -20,124 +20,79 @@ package koeln.becker.nomla.preference
 
 import android.net.Uri
 import android.os.Bundle
-import android.provider.OpenableColumns
 import android.text.InputType
 import android.widget.EditText
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
-import koeln.becker.nomla.mumble.net.Pkcs12Certificates
 import koeln.becker.nomla.R
-import koeln.becker.nomla.db.NomlaRepository
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.FileNotFoundException
-import java.io.IOException
-import java.security.KeyStore
-import java.security.KeyStoreException
-import java.security.NoSuchAlgorithmException
-import java.security.cert.CertificateException
-import java.util.UUID
-import koeln.becker.nomla.ui.AppMessages
 
+/** Picks a PKCS#12 file and imports it as a client certificate; [CertificateImportViewModel] does the work. */
 class CertificateImportActivity : AppCompatActivity() {
 
     private val picker = registerForActivityResult(ActivityResultContracts.GetContent(), ::onFilePicked)
+    private val model: CertificateImportViewModel by viewModels {
+        viewModelFactory { initializer { CertificateImportViewModel(application) } }
+    }
+
+    /** The password prompt while it is shown. */
+    private var passwordDialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         // A recreated activity gets the pending pick's result without asking again.
         if (savedInstanceState == null) picker.launch("*/*")
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) { model.state.collect(::render) }
+        }
+    }
+
+    override fun onDestroy() {
+        // A rotation shows the prompt again from the model; this window is going away.
+        passwordDialog?.dismiss()
+        passwordDialog = null
+        super.onDestroy()
     }
 
     private fun onFilePicked(uri: Uri?) {
-        if (uri == null) finish() else import(uri)
+        if (uri == null) finish() else model.import(uri)
     }
 
-    private fun import(uri: Uri) {
-        // Read once: the picker's stream is spent after one read, and a password retry needs the bytes.
-        val pkcs12: ByteArray = try {
-            contentResolver.openInputStream(uri)!!.use { it.readBytes() }
-        } catch (e: FileNotFoundException) {
-            e.printStackTrace()
-            finish()
-            return
-        } catch (e: IOException) {
-            invalidCertificate(e)
-            return
+    private fun render(state: CertificateImportState) {
+        if (state !is CertificateImportState.NeedsPassword) {
+            passwordDialog?.dismiss()
+            passwordDialog = null
         }
-
-        val displayName = contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
-            ?.use { if (it.moveToFirst()) it.getString(0) else null }
-            ?: (UUID.randomUUID().toString() + ".p12")
-
-        storeKeystore(CharArray(0), displayName, pkcs12)
-    }
-
-    private fun storeKeystore(password: CharArray, fileName: String, pkcs12: ByteArray) {
-        val keyStore: KeyStore = try {
-            Pkcs12Certificates.load(ByteArrayInputStream(pkcs12), password)
-        } catch (e: Exception) {
-            when (e) {
-                is CertificateException, is KeyStoreException, is IOException, is NoSuchAlgorithmException -> {
-                    // A well-formed PKCS#12 file that does not open is taken to need a (different) password.
-                    if (Pkcs12Certificates.isPkcs12(pkcs12)) {
-                        askForPassword(fileName, pkcs12)
-                    } else {
-                        invalidCertificate(e)
-                    }
-                    return
-                }
-                else -> throw e
-            }
-        }
-
-        val output = ByteArrayOutputStream()
-        try {
-            keyStore.store(output, CharArray(0))
-        } catch (e: Exception) {
-            when (e) {
-                is KeyStoreException, is IOException, is NoSuchAlgorithmException, is CertificateException -> {
-                    e.printStackTrace()
-                    AppMessages.post(this, R.string.certificate_load_failed)
-                    finish()
-                    return
-                }
-                else -> throw e
-            }
-        }
-
-        val pkcs12Out = output.toByteArray()
-        val success = getString(R.string.certificate_import_success, fileName)
-        lifecycleScope.launch {
-            NomlaRepository.get(this@CertificateImportActivity).io { addCertificate(fileName, pkcs12Out) }
-            AppMessages.get(this@CertificateImportActivity).post(success)
-            finish()
+        when (state) {
+            // A wrong password asks again: the last prompt closed with its button.
+            is CertificateImportState.NeedsPassword -> if (passwordDialog?.isShowing != true) askForPassword()
+            CertificateImportState.Finished -> finish()
+            CertificateImportState.Idle, CertificateImportState.Working -> Unit
         }
     }
 
-    private fun askForPassword(fileName: String, pkcs12: ByteArray) {
+    private fun askForPassword() {
         val passwordField = EditText(this)
         passwordField.setHint(R.string.password)
         passwordField.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-        MaterialAlertDialogBuilder(this)
+        passwordDialog = MaterialAlertDialogBuilder(this)
             .setTitle(R.string.decrypt_certificate)
             .setView(passwordField)
-            .setOnCancelListener { finish() }
-            .setNegativeButton(android.R.string.cancel) { _, _ -> finish() }
+            .setOnCancelListener { model.cancel() }
+            .setNegativeButton(android.R.string.cancel) { _, _ -> model.cancel() }
             .setPositiveButton(android.R.string.ok) { _, _ ->
-                storeKeystore(passwordField.text.toString().toCharArray(), fileName, pkcs12)
+                model.tryPassword(passwordField.text.toString().toCharArray())
             }
             .show()
-    }
-
-    private fun invalidCertificate(e: Exception) {
-        e.printStackTrace()
-        AppMessages.post(this, R.string.invalid_certificate)
-        finish()
     }
 }
