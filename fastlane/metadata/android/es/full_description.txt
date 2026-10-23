@@ -1,0 +1,26 @@
+Nomla es un cliente para el sistema de chat de voz Mumble. Aloja tu propio servidor o únete a uno de los muchos servidores públicos de la comunidad (consulta https://www.mumble.info).
+
+Nomla se portó desde Mumla y se reescribió casi por completo. Mumla y su biblioteca de protocolo Humla son obra de Daniel Lublin y colaboradores; continúan Plumble y Jumble de Andrew Comminos y colaboradores.
+
+Algunas de sus funciones:
+
+* Generación, importación y exportación de certificados
+* Exploración de servidores públicos
+* Transmisión activada por voz (predeterminada) o distintos botones de pulsar para hablar
+* Umbral de detección de voz adaptativo, con un medidor del nivel de entrada en vivo en los ajustes
+* Supresión de ruido con RNNoise, conmutable durante una llamada
+* Cancelación de eco (WebRTC AEC3) que sigue al dispositivo de audio y puede activarse o desactivarse por tipo de dispositivo
+* Selector de dispositivo de audio como en la app de teléfono: Bluetooth, altavoz, auricular del teléfono (la pantalla se apaga junto a la oreja), auriculares con cable o USB
+* Los auriculares Bluetooth se usan automáticamente
+* Registro propio en el servidor
+* Tokens de acceso
+* Compatibilidad con el códec Opus
+* Reconexión automática, que mantiene el micrófono funcionando con la pantalla apagada
+* Imágenes del chat mostradas en tamaño reducido; tócalas para verlas a pantalla completa
+* Compatibilidad con Tor mediante la app Orbot
+* Lectura en voz alta de los mensajes (activada de forma predeterminada)
+* Tema claro y oscuro
+
+Nomla es software libre bajo la GNU GPL v3 o posterior. Código fuente: https://github.com/devfbe/nomla
+
+En memoria de Andreas Mandalka (Natenom), cuyas guías, servidores y paciencia ayudaron a tantas personas a encontrar su camino hacia Mumble.

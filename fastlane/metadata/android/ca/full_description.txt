@@ -1,0 +1,26 @@
+El Nomla és un client per al sistema de xat de veu Mumble. Allotgeu el vostre propi servidor o uniu-vos a un dels molts servidors públics de la comunitat (vegeu https://www.mumble.info).
+
+El Nomla es va portar del Mumla i s'ha reescrit gairebé del tot. El Mumla i la seva biblioteca de protocol Humla són obra de Daniel Lublin i col·laboradors; continuen el Plumble i el Jumble d'Andrew Comminos i col·laboradors.
+
+Algunes de les funcions:
+
+* Generació, importació i exportació de certificats
+* Exploració de servidors públics
+* Transmissió activada per la veu (per defecte) o diversos botons de prémer per parlar
+* Llindar de detecció de veu adaptatiu, amb un mesurador del nivell d'entrada en directe a la configuració
+* Supressió de soroll amb RNNoise, commutable durant una trucada
+* Cancel·lació d'eco (WebRTC AEC3) que segueix el dispositiu d'àudio i es pot activar o desactivar per a cada tipus de dispositiu
+* Selector de dispositiu d'àudio com el de l'aplicació de telèfon: Bluetooth, altaveu, auricular (la pantalla s'apaga a l'orella), auriculars amb cable o USB
+* Els auriculars Bluetooth s'utilitzen automàticament
+* Registre propi al servidor
+* Testimonis d'accés
+* Compatibilitat amb el còdec Opus
+* Reconnexió automàtica, que manté el micròfon en funcionament amb la pantalla apagada
+* Imatges del xat mostrades en petit; toqueu-les per veure-les a pantalla completa
+* Compatibilitat amb Tor mitjançant l'aplicació Orbot
+* Lectura en veu alta dels missatges (activada per defecte)
+* Tema clar i fosc
+
+El Nomla és programari lliure sota la GNU GPL v3 o posterior. Codi font: https://github.com/devfbe/nomla
+
+En memòria d'Andreas Mandalka (Natenom), les guies, els servidors i la paciència del qual van ajudar tantes persones a trobar el camí cap al Mumble.

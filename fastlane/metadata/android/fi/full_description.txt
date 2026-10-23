@@ -1,0 +1,26 @@
+Nomla on asiakasohjelma Mumble-puhekeskustelujärjestelmään. Ylläpidä omaa palvelinta tai liity johonkin yhteisön monista julkisista palvelimista (katso https://www.mumble.info).
+
+Nomla on siirretty Mumlasta ja kirjoitettu lähes kokonaan uudelleen. Mumlan ja sen protokollakirjaston Humlan ovat tehneet Daniel Lublin ja muut kehittäjät; ne jatkavat Andrew Comminosin ja muiden kehittäjien Plumblea ja Jumblea.
+
+Joitakin ominaisuuksia:
+
+* Varmenteiden luonti, tuonti ja vienti
+* Julkisten palvelimien selaus
+* Puheaktivoitu lähetys (oletus) tai erilaiset puhepainikkeet
+* Mukautuva puheentunnistuksen kynnys ja reaaliaikainen tulotason mittari asetuksissa
+* Kohinanvaimennus RNNoisella, kytkettävissä puhelun aikana
+* Kaiunpoisto (WebRTC AEC3), joka seuraa äänilaitetta ja jonka voi kytkeä laitetyypeittäin
+* Äänilaitteen valinta kuten Puhelin-sovelluksessa: Bluetooth, kaiutin, kuuloke (näyttö sammuu korvalla), langallinen tai USB-kuulokemikrofoni
+* Bluetooth-kuulokkeita käytetään automaattisesti
+* Rekisteröityminen palvelimelle
+* Käyttöoikeustunnukset
+* Opus-koodekin tuki
+* Automaattinen uudelleenyhdistäminen, jonka ansiosta mikrofoni toimii myös näytön ollessa sammutettuna
+* Keskustelun kuvat näytetään pienennettyinä, napauta koko näytön tilaan
+* Tor-tuki Orbot-sovelluksen kautta
+* Viestien puhesynteesi (oletuksena päällä)
+* Vaalea ja tumma teema
+
+Nomla on vapaata ohjelmistoa GNU GPL v3 -lisenssillä tai uudemmalla. Lähdekoodi: https://github.com/devfbe/nomla
+
+Andreas Mandalkan (Natenom) muistolle. Hänen ohjeensa, palvelimensa ja kärsivällisyytensä auttoivat niin monia löytämään tiensä Mumbleen.

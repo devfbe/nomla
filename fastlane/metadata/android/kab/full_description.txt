@@ -1,0 +1,26 @@
+Nomla d amsaɣ i unagraw n udiwenni s taɣect Mumble. Sbedd aqeddac-ik·im neɣ kcem ɣer yiwen seg wuṭṭun meqqren n yiqeddacen izayezen n temɣiwent (wali https://www.mumble.info).
+
+Nomla yettwanqel seg Mumla, yettwaɛawed-d tira-ines qrib akk. Mumla d temkarḍit-is n uneggaf Humla d tid n Daniel Lublin d yimttekkiyen; ttkemmilent Plumble d Jumble n Andrew Comminos d yimttekkiyen.
+
+Kra seg tmahilin:
+
+* Asirew, aktar d usifeḍ n yiselkinen
+* Snirem iqeddacen izayezen
+* Tuzna s taɣect (s wudem amezwer), neɣ tiqeffalin yemgaraden n "Senned akken ad tmeslayeḍ"
+* Tilisa n tifin n taɣect yettemṣeggamen, s umeskan n uswir n unekcum srid deg yiɣewwaren
+* Asenqes n ṣṣut s RNNoise, yettbeddil deg tallit n usiwel
+* Tukksa n yiɣriten (WebRTC AEC3) i yettḍafaren ibenk n imesli, yezmer ad yettwarmed i yal anaw n yibenk
+* Afran n yibenk n imesli am deg usnas n tilifun: Bluetooth, asawaḍ, tameẓẓuɣt (agdil ad yensu ɣer umeẓẓuɣ), kask s ulamu neɣ USB
+* Kask Bluetooth ttwasqedcen s wudem awurman
+* Ajerred s yiman-ik·im ɣef uqeddac
+* Ijetunen n unekcum
+* Tallelt n codec Opus
+* Tuqqna-nniḍen tawurmant, i yettaǧǧan asawaḍ n usawal yettmahal ula ma yensa ugdil
+* Tugniwin n udiwenni ttbanent d timecṭuḥin, sit fell-asent i ugdil ačuran
+* Tallelt n Tor s usnas Orbot
+* Aḍris ɣer umeslay i yiznan (yermed s wudem amezwer)
+* Asentel aceɛlal d ubrik
+
+Nomla d aseɣzan ilelli s turagt GNU GPL v3 neɣ ugar. Tangalt taɣbalut: https://github.com/devfbe/nomla
+
+I usmekti n Andreas Mandalka (Natenom), win yellan imniren-is, iqeddacen-is d ṣṣber-is ttɛawanen aṭas n medden ad afen abrid ɣer Mumble.

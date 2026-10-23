@@ -1,0 +1,26 @@
+A Nomla a Mumble hangcsevegő rendszer kliense. Üzemeltessen saját szervert, vagy csatlakozzon a közösség számos nyilvános szerverének egyikéhez (lásd https://www.mumble.info).
+
+A Nomla a Mumlából lett átültetve, és szinte teljesen újraírták. A Mumla és protokollkönyvtára, a Humla Daniel Lublin és közreműködők munkája; ezek Andrew Comminos és közreműködők Plumble és Jumble projektjét folytatják.
+
+Néhány funkció:
+
+* Tanúsítványok létrehozása, importálása és exportálása
+* Nyilvános szerverek böngészése
+* Hangra aktiválódó adás (alapértelmezett) vagy különféle adógombok (push-to-talk)
+* Alkalmazkodó hangérzékelési küszöb, élő bemeneti szintjelzővel a beállításokban
+* Zajszűrés RNNoise-zal, hívás közben is kapcsolható
+* Visszhangszűrés (WebRTC AEC3), amely követi a hangeszközt, és eszköztípusonként kapcsolható
+* Hangeszközválasztó, mint a Telefon alkalmazásban: Bluetooth, hangszóró, fülhallgató (a képernyő a fülnél kikapcsol), vezetékes vagy USB-headset
+* A Bluetooth-headsetek automatikusan használatba kerülnek
+* Önregisztráció a szerveren
+* Hozzáférési tokenek
+* Opus kodek támogatása
+* Automatikus újracsatlakozás, amely kikapcsolt képernyőnél is működteti a mikrofont
+* A csevegés képei kicsinyítve jelennek meg, koppintásra teljes képernyőn
+* Tor-támogatás az Orbot alkalmazáson keresztül
+* Üzenetek felolvasása (alapértelmezés szerint bekapcsolva)
+* Világos és sötét téma
+
+A Nomla szabad szoftver a GNU GPL v3 vagy újabb licenc alatt. Forráskód: https://github.com/devfbe/nomla
+
+Andreas Mandalka (Natenom) emlékére, akinek útmutatói, szerverei és türelme oly sok embernek segítettek megtalálni az utat a Mumble-höz.

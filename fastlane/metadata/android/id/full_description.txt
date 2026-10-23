@@ -1,0 +1,26 @@
+Nomla adalah klien untuk sistem obrolan suara Mumble. Jalankan server Anda sendiri atau bergabunglah dengan salah satu dari banyak server publik yang dikelola komunitas (lihat https://www.mumble.info).
+
+Nomla di-porting dari Mumla dan hampir sepenuhnya ditulis ulang. Mumla dan pustaka protokolnya, Humla, dibuat oleh Daniel Lublin dan para kontributor; keduanya melanjutkan Plumble dan Jumble karya Andrew Comminos dan para kontributor.
+
+Beberapa fiturnya:
+
+* Membuat, mengimpor, dan mengekspor sertifikat
+* Menjelajahi server publik
+* Transmisi yang diaktifkan suara (bawaan), atau berbagai tombol push-to-talk
+* Ambang deteksi suara adaptif, dengan pengukur level masukan langsung di pengaturan
+* Peredam bising dengan RNNoise, dapat diubah selama panggilan
+* Peniadaan gema (WebRTC AEC3) yang mengikuti perangkat audio dan dapat diatur per jenis perangkat
+* Pemilih perangkat audio seperti di aplikasi Telepon: Bluetooth, speaker, earpiece (layar mati saat di telinga), headset kabel atau USB
+* Headset Bluetooth digunakan secara otomatis
+* Pendaftaran mandiri di server
+* Token akses
+* Dukungan codec Opus
+* Penyambungan ulang otomatis, yang menjaga mikrofon tetap bekerja saat layar mati
+* Gambar di obrolan ditampilkan diperkecil, ketuk untuk layar penuh
+* Dukungan Tor melalui aplikasi Orbot
+* Teks ke ucapan untuk pesan (aktif secara bawaan)
+* Tema terang dan gelap
+
+Nomla adalah perangkat lunak bebas di bawah GNU GPL v3 atau yang lebih baru. Kode sumber: https://github.com/devfbe/nomla
+
+Untuk mengenang Andreas Mandalka (Natenom), yang panduan, server, dan kesabarannya membantu begitu banyak orang menemukan jalan ke Mumble.

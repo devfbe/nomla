@@ -1,0 +1,26 @@
+Nomla, Mumble sesli sohbet sistemi için bir istemcidir. Kendi sunucunuzu çalıştırın ya da topluluğun işlettiği çok sayıdaki herkese açık sunucudan birine katılın (bkz. https://www.mumble.info).
+
+Nomla, Mumla'dan taşındı ve neredeyse tamamen yeniden yazıldı. Mumla ve protokol kitaplığı Humla, Daniel Lublin ve katkıda bulunanlar tarafından geliştirildi; bunlar Andrew Comminos ve katkıda bulunanların Plumble ve Jumble projelerini sürdürür.
+
+Özelliklerden bazıları:
+
+* Sertifika oluşturma, içe ve dışa aktarma
+* Herkese açık sunuculara göz atma
+* Sesle etkinleşen iletim (varsayılan) veya farklı bas-konuş düğmeleri
+* Ayarlarda canlı giriş seviyesi göstergesiyle uyarlanabilir ses algılama eşiği
+* RNNoise ile gürültü bastırma, görüşme sırasında açılıp kapatılabilir
+* Ses aygıtını izleyen ve aygıt türüne göre açılıp kapatılabilen yankı giderme (WebRTC AEC3)
+* Telefon uygulamasındaki gibi ses aygıtı seçimi: Bluetooth, hoparlör, ahize (kulağınızdayken ekran kapanır), kablolu veya USB kulaklık
+* Bluetooth kulaklıklar otomatik olarak kullanılır
+* Sunucuda kendi kendine kayıt
+* Erişim belirteçleri
+* Opus kodek desteği
+* Ekran kapalıyken de mikrofonu çalışır tutan otomatik yeniden bağlanma
+* Sohbetteki resimler küçültülmüş gösterilir, tam ekran için dokunun
+* Orbot uygulaması üzerinden Tor desteği
+* Mesajlar için metinden konuşmaya (varsayılan olarak açık)
+* Açık ve koyu tema
+
+Nomla, GNU GPL v3 veya sonrası altında özgür bir yazılımdır. Kaynak kodu: https://github.com/devfbe/nomla
+
+Rehberleri, sunucuları ve sabrıyla pek çok kişinin Mumble'a giden yolu bulmasına yardım eden Andreas Mandalka'nın (Natenom) anısına.
