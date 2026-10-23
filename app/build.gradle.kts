@@ -40,7 +40,7 @@ android {
         // Remember: a news string (app_news_items_*) in src/main/res/values*/strings.xml
         // and its entry in NEWS_ITEMS in src/main/java/koeln/becker/nomla/ui/DialogUtils.kt
         //     code:XYYZZbb (bb for build)
-        versionCode = 3070300
+        versionCode = 10000
         versionName = gitDescribe
 
         buildConfigField("long", "TIMESTAMP", "${System.currentTimeMillis()}L")

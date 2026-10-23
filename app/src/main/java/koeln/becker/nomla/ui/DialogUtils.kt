@@ -54,7 +54,7 @@ fun Context.showConfirmDialog(
 
 /** The news of each release, oldest first; add new versions at the end. */
 internal val NEWS_ITEMS = linkedMapOf(
-    "3.7.3" to R.string.app_news_items_nomla,
+    "0.1.0" to R.string.app_news_items_nomla,
 )
 
 /** The versions in [NEWS_ITEMS] up to this build's. */
