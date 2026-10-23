@@ -93,7 +93,7 @@ data class UserMenuState(
 class ChannelTreeViewModel(
     private val sessions: SessionManager,
     private val repository: NomlaRepository,
-    private val pinnedOnly: Boolean,
+    pinnedOnly: Boolean,
     showUserCount: Flow<Boolean>,
     private val settings: Settings,
     buildDispatcher: CoroutineDispatcher = Dispatchers.Default,

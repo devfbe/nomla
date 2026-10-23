@@ -85,7 +85,7 @@ internal class AudioInput(
         t.interrupt()
         try {
             t.join(joinTimeoutMs)
-        } catch (e: InterruptedException) {
+        } catch (_: InterruptedException) {
             // Restore the flag so callers further up see the cancellation.
             Thread.currentThread().interrupt()
         }

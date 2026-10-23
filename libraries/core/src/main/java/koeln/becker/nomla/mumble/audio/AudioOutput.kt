@@ -189,7 +189,7 @@ internal class AudioOutput(
         var silentMixes = 0
 
         while (running) {
-            if (fetchAudio(pcm, 0, bufferSize)) {
+            if (fetchAudio(pcm, bufferSize)) {
                 silentMixes = 0
             } else if (silentMixes < drainMixes) {
                 // Silence behind the last mix plays it out rather than flushing it, and leaves
@@ -242,13 +242,14 @@ internal class AudioOutput(
     }
 
     /**
-     * Fetches audio data from registered audio output users and mixes them into the given buffer.
+     * Fetches audio data from registered audio output users and mixes them into the first
+     * [bufferSize] samples of [buffer].
      * Priority speakers are mixed like everyone else.
      * @return true if the buffer contains audio data.
      */
-    private fun fetchAudio(buffer: ShortArray, bufferOffset: Int, bufferSize: Int): Boolean {
-        Arrays.fill(buffer, bufferOffset, bufferOffset + bufferSize, 0.toShort())
-        return packetLock.withLock { mix.mixInto(buffer, bufferOffset, bufferSize, onEnded) }
+    private fun fetchAudio(buffer: ShortArray, bufferSize: Int): Boolean {
+        Arrays.fill(buffer, 0, bufferSize, 0.toShort())
+        return packetLock.withLock { mix.mixInto(buffer, 0, bufferSize, onEnded) }
     }
 
     /** True for Opus; anything else is dropped, with one log line per output. */
