@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package koeln.becker.nomla.util
+package koeln.becker.nomla.mumble.util
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test

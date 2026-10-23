@@ -27,15 +27,14 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import koeln.becker.nomla.mumble.model.Server
+import koeln.becker.nomla.mumble.net.CertificatePins
 import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.CertificateInfoBinding
 import koeln.becker.nomla.util.getServer
 import koeln.becker.nomla.util.putServer
-import koeln.becker.nomla.util.toHex
 import java.io.ByteArrayInputStream
 import java.security.GeneralSecurityException
-import java.security.MessageDigest
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
 
@@ -208,8 +207,8 @@ class CertificateTrustDialogFragment : DialogFragment() {
         private fun decodeCertificate(encoded: ByteArray): X509Certificate = CertificateFactory.getInstance("X.509")
             .generateCertificate(ByteArrayInputStream(encoded)) as X509Certificate
 
-        /** The [algorithm] digest of [data] as colon-separated hex, e.g. "ab:cd:...". */
+        /** The [algorithm] fingerprint of [data] as colon-separated hex, e.g. "ab:cd:...". */
         private fun fingerprint(algorithm: String, data: ByteArray): String =
-            MessageDigest.getInstance(algorithm).digest(data).toHex().chunked(2).joinToString(":")
+            CertificatePins.fingerprint(data, algorithm).chunked(2).joinToString(":")
     }
 }

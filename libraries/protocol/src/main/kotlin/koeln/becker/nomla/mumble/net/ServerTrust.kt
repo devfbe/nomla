@@ -17,6 +17,7 @@
 
 package koeln.becker.nomla.mumble.net
 
+import koeln.becker.nomla.mumble.util.toHex
 import java.net.InetAddress
 import java.security.KeyStore
 import java.security.MessageDigest
@@ -25,8 +26,6 @@ import java.security.cert.CertificateParsingException
 import java.security.cert.X509Certificate
 import java.util.Locale
 import javax.net.ssl.X509TrustManager
-
-private const val BYTE_MASK = 0xFF
 
 /** Thrown when a host with a pinned certificate presents a different, not system-trusted one. */
 internal class CertificateChangedException(val host: String) :
@@ -41,10 +40,12 @@ internal enum class TrustFailure { NONE, UNTRUSTED, CHANGED }
  * host name as its alias.
  */
 public object CertificatePins {
-    /** Lower-case hex SHA-256 of the DER encoding. */
-    public fun fingerprint(certificate: X509Certificate): String =
-        MessageDigest.getInstance("SHA-256").digest(certificate.encoded)
-            .joinToString("") { "%02x".format(it.toInt() and BYTE_MASK) }
+    /** Lower-case hex SHA-256 of the DER encoding: the pin. */
+    public fun fingerprint(certificate: X509Certificate): String = fingerprint(certificate.encoded)
+
+    /** Lower-case hex [algorithm] digest of a DER-encoded certificate, [encoded]. */
+    public fun fingerprint(encoded: ByteArray, algorithm: String = "SHA-256"): String =
+        MessageDigest.getInstance(algorithm).digest(encoded).toHex()
 
     /** The trust store alias for [host]: lower case, without a trailing dot. */
     public fun aliasFor(host: String): String = HostnameMatcher.normalize(host)

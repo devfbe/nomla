@@ -50,7 +50,7 @@ import okhttp3.Request
 import okio.Buffer
 import koeln.becker.nomla.BuildConfig
 import koeln.becker.nomla.Settings
-import koeln.becker.nomla.util.toHex
+import koeln.becker.nomla.mumble.util.toHex
 import java.io.IOException
 import java.io.InterruptedIOException
 import java.security.MessageDigest

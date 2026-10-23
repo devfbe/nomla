@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package koeln.becker.nomla.util
+package koeln.becker.nomla.mumble.util
 
 private const val DIGITS = "0123456789abcdef"
 private const val BYTE_MASK = 0xFF
@@ -23,7 +23,7 @@ private const val NIBBLE_BITS = 4
 private const val NIBBLE_MASK = 0x0F
 
 /** Lower-case hexadecimal, two digits per byte. */
-fun ByteArray.toHex(): String {
+public fun ByteArray.toHex(): String {
     val out = CharArray(size * 2)
     forEachIndexed { i, b ->
         val v = b.toInt() and BYTE_MASK
