@@ -18,32 +18,67 @@
 
 package koeln.becker.nomla.preference
 
+import android.app.Dialog
+import android.content.DialogInterface
+import android.os.Bundle
 import android.view.KeyEvent
-import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDialogFragment
+import androidx.core.content.edit
+import androidx.preference.PreferenceFragmentCompat
 import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.DialogKeyselectPreferenceBinding
 
-/** Waits for a key press and offers it as the value of a [KeySelectDialogPreference]. */
-class KeySelectPreferenceDialogFragment : PreferenceValueDialogFragment<KeySelectDialogPreference>() {
+/**
+ * Waits for a key press and offers it as the value of a [KeySelectDialogPreference]. Shown by its
+ * [PreferenceFragmentCompat] as a child fragment, which is where [preference] is looked up by the
+ * [ARG_KEY] argument.
+ */
+class KeySelectPreferenceDialogFragment : AppCompatDialogFragment() {
     private var keyCode = 0
+    private var positiveClicked = false
     private var binding: DialogKeyselectPreferenceBinding? = null
 
-    override fun onPrepareDialogBuilder(builder: AlertDialog.Builder) {
-        builder.setNeutralButton(R.string.reset_key) { _, _ ->
-            keyCode = 0
-            // Not the positive button, so stored here rather than on dismissal.
-            persist(keyCode)
-        }
-    }
+    private val preference: KeySelectDialogPreference
+        get() = requireNotNull(
+            (requireParentFragment() as PreferenceFragmentCompat)
+                .findPreference<KeySelectDialogPreference>(requireArguments().getString(ARG_KEY).orEmpty()),
+        )
 
-    override fun onBindDialogView(view: View) {
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val preference = preference
+        val view = layoutInflater.inflate(preference.dialogLayoutResource, null)
         binding = DialogKeyselectPreferenceBinding.bind(view)
         view.setOnKeyListener { _, code, event -> onKey(code, event) }
         view.isFocusableInTouchMode = true
         view.requestFocus()
-        keyCode = storedValue(0)
+        keyCode = requireNotNull(preference.sharedPreferences).getInt(preference.key, 0)
         showKey()
+        return AlertDialog.Builder(requireContext())
+            .setTitle(preference.dialogTitle)
+            .setIcon(preference.dialogIcon)
+            .setView(view)
+            .setPositiveButton(preference.positiveButtonText) { _, _ -> positiveClicked = true }
+            .setNegativeButton(preference.negativeButtonText, null)
+            .setNeutralButton(R.string.reset_key) { _, _ ->
+                keyCode = 0
+                // Not the positive button, so stored here rather than on dismissal.
+                persist(keyCode)
+            }
+            .create()
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        if (positiveClicked) persist(keyCode)
+    }
+
+    /** Stores [value] if the preference's change listener accepts it. */
+    private fun persist(value: Int) {
+        val preference = preference
+        if (preference.callChangeListener(value)) {
+            requireNotNull(preference.sharedPreferences).edit { putInt(preference.key, value) }
+        }
     }
 
     private fun onKey(code: Int, event: KeyEvent): Boolean {
@@ -66,5 +101,7 @@ class KeySelectPreferenceDialogFragment : PreferenceValueDialogFragment<KeySelec
         }
     }
 
-    override fun currentValue(): Int = keyCode
+    companion object {
+        const val ARG_KEY = "key"
+    }
 }

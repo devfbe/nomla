@@ -49,7 +49,7 @@ abstract class NomlaPreferenceFragment(@param:XmlRes private val preferencesXml:
         if (preference !is KeySelectDialogPreference) return super.onDisplayPreferenceDialog(preference)
         if (childFragmentManager.findFragmentByTag(DIALOG_TAG) != null) return
         val dialog = KeySelectPreferenceDialogFragment()
-        dialog.arguments = Bundle().apply { putString(PreferenceValueDialogFragment.ARG_KEY, preference.key) }
+        dialog.arguments = Bundle().apply { putString(KeySelectPreferenceDialogFragment.ARG_KEY, preference.key) }
         dialog.show(childFragmentManager, DIALOG_TAG)
     }
 
