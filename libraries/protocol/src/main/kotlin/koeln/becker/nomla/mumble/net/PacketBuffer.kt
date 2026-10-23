@@ -19,7 +19,6 @@
 
 package koeln.becker.nomla.mumble.net
 
-import java.nio.BufferUnderflowException
 import java.nio.ByteBuffer
 
 /** Reads and writes Mumble's packet data stream (its varint encoding) over a [ByteBuffer]. */
@@ -60,31 +59,8 @@ internal class PacketBuffer(private val buffer: ByteBuffer) {
         return block
     }
 
-    /** Reads a varint. */
-    fun readLong(): Long {
-        val v = next().toLong()
-        return when {
-            v and 0x80L == 0L -> v and 0x7F
-            v and 0xC0L == 0x80L -> (v and 0x3F) shl 8 or next().toLong()
-            v and 0xF0L == 0xF0L -> when ((v and 0xFC).toInt()) {
-                0xF0 -> readBigEndian(4)
-                0xF4 -> readBigEndian(8)
-                0xF8 -> readLong().inv()
-                0xFC -> (v and 0x03).inv()
-                else -> throw BufferUnderflowException()
-            }
-            v and 0xF0L == 0xE0L -> readBigEndian(3, (v and 0x0F))
-            v and 0xE0L == 0xC0L -> readBigEndian(2, (v and 0x1F))
-            else -> 0
-        }
-    }
-
-    /** Reads [bytes] bytes big-endian after the high bits already in [initial]. */
-    private fun readBigEndian(bytes: Int, initial: Long = 0): Long {
-        var i = initial
-        repeat(bytes) { i = (i shl Byte.SIZE_BITS) or next().toLong() }
-        return i
-    }
+    /** Reads a varint; a truncated one throws [java.nio.BufferUnderflowException]. */
+    fun readLong(): Long = readMumbleVarint { next() }
 
     fun rewind() {
         buffer.rewind()

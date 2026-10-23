@@ -244,33 +244,8 @@ private class WireReader {
         return data[pos++].toInt() and BYTE_MASK
     }
 
-    /** A Mumble packet data stream varint, as [PacketBuffer.readLong] reads it. */
-    fun readMumbleVarint(): Long {
-        val v = next().toLong()
-        return when {
-            v and 0x80L == 0L -> v and 0x7F
-            v and 0xC0L == 0x80L -> (v and 0x3F) shl 8 or next().toLong()
-            v and 0xF0L == 0xF0L -> when ((v and 0xFC).toInt()) {
-                0xF0 -> readBigEndian(4, 0)
-                0xF4 -> readBigEndian(8, 0)
-                0xF8 -> readMumbleVarint().inv()
-                0xFC -> (v and 0x03).inv()
-                else -> {
-                    ok = false
-                    0
-                }
-            }
-            v and 0xF0L == 0xE0L -> readBigEndian(3, v and 0x0F)
-            v and 0xE0L == 0xC0L -> readBigEndian(2, v and 0x1F)
-            else -> 0
-        }
-    }
-
-    private fun readBigEndian(bytes: Int, initial: Long): Long {
-        var value = initial
-        repeat(bytes) { value = (value shl Byte.SIZE_BITS) or next().toLong() }
-        return value
-    }
+    /** A Mumble packet data stream varint; a truncated one clears [ok]. */
+    fun readMumbleVarint(): Long = readMumbleVarint { next() }
 
     /** A protobuf varint of at most ten bytes. */
     fun readVarint(): Long {
