@@ -1,7 +1,9 @@
 #!/bin/bash
 set -eu
 
-cd "${0%/*}"
+# Regenerates app/src/main/res/xml/local_config.xml and the languageValues array from the
+# values-* directories; run after adding or removing a locale.
+cd "${0%/*}/.."
 
 langdirs=(app/src/main/res/values-?? app/src/main/res/values-??-r?? app/src/main/res/values-???)
 readarray -td '' langdirs < <(printf '%s\0' "${langdirs[@]}" | sort -z)
