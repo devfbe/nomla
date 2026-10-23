@@ -26,7 +26,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -65,11 +64,12 @@ internal sealed interface CertificateExportStep {
  * itself, which run in the view model's scope so that a rotation (or the document picker's app
  * recreating the screen) neither loses nor repeats them.
  */
-internal class CertificateExportViewModel(private val app: Application) : ViewModel() {
-    private val repository get() = NomlaRepository.get(app)
-
+internal class CertificateExportViewModel(
+    private val app: Application,
     /** Where the key derivation runs; it takes seconds on a phone. */
-    var workDispatcher: CoroutineDispatcher = Dispatchers.Default
+    private val workDispatcher: CoroutineDispatcher,
+) : ViewModel() {
+    private val repository get() = NomlaRepository.get(app)
 
     private val mutableStep = MutableStateFlow<CertificateExportStep>(CertificateExportStep.Loading)
     val step: StateFlow<CertificateExportStep> = mutableStep.asStateFlow()

@@ -808,7 +808,7 @@ class ChannelChatFragmentTest {
         add(imageMessage(picture))
         launch()
         drainMainUntil { itemCount() == 1 }
-        fragment.imageIoDispatcher = Dispatchers.Unconfined
+        replaceParts { it.copy(ioDispatcher = Dispatchers.Unconfined) }
         return loader
     }
 
@@ -900,7 +900,7 @@ class ChannelChatFragmentTest {
         launchWithAPicture()
         FixedRowMediaProvider.install(into = ByteArrayOutputStream())
         val parked = QueueingDispatcher()
-        fragment.imageIoDispatcher = parked
+        replaceParts { it.copy(ioDispatcher = parked) }
 
         fragment.saveImage(picture)
         fragment.saveImage(picture)

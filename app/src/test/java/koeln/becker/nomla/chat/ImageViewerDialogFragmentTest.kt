@@ -233,7 +233,7 @@ class ImageViewerDialogFragmentTest {
         val fetched = mutableListOf<String>()
         installLoader { url -> fetched += url; shown }
         launched { fragment ->
-            fragment.ioDispatcher = Dispatchers.Unconfined
+            replaceParts { it.copy(ioDispatcher = Dispatchers.Unconfined) }
             val written = ByteArrayOutputStream()
             FixedRowMediaProvider.install(into = written)
             idleMainLooper()
@@ -249,7 +249,7 @@ class ImageViewerDialogFragmentTest {
     fun aSavedImageSaysSoAndOffersToViewIt() {
         installLoader { TestImages.png(40, 40) }
         launched { fragment ->
-            fragment.ioDispatcher = Dispatchers.Unconfined
+            replaceParts { it.copy(ioDispatcher = Dispatchers.Unconfined) }
             FixedRowMediaProvider.install(into = ByteArrayOutputStream())
             idleMainLooper()
 
@@ -274,7 +274,7 @@ class ImageViewerDialogFragmentTest {
         val saving = QueueingDispatcher()
         installLoader { TestImages.png(40, 40) }
         launched { fragment ->
-            fragment.ioDispatcher = saving
+            replaceParts { it.copy(ioDispatcher = saving) }
             FixedRowMediaProvider.install(into = ByteArrayOutputStream())
             idleMainLooper()
 
@@ -294,7 +294,7 @@ class ImageViewerDialogFragmentTest {
     fun aSaveThatCannotBeWrittenSaysSoAndOpensNothing() {
         installLoader { TestImages.png(4, 4) }
         launched { fragment ->
-            fragment.ioDispatcher = Dispatchers.Unconfined
+            replaceParts { it.copy(ioDispatcher = Dispatchers.Unconfined) }
             FixedRowMediaProvider.install(into = FailingOutputStream())
             idleMainLooper()
 
@@ -357,7 +357,7 @@ class ImageViewerDialogFragmentTest {
         val scenario = launch(action = ImageViewerDialogFragment.Action.SAVE)
 
         scenario.onFragment { fragment ->
-            fragment.ioDispatcher = Dispatchers.Unconfined
+            replaceParts { it.copy(ioDispatcher = Dispatchers.Unconfined) }
             assertThat(inserts()).isEqualTo(0)
             parked.drain()
             idleMainLooper()
@@ -369,7 +369,7 @@ class ImageViewerDialogFragmentTest {
 
         scenario.recreate()
         scenario.onFragment { fragment ->
-            fragment.ioDispatcher = Dispatchers.Unconfined
+            replaceParts { it.copy(ioDispatcher = Dispatchers.Unconfined) }
             parked.drain()
             idleMainLooper()
             assertThat(fragment.image().drawable).isNotNull()
@@ -384,7 +384,7 @@ class ImageViewerDialogFragmentTest {
         installLoader(ioDispatcher = parked) { TestImages.png(40, 40) }
         launch(action = ImageViewerDialogFragment.Action.SHARE).use { scenario ->
             scenario.onFragment { fragment ->
-                fragment.ioDispatcher = Dispatchers.Unconfined
+                replaceParts { it.copy(ioDispatcher = Dispatchers.Unconfined) }
                 assertThat(shadowOf(fragment.requireActivity()).nextStartedActivity).isNull()
                 parked.drain()
                 idleMainLooper()
@@ -412,7 +412,7 @@ class ImageViewerDialogFragmentTest {
     fun sharingStartsAChooserThatCanReadTheExportedFile() {
         installLoader { TestImages.png(100, 50) }
         launched { fragment ->
-            fragment.ioDispatcher = Dispatchers.Unconfined
+            replaceParts { it.copy(ioDispatcher = Dispatchers.Unconfined) }
             idleMainLooper()
             fragment.tap(R.id.image_viewer_share)
 
@@ -567,7 +567,7 @@ class ImageViewerDialogFragmentTest {
         val exporting = QueueingDispatcher()
         installLoader { TestImages.png(40, 40) }
         launched { fragment ->
-            fragment.ioDispatcher = exporting
+            replaceParts { it.copy(ioDispatcher = exporting) }
             idleMainLooper()
 
             fragment.tap(R.id.image_viewer_share)
@@ -593,7 +593,7 @@ class ImageViewerDialogFragmentTest {
         var served: ByteArray = shown
         installLoader { served }
         launched { fragment ->
-            fragment.ioDispatcher = Dispatchers.Unconfined
+            replaceParts { it.copy(ioDispatcher = Dispatchers.Unconfined) }
             idleMainLooper()
             // The server changes its answer and another image is fetched behind the dialog.
             served = "not an image at all".toByteArray()
@@ -613,7 +613,7 @@ class ImageViewerDialogFragmentTest {
         val fetched = mutableListOf<String>()
         installLoader { url -> fetched += url; TestImages.png(40, 40) }
         launched { fragment ->
-            fragment.ioDispatcher = Dispatchers.Unconfined
+            replaceParts { it.copy(ioDispatcher = Dispatchers.Unconfined) }
             idleMainLooper()
             runBlocking { loader!!.fetchBytes(other) }
 
@@ -698,7 +698,7 @@ class ImageViewerDialogFragmentTest {
     fun aShareThatCannotBeWrittenSaysSoAndStartsNothing() {
         installLoader { TestImages.png(4, 4) }
         launched { fragment ->
-            fragment.ioDispatcher = Dispatchers.Unconfined
+            replaceParts { it.copy(ioDispatcher = Dispatchers.Unconfined) }
             idleMainLooper()
             val blocking = File(fragment.requireContext().cacheDir, ImageShareExporter.DIRECTORY)
             blocking.deleteRecursively()

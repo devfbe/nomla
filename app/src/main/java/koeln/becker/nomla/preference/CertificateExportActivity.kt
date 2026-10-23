@@ -24,7 +24,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.activity.viewModels
-import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
@@ -33,9 +32,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import koeln.becker.nomla.R
+import koeln.becker.nomla.app.AppContainer
 import koeln.becker.nomla.databinding.DialogExportPasswordBinding
 
 /**
@@ -49,19 +48,13 @@ import koeln.becker.nomla.databinding.DialogExportPasswordBinding
 class CertificateExportActivity : AppCompatActivity(), DialogInterface.OnClickListener {
 
     private val model: CertificateExportViewModel by viewModels {
-        viewModelFactory { initializer { CertificateExportViewModel(application) } }
+        viewModelFactory {
+            initializer { CertificateExportViewModel(application, AppContainer.of(application).parts.workDispatcher) }
+        }
     }
 
     private val documentCreator: ActivityResultLauncher<String> =
         registerForActivityResult(CreateDocument("application/x-pkcs12")) { model.export(it) }
-
-    /** Where the key derivation runs; it takes seconds on a phone. */
-    @VisibleForTesting
-    internal var workDispatcher: CoroutineDispatcher
-        get() = model.workDispatcher
-        set(value) {
-            model.workDispatcher = value
-        }
 
     /** The step whose dialog is [stepDialog]. */
     private var shownStep: CertificateExportStep? = null

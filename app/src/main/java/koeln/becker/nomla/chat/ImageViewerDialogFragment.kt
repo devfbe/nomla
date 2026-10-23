@@ -28,8 +28,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import koeln.becker.nomla.R
 import koeln.becker.nomla.app.AppContainer
@@ -58,9 +56,8 @@ import koeln.becker.nomla.util.padForSystemBars
  */
 class ImageViewerDialogFragment : DialogFragment() {
 
-    /** Test seam: the dispatcher the share export and gallery save run on. Production code must not set this. */
-    @VisibleForTesting
-    internal var ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    /** Where the share export and the gallery save run. */
+    private val ioDispatcher get() = AppContainer.of(requireContext()).parts.ioDispatcher
 
     /** Save and share report in the viewer's own window, which would cover the activity's. */
     private val feedback = ImageActionFeedback { text, action, onAction ->

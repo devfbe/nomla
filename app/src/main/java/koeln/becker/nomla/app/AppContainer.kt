@@ -19,7 +19,9 @@ package koeln.becker.nomla.app
 import android.app.Application
 import android.content.Context
 import androidx.annotation.VisibleForTesting
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import koeln.becker.nomla.mumble.NomlaSession
 import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.audio.AndroidAudioTrackSink
@@ -79,6 +81,10 @@ class AppContainer(
         val newPublicServerFetcher: () -> PublicServerFetcher = { PublicServerFetcher() },
         /** Pings the public servers. */
         val newServerPinger: () -> ServerPinger = { ServerPinger() },
+        /** Where screens write and read files: image saves and share exports. */
+        val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+        /** Where screens compute for long: the key derivation of a certificate export. */
+        val workDispatcher: CoroutineDispatcher = Dispatchers.Default,
     )
 
     @Volatile

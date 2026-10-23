@@ -51,8 +51,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import koeln.becker.nomla.R
@@ -229,9 +227,8 @@ class ChannelChatFragment : Fragment(), MenuProvider {
         ImageViewerDialogFragment.newInstance(source, action).showNow(fm, ImageViewerDialogFragment.TAG)
     }
 
-    /** Test seam: the dispatcher image saves and share exports run on. Production code must not set this. */
-    @VisibleForTesting
-    internal var imageIoDispatcher: CoroutineDispatcher = Dispatchers.IO
+    /** Where image saves and share exports run. */
+    private val imageIoDispatcher get() = AppContainer.of(requireContext()).parts.ioDispatcher
 
     /** The running save or share from the log; one at a time (debounce, and one writer per share path). */
     private var imageAction: Job? = null

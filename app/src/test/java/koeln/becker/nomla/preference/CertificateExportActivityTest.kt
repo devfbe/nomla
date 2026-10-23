@@ -36,6 +36,7 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
+import org.robolectric.android.controller.ActivityController
 import org.robolectric.shadows.ShadowDialog
 import koeln.becker.nomla.mumble.net.NomlaCertificateGenerator
 import koeln.becker.nomla.mumble.net.Pkcs12Certificates
@@ -43,6 +44,7 @@ import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.db.NomlaSQLiteDatabase
 import koeln.becker.nomla.testing.installDatabase
+import koeln.becker.nomla.testing.replaceParts
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import kotlin.coroutines.CoroutineContext
@@ -69,12 +71,15 @@ class CertificateExportActivityTest {
 
     private fun startAndPick(): CertificateExportActivity = startAndPickIn().get()
 
-    private fun startAndPickIn(dispatcher: CoroutineDispatcher = Dispatchers.Unconfined) =
-        Robolectric.buildActivity(CertificateExportActivity::class.java).setup().also {
-            it.get().workDispatcher = dispatcher
+    private fun startAndPickIn(
+        dispatcher: CoroutineDispatcher = Dispatchers.Unconfined,
+    ): ActivityController<CertificateExportActivity> {
+        replaceParts { it.copy(workDispatcher = dispatcher) }
+        return Robolectric.buildActivity(CertificateExportActivity::class.java).setup().also {
             it.get().onClick(null, 0)
             idleMainLooper()
         }
+    }
 
     /** Holds the work handed to it until [runAll]. */
     private class HeldDispatcher : CoroutineDispatcher() {
@@ -215,7 +220,6 @@ class CertificateExportActivityTest {
 
         controller.recreate()
         val activity = controller.get()
-        activity.workDispatcher = Dispatchers.Unconfined
         activity.activityResultRegistry.dispatchResult(request.requestCode, Activity.RESULT_OK, Intent().setData(uri))
         idleMainLooper()
 
