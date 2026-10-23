@@ -31,10 +31,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.minidns.dnsserverlookup.android21.AndroidUsingLinkProperties
@@ -78,6 +76,7 @@ import koeln.becker.nomla.mumble.session.NetworkMonitor
 import koeln.becker.nomla.mumble.session.SessionConfig
 import koeln.becker.nomla.mumble.session.SessionEvents
 import koeln.becker.nomla.mumble.session.SessionLifecycle
+import koeln.becker.nomla.mumble.session.SessionModel
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.mumble.session.SessionWakeLock
 import koeln.becker.nomla.mumble.session.TalkStates
@@ -141,29 +140,19 @@ public class NomlaSession internal constructor(
 
     private var commands: ServerCommands? = null
 
-    /** The model of the live connection; dropped when it ends, so its tree can be collected. */
-    @Volatile
-    internal var modelHandler: ModelHandler? = null
-        private set
-
-    /** Guards the check that a snapshot comes from the live [modelHandler] together with its publication. */
-    private val modelLock = Any()
-
-    private val mutableModel = MutableStateFlow<ServerState?>(null)
-
-    override val model: StateFlow<ServerState?> = mutableModel.asStateFlow()
-
-    /** What this device remembers about users, carried from one connection of the session to the next. */
-    private var localUsers = LocalUserSettings(
-        volumes = config.localVolumes,
-        mutedUserIds = config.connection.localMuteHistory.toSet(),
-        ignoredUserIds = config.connection.localIgnoreHistory.toSet(),
-        serverScope = config.connection.server?.localVolumeScope,
+    private val serverModel = SessionModel(
+        LocalUserSettings(
+            volumes = config.localVolumes,
+            mutedUserIds = config.connection.localMuteHistory.toSet(),
+            ignoredUserIds = config.connection.localIgnoreHistory.toSet(),
+            serverScope = config.connection.server?.localVolumeScope,
+        ),
     )
 
-    /** Written on the protocol context with every snapshot, read by the network and playback threads. */
-    @Volatile
-    private var playbackParams = PlaybackParams.DEFAULT
+    /** The model of the live connection, see [SessionModel.handler]. */
+    internal val modelHandler: ModelHandler? get() = serverModel.handler
+
+    override val model: StateFlow<ServerState?> get() = serverModel.state
 
     private val mutableTalkStates = TalkStates(mainHandler.looper)
 
@@ -184,13 +173,13 @@ public class NomlaSession internal constructor(
         }
 
         override fun onTalkingStateChanged(talking: Boolean) {
-            val self = mutableModel.value?.selfSession ?: return
+            val self = serverModel.value?.selfSession ?: return
             mutableTalkStates.report(self, if (talking) TalkState.TALKING else TalkState.PASSIVE)
         }
     }
 
     private val audioOutputListener = object : AudioOutput.AudioOutputListener {
-        override val playbackParams: PlaybackParams get() = this@NomlaSession.playbackParams
+        override val playbackParams: PlaybackParams get() = serverModel.playbackParams
 
         override fun onTalkStateUpdated(session: Int, state: TalkState) = mutableTalkStates.report(session, state)
     }
@@ -259,13 +248,9 @@ public class NomlaSession internal constructor(
         callbacks.connection = connection
         this.connection = connection
 
-        val publisher = SnapshotPublisher(connection)
         val commands = ServerCommands(connection::sendTCPMessage)
         this.commands = commands
-        val modelHandler = ModelHandler(ServerState.empty(localUsers), ::emit, publisher, commands::requestAvatar)
-        publisher.handler = modelHandler
-        this.modelHandler = modelHandler
-        connection.addTcpHandler(modelHandler)
+        connection.addTcpHandler(serverModel.attach(connection, ::emit, commands::requestAvatar))
 
         // Resolves the host (SRV lookup included) and opens the socket on the protocol context;
         // every failure, certificate errors included, arrives at onConnectionDisconnected.
@@ -323,7 +308,7 @@ public class NomlaSession internal constructor(
         NomlaLog.v(TAG, "Connected")
         // The connection reports ServerSync before the model has read it; its snapshot follows.
         audioStart = scope.launch(start = CoroutineStart.UNDISPATCHED) {
-            val synced = mutableModel.first { it?.selfSession != null }
+            val synced = serverModel.state.first { it?.selfSession != null }
             startAudio(connection, synced?.self)
         }
     }
@@ -359,7 +344,7 @@ public class NomlaSession internal constructor(
         } else {
             NomlaLog.v(TAG, "Disconnected")
         }
-        val reason = e?.let { error -> disconnectReasonOf(error) { mutableModel.value?.user(it)?.name } }
+        val reason = e?.let { error -> disconnectReasonOf(error) { serverModel.value?.user(it)?.name } }
         lost(reason ?: tlsFailure)
     }
 
@@ -370,12 +355,7 @@ public class NomlaSession internal constructor(
         audioSession.stop()
         val autoReconnect = config.autoReconnect && reason is DisconnectReason.Network
         val next = lifecycle.lost(autoReconnect, reason)
-        synchronized(modelLock) {
-            mutableModel.value?.let { localUsers = it.local }
-            modelHandler = null
-            mutableModel.value = null
-            playbackParams = PlaybackParams.DEFAULT
-        }
+        serverModel.detach()
         mutableTalkStates.clear()
         voiceTargets.clear()
         if (next is SessionState.Disconnected) {
@@ -393,26 +373,8 @@ public class NomlaSession internal constructor(
 
     /** Hands [input] to the model's writer; ignored without a connection. */
     private fun local(input: LocalInput) {
-        val handler = modelHandler ?: return
+        val handler = serverModel.handler ?: return
         connection?.post { handler.onLocal(input) }
-    }
-
-    /** Publishes the snapshots of one connection's model, until another model replaces it. */
-    private inner class SnapshotPublisher(private val connection: NomlaConnection) : ModelHandler.Publisher {
-        lateinit var handler: ModelHandler
-
-        override fun post(block: () -> Unit) = connection.post(block)
-
-        override fun publish(state: ServerState) {
-            synchronized(modelLock) {
-                if (modelHandler !== handler) return
-                val previous = mutableModel.value
-                if (previous == null || previous.users !== state.users) {
-                    playbackParams = PlaybackParams.of(state.users.values)
-                }
-                mutableModel.value = state
-            }
-        }
     }
 
     /** The active voice target, see [VoiceTargets.id]. */
@@ -435,7 +397,7 @@ public class NomlaSession internal constructor(
 
     @Suppress("TooManyFunctions") // SessionActions, one request each.
     private inner class Actions : SessionActions {
-        private val model: ServerState? get() = mutableModel.value
+        private val model: ServerState? get() = serverModel.value
 
         override fun joinChannel(channel: Int) {
             val self = model?.selfSession ?: return
