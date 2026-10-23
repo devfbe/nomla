@@ -107,7 +107,7 @@ internal class NomlaConnection(
     private val transports: TransportFactory = DefaultTransportFactory,
     private val resolver: ServerResolver = ServerResolver(),
     protocolFactory: (ProtocolSession.Link, Boolean) -> ProtocolSession = ::ProtocolSession,
-) : NomlaTCP.TCPConnectionListener, NomlaUDP.UDPConnectionListener, MessageHandlerRegistry {
+) : NomlaTcp.TcpConnectionListener, NomlaUdp.UdpConnectionListener, MessageHandlerRegistry {
 
     /**
      * Builds the transports, so tests can supply fakes that never open a socket. Each gets the
@@ -116,19 +116,19 @@ internal class NomlaConnection(
     interface TransportFactory {
         fun createTcp(socketFactory: NomlaSSLSocketFactory, scope: CoroutineScope): TcpTransport
 
-        fun createUdp(cryptState: CryptState, listener: NomlaUDP.UDPConnectionListener, scope: CoroutineScope):
+        fun createUdp(cryptState: CryptState, listener: NomlaUdp.UdpConnectionListener, scope: CoroutineScope):
             UdpTransport
     }
 
     object DefaultTransportFactory : TransportFactory {
         override fun createTcp(socketFactory: NomlaSSLSocketFactory, scope: CoroutineScope): TcpTransport =
-            NomlaTCP(socketFactory, scope)
+            NomlaTcp(socketFactory, scope)
 
         override fun createUdp(
             cryptState: CryptState,
-            listener: NomlaUDP.UDPConnectionListener,
+            listener: NomlaUdp.UdpConnectionListener,
             scope: CoroutineScope,
-        ): UdpTransport = NomlaUDP(cryptState, listener, scope)
+        ): UdpTransport = NomlaUdp(cryptState, listener, scope)
     }
 
     /** Every call is made on the connection's callback executor. */

@@ -36,7 +36,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 
-class NomlaUDPTest {
+class NomlaUdpTest {
     private val key = ByteArray(16) { it.toByte() }
     private val clientNonce = ByteArray(16) { (0x10 + it).toByte() }
     private val serverNonce = ByteArray(16) { (0x20 + it).toByte() }
@@ -48,9 +48,9 @@ class NomlaUDPTest {
     private val server = DatagramSocket(0, InetAddress.getLoopbackAddress()).apply { soTimeout = 200 }
     private val serverCrypt = CryptState().apply { setKeys(key, serverNonce, clientNonce) }
     private val listener = RecordingListener()
-    private lateinit var udp: NomlaUDP
+    private lateinit var udp: NomlaUdp
 
-    private class RecordingListener : NomlaUDP.UDPConnectionListener {
+    private class RecordingListener : NomlaUdp.UdpConnectionListener {
         val received = LinkedBlockingQueue<Pair<String, ByteArray>>()
         val errors = LinkedBlockingQueue<Exception>()
         override fun onUDPDataReceived(data: ByteArray) { received.add(Thread.currentThread().name to data) }
@@ -58,8 +58,8 @@ class NomlaUDPTest {
         override fun resyncCryptState() {}
     }
 
-    private fun startClient(): NomlaUDP {
-        udp = NomlaUDP(CryptState().apply { setKeys(key, clientNonce, serverNonce) }, listener, scope)
+    private fun startClient(): NomlaUdp {
+        udp = NomlaUdp(CryptState().apply { setKeys(key, clientNonce, serverNonce) }, listener, scope)
         udp.connect("127.0.0.1", server.localPort)
         return udp
     }
@@ -70,7 +70,7 @@ class NomlaUDPTest {
      * makes this deterministic: a datagram handed to the transport before its socket exists can be
      * dropped, and the OS may drop a loopback datagram too.
      */
-    private fun sendUntilReceived(client: NomlaUDP, payload: ByteArray): Pair<DatagramPacket, ByteArray?> {
+    private fun sendUntilReceived(client: NomlaUdp, payload: ByteArray): Pair<DatagramPacket, ByteArray?> {
         val packet = DatagramPacket(ByteArray(2048), 2048)
         var plaintext: ByteArray? = null
         awaitUntil(description = "a datagram from the client reached the server") {
@@ -125,7 +125,7 @@ class NomlaUDPTest {
     @Test
     fun aClosedSocketIsReportedAsAConnectionError() {
         val sockets = LinkedBlockingQueue<DatagramSocket>()
-        udp = NomlaUDP(
+        udp = NomlaUdp(
             CryptState().apply { setKeys(key, clientNonce, serverNonce) },
             listener,
             scope,
@@ -149,7 +149,7 @@ class NomlaUDPTest {
     fun aSendAfterTheThreadDiedDoesNotBurnASequenceNumber() {
         val crypt = CryptState().apply { setKeys(key, clientNonce, serverNonce) }
         val sockets = LinkedBlockingQueue<DatagramSocket>()
-        udp = NomlaUDP(crypt, listener, scope) {
+        udp = NomlaUdp(crypt, listener, scope) {
             DatagramSocket().also { sockets.add(it) }
         }
         udp.connect("127.0.0.1", server.localPort)
@@ -197,7 +197,7 @@ class NomlaUDPTest {
     fun aDisconnectBeforeTheSocketExistsStillStopsTheReceiveLoop() {
         val gate = CountDownLatch(1)
         val sockets = LinkedBlockingQueue<DatagramSocket>()
-        udp = NomlaUDP(
+        udp = NomlaUdp(
             CryptState().apply { setKeys(key, clientNonce, serverNonce) },
             listener,
             scope,
@@ -229,7 +229,7 @@ class NomlaUDPTest {
     @Test
     fun cancellingTheScopeClosesTheSocketAndReportsNothing() {
         val sockets = LinkedBlockingQueue<DatagramSocket>()
-        udp = NomlaUDP(CryptState().apply { setKeys(key, clientNonce, serverNonce) }, listener, scope) {
+        udp = NomlaUdp(CryptState().apply { setKeys(key, clientNonce, serverNonce) }, listener, scope) {
             DatagramSocket().also { sockets.add(it) }
         }
         udp.connect("127.0.0.1", server.localPort)
@@ -243,6 +243,6 @@ class NomlaUDPTest {
         assertThat(listener.errors.poll(200, TimeUnit.MILLISECONDS)).isNull()
     }
 
-    private fun awaitFinished(transport: NomlaUDP) =
+    private fun awaitFinished(transport: NomlaUdp) =
         awaitUntil(description = "every coroutine of the transport finished") { transport.isFinished }
 }

@@ -50,11 +50,11 @@ internal class TcpFrame(val type: NomlaTCPMessageType, val data: ByteArray)
  * onTCPConnectionDisconnect is delivered exactly once and is terminal: no later callback is
  * delivered (checked at delivery time). Cancelling [scope] closes the socket.
  */
-internal class NomlaTCP(
+internal class NomlaTcp(
     private val socketFactory: NomlaSSLSocketFactory,
     private val scope: CoroutineScope,
 ) : TcpTransport {
-    private var listener: TCPConnectionListener? = null
+    private var listener: TcpConnectionListener? = null
     @Volatile private var socket: SSLSocket? = null
     @Volatile private var output: DataOutputStream? = null
     @Volatile private var running = false
@@ -73,12 +73,12 @@ internal class NomlaTCP(
     /** True once every coroutine of this transport has finished. */
     internal val isFinished: Boolean get() = job?.isCompleted ?: true
 
-    override fun setTCPConnectionListener(listener: TCPConnectionListener?) {
+    override fun setTCPConnectionListener(listener: TcpConnectionListener?) {
         this.listener = listener
     }
 
     override fun connect(host: String, port: Int, useTor: Boolean) {
-        if (!connectCalled.compareAndSet(false, true)) throw ConnectException("NomlaTCP is single-use")
+        if (!connectCalled.compareAndSet(false, true)) throw ConnectException("NomlaTcp is single-use")
         running = true
         job = scope.launch(Dispatchers.IO) {
             coroutineScope {
@@ -239,17 +239,17 @@ internal class NomlaTCP(
     }
 
     /** Posts a listener callback that is dropped if the disconnect was delivered before it. */
-    private fun post(block: (TCPConnectionListener) -> Unit) {
+    private fun post(block: (TcpConnectionListener) -> Unit) {
         deliver { if (!terminated) block(it) }
     }
 
-    private fun deliver(block: (TCPConnectionListener) -> Unit) {
+    private fun deliver(block: (TcpConnectionListener) -> Unit) {
         val l = listener ?: return
         scope.launch { block(l) }
     }
 
     /** All calls are made on the transport scope's dispatcher. */
-    interface TCPConnectionListener {
+    interface TcpConnectionListener {
         fun onTCPConnectionEstablished()
         fun onTLSHandshakeFailed(chain: Array<X509Certificate>)
         /** A host with a pinned certificate presented a different one that the system does not trust. */
@@ -260,7 +260,7 @@ internal class NomlaTCP(
     }
 
     companion object {
-        private val TAG = NomlaTCP::class.java.name
+        private val TAG = NomlaTcp::class.java.name
 
         /** Largest frame Mumble allows (Connection.cpp rejects anything above at both ends). */
         private const val MAX_FRAME_LENGTH = 0x7fffff

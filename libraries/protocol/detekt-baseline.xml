@@ -4,9 +4,9 @@
   <CurrentIssues>
     <ID>CyclomaticComplexMethod:MumbleLegacyPingDecoder.kt$MumbleLegacyPingDecoder$private fun readVarint(b: ByteArray): Long?</ID>
     <ID>CyclomaticComplexMethod:UdpHealthMonitor.kt$UdpHealthMonitor$private fun decide( nowMicros: Long, usingUdp: Boolean, first: Sample, localDelta: Int, remoteDelta: Int, carriesBothWays: Boolean, ): Decision</ID>
-    <ID>EmptyFunctionBlock:NomlaUDPTest.kt$NomlaUDPTest.RecordingListener${}</ID>
+    <ID>EmptyFunctionBlock:NomlaUdpTest.kt$NomlaUdpTest.RecordingListener${}</ID>
     <ID>LongParameterList:UdpHealthMonitor.kt$UdpHealthMonitor$( nowMicros: Long, usingUdp: Boolean, first: Sample, localDelta: Int, remoteDelta: Int, carriesBothWays: Boolean, )</ID>
-    <ID>ReturnCount:NomlaUDP.kt$NomlaUDP$override fun sendMessage(data: ByteArray, length: Int)</ID>
+    <ID>ReturnCount:NomlaUdp.kt$NomlaUdp$override fun sendMessage(data: ByteArray, length: Int)</ID>
     <ID>ReturnCount:MumbleLegacyPingDecoder.kt$MumbleLegacyPingDecoder$fun decodeAsServer(packet: ByteArray): Long?</ID>
     <ID>ReturnCount:MumbleLegacyPingDecoder.kt$MumbleLegacyPingDecoder$private fun readVarint(b: ByteArray): Long?</ID>
     <ID>ReturnCount:ServerTrust.kt$HostnameMatcher$fun matches(host: String, certificate: X509Certificate): Boolean</ID>
@@ -15,7 +15,7 @@
     <ID>ReturnCount:UdpHealthMonitor.kt$UdpHealthMonitor$private fun decide( nowMicros: Long, usingUdp: Boolean, first: Sample, localDelta: Int, remoteDelta: Int, carriesBothWays: Boolean, ): Decision</ID>
     <ID>SwallowedException:NomlaSSLSocketFactoryHandshakeTest.kt$NomlaSSLSocketFactoryHandshakeTest$e: Exception</ID>
     <ID>SwallowedException:NomlaSSLSocketFactoryTrustStoreTest.kt$NomlaSSLSocketFactoryTrustStoreTest$e: IOException</ID>
-    <ID>SwallowedException:NomlaUDPTest.kt$NomlaUDPTest$e: SocketTimeoutException</ID>
+    <ID>SwallowedException:NomlaUdpTest.kt$NomlaUdpTest$e: SocketTimeoutException</ID>
     <ID>SwallowedException:Pkcs12Certificates.kt$Pkcs12Certificates$e: Exception</ID>
     <ID>SwallowedException:ServerTrust.kt$HostnameMatcher$e: CertificateParsingException</ID>
     <ID>SwallowedException:ServerTrust.kt$HostnameMatcher$e: Exception</ID>
@@ -24,6 +24,6 @@
     <ID>TooGenericExceptionCaught:Pkcs12Certificates.kt$Pkcs12Certificates$e: Exception</ID>
     <ID>TooGenericExceptionCaught:ServerTrust.kt$HostnameMatcher$e: Exception</ID>
     <ID>TooManyFunctions:FakeTransports.kt$FakeTcpTransport : TcpTransport</ID>
-    <ID>TooManyFunctions:NomlaTCP.kt$NomlaTCP : TcpTransport</ID>
+    <ID>TooManyFunctions:NomlaTcp.kt$NomlaTcp : TcpTransport</ID>
   </CurrentIssues>
 </SmellBaseline>

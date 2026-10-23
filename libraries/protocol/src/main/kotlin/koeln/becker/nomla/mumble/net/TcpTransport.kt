@@ -23,12 +23,12 @@ import com.google.protobuf.MessageLite
 /**
  * The TCP control channel to a Mumble server as seen by [NomlaConnection].
  *
- * Implementations dispatch every [NomlaTCP.TCPConnectionListener] call on the scope they were given,
+ * Implementations dispatch every [NomlaTcp.TcpConnectionListener] call on the scope they were given,
  * so the connection never sees a callback on a socket thread. Single-use.
  */
 internal interface TcpTransport {
     val isRunning: Boolean
-    fun setTCPConnectionListener(listener: NomlaTCP.TCPConnectionListener?)
+    fun setTCPConnectionListener(listener: NomlaTcp.TcpConnectionListener?)
 
     /** Opens the connection. A second call is refused with a ConnectException. */
     fun connect(host: String, port: Int, useTor: Boolean)

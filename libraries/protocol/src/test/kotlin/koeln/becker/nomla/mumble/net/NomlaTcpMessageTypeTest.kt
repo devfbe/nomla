@@ -23,7 +23,7 @@ import org.junit.Assert.assertThrows
 import org.junit.Test
 import koeln.becker.nomla.mumble.protobuf.Mumble
 
-class NomlaTCPMessageTypeTest {
+class NomlaTcpMessageTypeTest {
     @Test
     fun parsesAKnownMessageType() {
         val bytes = Mumble.ChannelState.newBuilder().setChannelId(5).setName("five").build().toByteArray()

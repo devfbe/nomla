@@ -50,9 +50,9 @@ private const val RESYNC_AFTER_MICROS = 5_000_000
  * @param scope The connection's scope; its dispatcher delivers the callbacks.
  * @param socketFactory Creates the datagram socket the loops run on.
  */
-internal class NomlaUDP(
+internal class NomlaUdp(
     private val cryptState: CryptState,
-    private val listener: UDPConnectionListener,
+    private val listener: UdpConnectionListener,
     private val scope: CoroutineScope,
     private val socketFactory: () -> DatagramSocket = { DatagramSocket() },
 ) : UdpTransport {
@@ -71,7 +71,7 @@ internal class NomlaUDP(
     internal val isFinished: Boolean get() = job?.isCompleted ?: true
 
     override fun connect(host: String, port: Int) {
-        check(job == null) { "NomlaUDP is single-use; create a new transport to reconnect" }
+        check(job == null) { "NomlaUdp is single-use; create a new transport to reconnect" }
         this.port = port
         job = scope.launch(Dispatchers.IO) { receiveLoop(host, port) }
     }
@@ -190,14 +190,14 @@ internal class NomlaUDP(
     }
 
     /** All calls are made on the transport scope's dispatcher. */
-    interface UDPConnectionListener {
+    interface UdpConnectionListener {
         fun onUDPDataReceived(data: ByteArray)
         fun onUDPConnectionError(e: Exception)
         fun resyncCryptState()
     }
 
     companion object {
-        private val TAG = NomlaUDP::class.java.name
+        private val TAG = NomlaUdp::class.java.name
         private const val BUFFER_SIZE = 2048
     }
 }

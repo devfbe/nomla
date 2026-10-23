@@ -42,8 +42,8 @@ import javax.net.ssl.SSLSocket
 class NomlaConnectionLeakTest {
     private val udpServer = DatagramSocket(0, InetAddress.getLoopbackAddress())
     private val listener = RecordingConnectionListener()
-    private val tcps = CopyOnWriteArrayList<NomlaTCP>()
-    private val udps = CopyOnWriteArrayList<NomlaUDP>()
+    private val tcps = CopyOnWriteArrayList<NomlaTcp>()
+    private val udps = CopyOnWriteArrayList<NomlaUdp>()
 
     /** A server that accepts the TLS handshake and then stays silent until the socket is closed. */
     private val silentServer = mockk<NomlaSSLSocketFactory>().also { factory ->
@@ -61,13 +61,13 @@ class NomlaConnectionLeakTest {
     /** The real transports, except that TCP talks to [silentServer]. */
     private val transports = object : NomlaConnection.TransportFactory {
         override fun createTcp(socketFactory: NomlaSSLSocketFactory, scope: CoroutineScope): TcpTransport =
-            NomlaTCP(silentServer, scope).also { tcps += it }
+            NomlaTcp(silentServer, scope).also { tcps += it }
 
         override fun createUdp(
             cryptState: CryptState,
-            listener: NomlaUDP.UDPConnectionListener,
+            listener: NomlaUdp.UdpConnectionListener,
             scope: CoroutineScope,
-        ): UdpTransport = NomlaUDP(cryptState, listener, scope).also { udps += it }
+        ): UdpTransport = NomlaUdp(cryptState, listener, scope).also { udps += it }
     }
 
     @After

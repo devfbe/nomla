@@ -30,9 +30,9 @@ import koeln.becker.nomla.mumble.exception.NomlaException
 import koeln.becker.nomla.mumble.net.CryptState
 import koeln.becker.nomla.mumble.net.NomlaConnection
 import koeln.becker.nomla.mumble.net.NomlaSSLSocketFactory
-import koeln.becker.nomla.mumble.net.NomlaTCP
 import koeln.becker.nomla.mumble.net.NomlaTCPMessageType
-import koeln.becker.nomla.mumble.net.NomlaUDP
+import koeln.becker.nomla.mumble.net.NomlaTcp
+import koeln.becker.nomla.mumble.net.NomlaUdp
 import koeln.becker.nomla.mumble.net.ReconnectPolicy
 import koeln.becker.nomla.mumble.net.TcpTransport
 import koeln.becker.nomla.mumble.net.UdpTransport
@@ -113,7 +113,7 @@ public class ScriptedConnections(reconnectBaseDelayMillis: Long, reconnectAttemp
 
         override fun createUdp(
             cryptState: CryptState,
-            listener: NomlaUDP.UDPConnectionListener,
+            listener: NomlaUdp.UdpConnectionListener,
             scope: CoroutineScope,
         ): UdpTransport = SilentUdp()
     }
@@ -126,12 +126,12 @@ public class ScriptedConnections(reconnectBaseDelayMillis: Long, reconnectAttemp
     }
 
     private class ScriptedTcp : TcpTransport {
-        lateinit var listener: NomlaTCP.TCPConnectionListener
+        lateinit var listener: NomlaTcp.TcpConnectionListener
         @Volatile var disconnectCalls = 0
 
         override val isRunning: Boolean get() = disconnectCalls == 0
 
-        override fun setTCPConnectionListener(listener: NomlaTCP.TCPConnectionListener?) {
+        override fun setTCPConnectionListener(listener: NomlaTcp.TcpConnectionListener?) {
             this.listener = checkNotNull(listener)
         }
 

@@ -420,8 +420,8 @@ class NomlaConnectionLifecycleTest {
      */
     private fun invokeEveryTransportCallback(connection: NomlaConnection): List<String> {
         val interfaces = listOf(
-            NomlaTCP.TCPConnectionListener::class.java,
-            NomlaUDP.UDPConnectionListener::class.java,
+            NomlaTcp.TcpConnectionListener::class.java,
+            NomlaUdp.UdpConnectionListener::class.java,
         )
         val names = mutableListOf<String>()
         for (iface in interfaces) {

@@ -58,14 +58,14 @@ import kotlin.coroutines.CoroutineContext
  * The real read loop is reachable here too: a mocked SSLSocket carrying a piped stream drives
  * readFrame and the frame callbacks for real.
  */
-class NomlaTCPTest {
+class NomlaTcpTest {
     private val callbackExecutor = Executors.newSingleThreadExecutor { Thread(it, "test-tcp-callbacks") }
     private val callbackDispatcher = callbackExecutor.asCoroutineDispatcher()
     private val listener = RecordingListener()
     private val socketFactory = mockk<NomlaSSLSocketFactory>()
-    private var tcp: NomlaTCP? = null
+    private var tcp: NomlaTcp? = null
 
-    private class RecordingListener : NomlaTCP.TCPConnectionListener {
+    private class RecordingListener : NomlaTcp.TcpConnectionListener {
         val events = LinkedBlockingQueue<Pair<String, String>>()
         val disconnects = AtomicInteger()
         override fun onTCPConnectionEstablished() { record("established") }
@@ -100,9 +100,9 @@ class NomlaTCPTest {
     private fun newTransport(
         dispatcher: CoroutineDispatcher = callbackDispatcher,
         scope: CoroutineScope = scopeOn(dispatcher),
-    ) = NomlaTCP(socketFactory, scope).also { it.setTCPConnectionListener(listener); tcp = it }
+    ) = NomlaTcp(socketFactory, scope).also { it.setTCPConnectionListener(listener); tcp = it }
 
-    private fun awaitFinished(transport: NomlaTCP) =
+    private fun awaitFinished(transport: NomlaTcp) =
         awaitUntil(description = "every coroutine of the transport finished") { transport.isFinished }
 
     /** Waits until everything already queued on the callback thread has been delivered. */
@@ -314,7 +314,7 @@ class NomlaTCPTest {
         every { socket.inputStream } returns fromServer
         every { socket.outputStream } returns ByteArrayOutputStream()
         every { socketFactory.createSocket(any(), any()) } returns socket
-        lateinit var transport: NomlaTCP
+        lateinit var transport: NomlaTcp
         // Post 1 is onTCPConnectionEstablished, post 2 the frame, post 3 the disconnect the hook
         // itself triggers - after the frame passed the check in post(), before it is queued.
         val dispatcher = HookedDispatcher { post ->

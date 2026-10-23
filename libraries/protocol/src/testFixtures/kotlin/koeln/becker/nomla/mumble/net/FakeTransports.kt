@@ -29,14 +29,14 @@ import java.util.concurrent.atomic.AtomicInteger
 /**
  * A TCP transport that never opens a socket; tests push frames through it as the read thread would.
  *
- * Like NomlaTCP, every callback, including the terminal one [disconnect] reports, is dispatched on
+ * Like NomlaTcp, every callback, including the terminal one [disconnect] reports, is dispatched on
  * [scope] rather than called inline. [inProtocolContext] tells whether the caller runs there.
  */
 internal class FakeTcpTransport(
     private val scope: CoroutineScope,
     private val inProtocolContext: () -> Boolean,
 ) : TcpTransport {
-    @Volatile var listener: NomlaTCP.TCPConnectionListener? = null
+    @Volatile var listener: NomlaTcp.TcpConnectionListener? = null
 
     /** Whether [connect] ran on the protocol context; null before it ran. */
     @Volatile var connectedInProtocolContext: Boolean? = null
@@ -63,7 +63,7 @@ internal class FakeTcpTransport(
     val terminalDelivered = AtomicBoolean(false)
 
     override val isRunning: Boolean get() = isConnectCalled && disconnectCalls == 0
-    override fun setTCPConnectionListener(listener: NomlaTCP.TCPConnectionListener?) { this.listener = listener }
+    override fun setTCPConnectionListener(listener: NomlaTcp.TcpConnectionListener?) { this.listener = listener }
     override fun connect(host: String, port: Int, useTor: Boolean) {
         connectHost = host
         connectPort = port
@@ -110,7 +110,7 @@ internal class FakeTcpTransport(
         checkNotNull(listener) { "connect() was not called" }.onTCPConnectionDisconnect()
     }
 
-    private fun post(block: (NomlaTCP.TCPConnectionListener) -> Unit) {
+    private fun post(block: (NomlaTcp.TcpConnectionListener) -> Unit) {
         val l = checkNotNull(listener) { "connect() was not called" }
         scope.launch { block(l) }
     }
@@ -125,7 +125,7 @@ internal class FakeTcpTransport(
  */
 internal class FakeUdpTransport(
     private val scope: CoroutineScope,
-    private val listener: NomlaUDP.UDPConnectionListener,
+    private val listener: NomlaUdp.UdpConnectionListener,
     private val cryptState: CryptState,
     private val inProtocolContext: () -> Boolean,
 ) : UdpTransport {
@@ -174,7 +174,7 @@ internal class FakeTransports(
 
     override fun createUdp(
         cryptState: CryptState,
-        listener: NomlaUDP.UDPConnectionListener,
+        listener: NomlaUdp.UdpConnectionListener,
         scope: CoroutineScope,
     ): UdpTransport =
         FakeUdpTransport(scope, listener, cryptState, inProtocolContext).also { udps += it }
