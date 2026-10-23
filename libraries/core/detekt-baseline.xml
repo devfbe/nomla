@@ -13,8 +13,6 @@
     <ID>LongParameterList:VadConfig.kt$VadConfig.Companion$( snrFraction: Float = AdaptiveVadTracker.DEFAULT_FRACTION, holdTimeMs: Long = DEFAULT_HOLD_MS, onsetFrames: Int = DEFAULT_ONSET_FRAMES, hysteresisDb: Float = DEFAULT_HYSTERESIS_DB, adaptiveFloor: Boolean = true, manualFloorDbfs: Float = AdaptiveVadTracker.DEFAULT_FLOOR_DBFS, )</ID>
     <ID>LongParameterList:WebRtcApmNative.kt$WebRtcApmApi$( sampleRate: Int, echoCancellation: Boolean, noiseSuppression: Boolean, noiseSuppressionLevel: Int, gainControl: Boolean, highPass: Boolean, )</ID>
     <ID>LoopWithTooManyJumpStatements:AudioInput.kt$AudioInput$while</ID>
-    <ID>ReturnCount:AudioRouter.kt$AudioRouter$private fun automatic(available: List&lt;CommunicationDevice&gt;): CommunicationDevice?</ID>
-    <ID>ReturnCount:FakeSpeexResamplerApi.kt$FakeSpeexResamplerApi$override fun processInt( state: Long, channelIndex: Int, input: ShortArray, inLen: IntArray, out: ShortArray, outLen: IntArray, ): Int</ID>
     <ID>ReturnCount:PcmCaptureSource.kt$AndroidAudioRecordSource.Factory$@SuppressLint("MissingPermission") private fun tryOpen(source: Int, rate: Int): AudioRecord?</ID>
     <ID>ReturnCount:SpeexPreprocessor.kt$SpeexPreprocessor$override fun onCaptureFrame(handle: Long, frame: ShortArray): Float?</ID>
     <ID>TooGenericExceptionCaught:AudioController.kt$AudioController$e: Exception</ID>

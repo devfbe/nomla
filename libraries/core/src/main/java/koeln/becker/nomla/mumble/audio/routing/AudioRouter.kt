@@ -171,10 +171,10 @@ internal class AudioRouter(
 
     private fun automatic(available: List<CommunicationDevice>): CommunicationDevice? {
         val saved = preferred?.let { p -> available.firstOrNull(p::matches) }
-        if (saved != null && saved.type !in BUILT_IN) return saved
-        if (bluetoothAutomatic) available.firstOrNull { it.type in BLUETOOTH }?.let { return it }
-        available.firstOrNull { it.type in WIRED }?.let { return it }
-        return saved
+        return saved?.takeIf { it.type !in BUILT_IN }
+            ?: available.firstOrNull { bluetoothAutomatic && it.type in BLUETOOTH }
+            ?: available.firstOrNull { it.type in WIRED }
+            ?: saved
             ?: available.firstOrNull { it.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER }
             ?: available.firstOrNull { it.type == AudioDeviceInfo.TYPE_BUILTIN_EARPIECE }
     }

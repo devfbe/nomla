@@ -57,14 +57,18 @@ class FakeSpeexResamplerApi(
         lastChannelIndex = channelIndex
         lastInLength = inLen[0]
         lastOutCapacity = outLen[0]
-        // The bridge refuses a destroyed or null state with RESAMPLER_ERR_INVALID_ARG, leaving outLen as set.
-        if (state == 0L) return ERR_INVALID_ARG
-        if (errorCode != 0) return errorCode
-        val n = minOf(produced, out.size)
-        for (i in 0 until n) out[i] = fill
-        inLen[0] = minOf(inLen[0], input.size)
-        outLen[0] = n
-        return 0
+        return when {
+            // The bridge refuses a destroyed or null state with RESAMPLER_ERR_INVALID_ARG, leaving outLen as set.
+            state == 0L -> ERR_INVALID_ARG
+            errorCode != 0 -> errorCode
+            else -> {
+                val n = minOf(produced, out.size)
+                for (i in 0 until n) out[i] = fill
+                inLen[0] = minOf(inLen[0], input.size)
+                outLen[0] = n
+                0
+            }
+        }
     }
 
     override fun destroy(state: Long) {
