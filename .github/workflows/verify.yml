@@ -1,0 +1,54 @@
+# Runs the pre-merge check (`./gradlew verify`, see build.gradle.kts) inside the Nix dev shell
+# defined by flake.nix, which provides the JDK, the Android SDK/NDK, cmake, ninja and the host
+# compiler for the native tests.
+name: verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      # The SDK/NDK in the Nix store and the Gradle build need more room than the runner leaves.
+      - name: Free disk space
+        run: sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /opt/hostedtoolcache/CodeQL
+
+      - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+          # gitDescribe in app/build.gradle.kts names the version after the latest tag.
+          fetch-depth: 0
+
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      # Caches ~/.gradle (dependencies, wrapper) between runs; the build itself runs in the shell.
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: verify
+        run: nix develop --command ./gradlew verify --no-daemon --console=plain
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            app/build/reports/
+            app/build/test-results/
+            libraries/*/build/reports/
+            libraries/*/build/test-results/
+          if-no-files-found: ignore
