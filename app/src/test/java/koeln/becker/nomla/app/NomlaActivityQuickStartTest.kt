@@ -82,9 +82,9 @@ class NomlaActivityQuickStartTest {
         idleMainLooper()
     }
 
-    private fun AlertDialog.nameField() = findViewById<EditText>(R.id.quick_start_name)!!
+    private fun AlertDialog.nameField() = findViewById<EditText>(R.id.text_input)!!
 
-    private fun AlertDialog.nameLayout() = findViewById<TextInputLayout>(R.id.quick_start_name_layout)!!
+    private fun AlertDialog.nameLayout() = findViewById<TextInputLayout>(R.id.text_input_layout)!!
 
     private fun AlertDialog.letsGo() {
         getButton(DialogInterface.BUTTON_POSITIVE).performClick()

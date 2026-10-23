@@ -166,7 +166,7 @@ class ConnectionDialogsTest {
     @Test
     fun aTakenNameEnteredAfterRotationRetriesWithIt() {
         show(SessionState.Disconnected(DisconnectReason.Rejected(RejectType.USERNAME_IN_USE, "")))
-        errorDialog().findViewById<EditText>(R.id.connection_input)!!.setText("me2")
+        errorDialog().findViewById<EditText>(R.id.text_input)!!.setText("me2")
 
         recreate().dialogs.update()
         val dialog = errorDialog()
@@ -180,11 +180,11 @@ class ConnectionDialogsTest {
     @Test
     fun aWrongPasswordEnteredAfterRotationReconnectsWithIt() {
         show(SessionState.Disconnected(DisconnectReason.Rejected(RejectType.WRONG_SERVER_PASSWORD, "")))
-        errorDialog().findViewById<EditText>(R.id.connection_input)!!.setText("sec")
+        errorDialog().findViewById<EditText>(R.id.text_input)!!.setText("sec")
 
         recreate().dialogs.update()
         val dialog = errorDialog()
-        assertThat(dialog.findViewById<EditText>(R.id.connection_input)!!.text.toString()).isEqualTo("sec")
+        assertThat(dialog.findViewById<EditText>(R.id.text_input)!!.text.toString()).isEqualTo("sec")
         dialog.click(DialogInterface.BUTTON_POSITIVE)
 
         verify { listener.reconnectWithPassword(server.copy(password = "sec")) }

@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- The name or password field of the connection error dialog, so that its text survives recreation. -->
-    <item name="connection_input" type="id"/>
-</resources>

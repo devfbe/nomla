@@ -25,8 +25,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
 import androidx.core.view.MenuProvider
 import androidx.core.view.children
@@ -55,7 +53,9 @@ import koeln.becker.nomla.databinding.FragmentPublicServerListBinding
 import koeln.becker.nomla.db.PublicServer
 import koeln.becker.nomla.ui.ConnectRequests
 import koeln.becker.nomla.ui.ServerRequest
+import koeln.becker.nomla.ui.TextInputField
 import koeln.becker.nomla.ui.showConfirmDialog
+import koeln.becker.nomla.ui.textInputDialog
 import java.util.Locale
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -203,20 +203,10 @@ class PublicServerListFragment :
     override fun favouriteServer(server: PublicServer) {
         val context = requireActivity()
         val settings = Settings.getInstance(context)
-        val usernameField = EditText(context).apply { hint = settings.defaultUsername }
-        val horizontalPadding = resources.getDimension(R.dimen.padding_medium).toInt()
-        val layout = FrameLayout(context).apply {
-            addView(usernameField)
-            setPadding(horizontalPadding, 0, horizontalPadding, 0)
-        }
-        MaterialAlertDialogBuilder(context)
-            .setTitle(R.string.addFavorite)
-            .setView(layout)
-            .setPositiveButton(R.string.add) { _, _ ->
-                publicServers.favourite(server, usernameField.text.toString().ifEmpty { settings.defaultUsername })
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
+        val usernameField = TextInputField(context, settings.defaultUsername)
+        context.textInputDialog(R.string.addFavorite, usernameField, R.string.add) { entered ->
+            publicServers.favourite(server, entered.ifEmpty { settings.defaultUsername })
+        }.show()
     }
 
     private fun showMatchDialog() {

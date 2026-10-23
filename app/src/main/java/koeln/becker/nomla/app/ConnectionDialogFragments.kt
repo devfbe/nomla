@@ -20,8 +20,6 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
 import android.text.InputType
-import android.widget.EditText
-import android.widget.FrameLayout
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
@@ -31,6 +29,7 @@ import koeln.becker.nomla.mumble.net.CertificatePins
 import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.CertificateInfoBinding
+import koeln.becker.nomla.ui.TextInputField
 import koeln.becker.nomla.util.getServer
 import koeln.becker.nomla.util.putServer
 import java.io.ByteArrayInputStream
@@ -69,31 +68,23 @@ class ConnectionErrorDialogFragment : DialogFragment() {
         val builder = MaterialAlertDialogBuilder(requireContext())
             .setTitle(args.getString(ARG_TITLE))
             .setMessage(args.getString(ARG_MESSAGE))
-            .setPositiveButton(R.string.retry) { _, _ -> report(Action.RETRY, field?.text?.toString()) }
+            .setPositiveButton(R.string.retry) { _, _ -> report(Action.RETRY, field?.text) }
             .setNeutralButton(R.string.edit_server) { _, _ -> report(Action.EDIT, null) }
             .setNegativeButton(R.string.close) { _, _ -> report(Action.CLOSE, null) }
         if (field != null) {
-            val padding = resources.getDimensionPixelSize(R.dimen.padding_medium)
-            builder.setView(FrameLayout(requireContext()).apply {
-                setPadding(padding, 0, padding, 0)
-                addView(field)
-            })
+            builder.setView(field.view)
         }
         return builder.create()
     }
 
-    private fun inputField(input: FailureInput): EditText? {
+    private fun inputField(input: FailureInput): TextInputField? {
         val (type, hint) = when (input) {
             FailureInput.NONE -> return null
             FailureInput.USERNAME -> InputType.TYPE_CLASS_TEXT to R.string.server_username
             FailureInput.PASSWORD ->
                 (InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD) to R.string.password
         }
-        return EditText(requireContext()).apply {
-            id = R.id.connection_input
-            inputType = type
-            setHint(hint)
-        }
+        return TextInputField(requireContext(), getString(hint), type)
     }
 
     /** Reports [action] for the server, with the name or password changed to [entered] if there is a field. */

@@ -21,7 +21,6 @@ package koeln.becker.nomla.preference
 import android.net.Uri
 import android.os.Bundle
 import android.text.InputType
-import android.widget.EditText
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -32,9 +31,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import koeln.becker.nomla.R
+import koeln.becker.nomla.ui.TextInputField
+import koeln.becker.nomla.ui.textInputDialog
 
 /** Picks a PKCS#12 file and imports it as a client certificate; [CertificateImportViewModel] does the work. */
 class CertificateImportActivity : AppCompatActivity() {
@@ -82,17 +82,16 @@ class CertificateImportActivity : AppCompatActivity() {
     }
 
     private fun askForPassword() {
-        val passwordField = EditText(this)
-        passwordField.setHint(R.string.password)
-        passwordField.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-        passwordDialog = MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.decrypt_certificate)
-            .setView(passwordField)
-            .setOnCancelListener { model.cancel() }
-            .setNegativeButton(android.R.string.cancel) { _, _ -> model.cancel() }
-            .setPositiveButton(android.R.string.ok) { _, _ ->
-                model.tryPassword(passwordField.text.toString().toCharArray())
-            }
-            .show()
+        val passwordField = TextInputField(
+            this,
+            getString(R.string.password),
+            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD,
+        )
+        passwordDialog = textInputDialog(
+            R.string.decrypt_certificate,
+            passwordField,
+            android.R.string.ok,
+            onCancel = { model.cancel() },
+        ) { model.tryPassword(it.toCharArray()) }.apply { show() }
     }
 }

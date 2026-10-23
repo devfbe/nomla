@@ -17,18 +17,17 @@
 package koeln.becker.nomla.app
 
 import android.app.Dialog
-import android.content.DialogInterface
 import android.os.Bundle
 import android.text.InputFilter
+import android.text.InputType
+import android.view.View
 import android.view.inputmethod.EditorInfo
-import androidx.appcompat.app.AlertDialog
-import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
-import koeln.becker.nomla.databinding.DialogQuickStartNameBinding
+import koeln.becker.nomla.ui.TextInputField
+import koeln.becker.nomla.ui.textInputDialog
 
 /**
  * Asks for the nickname "Just talk" joins with, prefilled with the default username. A valid name
@@ -37,43 +36,28 @@ import koeln.becker.nomla.databinding.DialogQuickStartNameBinding
  */
 class QuickStartNameFragment : DialogFragment() {
 
-    private lateinit var binding: DialogQuickStartNameBinding
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        binding = DialogQuickStartNameBinding.inflate(layoutInflater)
-        val field = binding.quickStartName
-        field.filters = arrayOf(InputFilter.LengthFilter(QuickStart.MAX_NICKNAME_LENGTH))
+        val field = TextInputField(
+            requireContext(),
+            getString(R.string.quick_start_name_hint),
+            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PERSON_NAME,
+        )
+        field.editText.filters = arrayOf(InputFilter.LengthFilter(QuickStart.MAX_NICKNAME_LENGTH))
+        field.editText.setAutofillHints(View.AUTOFILL_HINT_USERNAME)
         // A recreated dialog gets the text it had back.
         if (savedInstanceState == null) {
-            field.setText(Settings.getInstance(requireContext()).defaultUsername)
-            field.selectAll()
+            field.editText.setText(Settings.getInstance(requireContext()).defaultUsername)
+            field.editText.selectAll()
         }
-        field.doAfterTextChanged { binding.quickStartNameLayout.error = null }
-        field.setOnEditorActionListener { _, actionId, _ ->
-            (actionId == EditorInfo.IME_ACTION_GO).also { if (it) confirm() }
-        }
-        return MaterialAlertDialogBuilder(requireActivity())
-            .setTitle(R.string.quick_start_name_title)
-            .setView(binding.root)
-            .setPositiveButton(R.string.quick_start_go, null)
-            .setNegativeButton(android.R.string.cancel, null)
-            .create()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        // Replaces the button's listener so that an invalid name does not dismiss.
-        (requireDialog() as AlertDialog).getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener { confirm() }
-    }
-
-    private fun confirm() {
-        val name = binding.quickStartName.text.toString().trim()
-        if (!QuickStart.isValidNickname(name)) {
-            binding.quickStartNameLayout.error = getString(R.string.quick_start_name_invalid)
-            return
-        }
-        setFragmentResult(REQUEST_KEY, Bundle().apply { putString(ARG_NICKNAME, name) })
-        dismiss()
+        return requireActivity().textInputDialog(
+            R.string.quick_start_name_title,
+            field,
+            R.string.quick_start_go,
+            imeAction = EditorInfo.IME_ACTION_GO,
+            validate = { name ->
+                if (QuickStart.isValidNickname(name.trim())) null else getString(R.string.quick_start_name_invalid)
+            },
+        ) { setFragmentResult(REQUEST_KEY, Bundle().apply { putString(ARG_NICKNAME, it.trim()) }) }
     }
 
     companion object {

@@ -19,13 +19,10 @@ package koeln.becker.nomla.app
 
 import android.Manifest
 import android.os.Build
-import android.widget.EditText
-import android.widget.FrameLayout
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.net.TorProxy
@@ -33,11 +30,13 @@ import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.db.PublicServer
 import koeln.becker.nomla.session.SessionManager
+import koeln.becker.nomla.ui.TextInputField
 import koeln.becker.nomla.ui.isGranted
 import koeln.becker.nomla.ui.openAppSettings
 import koeln.becker.nomla.ui.showConfirmDialog
 import koeln.becker.nomla.ui.showPermissionDeniedSnackbar
 import koeln.becker.nomla.ui.showMessageDialog
+import koeln.becker.nomla.ui.textInputDialog
 import koeln.becker.nomla.util.Orbot
 import koeln.becker.nomla.util.isPortOpen
 
@@ -65,21 +64,10 @@ class ConnectFlow(
 
     /** Asks for the username to use on the public [server], then connects. */
     fun connectToPublic(server: PublicServer) {
-        val usernameField = EditText(activity).apply { hint = settings.defaultUsername }
-        val padding = activity.resources.getDimension(R.dimen.padding_medium).toInt()
-        val layout = FrameLayout(activity).apply {
-            addView(usernameField)
-            setPadding(padding, 0, padding, 0)
-        }
-        MaterialAlertDialogBuilder(activity)
-            .setView(layout)
-            .setTitle(R.string.connectToServer)
-            .setPositiveButton(R.string.connect) { _, _ ->
-                val username = usernameField.text.toString().ifEmpty { settings.defaultUsername }
-                connect(server.server.copy(username = username))
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
+        val usernameField = TextInputField(activity, settings.defaultUsername)
+        activity.textInputDialog(R.string.connectToServer, usernameField, R.string.connect) { entered ->
+            connect(server.server.copy(username = entered.ifEmpty { settings.defaultUsername }))
+        }.show()
     }
 
     private inner class PermissionHost : PermissionGate.Host {

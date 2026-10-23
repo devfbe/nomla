@@ -21,7 +21,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import androidx.core.os.bundleOf
 import androidx.core.view.AccessibilityDelegateCompat
 import androidx.core.view.ViewCompat
@@ -31,7 +30,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.slider.Slider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -41,7 +39,9 @@ import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.BottomSheetUserActionsBinding
 import koeln.becker.nomla.databinding.ItemUserActionBinding
+import koeln.becker.nomla.ui.TextInputField
 import koeln.becker.nomla.ui.showConfirmDialog
+import koeln.becker.nomla.ui.textInputDialog
 import koeln.becker.nomla.util.HtmlUtils
 import koeln.becker.nomla.util.UserStatus
 import kotlin.math.roundToInt
@@ -279,15 +279,10 @@ class UserActionsSheet : BottomSheetDialogFragment() {
     }
 
     private fun showKickDialog(ban: Boolean) {
-        val reasonField = EditText(requireContext()).apply { setHint(R.string.hint_reason) }
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.user_menu_kick)
-            .setView(reasonField)
-            .setPositiveButton(R.string.user_menu_kick) { _, _ ->
-                actions.kickBan(session, reasonField.text.toString(), ban)
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
+        val reasonField = TextInputField(requireContext(), getString(R.string.hint_reason))
+        requireContext().textInputDialog(R.string.user_menu_kick, reasonField, R.string.user_menu_kick) { reason ->
+            actions.kickBan(session, reason, ban)
+        }.show()
     }
 
     private fun showChannelMoveDialog() {
