@@ -25,7 +25,10 @@ import android.widget.TextView
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.TestScope
@@ -34,10 +37,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import koeln.becker.nomla.mumble.model.Server
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import java.io.IOException
 import java.net.DatagramPacket
 import java.net.DatagramSocket
+import java.util.concurrent.Executor
 import java.util.concurrent.atomic.AtomicInteger
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -174,5 +179,25 @@ class ServerAdapterTest {
         scope.advanceUntilIdle()
 
         assertThat(sockets.get()).isEqualTo(1)
+    }
+
+    /**
+     * A row asks for its ping while the list lays it out, when the list must not change. Even a ping
+     * that is done before the asking coroutine could suspend (here: one run inline) publishes its
+     * reply only later, from a message of its own, as on the main thread of the app.
+     */
+    @Test
+    fun aReplyIsNeverPublishedWhileItIsBeingRequested() {
+        val main = CoroutineScope(Dispatchers.Main.immediate)
+        val pings = ServerPings(main, { true }, pinger, Executor(Runnable::run).asCoroutineDispatcher())
+        try {
+            pings.request(server)
+            assertThat(pings.replies.value).isEmpty()
+
+            idleMainLooper()
+            assertThat(pings.replies.value.keys).containsExactly(server.address)
+        } finally {
+            main.cancel()
+        }
     }
 }

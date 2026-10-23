@@ -40,6 +40,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.db.NomlaRepository
@@ -67,11 +68,17 @@ class ServerPings(
 
     private val inFlight = HashSet<ServerAddress>()
 
-    /** Pings [server] unless its address answered already or is being pinged. */
+    /**
+     * Pings [server] unless its address answered already or is being pinged. The reply is published
+     * later, never within this call: rows ask while the list lays them out, when it must not change.
+     */
     fun request(server: Server) {
         val address = server.address
         if (!allowed() || address in mutableReplies.value || !inFlight.add(address)) return
         scope.launch {
+            // On Main.immediate the launch runs at once, and a ping done before withContext suspends
+            // returns without a dispatch: leave the caller first.
+            yield()
             val reply = withContext(dispatcher) { pinger.ping(server) }
             inFlight.remove(address)
             mutableReplies.update { it + (address to reply) }
