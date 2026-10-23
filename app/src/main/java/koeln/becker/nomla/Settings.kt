@@ -31,15 +31,17 @@ import koeln.becker.nomla.mumble.audio.capture.VadConfig
 import koeln.becker.nomla.mumble.audio.capture.VadMode
 import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.audio.routing.PreferredAudioDevice
+import koeln.becker.nomla.app.AppContainer
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 /**
  * Typed access to the app's preferences. Each preference's key and default live in the companion;
- * the properties read and write through to disk, so they always reflect the current value.
+ * the properties read and write through to disk, so they always reflect the current value. The
+ * process's instance is the [AppContainer]'s.
  */
 @Suppress("TooManyFunctions") // One accessor per preference.
-class Settings private constructor(private val context: Context) {
+class Settings internal constructor(context: Context) {
 
     private val preferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
@@ -480,19 +482,7 @@ class Settings private constructor(private val context: Context) {
         private const val NO_CERTIFICATE = -1L
         private const val PERCENT = 100
 
-        @Volatile
-        private var instance: Settings? = null
-
-        /**
-         * The settings of [context]'s application, created on first use; a new application (as in
-         * tests) gets a new instance.
-         */
-        fun getInstance(context: Context): Settings {
-            val app = context.applicationContext
-            instance?.takeIf { it.context === app }?.let { return it }
-            return synchronized(this) {
-                instance?.takeIf { it.context === app } ?: Settings(app).also { instance = it }
-            }
-        }
+        /** The settings of [context]'s application, from the [AppContainer]. */
+        fun getInstance(context: Context): Settings = AppContainer.of(context).settings
     }
 }

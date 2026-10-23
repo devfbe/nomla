@@ -23,6 +23,7 @@ import kotlinx.coroutines.CoroutineScope
 import koeln.becker.nomla.mumble.NomlaSession
 import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.session.SessionConfig
+import koeln.becker.nomla.Settings
 import koeln.becker.nomla.chat.NoticeFormatter
 import koeln.becker.nomla.chat.SessionChat
 import koeln.becker.nomla.db.NomlaRepository
@@ -35,9 +36,9 @@ import koeln.becker.nomla.ui.AppMessages
 /**
  * The objects the whole process shares, wired by hand once per process by the Application.
  *
- * Code reaches it through [of]; the shorthands (`SessionManager.get`, `NomlaRepository.get`,
- * `AppMessages.get`, `ApplicationScope.of`) read it there. The objects built here take what they
- * need as constructor arguments.
+ * Code reaches it through [of]; the shorthands (`Settings.getInstance`, `SessionManager.get`,
+ * `NomlaRepository.get`, `AppMessages.get`, `ApplicationScope.of`) read it there. The objects
+ * built here take what they need as constructor arguments.
  *
  * What it builds from are its [parts], whose defaults are production's. [replaceParts] is the one
  * seam for tests to put fakes in. Robolectric gives every test a new application, and with it a new
@@ -75,6 +76,8 @@ class AppContainer(
     }
 
     private val repositoryOf = BuiltFrom({ parts.newRepository }) { it(app) }
+
+    val settings = Settings(app)
 
     /** The single database of the process, opened on first use and never closed. */
     val repository: NomlaRepository get() = repositoryOf.get()
