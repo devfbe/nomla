@@ -17,7 +17,7 @@
 
 package koeln.becker.nomla.mumble.audio.capture
 
-import kotlin.math.pow
+import koeln.becker.nomla.mumble.audio.PcmLevel
 
 /**
  * Whether the far end (the remote users as played on the speaker) is talking, or was within the
@@ -38,7 +38,7 @@ internal class FarEndActivity(
     private val holdNanos = holdMs * NANOS_PER_MS
 
     /** Mean square of a 16-bit frame at the threshold. */
-    private val thresholdPower = FULL_SCALE * FULL_SCALE * 10.0.pow(thresholdDbfs / POWER_DB_PER_DECADE)
+    private val thresholdPower = PcmLevel.meanSquareAt(thresholdDbfs)
 
     /** When a far-end frame last reached the threshold; meaningless until [heard]. */
     @Volatile
@@ -51,9 +51,7 @@ internal class FarEndActivity(
     /** Playback thread: one far-end frame about to be played. */
     fun onFarEndFrame(frame: ShortArray) {
         if (frame.isEmpty()) return
-        var sum = 0.0
-        for (s in frame) sum += s.toDouble() * s
-        if (sum / frame.size >= thresholdPower) {
+        if (PcmLevel.meanSquare(frame) >= thresholdPower) {
             lastVoicedNanos = clock.nanoTime()
             heard = true
         }
@@ -72,7 +70,5 @@ internal class FarEndActivity(
         const val HOLD_MS = 800L
 
         private const val NANOS_PER_MS = 1_000_000L
-        private const val FULL_SCALE = 32768.0
-        private const val POWER_DB_PER_DECADE = 10.0
     }
 }

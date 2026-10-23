@@ -42,8 +42,8 @@ class VoiceActivityDetectorTest {
         // rms 3277 -> 20*log10(3277/32768) = -20.0 dB -> 1 + (-20/96) = 0.7917
         assertThat(VoiceActivityDetector.amplitudeScore(constant(3277), 480)).isWithin(0.002f).of(0.792f)
         assertThat(VoiceActivityDetector.amplitudeScore(constant(32767), 480)).isWithin(0.001f).of(1.0f)
-        // Digital silence stays finite thanks to the `+1` the sum starts from.
-        assertThat(VoiceActivityDetector.amplitudeScore(constant(0), 480)).isWithin(0.001f).of(-0.220f)
+        // Digital silence stays finite at PcmLevel's floor: -120 dBFS -> 1 + (-120/96) = -0.25.
+        assertThat(VoiceActivityDetector.amplitudeScore(constant(0), 480)).isWithin(0.001f).of(-0.250f)
     }
 
     /** The legacy formula yields infinity for a zero-sample frame, i.e. louder than anything. */
@@ -67,7 +67,7 @@ class VoiceActivityDetectorTest {
 
     /**
      * The user's slider is calibrated against this curve: 20 (amplitude dB), 96 (maps -96 dBFS
-     * onto 0) and the `+1` offset.
+     * onto 0) and the `+1` offset of the score.
      */
     @Test
     fun `the amplitude curve has the legacy slope and anchor`() {

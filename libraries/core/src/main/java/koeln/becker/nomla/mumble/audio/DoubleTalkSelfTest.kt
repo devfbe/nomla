@@ -46,7 +46,6 @@ import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.audio.routing.CommunicationDevice
 import koeln.becker.nomla.mumble.audio.routing.CommunicationDevices
 import koeln.becker.nomla.mumble.util.NomlaLog
-import kotlin.math.log10
 import kotlin.math.roundToInt
 
 private const val TAG = "DoubleTalkSelfTest"
@@ -341,7 +340,7 @@ public class DoubleTalkSelfTest internal constructor(
             if (read > 0) {
                 val out = pipe.process(buffer, read)
                 val playing = voiceActive[playedFrame]
-                count(out.transmit, referenceGate.open, playing, referenceGate.power, meanSquare(out.samples))
+                count(out.transmit, referenceGate.open, playing, referenceGate.power, PcmLevel.meanSquare(out.samples))
                 if (++count % readingIntervalFrames == 0) onReading(reading())
             }
         }
@@ -387,7 +386,7 @@ public class DoubleTalkSelfTest internal constructor(
         keptDb = if (talked < MIN_COUNTED_FRAMES || talkedInPower <= 0.0) {
             null
         } else {
-            (POWER_DB_PER_DECADE * log10(talkedOutPower.coerceAtLeast(TINY) / talkedInPower)).toFloat()
+            PcmLevel.powerDb(talkedOutPower / talkedInPower)
         },
     )
 
@@ -412,7 +411,7 @@ public class DoubleTalkSelfTest internal constructor(
 
         override fun process(frame: ShortArray): Float? {
             open = gate.isVoice(frame, frame.size, null)
-            power = meanSquare(frame)
+            power = PcmLevel.meanSquare(frame)
             return null
         }
 
@@ -420,14 +419,6 @@ public class DoubleTalkSelfTest internal constructor(
     }
 
     internal companion object {
-        /** Mean square of [frame], in 16-bit units. */
-        fun meanSquare(frame: ShortArray): Double {
-            if (frame.isEmpty()) return 0.0
-            var sum = 0.0
-            for (s in frame) sum += s.toDouble() * s
-            return sum / frame.size
-        }
-
         /**
          * Frame by frame, whether the test voice is in the room while that frame of [voice] plays:
          * voiced itself, or within [ECHO_TAIL_FRAMES] after a voiced frame (the echo and the room's
@@ -435,20 +426,12 @@ public class DoubleTalkSelfTest internal constructor(
          */
         fun activeFrames(voice: ShortArray): BooleanArray {
             val frames = voice.size / FRAME
-            val levels = FloatArray(frames) { f ->
-                var sum = 0.0
-                for (i in f * FRAME until (f + 1) * FRAME) sum += voice[i].toDouble() * voice[i]
-                (POWER_DB_PER_DECADE * log10(sum / FRAME / FULL_SCALE_SQUARED + TINY)).toFloat()
-            }
+            val levels = FloatArray(frames) { f -> PcmLevel.dbfs(PcmLevel.meanSquare(voice, FRAME, f * FRAME)) }
             val loudest = levels.maxOrNull() ?: return BooleanArray(0)
             val voiced = BooleanArray(frames) { levels[it] > loudest - VOICED_RANGE_DB }
             return BooleanArray(frames) { f ->
                 (0..minOf(ECHO_TAIL_FRAMES, frames - 1)).any { back -> voiced[(f - back).mod(frames)] }
             }
         }
-
-        private const val FULL_SCALE_SQUARED = 32768.0 * 32768.0
-        private const val TINY = 1e-12
-        private const val POWER_DB_PER_DECADE = 10
     }
 }

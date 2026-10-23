@@ -17,8 +17,7 @@
 
 package koeln.becker.nomla.mumble.audio.capture
 
-import kotlin.math.log10
-import kotlin.math.sqrt
+import koeln.becker.nomla.mumble.audio.PcmLevel
 
 /** Monotonic nanosecond clock; a `fun interface` because `() -> Long` boxes on every frame. */
 internal fun interface NanoClock {
@@ -116,16 +115,12 @@ internal class VoiceActivityDetector(
         const val SCORE_RANGE_DB = 96.0
 
         /**
-         * `1 + 20*log10(rms/32768)/96`: full scale 1.0, -96 dBFS 0.0. The user's threshold slider is
-         * calibrated against this curve. An empty frame returns [NO_SIGNAL].
+         * `1 + dBFS/96` with the frame's [PcmLevel.dbfs]: full scale 1.0, -96 dBFS 0.0, digital
+         * silence -0.25. The user's threshold slider is calibrated against this curve. An empty frame
+         * returns [NO_SIGNAL].
          */
-        fun amplitudeScore(pcm: ShortArray, length: Int): Float {
-            if (length <= 0) return NO_SIGNAL
-            var sum = 1.0
-            for (i in 0 until length) sum += pcm[i].toDouble() * pcm[i].toDouble()
-            val rms = sqrt(sum / length)
-            return (1.0 + DB_PER_DECADE * log10(rms / FULL_SCALE) / SCORE_RANGE_DB).toFloat()
-        }
+        fun amplitudeScore(pcm: ShortArray, length: Int): Float =
+            if (length <= 0) NO_SIGNAL else (1.0 + PcmLevel.dbfs(pcm, length) / SCORE_RANGE_DB).toFloat()
 
         /** Below every [0, 1] threshold, and finite for the meter. */
         const val NO_SIGNAL = -1f
@@ -139,8 +134,6 @@ internal class VoiceActivityDetector(
         /** [NO_SIGNAL] in dBFS (-192): finite and below [AdaptiveVadTracker.MIN_FLOOR_DBFS]. */
         const val NO_SIGNAL_DBFS = (NO_SIGNAL - 1f) * SCORE_RANGE_DB.toFloat()
 
-        private const val DB_PER_DECADE = 20.0
-        private const val FULL_SCALE = 32768.0
         private const val NANOS_PER_MILLI = 1_000_000L
 
         const val DEFAULT_FRAME_MS = 10f
