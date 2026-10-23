@@ -37,8 +37,8 @@ android {
 
     defaultConfig {
         applicationId = "koeln.becker.nomla"
-        // Remember: app_news_items_vX_Y_Z in src/main/res/values/strings.xml
-        // and NEWS_ITEMS in src/main/java/koeln/becker/nomla/ui/DialogUtils.kt
+        // Remember: a news string (app_news_items_*) in src/main/res/values*/strings.xml
+        // and its entry in NEWS_ITEMS in src/main/java/koeln/becker/nomla/ui/DialogUtils.kt
         //     code:XYYZZbb (bb for build)
         versionCode = 3070300
         versionName = gitDescribe

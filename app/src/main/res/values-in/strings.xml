@@ -160,7 +160,6 @@
     <string name="donate_dialog_positivebutton_goog">Mendukung Nomla</string>
     <string name="donate_dialog_message_goog">Terima kasih untuk menggunakan Nomla! Harap mempertimbangkan untuk membuat donasi kecil untuk membantu menjaga hidup Nomla - dan menghapus pesan ini.</string>
     <string name="donate_dialog_title_goog">Apakah kamu suka Nomla?</string>
-    <string name="app_news_items_v3_7_1">Rilis kecil dengan sebagian besar pembaruan terjemahan, terima kasih semua penerjemah!\n</string>
     <string name="connection_lost_reconnecting">Koneksi terputus – menyambungkan ulang…</string>
     <string name="foreground_start_failed">Nomla tidak dapat tetap berjalan di latar belakang. Suara mungkin berhenti saat layar mati.</string>
     <string name="bluetooth_perm_denied">Headset Bluetooth tetap aktif. Tanpa izin Perangkat di sekitar, beberapa perangkat akan menolak mengalihkan audio ke headset.</string>
@@ -305,9 +304,7 @@
     <string name="share_log_summary">Kirim log terbaru, tanpa password atau sertifikat</string>
     <string name="share_log_failed">Log tidak dapat ditulis.</string>
     <string name="app_news_footer_on_startup">Berita ini dapat dilihat lagi dari halaman Tentang.</string>
-    <string name="app_news_items_v3_7_0">• Banyak pekerjaan dilakukan untuk memperbarui Mumla bagi Android 15 dan 16 (API 35 &amp; 36).\n • Akibatnya, kini dibutuhkan Android 5.0 (API 21) atau yang lebih baru.\n • Tema diperbarui agar mendukung mode terang/gelap sistem.\n • Layar pengaturan harus disesuaikan dengan API yang lebih baru.\n • Ditambahkan preferensi bahasa di dalam aplikasi.\n</string>
-    <string name="app_news_items_v3_7_2">• Memperbaiki potensi crash saat aplikasi dimulai.\n • Menambahkan beberapa terjemahan, terima kasih semua penerjemah!\n</string>
-    <string name="app_news_items_v3_7_3">• Push-to-talk corner kini terlihat di Android 12 ke atas, serta pada latar gelap dan terang\n • Tombol Kembali kembali menanyakan apakah koneksi ke server akan diputus di Android 16+\n</string>
+    <string name="app_news_items_nomla">• Nomla telah hadir: klien Mumble untuk Android, di-porting dari Mumla dan hampir sepenuhnya ditulis ulang.\n</string>
     <string name="chat_image_save">Simpan gambar</string>
     <string name="chat_image_saved">Gambar disimpan</string>
     <string name="chat_image_save_failed">Gambar tidak dapat disimpan</string>

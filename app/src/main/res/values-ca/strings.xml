@@ -325,10 +325,7 @@
     <string name="share_log_summary">Envia el registre recent, sense contrasenyes ni certificats</string>
     <string name="share_log_failed">No s\'ha pogut escriure el registre.</string>
     <string name="app_news_footer_on_startup">Podeu tornar a veure aquestes novetats des de la pàgina Quant a.</string>
-    <string name="app_news_items_v3_7_0">• S\'ha treballat molt per adaptar el Mumla a Android 15 i 16 (API 35 &amp; 36).\n • Per això ara cal Android 5.0 (API 21) o posterior.\n • El tema s\'ha modernitzat per seguir els modes clar i fosc del sistema.\n • La pantalla de configuració s\'ha hagut d\'adaptar a API més noves.\n • S\'ha afegit la preferència d\'idioma dins l\'aplicació.\n</string>
-    <string name="app_news_items_v3_7_1">• Versió menor amb sobretot actualitzacions de traducció. Gràcies a tots els traductors!\n</string>
-    <string name="app_news_items_v3_7_2">• S\'ha corregit una possible fallada en iniciar.\n • S\'han afegit traduccions. Gràcies a tots els traductors!\n</string>
-    <string name="app_news_items_v3_7_3">• La cantonada PTT és visible a Android 12 i posteriors, i sobre fons fosc i clar\n • El botó Enrere torna a preguntar si voleu desconnectar-vos del servidor a Android 16+\n</string>
+    <string name="app_news_items_nomla">• Ja és aquí el Nomla: un client de Mumble per a Android, portat del Mumla i reescrit gairebé del tot.\n</string>
     <string name="chat_image_save">Desa la imatge</string>
     <string name="chat_image_saved">S\'ha desat la imatge</string>
     <string name="chat_image_save_failed">No s\'ha pogut desar la imatge</string>

@@ -274,10 +274,7 @@
     <string name="share_log_summary">Send den seneste log uden adgangskoder og certifikater</string>
     <string name="share_log_failed">Kunne ikke skrive loggen.</string>
     <string name="app_news_footer_on_startup">Disse nyheder kan ses igen fra siden Om.</string>
-    <string name="app_news_items_v3_7_0">• Der er lagt meget arbejde i at opdatere Mumla til Android 15 og 16 (API 35 &amp; 36).\n • Derfor kræves nu Android 5.0 (API 21) eller nyere.\n • Temaerne er moderniseret og understøtter systemets lyse/mørke tilstand.\n • Indstillingsskærmen skulle tilpasses nyere API-versioner.\n • Sprogvalg i appen er tilføjet.\n</string>
-    <string name="app_news_items_v3_7_1">• Mindre udgivelse med primært opdaterede oversættelser – tak til alle oversættere!\n</string>
-    <string name="app_news_items_v3_7_2">• Rettet et muligt nedbrud ved opstart.\n • Nogle oversættelser tilføjet – tak til alle oversættere!\n</string>
-    <string name="app_news_items_v3_7_3">• PTT-hjørnet er nu synligt på Android 12 og nyere samt på mørk og lys baggrund\n • Tilbage-knappen spørger igen, om du vil afbryde forbindelsen til serveren, på Android 16+\n</string>
+    <string name="app_news_items_nomla">• Nomla er her: en Mumble-klient til Android, overført fra Mumla og næsten helt omskrevet.\n</string>
     <string name="chat_image_save">Gem billede</string>
     <string name="chat_image_saved">Billede gemt</string>
     <string name="chat_image_save_failed">Billedet kunne ikke gemmes</string>

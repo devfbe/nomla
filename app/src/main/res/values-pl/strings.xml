@@ -178,14 +178,7 @@
     <string name="donate_dialog_negativebutton_goog">Później</string>
     <string name="donate_purchase_pending_goog">Twoja darowizna jest w trakcie realizacji i może być gotowa po ponownym uruchomieniu. Dziękujemy!</string>
     <string name="donate_thanks_goog">Dziękujemy za wsparcie!</string>
-    <string name="app_news_items_v3_7_0">• Dużo pracy włożono w aktualizację Mumli dla Androida 15 i 16 (API 35 i 36).\n
-• W związku z tym wymagany jest Android 5.0 (API 21) lub nowszy.\n
-• Zmodernizowano motyw, aby obsługiwał jasny/ciemny tryb systemu.\n
-• Ekran ustawień musiał zostać dostosowany do nowszych interfejsów API.\n
-• Dodano preferencje językowe w aplikacji.\n</string>
-    <string name="app_news_items_v3_7_1">• Drobne wydanie zawierające głównie aktualizacje tłumaczeń, dziękujemy wszystkim tłumaczom!\n</string>
-    <string name="app_news_items_v3_7_2">• Naprawiono potencjalny błąd powodujący awarię podczas uruchamiania.\n• Dodano kilka tłumaczeń, dziękujemy wszystkim tłumaczom!\n</string>
-    <string name="app_news_items_v3_7_3">• Uwidoczniono narożnik PTT na urządzeniach z systemem Android 12 i nowszych, a także na ciemnym i jasnym tle.\n• Sprawiono, aby przycisk Wstecz ponownie prosił o rozłączenie z serwerem w systemie Android 16+.\n</string>
+    <string name="app_news_items_nomla">• Nomla już jest: klient Mumble dla Androida, przeniesiony z Mumli i niemal całkowicie przepisany.\n</string>
     <string name="connection_lost_reconnecting">Utracono połączenie – ponowne łączenie…</string>
     <string name="foreground_start_failed">Nie udało się utrzymać Nomli w tle. Dźwięk może ustać po wyłączeniu ekranu.</string>
     <string name="bluetooth_perm_denied">Zestaw słuchawkowy Bluetooth pozostaje włączony. Bez uprawnienia „Urządzenia w pobliżu” niektóre urządzenia odmówią przekierowania do niego dźwięku.</string>

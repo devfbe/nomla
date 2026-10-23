@@ -323,10 +323,7 @@
     <string name="share_log_summary">Lähetä tuore loki ilman salasanoja tai sertifikaatteja</string>
     <string name="share_log_failed">Lokia ei voitu kirjoittaa.</string>
     <string name="app_news_footer_on_startup">Nämä uutiset voi katsoa uudelleen Tietoja-sivulta.</string>
-    <string name="app_news_items_v3_7_0">• Mumlan päivittämiseksi Android 15:lle ja 16:lle (API 35 &amp; 36) tehtiin paljon työtä.\n • Siksi nyt vaaditaan Android 5.0 (API 21) tai uudempi.\n • Teemat uudistettiin tukemaan järjestelmän vaaleaa ja tummaa tilaa.\n • Asetusnäkymä piti sovittaa uudempiin rajapintoihin.\n • Lisätty sovelluksen sisäinen kielivalinta.\n</string>
-    <string name="app_news_items_v3_7_1">• Pieni julkaisu, enimmäkseen käännöspäivityksiä – kiitos kaikille kääntäjille!\n</string>
-    <string name="app_news_items_v3_7_2">• Korjattu mahdollinen kaatuminen käynnistyksessä.\n • Lisätty käännöksiä – kiitos kaikille kääntäjille!\n</string>
-    <string name="app_news_items_v3_7_3">• Puhepikanäppäinkulma näkyy Android 12:ssa ja uudemmissa sekä tummalla ja vaalealla taustalla\n • Takaisin-painike kysyy taas Android 16+:ssa, katkaistaanko yhteys palvelimeen\n</string>
+    <string name="app_news_items_nomla">• Nomla on täällä: Mumble-asiakasohjelma Androidille, siirretty Mumlasta ja kirjoitettu lähes kokonaan uudelleen.\n</string>
     <string name="chat_image_save">Tallenna kuva</string>
     <string name="chat_image_saved">Kuva tallennettu</string>
     <string name="chat_image_save_failed">Kuvaa ei voitu tallentaa</string>

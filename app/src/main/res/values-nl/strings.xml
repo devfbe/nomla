@@ -313,16 +313,7 @@
     <string name="share_log_summary">Recent logboek sturen, zonder wachtwoorden of certificaten</string>
     <string name="share_log_failed">Kon het logboek niet schrijven.</string>
     <string name="app_news_footer_on_startup">Dit nieuws is later opnieuw te bekijken via de pagina Over.</string>
-    <string name="app_news_items_v3_7_0">• Er is veel werk gestoken in het bijwerken van Mumla voor Android 15 en 16 (API 35 &amp; 36).\n
-• Daardoor is nu Android 5.0 (API 21) of nieuwer vereist.\n
-• Het thema is gemoderniseerd en volgt de lichte/donkere modus van het systeem.\n
-• Het instellingenscherm moest worden aangepast aan nieuwere API\'s.\n
-• Taalvoorkeur in de app toegevoegd.\n</string>
-    <string name="app_news_items_v3_7_1">• Kleine release met vooral bijgewerkte vertalingen, dank aan alle vertalers!\n</string>
-    <string name="app_news_items_v3_7_2">• Mogelijke crash bij het opstarten verholpen.\n
-• Enkele vertalingen toegevoegd, dank aan alle vertalers!\n</string>
-    <string name="app_news_items_v3_7_3">• De PTT-hoek is zichtbaar op Android 12 en nieuwer, en op een donkere en lichte achtergrond\n
-• De terugknop vraagt op Android 16+ weer of de verbinding met de server verbroken moet worden\n</string>
+    <string name="app_news_items_nomla">• Nomla is er: een Mumble-client voor Android, overgezet vanuit Mumla en vrijwel volledig herschreven.\n</string>
     <string name="chat_image_save">Afbeelding opslaan</string>
     <string name="chat_image_saved">Afbeelding opgeslagen</string>
     <string name="chat_image_save_failed">Afbeelding kon niet worden opgeslagen</string>

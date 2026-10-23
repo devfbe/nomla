@@ -329,16 +329,7 @@
     <string name="share_log_summary">Skicka den senaste loggen, utan lösenord eller certifikat</string>
     <string name="share_log_failed">Det gick inte att skriva loggen.</string>
     <string name="app_news_footer_on_startup">Nyheterna kan visas igen från sidan Om.</string>
-    <string name="app_news_items_v3_7_0">• Mycket arbete har lagts på att uppdatera Mumla för Android 15 och 16 (API 35 &amp; 36).\n
-• Därför krävs nu Android 5.0 (API 21) eller senare.\n
-• Temat har moderniserats och följer systemets ljusa/mörka läge.\n
-• Inställningsskärmen fick anpassas till nyare API:er.\n
-• Språkinställning i appen har lagts till.\n</string>
-    <string name="app_news_items_v3_7_1">• Mindre version med mest uppdaterade översättningar, tack alla översättare!\n</string>
-    <string name="app_news_items_v3_7_2">• Åtgärdat en möjlig krasch vid start.\n
-• Några översättningar har lagts till, tack alla översättare!\n</string>
-    <string name="app_news_items_v3_7_3">• Push-to-talk-hörnet syns på Android 12 och senare, och på mörk och ljus bakgrund\n
-• Bakåtknappen frågar igen om du vill koppla ner från servern på Android 16+\n</string>
+    <string name="app_news_items_nomla">• Nomla är här: en Mumble-klient för Android, portad från Mumla och nästan helt omskriven.\n</string>
     <string name="chat_image_save">Spara bild</string>
     <string name="chat_image_saved">Bilden sparades</string>
     <string name="chat_image_save_failed">Bilden kunde inte sparas</string>

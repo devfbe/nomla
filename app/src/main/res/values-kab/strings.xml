@@ -273,10 +273,7 @@
     <string name="share_log_summary">Azen aɣmis aneggaru, war awalen n uɛeddi neɣ iselkinen</string>
     <string name="share_log_failed">Ulamek tira n uɣmis.</string>
     <string name="app_news_footer_on_startup">Isallen-a zemren ad ttwaskanen tikkelt-nniḍen seg usebter Ɣef.</string>
-    <string name="app_news_items_v3_7_0">• Aṭas n umahil i yettwaxedmen akken ad yettwaleqqem Mumla i Android 15 d 16 (API 35 &amp; 36).\n • Ihi tura yesra Android 5.0 (API 21) neɣ ugar.\n • Asentel yettwasnefli akken ad yessefrak iskaren aceɛlal/ubrik n unagraw.\n • Agdil n yiɣewwaren yettwaṣeggem i yi-API imaynuten.\n • Yettwarna ufran n tutlayt deg usnas.\n</string>
-    <string name="app_news_items_v3_7_1">• Lqem amecṭuḥ s yisuqqlen yettwaleqqmen s umata, tanemmirt i yimsuqqlen akk!\n</string>
-    <string name="app_news_items_v3_7_2">• Yettwaseɣti uɣelluy ara yeḍrun deg usekker.\n • Kra n yisuqqlen yettwarnan, tanemmirt i yimsuqqlen akk!\n</string>
-    <string name="app_news_items_v3_7_3">• Tiɣmert n PTT tettban deg Android 12 d wayen d-yernan, ɣef ugilal ubrik d uceɛlal\n • Taqeffalt Tuɣalin tettsteqsi tikkelt-nniḍen ma ad tgezmeḍ tuqqna seg uqeddac deg Android 16+\n</string>
+    <string name="app_news_items_nomla">• Ha-t-an Nomla: amsaɣ n Mumble i Android, yettwanqel seg Mumla, yettwaɛawed-d tira-ines qrib akk.\n</string>
     <string name="chat_image_save">Sekles tugna</string>
     <string name="chat_image_saved">Tugna tettwasekles</string>
     <string name="chat_image_save_failed">Ulamek asekles n tugna</string>

@@ -53,11 +53,8 @@ fun Context.showConfirmDialog(
         .show()
 
 /** The news of each release, oldest first; add new versions at the end. */
-private val NEWS_ITEMS = linkedMapOf(
-    "3.7.0" to R.string.app_news_items_v3_7_0,
-    "3.7.1" to R.string.app_news_items_v3_7_1,
-    "3.7.2" to R.string.app_news_items_v3_7_2,
-    "3.7.3" to R.string.app_news_items_v3_7_3,
+internal val NEWS_ITEMS = linkedMapOf(
+    "3.7.3" to R.string.app_news_items_nomla,
 )
 
 /** The versions in [NEWS_ITEMS] up to this build's. */
@@ -79,16 +76,8 @@ fun maybeShowNewsDialog(context: Context): Boolean {
 fun showAllNewsDialog(context: Context) = showNewsDialog(context, RELEVANT_VERSIONS, markShown = false)
 
 private fun showNewsDialog(context: Context, versions: List<String>, markShown: Boolean) {
-    val html = buildString {
-        for (version in versions.asReversed()) {
-            val resId = NEWS_ITEMS[version] ?: continue
-            append("<b>${context.getString(R.string.version)} $version</b><br/>")
-            append(context.getString(resId).replace("\n", "<br/>"))
-            append("<br/>")
-        }
-        if (markShown) append("<em>${context.getString(R.string.app_news_footer_on_startup)}</em>")
-    }
     val binding = DialogNewsBinding.inflate(LayoutInflater.from(context))
+    val html = newsHtml(context, versions, withFooter = markShown)
     binding.newsTextView.text = HtmlCompat.fromHtml(html, HtmlCompat.FROM_HTML_MODE_LEGACY)
     MaterialAlertDialogBuilder(context)
         .setTitle(R.string.app_news)
@@ -99,6 +88,17 @@ private fun showNewsDialog(context: Context, versions: List<String>, markShown: 
             dialog.dismiss()
         }
         .show()
+}
+
+/** The news dialog's HTML for [versions], newest first; [withFooter] adds the startup footer. */
+internal fun newsHtml(context: Context, versions: List<String>, withFooter: Boolean): String = buildString {
+    for (version in versions.asReversed()) {
+        val resId = NEWS_ITEMS[version] ?: continue
+        append("<b>${context.getString(R.string.version)} $version</b><br/>")
+        append(context.getString(resId).replace("\n", "<br/>"))
+        append("<br/>")
+    }
+    if (withFooter) append("<em>${context.getString(R.string.app_news_footer_on_startup)}</em>")
 }
 
 /** A `major.minor.patch` version; a `-suffix` is ignored, and missing or bad parts count as 0. */

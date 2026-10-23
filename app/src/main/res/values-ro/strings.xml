@@ -305,10 +305,7 @@
     <string name="share_log_summary">Trimite jurnalul recent, fără parole sau certificate</string>
     <string name="share_log_failed">Jurnalul nu a putut fi scris.</string>
     <string name="app_news_footer_on_startup">Aceste noutăți pot fi revăzute din pagina Despre.</string>
-    <string name="app_news_items_v3_7_0">• S-a muncit mult la actualizarea Mumla pentru Android 15 și 16 (API 35 &amp; 36).\n • Prin urmare, acum este necesar Android 5.0 (API 21) sau mai nou.\n • Tema a fost modernizată pentru modurile luminos/întunecat ale sistemului.\n • Ecranul de setări a trebuit adaptat la API-uri mai noi.\n • S-a adăugat alegerea limbii în aplicație.\n</string>
-    <string name="app_news_items_v3_7_1">• Versiune minoră, în mare parte cu traduceri actualizate, mulțumim tuturor traducătorilor!\n</string>
-    <string name="app_news_items_v3_7_2">• Remediată o posibilă blocare la pornire.\n • Câteva traduceri noi, mulțumim tuturor traducătorilor!\n</string>
-    <string name="app_news_items_v3_7_3">• Colțul PTT este vizibil pe Android 12 și mai nou, pe fundal întunecat și luminos\n • Butonul Înapoi întreabă din nou dacă te deconectezi de la server pe Android 16+\n</string>
+    <string name="app_news_items_nomla">• Nomla a sosit: un client Mumble pentru Android, portat din Mumla și rescris aproape în întregime.\n</string>
     <string name="chat_image_save">Salvează imaginea</string>
     <string name="chat_image_saved">Imagine salvată</string>
     <string name="chat_image_save_failed">Imaginea nu a putut fi salvată</string>

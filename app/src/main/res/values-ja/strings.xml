@@ -307,10 +307,7 @@
     <string name="share_log_summary">パスワードや証明書を含まない最近のログを送信</string>
     <string name="share_log_failed">ログを書き込めませんでした。</string>
     <string name="app_news_footer_on_startup">このお知らせは「アプリについて」ページから再表示できます。</string>
-    <string name="app_news_items_v3_7_0">• Android 15 および 16 (API 35 &amp; 36) に対応するため、Mumla の更新に多くの作業が行われました。\n • そのため、Android 5.0 (API 21) 以降が必要になりました。\n • システムのライト/ダークモードに対応するようテーマを刷新しました。\n • 設定画面を新しい API に合わせて変更しました。\n • アプリ内で言語を設定できるようになりました。\n</string>
-    <string name="app_news_items_v3_7_1">• 主に翻訳を更新したマイナーリリースです。翻訳者の皆さん、ありがとうございます!\n</string>
-    <string name="app_news_items_v3_7_2">• 起動時に発生する可能性のあるクラッシュを修正しました。\n • 翻訳を追加しました。翻訳者の皆さん、ありがとうございます!\n</string>
-    <string name="app_news_items_v3_7_3">• Android 12 以降および暗い背景・明るい背景で、PTT ホットコーナーが見えるようにしました\n • Android 16 以降で、戻るボタンが再びサーバーからの切断を確認するようにしました\n</string>
+    <string name="app_news_items_nomla">• Nomla が登場しました: Mumla から移植し、ほぼ全面的に書き直した Android 向け Mumble クライアントです。\n</string>
     <string name="chat_image_save">画像を保存</string>
     <string name="chat_image_saved">画像を保存しました</string>
     <string name="chat_image_save_failed">画像を保存できませんでした</string>

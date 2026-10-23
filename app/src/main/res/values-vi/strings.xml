@@ -269,10 +269,7 @@
     <string name="share_log_summary">Gửi nhật ký gần đây, không kèm mật khẩu hay chứng chỉ</string>
     <string name="share_log_failed">Không thể ghi nhật ký.</string>
     <string name="app_news_footer_on_startup">Có thể xem lại các tin này từ trang Thông tin.</string>
-    <string name="app_news_items_v3_7_0">• Rất nhiều công sức đã được bỏ ra để cập nhật Mumla cho Android 15 và 16 (API 35 &amp; 36).\n • Do đó, giờ cần Android 5.0 (API 21) trở lên.\n • Giao diện được hiện đại hóa để hỗ trợ chế độ sáng/tối của hệ thống.\n • Màn hình cài đặt phải được điều chỉnh theo các API mới hơn.\n • Đã thêm tùy chọn ngôn ngữ trong ứng dụng.\n</string>
-    <string name="app_news_items_v3_7_1">• Bản phát hành nhỏ, chủ yếu cập nhật bản dịch, cảm ơn tất cả các dịch giả!\n</string>
-    <string name="app_news_items_v3_7_2">• Sửa lỗi có thể gây treo khi khởi động.\n • Thêm một số bản dịch, cảm ơn tất cả các dịch giả!\n</string>
-    <string name="app_news_items_v3_7_3">• Góc nhấn để nói hiển thị trên Android 12 trở lên, và trên nền tối lẫn nền sáng\n • Nút Quay lại lại hỏi có ngắt kết nối khỏi máy chủ không trên Android 16+\n</string>
+    <string name="app_news_items_nomla">• Nomla đã có mặt: ứng dụng khách Mumble cho Android, được chuyển từ Mumla và viết lại gần như hoàn toàn.\n</string>
     <string name="chat_image_save">Lưu hình ảnh</string>
     <string name="chat_image_saved">Đã lưu hình ảnh</string>
     <string name="chat_image_save_failed">Không lưu được hình ảnh</string>

@@ -329,10 +329,7 @@
     <string name="share_log_summary">Надіслати недавній журнал без паролів і сертифікатів</string>
     <string name="share_log_failed">Не вдалося записати журнал.</string>
     <string name="app_news_footer_on_startup">Ці новини можна переглянути знову на сторінці «Про додаток».</string>
-    <string name="app_news_items_v3_7_0">• Було виконано багато роботи, щоб оновити Mumla для Android 15 і 16 (API 35 і 36).\n• Тому тепер потрібен Android 5.0 (API 21) або новіший.\n• Оформлення модернізовано для підтримки системних світлої й темної тем.\n• Екран налаштувань довелося адаптувати до новіших API.\n• Додано вибір мови в застосунку.\n</string>
-    <string name="app_news_items_v3_7_1">• Невелике оновлення, переважно з оновленими перекладами. Дякуємо всім перекладачам!\n</string>
-    <string name="app_news_items_v3_7_2">• Виправлено можливий збій під час запуску.\n• Додано кілька перекладів, дякуємо всім перекладачам!\n</string>
-    <string name="app_news_items_v3_7_3">• Активний кут Натисни-щоб-говорити тепер видно на Android 12 і новіших, а також на темному й світлому тлі\n• На Android 16+ кнопка «Назад» знову питає, чи відключитися від сервера\n</string>
+    <string name="app_news_items_nomla">• Зустрічайте Nomla: клієнт Mumble для Android, перенесений із Mumla й майже повністю переписаний.\n</string>
     <string name="chat_image_save">Зберегти зображення</string>
     <string name="chat_image_saved">Зображення збережено</string>
     <string name="chat_image_save_failed">Не вдалося зберегти зображення</string>

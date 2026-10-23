@@ -166,16 +166,13 @@
     <string name="app_news">มีอะไรใหม่บ้าง</string>
     <string name="app_news_summary">ดูข้อมูลอัปเดตล่าสุด</string>
     <string name="app_news_footer_on_startup">สามารถดูข่าวเหล่านี้ซ้ำได้อีกครั้งจากหน้า \"เกี่ยวกับเรา\".</string>
-    <string name="app_news_items_v3_7_1">• อัปเดตเล็กน้อย ส่วนใหญ่เป็นการปรับปรุงคำแปล ขอขอบคุณนักแปลทุกท่าน!\n</string>
+    <string name="app_news_items_nomla">• Nomla มาแล้ว: ไคลเอนต์ Mumble สำหรับ Android ที่พอร์ตมาจาก Mumla และเขียนใหม่เกือบทั้งหมด\n</string>
     <string name="donate_dialog_message_goog">ขอบคุณที่ใช้ Nomla! พิจารณาบริจาคเล็กน้อยเพื่อช่วยให้ Nomla ยังคงอยู่ต่อไปและเพื่อลบข้อความนี้</string>
     <string name="donate_dialog_positivebutton_goog">สนับสนุน Nomla</string>
     <string name="donate_dialog_negativebutton_goog">ภายหลัง</string>
     <string name="donate_purchase_pending_goog">การบริจาคของคุณอยู่ในสถานะรอการดำเนินการ และอาจพร้อมใช้งานเมื่อมีการรีสตาร์ทครั้งต่อไป ขอบคุณ!</string>
     <string name="donate_thanks_goog">ขอบคุณสำหรับการสนับสนุนของคุณ!</string>
     <string name="donate_dialog_title_goog">มีความสุขกับ Nomla?</string>
-    <string name="app_news_items_v3_7_0">• มีการปรับปรุงแอป Mumla สำหรับ Android 15 และ 16 (API 35 และ 36).\n• ด้วยเหตุนี้ จึงจำเป็นต้องใช้ Android 5.0 (API 21) หรือเวอร์ชันที่ใหม่กว่า.\n• ปรับปรุงธีมให้รองรับโหมดสว่าง/มืดของระบบ.\n• หน้าจอการตั้งค่าต้องปรับให้เข้ากับ API เวอร์ชันใหม่กว่า.\n• เพิ่มการตั้งค่าภาษาภายในแอป.\n</string>
-    <string name="app_news_items_v3_7_2">• แก้ไขปัญหาที่อาจทำให้โปรแกรมหยุดทำงานขณะเริ่มต้นระบบ.\n• เพิ่มคำแปลบางส่วน, ขอขอบคุณนักแปลทุกท่าน!\n</string>
-    <string name="app_news_items_v3_7_3">• ทำให้ปุ่ม PTT (ปุ่มลัดสำหรับใช้งานปุ่ม PTT) ปรากฏให้เห็นบน Android 12 และเวอร์ชันที่ใหม่กว่า รวมถึงบนพื้นหลังสีเข้มและสีอ่อนด้วย.\n• ทำให้ปุ่มย้อนกลับถามก่อนตัดการเชื่อมต่อจากเซิร์ฟเวอร์อีกครั้งบน Android 16 ขึ้นไป.\n</string>
     <string name="connection_lost_reconnecting">การเชื่อมต่อหลุด – กำลังเชื่อมต่อใหม่…</string>
     <string name="foreground_start_failed">ไม่สามารถให้ Nomla ทำงานต่อในเบื้องหลังได้ เสียงอาจหยุดเมื่อปิดหน้าจอ</string>
     <string name="bluetooth_perm_denied">ชุดหูฟังบลูทูธยังเปิดอยู่ หากไม่มีสิทธิ์อุปกรณ์ที่อยู่ใกล้เคียง อุปกรณ์บางรุ่นจะไม่ยอมส่งเสียงไปยังชุดหูฟัง</string>

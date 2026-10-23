@@ -328,10 +328,7 @@
     <string name="share_log_summary">Odeslat nedávný protokol bez hesel a certifikátů</string>
     <string name="share_log_failed">Protokol se nepodařilo zapsat.</string>
     <string name="app_news_footer_on_startup">Tyto novinky si můžete znovu zobrazit na stránce O aplikaci.</string>
-    <string name="app_news_items_v3_7_0">• Mnoho práce šlo do aktualizace Mumly pro Android 15 a 16 (API 35 &amp; 36).\n • V důsledku toho je nyní vyžadován Android 5.0 (API 21) nebo novější.\n • Vzhled byl modernizován a podporuje světlý a tmavý režim systému.\n • Obrazovku nastavení bylo nutné přizpůsobit novějším API.\n • Přidána volba jazyka přímo v aplikaci.\n</string>
-    <string name="app_news_items_v3_7_1">• Menší vydání převážně s aktualizacemi překladů, děkujeme všem překladatelům!\n</string>
-    <string name="app_news_items_v3_7_2">• Opraven možný pád při spuštění.\n • Přidány některé překlady, děkujeme všem překladatelům!\n</string>
-    <string name="app_news_items_v3_7_3">• Roh PTT je viditelný na Androidu 12 a novějším a na tmavém i světlém pozadí\n • Tlačítko Zpět se na Androidu 16+ opět ptá na odpojení od serveru\n</string>
+    <string name="app_news_items_nomla">• Nomla je tady: klient Mumble pro Android, převzatý z Mumly a téměř kompletně přepsaný.\n</string>
     <string name="chat_image_save">Uložit obrázek</string>
     <string name="chat_image_saved">Obrázek uložen</string>
     <string name="chat_image_save_failed">Obrázek se nepodařilo uložit</string>

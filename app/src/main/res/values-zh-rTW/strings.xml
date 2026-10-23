@@ -145,10 +145,7 @@
     <string name="grant_perm_draw_over_apps">請允許顯示於其他 app 之上的權限。</string>
     <string name="orbot_not_installed">未安裝 Orbot app。不使用 Tor。</string>
     <string name="orbot_tor_failed">無法連接本機 Tor 代理伺服器，連接埠 %d (SOCKS)\n\n請確認 Orbot app 正在執行中。</string>
-    <string name="app_news_items_v3_7_3">• 在 Android 12 及更新的版本中顯示發話按鍵熱點，以及深色和淺色背景\n • 調整 Android 16 版的返回按鍵行為，改為詢問是否自目前伺服器離線。\n</string>
-    <string name="app_news_items_v3_7_2">• 修復啟動時可能當機的問題\n • 新增部份翻譯，感謝所有譯者！\n</string>
-    <string name="app_news_items_v3_7_1">• 內容主要為翻譯更新的小版本更新，感謝所有譯者！\n</string>
-    <string name="app_news_items_v3_7_0">• 經過一番努力，我們把 Mumla 更新到支援 Android 15 和 16 (API 35 &amp; 36) 了\n • 與之相應的，現在最低系統版本為 Android 5.0 (API 21)\n • 佈景主題跟上主流以支援淺色/深色模式\n • 設定畫面配合新版 API 而有調整\n • 新增 app 內語言選擇設定\n</string>
+    <string name="app_news_items_nomla">• Nomla 登場：一款 Android 版 Mumble 用戶端，移植自 Mumla，幾乎完全重新撰寫。\n</string>
     <string name="trust_added">憑證已新增至信任憑證存放區</string>
     <string name="trust_add_failed">憑證無法新增至信任憑證存放區。</string>
     <string name="trust_cleared">信任資料庫已清空</string>

@@ -306,16 +306,7 @@
     <string name="share_log_failed">Could not write the log.</string>
     <string name="app_news_footer_on_startup">These news can be viewed again from the About page.</string>
 
-    <string name="app_news_items_v3_7_0">• A lot of work was done to update Mumla for Android 15 and 16 (API 35 &amp; 36).\n
-• As a consequence Android 5.0 (API 21) or later is now required.\n
-• Theming was modernized to support system light/dark modes.\n
-• The settings screen had to be adapted to newer APIs.\n
-• Added in-app language preference.\n</string>
-    <string name="app_news_items_v3_7_1">• Minor release with mostly translation updates, thank you all translators!\n</string>
-    <string name="app_news_items_v3_7_2">• Fix potential crash on startup.\n
-• Add some translations, thank you all translators!\n</string>
-    <string name="app_news_items_v3_7_3">• Make PTT hot corner visible on Android 12 and later, and on dark and light background\n
-• Make the Back-button ask to disconnect from server again on Android 16+\n</string>
+    <string name="app_news_items_nomla">• Nomla is here: a Mumble client for Android, ported from Mumla and almost completely rewritten.\n</string>
 
     <!-- Chat images -->
     <string name="chat_image_share">Share image</string>

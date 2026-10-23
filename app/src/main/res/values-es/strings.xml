@@ -315,10 +315,7 @@
     <string name="share_log_summary">Enviar el registro reciente, sin contraseñas ni certificados</string>
     <string name="share_log_failed">No se pudo escribir el registro.</string>
     <string name="app_news_footer_on_startup">Puedes volver a ver estas novedades desde la página Acerca de.</string>
-    <string name="app_news_items_v3_7_0">• Se trabajó mucho para adaptar Mumla a Android 15 y 16 (API 35 &amp; 36).\n • Por ello ahora se requiere Android 5.0 (API 21) o posterior.\n • El tema se modernizó para seguir los modos claro y oscuro del sistema.\n • La pantalla de opciones tuvo que adaptarse a las API más recientes.\n • Se añadió la preferencia de idioma dentro de la app.\n</string>
-    <string name="app_news_items_v3_7_1">• Versión menor con sobre todo actualizaciones de traducción. ¡Gracias a todos los traductores!\n</string>
-    <string name="app_news_items_v3_7_2">• Corregido un posible cierre inesperado al iniciar.\n • Se añadieron traducciones. ¡Gracias a todos los traductores!\n</string>
-    <string name="app_news_items_v3_7_3">• La esquina de pulsar para hablar es visible en Android 12 y posteriores, y sobre fondo claro y oscuro\n • El botón Atrás vuelve a preguntar si desconectar del servidor en Android 16+\n</string>
+    <string name="app_news_items_nomla">• Ya llegó Nomla: un cliente de Mumble para Android, portado desde Mumla y reescrito casi por completo.\n</string>
     <string name="chat_image_save">Guardar imagen</string>
     <string name="chat_image_saved">Imagen guardada</string>
     <string name="chat_image_save_failed">No se pudo guardar la imagen</string>

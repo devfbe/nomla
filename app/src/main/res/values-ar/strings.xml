@@ -311,10 +311,7 @@
     <string name="share_log_summary">أرسل السجل الأخير، دون كلمات مرور أو شهادات</string>
     <string name="share_log_failed">تعذّرت كتابة السجل.</string>
     <string name="app_news_footer_on_startup">يمكن عرض هذه الأخبار مجددًا من صفحة «حول».</string>
-    <string name="app_news_items_v3_7_0">• بُذل جهد كبير لتحديث Mumla لنظامي Android 15 و16 (API 35 &amp; 36).\n • لذلك أصبح Android 5.0 (API 21) أو أحدث مطلوبًا.\n • حُدّث المظهر ليدعم الوضعين الفاتح والداكن للنظام.\n • كان لا بد من تكييف شاشة الإعدادات مع واجهات برمجة أحدث.\n • أُضيف تفضيل اللغة داخل التطبيق.\n</string>
-    <string name="app_news_items_v3_7_1">• إصدار صغير يضم في الغالب تحديثات للترجمات، شكرًا لجميع المترجمين!\n</string>
-    <string name="app_news_items_v3_7_2">• إصلاح عطل محتمل عند بدء التشغيل.\n • إضافة بعض الترجمات، شكرًا لجميع المترجمين!\n</string>
-    <string name="app_news_items_v3_7_3">• إظهار زاوية اضغط للتحدث على Android 12 وما بعده، وعلى الخلفيات الداكنة والفاتحة\n • زر الرجوع يسأل مجددًا عن قطع الاتصال بالخادم على Android 16+\n</string>
+    <string name="app_news_items_nomla">• وصل Nomla: عميل Mumble لنظام Android، منقول عن Mumla ومُعاد كتابته بالكامل تقريبًا.\n</string>
     <string name="chat_image_save">احفظ الصورة</string>
     <string name="chat_image_saved">حُفظت الصورة</string>
     <string name="chat_image_save_failed">تعذّر حفظ الصورة</string>

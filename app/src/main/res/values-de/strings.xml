@@ -252,10 +252,7 @@
     <string name="share_log_summary">Aktuelles Protokoll senden, ohne Passwörter und Zertifikate</string>
     <string name="share_log_failed">Das Protokoll konnte nicht geschrieben werden.</string>
     <string name="app_news_footer_on_startup">Die Neuigkeiten lassen sich auf der Seite „Über“ erneut ansehen.</string>
-    <string name="app_news_items_v3_7_0">• Viel Arbeit floss in die Anpassung von Mumla an Android 15 und 16 (API 35 &amp; 36).\n • Daher wird jetzt Android 5.0 (API 21) oder neuer benötigt.\n • Das Design wurde modernisiert und folgt dem hellen und dunklen Modus des Systems.\n • Der Einstellungsbildschirm musste an neuere APIs angepasst werden.\n • Die Sprache lässt sich jetzt in der App einstellen.\n</string>
-    <string name="app_news_items_v3_7_1">• Kleines Release mit vor allem aktualisierten Übersetzungen – danke an alle, die übersetzen!\n</string>
-    <string name="app_news_items_v3_7_2">• Möglichen Absturz beim Start behoben.\n • Übersetzungen ergänzt – danke an alle, die übersetzen!\n</string>
-    <string name="app_news_items_v3_7_3">• Push-to-Talk-Ecke unter Android 12 und neuer sowie auf dunklem und hellem Hintergrund sichtbar\n • Die Zurück-Taste fragt unter Android 16+ wieder, ob die Verbindung getrennt werden soll\n</string>
+    <string name="app_news_items_nomla">• Nomla ist da: ein Mumble-Client für Android, aus Mumla portiert und fast vollständig neu geschrieben.\n</string>
     <string name="donate_dialog_title_goog">Gefällt Ihnen Nomla?</string>
     <string name="donate_dialog_message_goog">Danke, dass Sie Nomla nutzen! Bitte denken Sie über eine kleine Spende nach, damit Nomla weiterlebt – und diese Nachricht verschwindet.</string>
     <string name="donate_dialog_positivebutton_goog">Nomla unterstützen</string>

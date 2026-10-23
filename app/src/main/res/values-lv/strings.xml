@@ -278,10 +278,7 @@
     <string name="share_log_summary">Sūtīt neseno žurnālu bez parolēm un sertifikātiem</string>
     <string name="share_log_failed">Neizdevās ierakstīt žurnālu.</string>
     <string name="app_news_footer_on_startup">Šos jaunumus var apskatīt vēlreiz lapā „Par lietotni”.</string>
-    <string name="app_news_items_v3_7_0">• Daudz darba ieguldīts, lai atjauninātu Mumla Android 15 un 16 (API 35 &amp; 36).\n • Tāpēc tagad nepieciešams Android 5.0 (API 21) vai jaunāks.\n • Motīvi modernizēti, lai atbalstītu sistēmas gaišo/tumšo režīmu.\n • Iestatījumu ekrāns bija jāpielāgo jaunākām API.\n • Pievienota valodas izvēle lietotnē.\n</string>
-    <string name="app_news_items_v3_7_1">• Neliels laidiens galvenokārt ar tulkojumu atjauninājumiem, paldies visiem tulkotājiem!\n</string>
-    <string name="app_news_items_v3_7_2">• Novērsta iespējama avārija palaišanas laikā.\n • Pievienoti tulkojumi, paldies visiem tulkotājiem!\n</string>
-    <string name="app_news_items_v3_7_3">• PTT karstais stūris redzams operētājsistēmā Android 12 un jaunākā, uz tumša un gaiša fona\n • Poga Atpakaļ operētājsistēmā Android 16+ atkal jautā, vai atvienoties no servera\n</string>
+    <string name="app_news_items_nomla">• Nomla ir klāt: Mumble klients Android ierīcēm, pārnests no Mumla un gandrīz pilnībā pārrakstīts.\n</string>
     <string name="chat_image_save">Saglabāt attēlu</string>
     <string name="chat_image_saved">Attēls saglabāts</string>
     <string name="chat_image_save_failed">Attēlu neizdevās saglabāt</string>
