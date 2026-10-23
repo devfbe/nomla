@@ -25,12 +25,15 @@ import kotlinx.coroutines.withContext
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import koeln.becker.nomla.mumble.util.Constants
+import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.db.PublicServer
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 
 private const val MUMBLE_PUBLIC_URL = "https://mumble.info/list2.cgi"
+
+private const val TAG = "PublicServerFetcher"
 
 /** Downloads the public Mumble server list. */
 class PublicServerFetcher(
@@ -59,10 +62,10 @@ class PublicServerFetcher(
             connection.disconnect()
         }
     } catch (e: IOException) {
-        e.printStackTrace()
+        NomlaLog.w(TAG, "Could not download the public server list", e)
         null
     } catch (e: XmlPullParserException) {
-        e.printStackTrace()
+        NomlaLog.w(TAG, "Could not parse the public server list", e)
         null
     }
 

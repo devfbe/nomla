@@ -223,7 +223,7 @@ internal class AudioOutput(
                             }
                         }
                     } catch (e: InterruptedException) {
-                        e.printStackTrace()
+                        NomlaLog.w(TAG, "Interrupted while waiting for audio", e)
                     }
 
                     woken = false

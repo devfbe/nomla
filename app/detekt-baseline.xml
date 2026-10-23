@@ -13,7 +13,6 @@
     <ID>LongParameterList:ZoomState.kt$ZoomState$( factor: Float, focusX: Float, focusY: Float, viewWidth: Float, viewHeight: Float, imageWidth: Float, imageHeight: Float, )</ID>
     <ID>LoopWithTooManyJumpStatements:SessionSettingsSyncTest.kt$SessionSettingsSyncTest$while</ID>
     <ID>NestedBlockDepth:ManifestAuditTest.kt$ManifestAuditTest$@Test fun theBackupRulesFileExcludesCloudBackupButNotDeviceTransfer()</ID>
-    <ID>PrintStackTrace:PublicServerFetcher.kt$PublicServerFetcher$e</ID>
     <ID>ReturnCount:BluetoothScoToggle.kt$BluetoothScoToggle$fun request(enabled: Boolean): Result</ID>
     <ID>ReturnCount:CertificateImportActivityTest.kt$CertificateImportActivityTest$private fun findEditText(view: View): EditText?</ID>
     <ID>ReturnCount:ChannelChatFragmentTest.kt$ChannelChatFragmentTest$private fun View.firstImageView(): ImageView?</ID>

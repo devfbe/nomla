@@ -26,9 +26,12 @@ import koeln.becker.nomla.mumble.exception.NativeAudioException
 import koeln.becker.nomla.mumble.model.TalkState
 import koeln.becker.nomla.mumble.net.VoicePacket
 import koeln.becker.nomla.mumble.util.BYTE_MASK
+import koeln.becker.nomla.mumble.util.NomlaLog
 import java.util.Arrays
 import kotlin.math.ceil
 import kotlin.math.sin
+
+private const val TAG = "AudioOutputSpeech"
 
 private const val JITTER_MARGIN_FRAMES = 10
 
@@ -229,7 +232,7 @@ internal class AudioOutputSpeech(
                 decoder.decodeFloat(null, 0, 0, out, AudioHandler.FRAME_SIZE)
             }
         } catch (e: NativeAudioException) {
-            e.printStackTrace()
+            NomlaLog.w(TAG, "Could not decode a frame of session $session; playing silence", e)
             AudioHandler.FRAME_SIZE
         }
 

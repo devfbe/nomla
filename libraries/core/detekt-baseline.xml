@@ -15,8 +15,6 @@
     <ID>LongParameterList:WebRtcApmNative.kt$WebRtcApmApi$( sampleRate: Int, echoCancellation: Boolean, noiseSuppression: Boolean, noiseSuppressionLevel: Int, gainControl: Boolean, highPass: Boolean, )</ID>
     <ID>LoopWithTooManyJumpStatements:AudioInput.kt$AudioInput$while</ID>
     <ID>NestedBlockDepth:FakeCaptureSource.kt$FakeCaptureSource$override fun read(buffer: ShortArray, length: Int): Int</ID>
-    <ID>PrintStackTrace:AudioOutput.kt$AudioOutput$e</ID>
-    <ID>PrintStackTrace:AudioOutputSpeech.kt$AudioOutputSpeech$e</ID>
     <ID>ReturnCount:AudioRouter.kt$AudioRouter$private fun automatic(available: List&lt;CommunicationDevice&gt;): CommunicationDevice?</ID>
     <ID>ReturnCount:FakeCaptureSource.kt$FakeCaptureSource$override fun read(buffer: ShortArray, length: Int): Int</ID>
     <ID>ReturnCount:FakeSpeexResamplerApi.kt$FakeSpeexResamplerApi$override fun processInt( state: Long, channelIndex: Int, input: ShortArray, inLen: IntArray, out: ShortArray, outLen: IntArray, ): Int</ID>
