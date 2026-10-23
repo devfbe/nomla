@@ -76,7 +76,8 @@ object KeystoreSecretCipher : SecretCipher {
             }
             key = created
             return created
-        } catch (e: Exception) {
+        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+            // Keystore implementations also fail with unchecked exceptions; all become GeneralSecurityException.
             val failure = e as? GeneralSecurityException ?: GeneralSecurityException("Android Keystore unavailable", e)
             if (!failureLogged) {
                 NomlaLog.e(TAG, "Android Keystore unavailable", failure)
@@ -124,7 +125,8 @@ class SecretCodec(private val cipher: SecretCipher) {
         if (stored == null || !isSealed(stored)) return stored
         return try {
             String(cipher.decrypt(Base64.getDecoder().decode(stored.substring(STRING_PREFIX.length))), Charsets.UTF_8)
-        } catch (e: Exception) {
+        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+            // Bad Base64, a lost key or a Keystore fault: a sealed value that cannot be opened reads as absent.
             NomlaLog.w(TAG, "Could not decrypt a stored secret", e)
             null
         }
@@ -141,7 +143,8 @@ class SecretCodec(private val cipher: SecretCipher) {
         if (stored == null || !isSealed(stored)) return stored
         return try {
             cipher.decrypt(stored.copyOfRange(BLOB_MAGIC.size, stored.size))
-        } catch (e: Exception) {
+        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+            // A lost key or a Keystore fault alike: a sealed value that cannot be opened reads as absent.
             NomlaLog.w(TAG, "Could not decrypt a stored secret", e)
             null
         }

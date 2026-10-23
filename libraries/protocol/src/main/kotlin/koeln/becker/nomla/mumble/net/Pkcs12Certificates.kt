@@ -68,7 +68,8 @@ public object Pkcs12Certificates {
     public fun isPkcs12(bytes: ByteArray): Boolean = try {
         Pfx.getInstance(ASN1Primitive.fromByteArray(bytes))
         true
-    } catch (e: Exception) {
+    } catch (_: Exception) {
+        // The ASN.1 parser throws checked and unchecked exceptions alike for malformed input.
         false
     }
 

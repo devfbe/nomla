@@ -35,7 +35,7 @@ object HtmlUtils {
         if (!link.contains("://")) return null
         return try {
             URI.create(link).host?.takeIf { it.isNotEmpty() }
-        } catch (e: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             null
         }
     }

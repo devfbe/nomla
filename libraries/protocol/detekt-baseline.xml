@@ -11,16 +11,6 @@
     <ID>ReturnCount:ServerTrust.kt$HostnameMatcher$private fun matchesDnsName(host: String, pattern: String?): Boolean</ID>
     <ID>ReturnCount:UdpHealthMonitor.kt$UdpHealthMonitor$fun onTcpPing(nowMicros: Long, localGood: Int, remoteGood: Int, usingUdp: Boolean): Decision</ID>
     <ID>ReturnCount:UdpHealthMonitor.kt$UdpHealthMonitor$private fun decide( nowMicros: Long, usingUdp: Boolean, first: Sample, localDelta: Int, remoteDelta: Int, carriesBothWays: Boolean, ): Decision</ID>
-    <ID>SwallowedException:NomlaSslSocketFactoryHandshakeTest.kt$NomlaSslSocketFactoryHandshakeTest$e: Exception</ID>
-    <ID>SwallowedException:NomlaSslSocketFactoryTrustStoreTest.kt$NomlaSslSocketFactoryTrustStoreTest$e: IOException</ID>
-    <ID>SwallowedException:NomlaUdpTest.kt$NomlaUdpTest$e: SocketTimeoutException</ID>
-    <ID>SwallowedException:Pkcs12Certificates.kt$Pkcs12Certificates$e: Exception</ID>
-    <ID>SwallowedException:ServerTrust.kt$HostnameMatcher$e: CertificateParsingException</ID>
-    <ID>SwallowedException:ServerTrust.kt$HostnameMatcher$e: Exception</ID>
-    <ID>SwallowedException:UdpPing.kt$UdpPing$e: BufferUnderflowException</ID>
-    <ID>TooGenericExceptionCaught:NomlaConnection.kt$NomlaConnection$e: RuntimeException</ID>
-    <ID>TooGenericExceptionCaught:Pkcs12Certificates.kt$Pkcs12Certificates$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:ServerTrust.kt$HostnameMatcher$e: Exception</ID>
     <ID>TooManyFunctions:FakeTransports.kt$FakeTcpTransport : TcpTransport</ID>
     <ID>TooManyFunctions:NomlaTcp.kt$NomlaTcp : TcpTransport</ID>
   </CurrentIssues>

@@ -77,7 +77,7 @@ class NomlaUdpTest {
             client.sendMessage(payload, payload.size)
             try {
                 server.receive(packet)
-            } catch (e: SocketTimeoutException) {
+            } catch (_: SocketTimeoutException) {
                 return@awaitUntil false
             }
             plaintext = serverCrypt.decrypt(packet.data, packet.length)

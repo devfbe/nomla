@@ -60,7 +60,8 @@ class ServerPinger(
     } catch (e: CancellationException) {
         // Not "no reply": the caller is gone, so neither the ping nor a dummy reply may go on.
         throw e
-    } catch (e: Exception) {
+    } catch (_: Exception) {
+        // Whatever failed - resolution, socket, timeout, a short reply - the server did not answer.
         ServerInfoResponse()
     }
 }

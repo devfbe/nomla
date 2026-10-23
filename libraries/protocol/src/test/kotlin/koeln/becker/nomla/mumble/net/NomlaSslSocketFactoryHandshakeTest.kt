@@ -64,7 +64,7 @@ class NomlaSslSocketFactoryHandshakeTest {
         closeables += socket
         pool.execute {
             while (!socket.isClosed) {
-                val client = try { socket.accept() as SSLSocket } catch (e: Exception) { return@execute }
+            val client = try { socket.accept() as SSLSocket } catch (_: Exception) { return@execute }
                 closeables += client
                 // Closed once answered: the JDK's client waits for the server's close_notify when
                 // it closes, up to its read timeout.
@@ -90,7 +90,7 @@ class NomlaSslSocketFactoryHandshakeTest {
         closeables += server
         pool.execute {
             while (!server.isClosed) {
-                val client = try { server.accept() } catch (e: Exception) { return@execute }
+            val client = try { server.accept() } catch (_: Exception) { return@execute }
                 closeables += client
                 pool.execute {
                     runCatching {

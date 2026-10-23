@@ -70,9 +70,9 @@ class OutgoingImagePreparer(
         try {
             // openInputStream returns null for a provider that opens nothing.
             resolver.openInputStream(uri)?.use { it.readBytes() }
-        } catch (e: IOException) {
+        } catch (_: IOException) {
             null
-        } catch (e: SecurityException) {
+        } catch (_: SecurityException) {
             // A picked URI's grant expires, e.g. after a process restart.
             null
         }
@@ -87,7 +87,7 @@ class OutgoingImagePreparer(
                 // from the GPU per quality rung and `getPixels` refuses. Robolectric cannot test this.
                 decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
             }
-        } catch (e: IOException) {
+        } catch (_: IOException) {
             // DecodeException is an IOException: not an image, no bytes, or truncated. ImageDecoder
             // throws unchecked exceptions only for bad listener arguments, which are bounded above.
             // (A codec reporting a zero-sized header would pass through boundedSize and throw.)

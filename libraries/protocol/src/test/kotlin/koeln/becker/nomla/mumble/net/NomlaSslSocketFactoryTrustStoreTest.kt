@@ -40,7 +40,7 @@ class NomlaSslSocketFactoryTrustStoreTest {
         return File("/proc/self/fd").listFiles().orEmpty().count {
             try {
                 Files.readSymbolicLink(it.toPath()).toString() == target
-            } catch (e: IOException) {
+            } catch (_: IOException) {
                 false // closed between listing and reading
             }
         }

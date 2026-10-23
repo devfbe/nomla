@@ -397,7 +397,7 @@ internal class NomlaConnection(
             }
         } catch (e: InvalidProtocolBufferException) {
             NomlaLog.w(TAG, "Could not parse $type", e)
-        } catch (e: RuntimeException) {
+        } catch (@Suppress("TooGenericExceptionCaught") e: RuntimeException) {
             // A single bad message must not end the session.
             NomlaLog.e(TAG, "Handler failed for $type", e)
         }
@@ -430,7 +430,8 @@ internal class NomlaConnection(
         if (closed || data.isEmpty()) return
         try {
             if (protocol.udpProtocol == UdpProtocol.PROTOBUF) onProtobufUdp(data) else onLegacyUdp(data)
-        } catch (e: RuntimeException) {
+        } catch (@Suppress("TooGenericExceptionCaught") e: RuntimeException) {
+            // A single bad datagram must not end the session.
             NomlaLog.e(TAG, "UDP handler failed", e)
         }
     }

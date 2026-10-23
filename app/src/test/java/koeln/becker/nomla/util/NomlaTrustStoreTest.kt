@@ -52,7 +52,7 @@ class NomlaTrustStoreTest {
         return File("/proc/self/fd").listFiles().orEmpty().count {
             try {
                 Files.readSymbolicLink(it.toPath()).toString() == target
-            } catch (e: IOException) {
+            } catch (_: IOException) {
                 false
             }
         }

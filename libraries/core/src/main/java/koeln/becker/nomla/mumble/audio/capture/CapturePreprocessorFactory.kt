@@ -113,7 +113,8 @@ internal class CapturePreprocessorFactory(
                             rnnoise = it
                         }
             }
-        } catch (e: Throwable) {
+        } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
+            // Whatever ends the build, the native stages built so far are released before it propagates.
             for (stage in stages) stage.release()
             throw e
         }

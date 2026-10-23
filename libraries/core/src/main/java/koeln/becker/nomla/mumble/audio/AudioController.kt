@@ -146,7 +146,7 @@ internal class AudioController(
             s.registry.addTcpHandler(audio.tcpHandler)
             s.registry.addVoiceHandler(audio.voiceHandler)
             running = Running(audio, s.registry, generation)
-        } catch (e: Exception) {
+        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             // Exception, not AudioException: AudioTrack/AudioRecord construction can throw
             // unchecked, which would kill the control thread and silently drop all later messages.
             NomlaLog.e(TAG, "Audio initialization failed", e)

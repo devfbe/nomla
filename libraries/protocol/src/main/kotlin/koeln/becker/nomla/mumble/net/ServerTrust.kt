@@ -77,7 +77,7 @@ internal object HostnameMatcher {
     fun matches(host: String, certificate: X509Certificate): Boolean {
         val names = try {
             certificate.subjectAlternativeNames ?: return false
-        } catch (e: CertificateParsingException) {
+        } catch (_: CertificateParsingException) {
             return false
         }
         val target = normalize(host.removePrefix("[").removeSuffix("]"))
@@ -94,7 +94,8 @@ internal object HostnameMatcher {
         if (literal == null || !isIpLiteral(literal)) return null
         return try {
             InetAddress.getByName(literal) // a literal never triggers a lookup
-        } catch (e: Exception) {
+        } catch (_: Exception) {
+            // Not an address after all: no SAN can match it.
             null
         }
     }

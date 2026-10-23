@@ -77,7 +77,7 @@ internal object UdpPing {
         pb.skip(1)
         return try {
             pb.readLong()
-        } catch (e: BufferUnderflowException) {
+        } catch (_: BufferUnderflowException) {
             null
         }
     }

@@ -160,7 +160,8 @@ internal class AndroidCommunicationDevices(
         } catch (e: SecurityException) {
             reportDenial(e)
             fallback
-        } catch (e: RuntimeException) {
+        } catch (@Suppress("TooGenericExceptionCaught") e: RuntimeException) {
+            // Any other failure of the platform call is only logged, so routing goes on without it.
             NomlaLog.w(TAG, warning, e)
             fallback
         }

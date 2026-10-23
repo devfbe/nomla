@@ -119,7 +119,7 @@ class ImageViewerDialogFragment : DialogFragment() {
             // Fetched here, not in the share path, so what leaves the app is what was shown.
             val bytes = try {
                 loader.fetchBytes(source)
-            } catch (e: ImageFetchException) {
+            } catch (_: ImageFetchException) {
                 return@launch fail()
             }
             val result = loader.decodeFull(
