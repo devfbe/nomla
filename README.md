@@ -51,7 +51,7 @@ dependency abseil-cpp — built for
 
 [direnv](https://direnv.net/) users can `direnv allow` to enter the shell
 automatically. `nix run .#android-studio` starts Android Studio with the same
-SDK and NDK. The same shell is what CI uses (`.gitlab-ci.yml`).
+SDK and NDK. The same shell is what CI uses (`.github/workflows/verify.yml`).
 
 If you get an error running out of Java heap space, try raising the `-Xmx` in
 `gradle.properties`.
