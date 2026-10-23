@@ -16,6 +16,7 @@
  */
 package koeln.becker.nomla.chat
 
+import androidx.core.text.htmlEncode
 import koeln.becker.nomla.util.HtmlUtils
 
 /**
@@ -109,20 +110,8 @@ object Markdown {
         out.append(escape(text).replace("\n", "<br>"))
     }
 
-    private fun escape(text: String): String {
-        val out = StringBuilder(text.length)
-        for (c in text) {
-            when (c) {
-                '&' -> out.append("&amp;")
-                '<' -> out.append("&lt;")
-                '>' -> out.append("&gt;")
-                '"' -> out.append("&quot;")
-                '\'' -> out.append("&#39;")
-                else -> out.append(c)
-            }
-        }
-        return out.toString()
-    }
+    /** Escapes `& < > "` and `'` (as `&#39;`), so the result is safe in text and in quoted attributes. */
+    private fun escape(text: String): String = text.htmlEncode()
 }
 
 /** The HTML to send for [message] as the user typed it, formatted as Markdown when [markdown] is set. */

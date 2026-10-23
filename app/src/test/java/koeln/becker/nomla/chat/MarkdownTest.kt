@@ -18,7 +18,11 @@ package koeln.becker.nomla.chat
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+/** Robolectric for the escaping, which is the platform's TextUtils.htmlEncode. */
+@RunWith(RobolectricTestRunner::class)
 class MarkdownTest {
     private fun html(markdown: String) = Markdown.toHtml(markdown)
 
