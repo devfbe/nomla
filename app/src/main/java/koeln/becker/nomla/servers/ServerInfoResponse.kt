@@ -21,12 +21,10 @@ package koeln.becker.nomla.servers
 import koeln.becker.nomla.mumble.model.Server
 import java.nio.ByteBuffer
 
-/* The ping reply: version, the request's identifier, users, maximum users, bandwidth. */
+/* The ping reply: version, the request's identifier, users, maximum users, bandwidth; the app reads three. */
 private const val VERSION_OFFSET = 0
-private const val IDENTIFIER_OFFSET = 4
 private const val CURRENT_USERS_OFFSET = 12
 private const val MAXIMUM_USERS_OFFSET = 16
-private const val BANDWIDTH_OFFSET = 20
 
 /** The version is `major.minor.patch`, a byte each, in the low three bytes. */
 private const val MAJOR_SHIFT = 16
@@ -36,10 +34,8 @@ private const val MINOR_SHIFT = 8
 class ServerInfoResponse private constructor(
     val server: Server?,
     val version: Int,
-    val identifier: Long,
     val currentUsers: Int,
     val maximumUsers: Int,
-    val allowedBandwidth: Int,
     val latency: Int,
     val isDummy: Boolean,
 ) {
@@ -47,15 +43,13 @@ class ServerInfoResponse private constructor(
     constructor(server: Server, response: ByteArray, latency: Int) : this(
         server = server,
         version = ByteBuffer.wrap(response).getInt(VERSION_OFFSET),
-        identifier = ByteBuffer.wrap(response).getLong(IDENTIFIER_OFFSET),
         currentUsers = ByteBuffer.wrap(response).getInt(CURRENT_USERS_OFFSET),
         maximumUsers = ByteBuffer.wrap(response).getInt(MAXIMUM_USERS_OFFSET),
-        allowedBandwidth = ByteBuffer.wrap(response).getInt(BANDWIDTH_OFFSET),
         latency = latency,
         isDummy = false,
     )
 
-    constructor() : this(null, 0, 0L, 0, 0, 0, 0, true)
+    constructor() : this(null, 0, 0, 0, 0, true)
 
     val versionString: String
         get() = "%d.%d.%d".format(
