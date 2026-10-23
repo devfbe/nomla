@@ -42,7 +42,8 @@ and more accurate than shell tools, and they keep the IDE, its index and the dis
    - File problems: `get_file_problems` (or `ide_diagnostics`).
 5. **One `verify` per task, at the end, also through Studio.** The shared run configuration
    `.run/verify.run.xml` runs `./gradlew verify` (all shipped variants assembled, foss unit tests,
-   device tests built, lint, detekt): `execute_run_configuration(configurationName: "verify",
+   native host tests with ASan/UBSan, device tests built, lint of every shipped variant, detekt;
+   GitHub Actions runs the same on every push): `execute_run_configuration(configurationName: "verify",
    waitForExit: false)` returns a `fullOutputPath`; wait until it shows `BUILD SUCCESSFUL` or
    `BUILD FAILED` (e.g. `until grep -qE "BUILD (SUCCESSFUL|FAILED)" <path>; do sleep 3; done`).
    A long `waitForExit: true` call times out while the build keeps running.
