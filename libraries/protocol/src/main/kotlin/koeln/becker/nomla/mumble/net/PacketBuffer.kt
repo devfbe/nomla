@@ -23,7 +23,7 @@ import koeln.becker.nomla.mumble.util.BYTE_MASK
 import java.nio.ByteBuffer
 
 /** Reads and writes Mumble's packet data stream (its varint encoding) over a [ByteBuffer]. */
-@Suppress("TooManyFunctions")
+@Suppress("TooManyFunctions") // The cursor calls of a ByteBuffer, plus the varint read and write.
 internal class PacketBuffer(private val buffer: ByteBuffer) {
 
     /** Wraps the first [len] bytes of [data]. */

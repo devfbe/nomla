@@ -240,7 +240,7 @@ internal class CryptState {
      *        refusing it: digital silence produces such blocks.
      * @return false if a critical block was found and not modified.
      */
-    @Suppress("LongParameterList")
+    @Suppress("LongParameterList") // Mumble's ocb_encrypt, buffers and nonce as separate arrays.
     internal fun ocbEncrypt(
         plain: ByteArray,
         encrypted: ByteArray,

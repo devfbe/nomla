@@ -26,7 +26,7 @@ package koeln.becker.nomla.mumble.audio.capture
  * AEC3 works on 64-sample blocks (4 ms) of the 0-8 kHz band at 16 kHz, in 65 frequency bins of
  * 125 Hz. "ENR" is the echo-to-near-end power ratio per bin, "EMR" echo-to-masker (noise) ratio.
  */
-@Suppress("MagicNumber")
+@Suppress("MagicNumber") // Each entry names its number: webrtc's default for that field.
 internal enum class Aec3Param(val default: Float) {
     // suppressor.normal_tuning: the suppressor while no dominant near end is detected. A bin passes
     // unchanged while ENR <= enr_transparent (or EMR <= emr_transparent), is fully suppressed at

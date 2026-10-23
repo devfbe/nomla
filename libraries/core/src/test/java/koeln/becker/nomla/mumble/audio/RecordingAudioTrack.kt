@@ -35,7 +35,7 @@ val trackEvents = CopyOnWriteArrayList<TrackEvent>()
 @Suppress("ProtectedMemberInFinalClass") // Robolectric matches the framework's own signatures
 @Implements(AudioTrack::class)
 class RecordingAudioTrack : ShadowAudioTrack() {
-    @Suppress("FunctionNaming", "UnusedParameter")
+    @Suppress("FunctionNaming", "UnusedParameter") // The framework's native method, name and parameters.
     @Implementation
     protected fun native_write_short(
         audioData: ShortArray,
@@ -49,7 +49,7 @@ class RecordingAudioTrack : ShadowAudioTrack() {
         return sizeInShorts
     }
 
-    @Suppress("FunctionNaming")
+    @Suppress("FunctionNaming") // The framework's native method name.
     @Implementation
     protected fun native_pause() {
         trackEvents += Pause
