@@ -4,13 +4,8 @@
   <CurrentIssues>
     <ID>CyclomaticComplexMethod:VoiceActivityDetector.kt$VoiceActivityDetector$fun isVoice(pcm: ShortArray, length: Int, probability: Float?): Boolean</ID>
     <ID>CyclomaticComplexMethod:VoiceActivityDetectorTest.kt$VoiceActivityDetectorTest$@Test fun `a long score sequence agrees with the state machine on every frame`()</ID>
-    <ID>LongParameterList:OpusDecoderNative.kt$OpusDecoderApi$( state: Long, data: ByteArray?, offset: Int, len: Int, out: FloatArray, frameSize: Int, decodeFec: Int, )</ID>
     <ID>LongParameterList:OpusEncoder.kt$OpusEncoder$( sampleRate: Int, channels: Int, private val frameSize: Int, private val framesPerPacket: Int, bitrate: Int, maxBufferSize: Int, private val api: OpusEncoderApi = OpusEncoderNative, )</ID>
-    <ID>LongParameterList:SpeexJitterBuffer.kt$SpeexJitterBuffer$(data: ByteArray, length: Int, timestamp: Int, span: Int, sequence: Int, userData: Int)</ID>
-    <ID>LongParameterList:SpeexJitterNative.kt$SpeexJitterApi$(handle: Long, data: ByteArray, len: Int, timestamp: Int, span: Int, sequence: Int, userData: Int)</ID>
-    <ID>LongParameterList:SpeexResamplerNative.kt$SpeexResamplerApi$( state: Long, channelIndex: Int, input: ShortArray, inLen: IntArray, out: ShortArray, outLen: IntArray, )</ID>
     <ID>LongParameterList:VadConfig.kt$VadConfig.Companion$( snrFraction: Float = AdaptiveVadTracker.DEFAULT_FRACTION, holdTimeMs: Long = DEFAULT_HOLD_MS, onsetFrames: Int = DEFAULT_ONSET_FRAMES, hysteresisDb: Float = DEFAULT_HYSTERESIS_DB, adaptiveFloor: Boolean = true, manualFloorDbfs: Float = AdaptiveVadTracker.DEFAULT_FLOOR_DBFS, )</ID>
-    <ID>LongParameterList:WebRtcApmNative.kt$WebRtcApmApi$( sampleRate: Int, echoCancellation: Boolean, noiseSuppression: Boolean, noiseSuppressionLevel: Int, gainControl: Boolean, highPass: Boolean, )</ID>
     <ID>LoopWithTooManyJumpStatements:AudioInput.kt$AudioInput$while</ID>
     <ID>ReturnCount:PcmCaptureSource.kt$AndroidAudioRecordSource.Factory$@SuppressLint("MissingPermission") private fun tryOpen(source: Int, rate: Int): AudioRecord?</ID>
     <ID>ReturnCount:SpeexPreprocessor.kt$SpeexPreprocessor$override fun onCaptureFrame(handle: Long, frame: ShortArray): Float?</ID>

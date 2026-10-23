@@ -35,6 +35,7 @@ internal class SpeexJitterBuffer(
     private val meta = IntArray(META_SIZE)
     private val scratch = IntArray(1)
 
+    @Suppress("LongParameterList") // The fields of speex's JitterBufferPacket, flat so a put allocates nothing.
     fun put(data: ByteArray, length: Int, timestamp: Int, span: Int, sequence: Int, userData: Int) =
         api.put(handle.value, data, length, timestamp, span, sequence, userData)
 

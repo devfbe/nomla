@@ -23,6 +23,8 @@ package koeln.becker.nomla.mumble.audio.native
  */
 internal interface OpusDecoderApi {
     fun create(sampleRate: Int, channels: Int, error: IntArray): Long
+
+    @Suppress("LongParameterList") // mirrors the flat JNI signature of opus_decode_float
     fun decodeFloat(
         state: Long,
         data: ByteArray?,

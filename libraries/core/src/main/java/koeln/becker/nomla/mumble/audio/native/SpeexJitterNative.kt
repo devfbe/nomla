@@ -25,6 +25,8 @@ package koeln.becker.nomla.mumble.audio.native
 internal interface SpeexJitterApi {
     fun init(stepSize: Int): Long
     fun destroy(handle: Long)
+
+    @Suppress("LongParameterList") // mirrors the flat JNI signature: a JitterBufferPacket's fields
     fun put(handle: Long, data: ByteArray, len: Int, timestamp: Int, span: Int, sequence: Int, userData: Int)
     fun get(handle: Long, out: ByteArray, desiredSpan: Int, meta: IntArray): Int
     fun pointerTimestamp(handle: Long): Int

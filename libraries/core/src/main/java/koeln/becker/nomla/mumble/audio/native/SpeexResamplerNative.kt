@@ -32,6 +32,7 @@ internal interface SpeexResamplerApi {
      * `inLen[0]` and `outLen[0]` are clamped to `input.size` and `out.size` before speex sees
      * them, and come back as the counts actually consumed and produced.
      */
+    @Suppress("LongParameterList") // mirrors the flat JNI signature of speex_resampler_process_int
     fun processInt(
         state: Long,
         channelIndex: Int,
