@@ -22,9 +22,11 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import org.junit.After
 import org.junit.Before
@@ -43,6 +45,7 @@ import koeln.becker.nomla.db.NomlaSQLiteDatabase
 import koeln.becker.nomla.testing.installDatabase
 import java.io.ByteArrayOutputStream
 import java.io.IOException
+import kotlin.coroutines.CoroutineContext
 
 @RunWith(RobolectricTestRunner::class)
 class CertificateExportActivityTest {
@@ -64,12 +67,31 @@ class CertificateExportActivityTest {
         db.close()
     }
 
-    private fun startAndPick(): CertificateExportActivity {
-        val activity = Robolectric.buildActivity(CertificateExportActivity::class.java).setup().get()
-        activity.workDispatcher = Dispatchers.Unconfined
-        activity.onClick(null, 0)
-        return activity
+    private fun startAndPick(): CertificateExportActivity = startAndPickIn().get()
+
+    private fun startAndPickIn(dispatcher: CoroutineDispatcher = Dispatchers.Unconfined) =
+        Robolectric.buildActivity(CertificateExportActivity::class.java).setup().also {
+            it.get().workDispatcher = dispatcher
+            it.get().onClick(null, 0)
+            idleMainLooper()
+        }
+
+    /** Holds the work handed to it until [runAll]. */
+    private class HeldDispatcher : CoroutineDispatcher() {
+        val held = mutableListOf<Runnable>()
+
+        override fun dispatch(context: CoroutineContext, block: Runnable) {
+            held += block
+        }
+
+        fun runAll() {
+            while (held.isNotEmpty()) held.removeAt(0).run()
+        }
     }
+
+    private fun storeRealCertificate(): ByteArray =
+        ByteArrayOutputStream().also { NomlaCertificateGenerator.generateCertificate(it) }.toByteArray()
+            .also { storeCertificate("alice.p12", it) }
 
     private fun passwordDialog(): AlertDialog = ShadowDialog.getLatestDialog() as AlertDialog
 
@@ -178,5 +200,51 @@ class CertificateExportActivityTest {
         val store = Pkcs12Certificates.load(exported, "secret")
         assertThat(store.aliases().toList().any { store.isKeyEntry(it) }).isTrue()
         assertThat(activity.isFinishing).isTrue()
+    }
+
+    /** The document picker is another app: Android may recreate this screen before it answers. */
+    @Test
+    fun `a rotation while the document is created keeps the export`() {
+        storeRealCertificate()
+        val uri = Uri.parse("content://test.documents/alice.p12")
+        val written = ByteArrayOutputStream()
+        shadowOf(context.contentResolver).registerOutputStream(uri, written)
+        val controller = startAndPickIn()
+        passwordDialog().enter("secret", "secret")
+        val request = shadowOf(controller.get()).nextStartedActivityForResult
+
+        controller.recreate()
+        val activity = controller.get()
+        activity.workDispatcher = Dispatchers.Unconfined
+        activity.activityResultRegistry.dispatchResult(request.requestCode, Activity.RESULT_OK, Intent().setData(uri))
+        idleMainLooper()
+
+        val store = Pkcs12Certificates.load(written.toByteArray(), "secret")
+        assertThat(store.aliases().toList().any { store.isKeyEntry(it) }).isTrue()
+        assertThat(activity.isFinishing).isTrue()
+    }
+
+    /** A cancelled export is not a failed one: leaving the screen shows no error. */
+    @Test
+    fun `an export cancelled with its screen shows no error`() {
+        storeRealCertificate()
+        val uri = Uri.parse("content://test.documents/alice.p12")
+        shadowOf(context.contentResolver).registerOutputStream(uri, ByteArrayOutputStream())
+        val worker = HeldDispatcher()
+        val controller = startAndPickIn(worker)
+        passwordDialog().enter("secret", "secret")
+        val activity = controller.get()
+        val request = shadowOf(activity).nextStartedActivityForResult
+        shadowOf(activity).receiveResult(request.intent, Activity.RESULT_OK, Intent().setData(uri))
+        idleMainLooper()
+        assertThat(worker.held).isNotEmpty()
+
+        controller.pause().stop().destroy()
+        worker.runAll()
+        idleMainLooper()
+
+        val messages = ShadowDialog.getShownDialogs().filter { it.isShowing }
+            .map { it.findViewById<TextView>(android.R.id.message)?.text?.toString() }
+        assertThat(messages).doesNotContain(context.getString(R.string.certificate_load_failed))
     }
 }

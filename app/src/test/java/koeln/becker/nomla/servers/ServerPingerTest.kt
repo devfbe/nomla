@@ -18,6 +18,11 @@
 package koeln.becker.nomla.servers
 
 import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.job
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import koeln.becker.nomla.mumble.model.Server
@@ -67,5 +72,22 @@ class ServerPingerTest {
 
         assertThat(response.isDummy).isTrue()
         assertThat(socket.closeCalls).isEqualTo(1)
+    }
+
+    /** A cancelled ping is not an unanswered one: it ends as cancelled and sends nothing. */
+    @Test
+    fun aCancelledPingStaysCancelled() = runTest {
+        val socket = RecordingSocket(ByteArray(24))
+        // No port: the SRV lookup's withContext is where a cancellation surfaces, before any lookup.
+        val unresolved = Server(1, "s", "nomla.invalid", 0, "me", "")
+        var outcome: Result<ServerInfoResponse>? = null
+
+        launch(start = CoroutineStart.UNDISPATCHED) {
+            currentCoroutineContext().job.cancel()
+            outcome = runCatching { pingerWith(socket).ping(unresolved) }
+        }.join()
+
+        assertThat(outcome!!.exceptionOrNull()).isInstanceOf(CancellationException::class.java)
+        assertThat(socket.closeCalls).isEqualTo(0)
     }
 }

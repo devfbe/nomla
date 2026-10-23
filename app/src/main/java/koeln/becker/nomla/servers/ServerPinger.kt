@@ -18,6 +18,7 @@
 
 package koeln.becker.nomla.servers
 
+import kotlinx.coroutines.CancellationException
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.net.ServerResolver
 import koeln.becker.nomla.mumble.util.NomlaLog
@@ -39,7 +40,7 @@ class ServerPinger(
     private val createSocket: () -> DatagramSocket = { DatagramSocket() },
 ) {
 
-    /** Returns [server]'s ping reply, or a dummy response when there is none. */
+    /** Returns [server]'s ping reply, or a dummy response when there is none; a cancellation is rethrown. */
     suspend fun ping(server: Server): ServerInfoResponse = try {
         val endpoint = resolver.resolve(server)
         val request = ByteBuffer.allocate(REQUEST_SIZE).putInt(0).putLong(server.id).array()
@@ -56,6 +57,9 @@ class ServerPinger(
                 NomlaLog.d(TAG, "Server version: ${it.versionString} Users: ${it.currentUsers}/${it.maximumUsers}")
             }
         }
+    } catch (e: CancellationException) {
+        // Not "no reply": the caller is gone, so neither the ping nor a dummy reply may go on.
+        throw e
     } catch (e: Exception) {
         ServerInfoResponse()
     }

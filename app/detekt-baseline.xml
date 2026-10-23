@@ -31,7 +31,6 @@
     <ID>SwallowedException:OutgoingImagePreparer.kt$OutgoingImagePreparer$e: IOException</ID>
     <ID>SwallowedException:OutgoingImagePreparer.kt$OutgoingImagePreparer$e: SecurityException</ID>
     <ID>SwallowedException:ServerPinger.kt$ServerPinger$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:CertificateExportActivity.kt$CertificateExportActivity$e: Exception</ID>
     <ID>TooGenericExceptionCaught:SecretCipher.kt$KeystoreSecretCipher$e: Exception</ID>
     <ID>TooGenericExceptionCaught:SecretCipher.kt$SecretCodec$e: Exception</ID>
     <ID>TooGenericExceptionCaught:ServerPinger.kt$ServerPinger$e: Exception</ID>
