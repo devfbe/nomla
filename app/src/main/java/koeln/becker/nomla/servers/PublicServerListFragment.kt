@@ -25,7 +25,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.VisibleForTesting
 import androidx.core.view.MenuProvider
 import androidx.core.view.children
 import androidx.core.view.isVisible
@@ -72,17 +71,11 @@ class PublicServerListFragment :
     private val publicServers: PublicServersViewModel by viewModels {
         viewModelFactory {
             initializer {
-                PublicServersViewModel.create(requireActivity().application, fetcher, pinger, createSavedStateHandle())
+                PublicServersViewModel.create(requireActivity().application, createSavedStateHandle())
             }
         }
     }
     private var binding: FragmentPublicServerListBinding? = null
-
-    @VisibleForTesting
-    internal var fetcher = PublicServerFetcher()
-
-    @VisibleForTesting
-    internal var pinger = ServerPinger()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = FragmentPublicServerListBinding.inflate(inflater, container, false)

@@ -43,6 +43,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.Settings
+import koeln.becker.nomla.app.AppContainer
 import koeln.becker.nomla.db.NomlaRepository
 import koeln.becker.nomla.db.PublicServer
 import kotlin.time.Duration.Companion.seconds
@@ -251,13 +252,13 @@ class PublicServersViewModel(
         /** How long no new reply may arrive before the pinged list counts as settled. */
         private val REPLIES_SETTLE_TIME = 1.seconds
 
-        fun create(
-            app: Application,
-            fetcher: PublicServerFetcher,
-            pinger: ServerPinger,
-            savedState: SavedStateHandle,
-        ) = PublicServersViewModel(
-            NomlaRepository.get(app), fetcher, { Settings.getInstance(app).isTorEnabled }, savedState, pinger,
-        )
+        /** Downloads and pings through the [AppContainer]'s parts. */
+        fun create(app: Application, savedState: SavedStateHandle): PublicServersViewModel {
+            val parts = AppContainer.of(app).parts
+            return PublicServersViewModel(
+                NomlaRepository.get(app), parts.newPublicServerFetcher(), { Settings.getInstance(app).isTorEnabled },
+                savedState, parts.newServerPinger(),
+            )
+        }
     }
 }

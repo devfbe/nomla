@@ -35,6 +35,8 @@ import koeln.becker.nomla.chat.NoticeFormatter
 import koeln.becker.nomla.chat.SessionChat
 import koeln.becker.nomla.db.NomlaRepository
 import koeln.becker.nomla.db.NomlaSQLiteDatabase
+import koeln.becker.nomla.servers.PublicServerFetcher
+import koeln.becker.nomla.servers.ServerPinger
 import koeln.becker.nomla.service.NomlaService
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.session.SessionSettingsSync
@@ -73,6 +75,10 @@ class AppContainer(
         val micCapture: PcmCaptureSourceFactory = AndroidAudioRecordSource.Factory(),
         /** The speaker the microphone test plays back to. */
         val micPlayback: PcmPlaybackSinkFactory = AndroidAudioTrackSink.Factory(),
+        /** Downloads the public server list. */
+        val newPublicServerFetcher: () -> PublicServerFetcher = { PublicServerFetcher() },
+        /** Pings the public servers. */
+        val newServerPinger: () -> ServerPinger = { ServerPinger() },
     )
 
     @Volatile

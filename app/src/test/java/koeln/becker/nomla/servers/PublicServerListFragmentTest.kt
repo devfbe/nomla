@@ -50,6 +50,7 @@ import koeln.becker.nomla.testing.ServiceHostActivity
 import koeln.becker.nomla.testing.drainMainUntil
 import koeln.becker.nomla.testing.host
 import koeln.becker.nomla.testing.laidOutRows
+import koeln.becker.nomla.testing.replaceParts
 import java.nio.ByteBuffer
 import java.time.Duration
 import java.util.concurrent.atomic.AtomicInteger
@@ -77,16 +78,22 @@ class PublicServerListFragmentTest {
             }
         }
 
+    /** The public server list's download and pings, put into the app's container before a fragment is hosted. */
+    private fun use(fetcher: PublicServerFetcher, pinger: ServerPinger = ServerPinger()) =
+        replaceParts { it.copy(newPublicServerFetcher = { fetcher }, newServerPinger = { pinger }) }
+
     /** Hosts the fragment with a download that counts its attempts and yields [downloaded] in turn. */
     private fun showFragment(
         vararg downloaded: List<PublicServer>?,
         pinger: ServerPinger = pinger(),
     ): PublicServerListFragment {
+        use(
+            mockk {
+                coEvery { fetch() } answers { downloaded[minOf(downloads.getAndIncrement(), downloaded.lastIndex)] }
+            },
+            pinger,
+        )
         val fragment = PublicServerListFragment()
-        fragment.fetcher = mockk {
-            coEvery { fetch() } answers { downloaded[minOf(downloads.getAndIncrement(), downloaded.lastIndex)] }
-        }
-        fragment.pinger = pinger
         activity.host(fragment)
         idleMainLooper()
         return fragment
@@ -120,8 +127,8 @@ class PublicServerListFragmentTest {
 
     @Test
     fun whileLoadingOnlyTheProgressShows() {
+        use(mockk { coEvery { fetch() } coAnswers { awaitCancellation() } })
         val fragment = PublicServerListFragment()
-        fragment.fetcher = mockk { coEvery { fetch() } coAnswers { awaitCancellation() } }
         activity.host(fragment)
         idleMainLooper()
 
@@ -270,8 +277,8 @@ class PublicServerListFragmentTest {
     fun overTorTheListIsNotDownloadedAndANoticeExplainsWhy() {
         prefs.edit().putBoolean("useTor", true).commit()
 
+        use(mockk { coEvery { fetch() } answers { downloads.incrementAndGet(); servers } })
         val fragment = PublicServerListFragment()
-        fragment.fetcher = mockk { coEvery { fetch() } answers { downloads.incrementAndGet(); servers } }
         activity.host(fragment)
         assertThat(fragment.visible(R.id.server_list_tor_notice)).isTrue()
         assertThat(fragment.visible(R.id.serverProgress)).isFalse()
