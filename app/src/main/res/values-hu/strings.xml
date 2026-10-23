@@ -351,7 +351,6 @@
     <string name="local_volume_percent">%1$d%%</string>
     <string name="a11y_local_volume">Helyi hangerő %1$d százalék</string>
     <string name="local_volume_reset">Visszaállítás</string>
-    <string name="local_volume_title">Helyi hangerő: %1$s</string>
     <string name="user_menu_information">Felhasználói információk</string>
     <string name="user_info_loading">Betöltés…</string>
     <string name="user_info_unavailable">A szerver nem küldött információt erről a felhasználóról.</string>

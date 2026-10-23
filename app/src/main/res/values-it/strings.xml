@@ -362,7 +362,6 @@
     <string name="local_volume_percent">%1$d%%</string>
     <string name="a11y_local_volume">Volume locale %1$d per cento</string>
     <string name="local_volume_reset">Ripristina</string>
-    <string name="local_volume_title">Volume locale: %1$s</string>
     <string name="user_menu_information">Informazioni utente</string>
     <string name="user_info_loading">Caricamento…</string>
     <string name="user_info_unavailable">Il server non ha inviato informazioni su questo utente.</string>

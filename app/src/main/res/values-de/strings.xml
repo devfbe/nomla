@@ -274,7 +274,6 @@
     <string name="user_menu_local_volume">Lokale Lautstärke</string>
     <string name="local_volume_percent">%1$d %%</string>
     <string name="local_volume_reset">Zurücksetzen</string>
-    <string name="local_volume_title">Lokale Lautstärke: %1$s</string>
     <string name="user_menu_information">Benutzerinformationen</string>
     <string name="user_info_loading">Wird geladen…</string>
     <string name="user_info_unavailable">Der Server hat keine Informationen zu diesem Benutzer gesendet.</string>

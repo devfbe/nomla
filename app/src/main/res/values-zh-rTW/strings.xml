@@ -327,7 +327,6 @@
     <string name="local_volume_percent">%1$d%%</string>
     <string name="a11y_local_volume">本機音量百分之 %1$d</string>
     <string name="local_volume_reset">重設</string>
-    <string name="local_volume_title">本機音量：%1$s</string>
     <string name="user_menu_information">使用者資訊</string>
     <string name="user_info_loading">正在載入…</string>
     <string name="user_info_unavailable">伺服器未傳送此使用者的任何資訊。</string>

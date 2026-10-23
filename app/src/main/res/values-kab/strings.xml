@@ -330,7 +330,6 @@
     <string name="local_volume_percent">%1$d%%</string>
     <string name="a11y_local_volume">Ableɣ adigan %1$d deg meyya</string>
     <string name="local_volume_reset">Wennez</string>
-    <string name="local_volume_title">Ableɣ adigan: %1$s</string>
     <string name="user_menu_information">Talɣut n useqdac</string>
     <string name="user_info_loading">Asali…</string>
     <string name="user_info_unavailable">Aqeddac ur d-yuzin ara talɣut ɣef useqdac-a.</string>

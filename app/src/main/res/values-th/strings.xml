@@ -335,7 +335,6 @@
     <string name="local_volume_percent">%1$d%%</string>
     <string name="a11y_local_volume">ระดับเสียงเฉพาะเรา %1$d เปอร์เซ็นต์</string>
     <string name="local_volume_reset">รีเซ็ต</string>
-    <string name="local_volume_title">ระดับเสียงเฉพาะเรา: %1$s</string>
     <string name="user_menu_information">ข้อมูลผู้ใช้</string>
     <string name="user_info_loading">กำลังโหลด…</string>
     <string name="user_info_unavailable">เซิฟเวอร์ไม่ได้ส่งข้อมูลเกี่ยวกับผู้ใช้นี้</string>

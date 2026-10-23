@@ -327,7 +327,6 @@
     <string name="local_volume_percent">%1$d%%</string>
     <string name="a11y_local_volume">Âm lượng cục bộ %1$d phần trăm</string>
     <string name="local_volume_reset">Đặt lại</string>
-    <string name="local_volume_title">Âm lượng cục bộ: %1$s</string>
     <string name="user_menu_information">Thông tin người dùng</string>
     <string name="user_info_loading">Đang tải…</string>
     <string name="user_info_unavailable">Máy chủ không gửi thông tin nào về người dùng này.</string>

@@ -351,7 +351,6 @@
     <string name="local_volume_percent">%1$d %%</string>
     <string name="a11y_local_volume">Локальная громкость %1$d процентов</string>
     <string name="local_volume_reset">Сбросить</string>
-    <string name="local_volume_title">Локальная громкость: %1$s</string>
     <string name="user_menu_information">Информация о пользователе</string>
     <string name="user_info_loading">Загрузка…</string>
     <string name="user_info_unavailable">Сервер не прислал сведений об этом пользователе.</string>

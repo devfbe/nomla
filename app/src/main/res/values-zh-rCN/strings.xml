@@ -340,7 +340,6 @@
     <string name="local_volume_percent">%1$d%%</string>
     <string name="a11y_local_volume">本地音量百分之 %1$d</string>
     <string name="local_volume_reset">重置</string>
-    <string name="local_volume_title">本地音量：%1$s</string>
     <string name="user_menu_information">用户信息</string>
     <string name="user_info_loading">正在加载…</string>
     <string name="user_info_unavailable">服务器未发送此用户的任何信息。</string>

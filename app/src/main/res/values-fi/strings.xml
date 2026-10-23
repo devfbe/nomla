@@ -351,7 +351,6 @@
     <string name="local_volume_percent">%1$d %%</string>
     <string name="a11y_local_volume">Paikallinen äänenvoimakkuus %1$d prosenttia</string>
     <string name="local_volume_reset">Nollaa</string>
-    <string name="local_volume_title">Paikallinen äänenvoimakkuus: %1$s</string>
     <string name="user_menu_information">Käyttäjän tiedot</string>
     <string name="user_info_loading">Ladataan…</string>
     <string name="user_info_unavailable">Palvelin ei lähettänyt tietoja tästä käyttäjästä.</string>

@@ -343,7 +343,6 @@
     <string name="local_volume_percent">%1$d %%</string>
     <string name="a11y_local_volume">Volumen local %1$d por ciento</string>
     <string name="local_volume_reset">Restablecer</string>
-    <string name="local_volume_title">Volumen local: %1$s</string>
     <string name="user_menu_information">Información del usuario</string>
     <string name="user_info_loading">Cargando…</string>
     <string name="user_info_unavailable">El servidor no envió información sobre este usuario.</string>

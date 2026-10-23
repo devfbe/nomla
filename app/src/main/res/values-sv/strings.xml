@@ -351,7 +351,6 @@
     <string name="local_volume_percent">%1$d %%</string>
     <string name="a11y_local_volume">Lokal volym %1$d procent</string>
     <string name="local_volume_reset">Återställ</string>
-    <string name="local_volume_title">Lokal volym: %1$s</string>
     <string name="user_menu_information">Användarinformation</string>
     <string name="user_info_loading">Läser in…</string>
     <string name="user_info_unavailable">Servern skickade ingen information om den här användaren.</string>

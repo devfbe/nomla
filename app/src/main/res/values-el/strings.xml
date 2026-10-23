@@ -351,7 +351,6 @@
     <string name="local_volume_percent">%1$d%%</string>
     <string name="a11y_local_volume">Τοπική ένταση %1$d τοις εκατό</string>
     <string name="local_volume_reset">Επαναφορά</string>
-    <string name="local_volume_title">Τοπική ένταση: %1$s</string>
     <string name="user_menu_information">Πληροφορίες χρήστη</string>
     <string name="user_info_loading">Φόρτωση…</string>
     <string name="user_info_unavailable">Ο διακομιστής δεν έστειλε πληροφορίες για αυτόν τον χρήστη.</string>

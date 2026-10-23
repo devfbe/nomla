@@ -333,7 +333,6 @@
     <string name="local_volume_percent">%1$d%%</string>
     <string name="a11y_local_volume">Volum local %1$d la sută</string>
     <string name="local_volume_reset">Resetează</string>
-    <string name="local_volume_title">Volum local: %1$s</string>
     <string name="user_menu_information">Informații despre utilizator</string>
     <string name="user_info_loading">Se încarcă…</string>
     <string name="user_info_unavailable">Serverul nu a trimis informații despre acest utilizator.</string>

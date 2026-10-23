@@ -351,7 +351,6 @@
     <string name="local_volume_percent">%1$d %%</string>
     <string name="a11y_local_volume">Lokal lydstyrke %1$d prosent</string>
     <string name="local_volume_reset">Tilbakestill</string>
-    <string name="local_volume_title">Lokal lydstyrke: %1$s</string>
     <string name="user_menu_information">Brukerinformasjon</string>
     <string name="user_info_loading">Laster inn …</string>
     <string name="user_info_unavailable">Tjeneren sendte ingen informasjon om denne brukeren.</string>

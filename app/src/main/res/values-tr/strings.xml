@@ -351,7 +351,6 @@
     <string name="local_volume_percent">%%%1$d</string>
     <string name="a11y_local_volume">Yerel ses seviyesi yüzde %1$d</string>
     <string name="local_volume_reset">Sıfırla</string>
-    <string name="local_volume_title">Yerel ses seviyesi: %1$s</string>
     <string name="user_menu_information">Kullanıcı bilgileri</string>
     <string name="user_info_loading">Yükleniyor…</string>
     <string name="user_info_unavailable">Sunucu bu kullanıcı hakkında bilgi göndermedi.</string>

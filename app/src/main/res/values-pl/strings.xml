@@ -347,7 +347,6 @@
     <string name="local_volume_percent">%1$d%%</string>
     <string name="a11y_local_volume">Głośność lokalna %1$d procent</string>
     <string name="local_volume_reset">Resetuj</string>
-    <string name="local_volume_title">Głośność lokalna: %1$s</string>
     <string name="user_menu_information">Informacje o użytkowniku</string>
     <string name="user_info_loading">Wczytywanie…</string>
     <string name="user_info_unavailable">Serwer nie przesłał informacji o tym użytkowniku.</string>

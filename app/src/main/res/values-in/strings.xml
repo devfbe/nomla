@@ -327,7 +327,6 @@
     <string name="local_volume_percent">%1$d%%</string>
     <string name="a11y_local_volume">Volume lokal %1$d persen</string>
     <string name="local_volume_reset">Reset</string>
-    <string name="local_volume_title">Volume lokal: %1$s</string>
     <string name="user_menu_information">Informasi user</string>
     <string name="user_info_loading">Memuat…</string>
     <string name="user_info_unavailable">Server tidak mengirimkan informasi tentang user ini.</string>

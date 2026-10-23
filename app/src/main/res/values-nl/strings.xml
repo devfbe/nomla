@@ -341,7 +341,6 @@
     <string name="local_volume_percent">%1$d%%</string>
     <string name="a11y_local_volume">Lokaal volume %1$d procent</string>
     <string name="local_volume_reset">Herstellen</string>
-    <string name="local_volume_title">Lokaal volume: %1$s</string>
     <string name="user_menu_information">Gebruikersinformatie</string>
     <string name="user_info_loading">Laden…</string>
     <string name="user_info_unavailable">De server heeft geen informatie over deze gebruiker gestuurd.</string>

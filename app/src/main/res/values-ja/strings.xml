@@ -335,7 +335,6 @@
     <string name="local_volume_percent">%1$d%%</string>
     <string name="a11y_local_volume">ローカル音量 %1$d パーセント</string>
     <string name="local_volume_reset">リセット</string>
-    <string name="local_volume_title">ローカル音量: %1$s</string>
     <string name="user_menu_information">ユーザー情報</string>
     <string name="user_info_loading">読み込み中…</string>
     <string name="user_info_unavailable">サーバーはこのユーザーの情報を送信しませんでした。</string>
