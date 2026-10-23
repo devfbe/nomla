@@ -17,9 +17,7 @@
  */
 package koeln.becker.nomla.app
 
-import android.content.Intent
 import android.content.res.Configuration
-import android.net.Uri
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -28,7 +26,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.RecyclerView
-import koeln.becker.nomla.BuildConfig
 import koeln.becker.nomla.R
 
 private const val HALF_OPEN = 0.5f
@@ -68,16 +65,6 @@ class MainDrawer(
             .isAppearanceLightStatusBars = overDrawer && !night
     }
 
-    /** The donation row, if this flavor's resources define one. */
-    private val donateRow: DrawerRow.Donate? = run {
-        if (BuildConfig.FLAVOR != "foss") return@run null
-        val resources = activity.resources
-        // Looked up by name: only the foss flavor has them (kept for the shrinker in keep_foss.xml).
-        val layoutId = resources.getIdentifier("list_drawer_headerdonate_foss", "xml", activity.packageName)
-        val linkId = resources.getIdentifier("donate_link_foss", "string", activity.packageName)
-        if (layoutId == 0 || linkId == 0) null else DrawerRow.Donate(layoutId, activity.getString(linkId))
-    }
-
     init {
         list.adapter = adapter
         layout.addDrawerListener(toggle)
@@ -91,9 +78,8 @@ class MainDrawer(
             val enabled = connectedServer != null || id !in DrawerAdapter.CONNECTED_ITEMS
             return DrawerRow.Item(id, activity.getString(title), icon, enabled)
         }
-        return listOfNotNull(
+        return listOf(
             DrawerRow.Logo,
-            donateRow,
             DrawerRow.Header(
                 DrawerAdapter.HEADER_CONNECTED_SERVER,
                 connectedServer ?: activity.getString(R.string.drawer_not_connected),
@@ -112,11 +98,7 @@ class MainDrawer(
 
     private fun onRowClicked(row: DrawerRow) {
         layout.closeDrawers()
-        when (row) {
-            is DrawerRow.Item -> onItemSelected(row.id)
-            is DrawerRow.Donate -> activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(row.link)))
-            else -> Unit
-        }
+        if (row is DrawerRow.Item) onItemSelected(row.id)
     }
 
     fun title(id: Int): String? = adapter.currentList.filterIsInstance<DrawerRow.Item>().find { it.id == id }?.title

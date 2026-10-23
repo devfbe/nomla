@@ -22,7 +22,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
-import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -32,16 +31,15 @@ import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.ListDrawerHeaderBinding
 import koeln.becker.nomla.databinding.ListDrawerItemBinding
 
-/** The rows of the navigation drawer; a tap on an enabled item or the donation row goes to [onClick]. */
+/** The rows of the navigation drawer; a tap on an enabled item goes to [onClick]. */
 class DrawerAdapter(private val onClick: (DrawerRow) -> Unit) :
     ListAdapter<DrawerRow, DrawerAdapter.RowHolder>(
         // A dozen rows: diffed on the calling thread rather than a background one.
         AsyncDifferConfig.Builder(DIFF).setBackgroundThreadExecutor(Runnable::run).build(),
     ) {
 
-    override fun getItemViewType(position: Int): Int = when (val row = getItem(position)) {
+    override fun getItemViewType(position: Int): Int = when (getItem(position)) {
         DrawerRow.Logo -> R.layout.list_drawer_headerlogo
-        is DrawerRow.Donate -> row.layout
         is DrawerRow.Header -> R.layout.list_drawer_header
         is DrawerRow.Item -> R.layout.list_drawer_item
     }
@@ -54,7 +52,6 @@ class DrawerAdapter(private val onClick: (DrawerRow) -> Unit) :
         val view = holder.itemView
         when (row) {
             DrawerRow.Logo -> Unit
-            is DrawerRow.Donate -> view.setOnClickListener { onClick(row) }
             is DrawerRow.Header -> ListDrawerHeaderBinding.bind(view).drawerHeaderTitle.text = row.title
             is DrawerRow.Item -> bindItem(ListDrawerItemBinding.bind(view), row)
         }
@@ -107,11 +104,6 @@ sealed interface DrawerRow {
 
     data object Logo : DrawerRow {
         override val key = "logo"
-    }
-
-    /** The donation link of flavors that have one, drawn from [layout]. */
-    data class Donate(@param:LayoutRes val layout: Int, val link: String) : DrawerRow {
-        override val key = "donate"
     }
 
     data class Header(val id: Int, val title: String) : DrawerRow {
