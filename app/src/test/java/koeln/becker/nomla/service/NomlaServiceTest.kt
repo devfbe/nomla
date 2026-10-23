@@ -60,6 +60,7 @@ import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.testing.createNomlaService
 import koeln.becker.nomla.testing.installSession
 import koeln.becker.nomla.testing.refuseForegroundStarts
+import koeln.becker.nomla.testing.replaceParts
 import koeln.becker.nomla.testing.serverState
 import koeln.becker.nomla.testing.stubEvents
 import koeln.becker.nomla.testing.stubModel
@@ -71,8 +72,8 @@ import java.security.cert.X509Certificate
 /**
  * NomlaService as it follows the current session: its foreground notification, reconnect prompt,
  * chat notifications, text-to-speech, what it shows while synchronized and the notification
- * actions. The session is a mock whose state and events the test drives; the overlay and the hot
- * corner are relaxed mocks.
+ * actions. The session is a mock whose state and events the test drives; the overlay, the hot
+ * corner and text-to-speech are relaxed mocks, put in through the app's container parts.
  */
 @RunWith(RobolectricTestRunner::class)
 class NomlaServiceTest {
@@ -81,8 +82,9 @@ class NomlaServiceTest {
     private lateinit var sessions: SessionManager
     private lateinit var controller: ServiceController<NomlaService>
     private lateinit var service: NomlaService
-    private lateinit var overlay: NomlaOverlay
-    private lateinit var hotCorner: NomlaHotCorner
+    private val overlay: NomlaOverlay = mockk(relaxed = true)
+    private val hotCorner: NomlaHotCorner = mockk(relaxed = true)
+    private val textToSpeech: TextToSpeech = mockk(relaxed = true)
     private val route = MutableStateFlow<Int?>(null)
     private val captureSilenced = MutableStateFlow(false)
     private val session: Session = mockk(relaxed = true) {
@@ -105,22 +107,21 @@ class NomlaServiceTest {
     @Before
     fun setUp() {
         shadowOf(app).grantPermissions(android.Manifest.permission.POST_NOTIFICATIONS)
-        app.container.replaceParts { parts ->
+        replaceParts { parts ->
             parts.copy(
                 newSession = { _, config ->
                     created += config
                     mockk<Session>(relaxed = true).also { it.stubEvents(); it.stubState(SessionState.Connecting) }
                 },
+                newOverlay = { _, _ -> overlay },
+                newHotCorner = { _, _, _ -> hotCorner },
+                newTextToSpeech = { _, _ -> textToSpeech },
             )
         }
         sessions = SessionManager.get(app)
         installSession(session)
         controller = createNomlaService()
         service = controller.get()
-        overlay = mockk(relaxed = true)
-        hotCorner = mockk(relaxed = true)
-        service.channelOverlay = overlay
-        service.hotCorner = hotCorner
         idleMainLooper()
     }
 
@@ -704,10 +705,8 @@ class NomlaServiceTest {
     }
 
     private fun installTts(): TextToSpeech {
-        val tts = mockk<TextToSpeech>(relaxed = true)
-        service.tts = tts
         preferences().edit().putBoolean(Settings.USE_TTS.key, true).commit()
-        return tts
+        return textToSpeech
     }
 
     private fun spoken(tts: TextToSpeech): List<String> {
@@ -1045,7 +1044,7 @@ class NomlaServiceTest {
 
     /** All five clauses true; each test below turns exactly one of them false. */
     private fun clickReady() {
-        service.keyClickSound = { clicks++ }
+        replaceParts { it.copy(keyClick = { clicks++ }) }
         every { session.audio.transmitMode } returns TransmitMode.PUSH_TO_TALK
         preferences().edit().putBoolean(Settings.PTT_SOUND.key, true).commit()
         move(SessionState.Connected)

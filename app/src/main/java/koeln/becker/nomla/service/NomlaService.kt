@@ -23,7 +23,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.media.AudioDeviceInfo
-import android.media.AudioManager
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
@@ -56,6 +55,7 @@ import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
+import koeln.becker.nomla.app.AppContainer
 import koeln.becker.nomla.chat.NoticeFormatter
 import koeln.becker.nomla.service.ipc.TalkBroadcastReceiver
 import koeln.becker.nomla.session.PushToTalk
@@ -97,8 +97,7 @@ class NomlaService :
     internal var mediaSession: NomlaMediaSession? = null
         private set
 
-    @VisibleForTesting
-    internal lateinit var channelOverlay: NomlaOverlay
+    private lateinit var channelOverlay: NomlaOverlay
 
     /** Proximity lock, held while voice goes to the earpiece. */
     @VisibleForTesting
@@ -107,14 +106,9 @@ class NomlaService :
 
     /** Text-to-speech, see [ChatAlerts.tts]. */
     @VisibleForTesting
-    internal var tts: TextToSpeech?
-        get() = chatAlerts.tts
-        set(value) {
-            chatAlerts.tts = value
-        }
+    internal val tts: TextToSpeech? get() = chatAlerts.tts
 
-    @VisibleForTesting
-    internal lateinit var hotCorner: NomlaHotCorner
+    private lateinit var hotCorner: NomlaHotCorner
 
     @VisibleForTesting
     internal val hotCornerListener = object : NomlaHotCorner.NomlaHotCornerListener {
@@ -129,10 +123,8 @@ class NomlaService :
     private val handler = Handler(Looper.getMainLooper())
     private val stopIfIdle = Runnable { if (!sessions.isActive && !reconnectPromptShown) stopSelf() }
 
-    /** Test seam: Robolectric's AudioManager records no sound effect. */
-    internal var keyClickSound: () -> Unit = {
-        getSystemService(AudioManager::class.java).playSoundEffect(AudioManager.FX_KEYPRESS_STANDARD, -1f)
-    }
+    /** What the container builds the service's parts from; read where they are used. */
+    private val parts get() = AppContainer.of(this).parts
 
     /**
      * Main.immediate: the session state is mutated on the main thread, so every transition is
@@ -149,10 +141,12 @@ class NomlaService :
         setTheme(R.style.Theme_Nomla)
 
         notification = NomlaConnectionNotification.create(this, "", this)
-        chatAlerts = ChatAlerts(this, sessions, settings)
+        chatAlerts = ChatAlerts(this, sessions, settings) { context, listener ->
+            parts.newTextToSpeech(context, listener)
+        }
         reconnectPrompt = NomlaReconnectNotification(this, this)
-        channelOverlay = NomlaOverlay(this, sessions)
-        hotCorner = NomlaHotCorner(this, settings.hotCornerGravity, hotCornerListener)
+        channelOverlay = parts.newOverlay(this, sessions)
+        hotCorner = parts.newHotCorner(this, settings.hotCornerGravity, hotCornerListener)
         chatAlerts.applyTextToSpeechPreference()
         talkReceiver = TalkBroadcastReceiver(sessions) { settings.isExternalPushToTalkAllowed }
         mediaSession = NomlaMediaSession(this, SessionMediaKeyTarget(sessions), settings).also {
@@ -344,7 +338,7 @@ class NomlaService :
 
     private fun onStartedTalking(session: Session) {
         val pttClick = settings.isPttSoundEnabled && session.audio.transmitMode == TransmitMode.PUSH_TO_TALK
-        if (pttClick && session.isConnected) keyClickSound()
+        if (pttClick && session.isConnected) parts.keyClick(this)
     }
 
     /** The session synchronized, the first time or again after a reconnect. */

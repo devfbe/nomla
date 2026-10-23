@@ -39,12 +39,14 @@ internal class ChatAlerts(
     private val context: Context,
     private val sessions: SessionManager,
     private val settings: Settings,
+    private val newTextToSpeech: (Context, TextToSpeech.OnInitListener) -> TextToSpeech,
 ) {
     private val messageNotification = NomlaMessageNotification(context)
     private val notices by lazy { NoticeFormatter(context) }
 
     /** Non-null exactly while the setting is on ([applyTextToSpeechPreference] owns it). */
     var tts: TextToSpeech? = null
+        private set
 
     private val ttsInitListener = TextToSpeech.OnInitListener { status ->
         if (status == TextToSpeech.ERROR) sessions.chat.warnOnce(context.getString(R.string.tts_failed))
@@ -109,7 +111,7 @@ internal class ChatAlerts(
     fun applyTextToSpeechPreference() {
         val current = tts
         if (current == null && settings.isTextToSpeechEnabled) {
-            tts = TextToSpeech(context, ttsInitListener)
+            tts = newTextToSpeech(context, ttsInitListener)
         } else if (current != null && !settings.isTextToSpeechEnabled) {
             current.shutdown()
             tts = null

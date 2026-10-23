@@ -18,6 +18,8 @@ package koeln.becker.nomla.app
 
 import android.app.Application
 import android.content.Context
+import android.media.AudioManager
+import android.speech.tts.TextToSpeech
 import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -39,6 +41,8 @@ import koeln.becker.nomla.db.NomlaRepository
 import koeln.becker.nomla.db.NomlaSQLiteDatabase
 import koeln.becker.nomla.servers.PublicServerFetcher
 import koeln.becker.nomla.servers.ServerPinger
+import koeln.becker.nomla.service.NomlaHotCorner
+import koeln.becker.nomla.service.NomlaOverlay
 import koeln.becker.nomla.service.NomlaService
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.session.SessionSettingsSync
@@ -85,6 +89,18 @@ class AppContainer(
         val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
         /** Where screens compute for long: the key derivation of a certificate export. */
         val workDispatcher: CoroutineDispatcher = Dispatchers.Default,
+        /** The foreground service's channel overlay. */
+        val newOverlay: (Context, SessionManager) -> NomlaOverlay = { context, sessions -> NomlaOverlay(context, sessions) },
+        /** The foreground service's push-to-talk corner. */
+        val newHotCorner: (Context, Int, NomlaHotCorner.NomlaHotCornerListener) -> NomlaHotCorner =
+            { context, gravity, listener -> NomlaHotCorner(context, gravity, listener) },
+        /** Text-to-speech for received chat messages. */
+        val newTextToSpeech: (Context, TextToSpeech.OnInitListener) -> TextToSpeech =
+            { context, listener -> TextToSpeech(context, listener) },
+        /** The click when push-to-talk starts transmitting. */
+        val keyClick: (Context) -> Unit = { context ->
+            context.getSystemService(AudioManager::class.java).playSoundEffect(AudioManager.FX_KEYPRESS_STANDARD, -1f)
+        },
     )
 
     @Volatile

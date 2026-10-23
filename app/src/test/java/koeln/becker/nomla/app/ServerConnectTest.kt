@@ -34,6 +34,7 @@ import koeln.becker.nomla.service.NomlaService
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.testing.drainMainUntil
 import koeln.becker.nomla.testing.installDatabase
+import koeln.becker.nomla.testing.replaceParts
 import koeln.becker.nomla.testing.stubDisconnected
 import koeln.becker.nomla.testing.stubState
 
@@ -48,7 +49,7 @@ class ServerConnectTest {
     @Test
     fun aSessionIsConnectedForTheServerAndTheServiceStarted() {
         installDatabase(mockk(relaxed = true))
-        app.container.replaceParts { it.copy(newSession = { _, config -> configs += config; session }) }
+        replaceParts { it.copy(newSession = { _, config -> configs += config; session }) }
         every { session.connect() } answers { session.stubState(SessionState.Connecting) }
 
         startServerConnect(app, server)
@@ -64,7 +65,7 @@ class ServerConnectTest {
     @Test
     fun aSessionThatEndedAtOnceStartsNoService() {
         installDatabase(mockk(relaxed = true))
-        app.container.replaceParts { it.copy(newSession = { _, config -> configs += config; session }) }
+        replaceParts { it.copy(newSession = { _, config -> configs += config; session }) }
 
         startServerConnect(app, server)
         drainMainUntil { configs.isNotEmpty() }

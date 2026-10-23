@@ -40,6 +40,7 @@ import koeln.becker.nomla.app.NomlaApplication
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.testing.createNomlaService
 import koeln.becker.nomla.testing.refuseForegroundStarts
+import koeln.becker.nomla.testing.replaceParts
 import java.time.Duration
 
 /**
@@ -59,7 +60,7 @@ class NomlaServiceForegroundTest {
     @Before
     fun setUp() {
         shadowOf(app).grantPermissions(android.Manifest.permission.POST_NOTIFICATIONS)
-        app.container.replaceParts { it.copy(newSession = { _, config -> server.session(app, config) }) }
+        replaceParts { it.copy(newSession = { _, config -> server.session(app, config) }) }
         sessions = SessionManager.get(app)
         sessions.connect(
             SessionConfig(
