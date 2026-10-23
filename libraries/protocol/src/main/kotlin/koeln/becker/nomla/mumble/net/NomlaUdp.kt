@@ -163,17 +163,16 @@ internal class NomlaUdp(
     }
 
     override fun sendMessage(data: ByteArray, length: Int) {
-        if (!cryptState.isValid) {
-            NomlaLog.w(TAG, "Invalid cryptstate prior to sendMessage call.")
-            return
-        }
-        if (!connected) {
+        when {
+            !cryptState.isValid -> NomlaLog.w(TAG, "Invalid cryptstate prior to sendMessage call.")
             // Drop before encrypt(): encrypt() consumes an OCB2 sequence number, so a packet that is
             // never sent would punch a hole in the server's replay window.
-            NomlaLog.w(TAG, "Tried to send UDP message without an active connection.")
-            return
+            !connected -> NomlaLog.w(TAG, "Tried to send UDP message without an active connection.")
+            else -> resolvedHost?.let { encryptAndQueue(data, length, it) }
         }
-        val address = resolvedHost ?: return
+    }
+
+    private fun encryptAndQueue(data: ByteArray, length: Int, address: InetAddress) {
         try {
             val encrypted = cryptState.encrypt(data, length)
             sendQueue.trySend(DatagramPacket(encrypted, encrypted.size, address, port))

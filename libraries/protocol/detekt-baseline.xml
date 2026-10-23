@@ -5,7 +5,6 @@
     <ID>CyclomaticComplexMethod:MumbleLegacyPingDecoder.kt$MumbleLegacyPingDecoder$private fun readVarint(b: ByteArray): Long?</ID>
     <ID>CyclomaticComplexMethod:UdpHealthMonitor.kt$UdpHealthMonitor$private fun decide( nowMicros: Long, usingUdp: Boolean, first: Sample, localDelta: Int, remoteDelta: Int, carriesBothWays: Boolean, ): Decision</ID>
     <ID>LongParameterList:UdpHealthMonitor.kt$UdpHealthMonitor$( nowMicros: Long, usingUdp: Boolean, first: Sample, localDelta: Int, remoteDelta: Int, carriesBothWays: Boolean, )</ID>
-    <ID>ReturnCount:NomlaUdp.kt$NomlaUdp$override fun sendMessage(data: ByteArray, length: Int)</ID>
     <ID>ReturnCount:MumbleLegacyPingDecoder.kt$MumbleLegacyPingDecoder$fun decodeAsServer(packet: ByteArray): Long?</ID>
     <ID>ReturnCount:MumbleLegacyPingDecoder.kt$MumbleLegacyPingDecoder$private fun readVarint(b: ByteArray): Long?</ID>
     <ID>ReturnCount:ServerTrust.kt$HostnameMatcher$fun matches(host: String, certificate: X509Certificate): Boolean</ID>
