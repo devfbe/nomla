@@ -24,7 +24,6 @@ import androidx.preference.PreferenceManager
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
 import com.google.common.truth.Truth.assertWithMessage
-import org.junit.Assert.assertThrows
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -52,20 +51,28 @@ class SettingsTest {
     @Test
     fun `an unknown stored input method falls back to voice activity`() {
         prefs.edit().putString("audioInputMethod", "handset").commit()
-        assertThat(settings.inputMethod).isEqualTo("voiceActivity")
         assertThat(settings.transmitMode).isEqualTo(TransmitMode.VOICE_ACTIVITY)
     }
 
     @Test
-    fun `setInputMethod rejects unknown values without writing them`() {
-        assertThrows(RuntimeException::class.java) { settings.inputMethod = "handset" }
+    fun `no stored input method reads as voice activity`() {
         assertThat(prefs.contains("audioInputMethod")).isFalse()
+        assertThat(settings.transmitMode).isEqualTo(TransmitMode.VOICE_ACTIVITY)
     }
 
+    /** The values on disk, and in the preference XML, stay as they were. */
     @Test
-    fun `setInputMethod stores a valid value`() {
-        settings.inputMethod = "ptt"
-        assertThat(prefs.getString("audioInputMethod", null)).isEqualTo("ptt")
+    fun `each transmit mode is stored as its input method`() {
+        val cases = mapOf(
+            TransmitMode.VOICE_ACTIVITY to "voiceActivity",
+            TransmitMode.PUSH_TO_TALK to "ptt",
+            TransmitMode.CONTINUOUS to "continuous",
+        )
+        for ((mode, stored) in cases) {
+            settings.transmitMode = mode
+            assertWithMessage(stored).that(prefs.getString("audioInputMethod", null)).isEqualTo(stored)
+            assertWithMessage(stored).that(settings.transmitMode).isEqualTo(mode)
+        }
     }
 
     @Test

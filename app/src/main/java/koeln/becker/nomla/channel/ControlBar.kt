@@ -28,8 +28,8 @@ import androidx.core.view.updatePadding
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.R as MaterialR
+import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.R
-import koeln.becker.nomla.Settings
 import koeln.becker.nomla.databinding.FragmentChannelBinding
 import koeln.becker.nomla.session.SelfState
 
@@ -91,14 +91,14 @@ internal class ControlBar(private val binding: FragmentChannelBinding) {
         ViewCompat.setStateDescription(button, if (on) resources.getString(toggle.onState) else null)
     }
 
-    /** Shows [inputMethod], and whether we transmit, where push-to-talk would be. */
-    fun showTalkState(inputMethod: String, talking: Boolean) {
+    /** Shows [transmitMode], and whether we transmit, where push-to-talk would be. */
+    fun showTalkState(transmitMode: TransmitMode, talking: Boolean) {
         val view = binding.controlTalkState
         view.setText(
-            when (inputMethod) {
-                Settings.ARRAY_INPUT_METHOD_PTT -> R.string.inputMethodPtt
-                Settings.ARRAY_INPUT_METHOD_CONTINUOUS -> R.string.inputMethodContinuous
-                else -> R.string.inputMethodVoice
+            when (transmitMode) {
+                TransmitMode.PUSH_TO_TALK -> R.string.inputMethodPtt
+                TransmitMode.CONTINUOUS -> R.string.inputMethodContinuous
+                TransmitMode.VOICE_ACTIVITY -> R.string.inputMethodVoice
             },
         )
         view.isActivated = talking

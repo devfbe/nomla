@@ -34,6 +34,7 @@ import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceScreen
 import androidx.preference.SwitchPreferenceCompat
 import kotlinx.coroutines.launch
+import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.mumble.audio.capture.NoiseSuppressionMode
 import koeln.becker.nomla.mumble.audio.capture.VadMode
 import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
@@ -56,7 +57,7 @@ open class AudioSettingsFragment : NomlaPreferenceFragment(R.xml.settings_audio)
 
         val inputPreference = requireNotNull(findPreference<ListPreference>(Settings.INPUT_METHOD.key))
         inputPreference.setOnPreferenceChangeListener { _, newValue ->
-            updateAudioDependents(preferenceScreen, newValue as String)
+            updateAudioDependents(preferenceScreen, TransmitMode.fromPreferenceValue(newValue as String))
             true
         }
 
@@ -105,7 +106,7 @@ open class AudioSettingsFragment : NomlaPreferenceFragment(R.xml.settings_audio)
         }
         refreshAudioDevices()
 
-        updateAudioDependents(preferenceScreen, inputPreference.value)
+        updateAudioDependents(preferenceScreen, TransmitMode.fromPreferenceValue(inputPreference.value))
     }
 
     private var audioDeviceChoices: AudioDeviceChoices? = null
@@ -312,8 +313,8 @@ open class AudioSettingsFragment : NomlaPreferenceFragment(R.xml.settings_audio)
             AudioSettingsPolicy.manualFloorVisible(mode, adaptiveFloor)
     }
 
-    private fun updateAudioDependents(screen: PreferenceScreen, inputMethod: String) {
-        val voice = Settings.ARRAY_INPUT_METHOD_VOICE == inputMethod
+    private fun updateAudioDependents(screen: PreferenceScreen, transmitMode: TransmitMode) {
+        val voice = transmitMode == TransmitMode.VOICE_ACTIVITY
         requireNotNull(screen.findPreference<PreferenceCategory>("vad_settings")).isEnabled = voice
         VAD_TUNING_KEYS.forEach { screen.findPreference<Preference>(it)?.isEnabled = voice }
     }

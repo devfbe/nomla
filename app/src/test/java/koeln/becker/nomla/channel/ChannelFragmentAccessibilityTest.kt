@@ -37,6 +37,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.android.controller.ActivityController
 import koeln.becker.nomla.mumble.AudioControls
 import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.mumble.model.TalkState
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
@@ -63,7 +64,7 @@ class ChannelFragmentAccessibilityTest {
 
     @Before
     fun setUp() {
-        preferences.edit(commit = true) { putString(Settings.INPUT_METHOD.key, Settings.ARRAY_INPUT_METHOD_PTT) }
+        preferences.edit(commit = true) { putString(Settings.INPUT_METHOD.key, TransmitMode.PUSH_TO_TALK.preferenceValue) }
         session = mockk(relaxed = true)
         audio = session.stubAudio()
         session.stubModel(serverState(self = SESSION) { channel(0, "Root"); user(SESSION, "me") })

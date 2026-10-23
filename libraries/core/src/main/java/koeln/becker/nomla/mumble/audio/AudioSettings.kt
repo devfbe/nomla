@@ -22,11 +22,19 @@ import koeln.becker.nomla.mumble.audio.capture.VadConfig
 import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.audio.routing.PreferredAudioDevice
 
-/** When the microphone is sent. */
-public enum class TransmitMode {
-    VOICE_ACTIVITY,
-    PUSH_TO_TALK,
-    CONTINUOUS,
+/**
+ * When the microphone is sent. [preferenceValue] is the stable on-disk identifier (see app
+ * Settings.kt); unknown or missing values fall back to [VOICE_ACTIVITY].
+ */
+public enum class TransmitMode(public val preferenceValue: String) {
+    VOICE_ACTIVITY("voiceActivity"),
+    PUSH_TO_TALK("ptt"),
+    CONTINUOUS("continuous");
+
+    public companion object {
+        public fun fromPreferenceValue(value: String?): TransmitMode =
+            entries.firstOrNull { it.preferenceValue == value } ?: VOICE_ACTIVITY
+    }
 }
 
 /**

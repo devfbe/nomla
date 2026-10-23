@@ -50,21 +50,10 @@ class Settings private constructor(private val context: Context) {
             preferences.edit { write(pref, value) }
     }
 
-    /** One of [ARRAY_INPUT_METHODS]; an unknown stored value reads as voice activity. */
-    var inputMethod: String
-        get() = preferences.read(INPUT_METHOD)
-            .takeIf { it in ARRAY_INPUT_METHODS } ?: ARRAY_INPUT_METHOD_VOICE
-        set(value) {
-            require(value in ARRAY_INPUT_METHODS) { "Invalid input method $value" }
-            preferences.edit { putString(INPUT_METHOD.key, value) }
-        }
-
-    val transmitMode: TransmitMode
-        get() = when (inputMethod) {
-            ARRAY_INPUT_METHOD_PTT -> TransmitMode.PUSH_TO_TALK
-            ARRAY_INPUT_METHOD_CONTINUOUS -> TransmitMode.CONTINUOUS
-            else -> TransmitMode.VOICE_ACTIVITY
-        }
+    /** Stored as its [TransmitMode.preferenceValue]; an unknown stored value reads as voice activity. */
+    var transmitMode: TransmitMode
+        get() = TransmitMode.fromPreferenceValue(preferences.read(INPUT_METHOD))
+        set(value) = preferences.edit { write(INPUT_METHOD, value.preferenceValue) }
 
     val inputSampleRate: Int get() = preferences.read(INPUT_RATE).toInt()
 
@@ -313,13 +302,8 @@ class Settings private constructor(private val context: Context) {
     var isNotificationPermissionAsked: Boolean by pref(NOTIFICATION_PERMISSION_ASKED)
 
     companion object {
-        val INPUT_METHOD = Pref("audioInputMethod", ARRAY_INPUT_METHOD_VOICE)
-        const val ARRAY_INPUT_METHOD_VOICE = "voiceActivity"
-        const val ARRAY_INPUT_METHOD_PTT = "ptt"
-        const val ARRAY_INPUT_METHOD_CONTINUOUS = "continuous"
-        val ARRAY_INPUT_METHODS: Set<String> =
-            setOf(ARRAY_INPUT_METHOD_VOICE, ARRAY_INPUT_METHOD_PTT, ARRAY_INPUT_METHOD_CONTINUOUS)
-
+        /** One of [TransmitMode.preferenceValue]. */
+        val INPUT_METHOD = Pref("audioInputMethod", TransmitMode.VOICE_ACTIVITY.preferenceValue)
 
         val THRESHOLD = Pref("vadThreshold", 50)
 

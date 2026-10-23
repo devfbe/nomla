@@ -31,6 +31,7 @@ import androidx.preference.PreferenceManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
 import koeln.becker.nomla.mumble.audio.MeterReading
+import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.mumble.audio.capture.NoiseSuppressionMode
 import koeln.becker.nomla.mumble.audio.capture.VadConfig
 import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
@@ -112,7 +113,7 @@ class AudioPanelSheet : BottomSheetDialogFragment() {
             if (!applyingSettings) controls?.setEchoCancellationEnabled(checked)
         }
         binding.audioPanelTransmit.addOnButtonCheckedListener { _, id, checked ->
-            if (checked && !applyingSettings) TRANSMIT_MODES[id]?.let { settings.inputMethod = it }
+            if (checked && !applyingSettings) TRANSMIT_MODES[id]?.let { settings.transmitMode = it }
         }
         binding.audioPanelNoise.addOnButtonCheckedListener { _, id, checked ->
             val mode = NOISE_MODES[id]
@@ -150,7 +151,7 @@ class AudioPanelSheet : BottomSheetDialogFragment() {
         renderDevices(binding, controls.choices())
         binding.audioPanelEcho.isVisible = controls.echoCategory != null
         binding.audioPanelEcho.isChecked = controls.isEchoCancellationEnabled
-        TRANSMIT_MODES.entries.firstOrNull { it.value == settings.inputMethod }
+        TRANSMIT_MODES.entries.firstOrNull { it.value == settings.transmitMode }
             ?.let { binding.audioPanelTransmit.check(it.key) }
         NOISE_MODES.entries.firstOrNull { it.value == settings.noiseSuppressionMode }
             ?.let { binding.audioPanelNoise.check(it.key) }
@@ -241,10 +242,11 @@ class AudioPanelSheet : BottomSheetDialogFragment() {
     }
 
     /** What the user's transmit mode would do with this frame. */
-    private fun transmitState(reading: MeterReading): Int = when (settings.inputMethod) {
-        Settings.ARRAY_INPUT_METHOD_PTT -> R.string.mic_check_ptt
-        Settings.ARRAY_INPUT_METHOD_CONTINUOUS -> R.string.mic_check_continuous
-        else -> if (reading.voice) R.string.mic_check_would_transmit else R.string.mic_check_would_not_transmit
+    private fun transmitState(reading: MeterReading): Int = when (settings.transmitMode) {
+        TransmitMode.PUSH_TO_TALK -> R.string.mic_check_ptt
+        TransmitMode.CONTINUOUS -> R.string.mic_check_continuous
+        TransmitMode.VOICE_ACTIVITY ->
+            if (reading.voice) R.string.mic_check_would_transmit else R.string.mic_check_would_not_transmit
     }
 
     companion object {
@@ -257,9 +259,9 @@ class AudioPanelSheet : BottomSheetDialogFragment() {
         }
 
         private val TRANSMIT_MODES = mapOf(
-            R.id.audio_panel_transmit_voice to Settings.ARRAY_INPUT_METHOD_VOICE,
-            R.id.audio_panel_transmit_ptt to Settings.ARRAY_INPUT_METHOD_PTT,
-            R.id.audio_panel_transmit_continuous to Settings.ARRAY_INPUT_METHOD_CONTINUOUS,
+            R.id.audio_panel_transmit_voice to TransmitMode.VOICE_ACTIVITY,
+            R.id.audio_panel_transmit_ptt to TransmitMode.PUSH_TO_TALK,
+            R.id.audio_panel_transmit_continuous to TransmitMode.CONTINUOUS,
         )
 
         private val NOISE_MODES = mapOf(

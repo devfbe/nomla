@@ -39,6 +39,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
@@ -68,7 +69,7 @@ class NomlaOverlay(private val context: Context, private val sessions: SessionMa
     init {
         setUpGestures()
         binding.overlayClose.setOnClickListener { hide() }
-        setPushToTalkShown(Settings.getInstance(context).inputMethod == Settings.ARRAY_INPUT_METHOD_PTT)
+        setPushToTalkShown(Settings.getInstance(context).transmitMode == TransmitMode.PUSH_TO_TALK)
 
         overlayParams = WindowManager.LayoutParams(
             context.resources.dp(DEFAULT_WIDTH_DP).toInt(),

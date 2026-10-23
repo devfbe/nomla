@@ -26,6 +26,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.testing.installSession
@@ -50,7 +51,7 @@ class PushToTalkTest {
 
     private fun pushToTalk(toggle: Boolean) {
         PreferenceManager.getDefaultSharedPreferences(context).edit()
-            .putString(Settings.INPUT_METHOD.key, Settings.ARRAY_INPUT_METHOD_PTT)
+            .putString(Settings.INPUT_METHOD.key, TransmitMode.PUSH_TO_TALK.preferenceValue)
             .putBoolean(Settings.PTT_TOGGLE.key, toggle)
             .commit()
     }
@@ -82,7 +83,7 @@ class PushToTalkTest {
     @Test
     fun theKeysDoNothingOutsidePushToTalk() {
         PreferenceManager.getDefaultSharedPreferences(context).edit()
-            .putString(Settings.INPUT_METHOD.key, Settings.ARRAY_INPUT_METHOD_VOICE).commit()
+            .putString(Settings.INPUT_METHOD.key, TransmitMode.VOICE_ACTIVITY.preferenceValue).commit()
 
         keys.onKeyDown()
         assertThat(talking).isFalse()

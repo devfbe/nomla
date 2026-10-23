@@ -45,6 +45,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.mumble.audio.capture.NoiseSuppressionMode
 import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.audio.routing.CommunicationDevice
@@ -201,7 +202,7 @@ class AudioPanelSheetTest {
 
         panel.find<MaterialButton>(R.id.audio_panel_transmit_ptt).performClick()
 
-        assertThat(settings.inputMethod).isEqualTo(Settings.ARRAY_INPUT_METHOD_PTT)
+        assertThat(settings.transmitMode).isEqualTo(TransmitMode.PUSH_TO_TALK)
         assertThat(group.checkedButtonIds).containsExactly(R.id.audio_panel_transmit_ptt)
     }
 

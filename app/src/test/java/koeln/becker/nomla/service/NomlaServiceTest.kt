@@ -973,7 +973,7 @@ class NomlaServiceTest {
     fun theHotCornerDrivesTheTalkKeys() {
         move(SessionState.Connected)
         preferences().edit()
-            .putString(Settings.INPUT_METHOD.key, Settings.ARRAY_INPUT_METHOD_PTT)
+            .putString(Settings.INPUT_METHOD.key, TransmitMode.PUSH_TO_TALK.preferenceValue)
             .putBoolean(Settings.PTT_TOGGLE.key, false)
             .commit()
 
@@ -1017,8 +1017,8 @@ class NomlaServiceTest {
 
     @Test
     fun switchingToPushToTalkShowsTheOverlayButton() {
-        preferences().edit().putString(Settings.INPUT_METHOD.key, Settings.ARRAY_INPUT_METHOD_PTT).commit()
-        preferences().edit().putString(Settings.INPUT_METHOD.key, Settings.ARRAY_INPUT_METHOD_VOICE).commit()
+        preferences().edit().putString(Settings.INPUT_METHOD.key, TransmitMode.PUSH_TO_TALK.preferenceValue).commit()
+        preferences().edit().putString(Settings.INPUT_METHOD.key, TransmitMode.VOICE_ACTIVITY.preferenceValue).commit()
 
         verify(exactly = 1) { overlay.setPushToTalkShown(true) }
         verify(exactly = 1) { overlay.setPushToTalkShown(false) }
@@ -1166,7 +1166,7 @@ class NomlaServiceTest {
         // Nothing follows the session or the preferences any more.
         emit(NomlaEvent.TextMessage(textMessage("after")))
         assertThat(shadowOf(notificationManager).allNotifications).isEmpty()
-        preferences().edit().putString(Settings.INPUT_METHOD.key, Settings.ARRAY_INPUT_METHOD_PTT).commit()
+        preferences().edit().putString(Settings.INPUT_METHOD.key, TransmitMode.PUSH_TO_TALK.preferenceValue).commit()
         verify(exactly = 0) { overlay.setPushToTalkShown(any()) }
     }
 

@@ -32,6 +32,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
+import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
@@ -96,7 +97,7 @@ class SettingsActivityTest {
         assertThat(hotCorner.isEnabled).isFalse()
         assertThat(controls.findPreference<Preference>(Settings.PTT_BUTTON_HEIGHT.key)?.isEnabled).isTrue()
 
-        preferences.edit().putString(Settings.INPUT_METHOD.key, Settings.ARRAY_INPUT_METHOD_PTT).commit()
+        preferences.edit().putString(Settings.INPUT_METHOD.key, TransmitMode.PUSH_TO_TALK.preferenceValue).commit()
         controls.onPause()
         controls.onResume()
 

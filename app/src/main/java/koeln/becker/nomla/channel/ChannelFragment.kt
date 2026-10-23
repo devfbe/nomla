@@ -45,6 +45,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.launch
+import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.audio.AudioPanelSheet
@@ -119,7 +120,7 @@ class ChannelFragment :
     private fun showTalking(talking: Boolean) {
         val talkButton = binding?.pushtotalk ?: return
         ViewCompat.setStateDescription(talkButton, if (talking) getString(R.string.a11y_transmitting) else null)
-        announcer.onTalking(talking, announce = settings.inputMethod == Settings.ARRAY_INPUT_METHOD_PTT)
+        announcer.onTalking(talking, announce = settings.transmitMode == TransmitMode.PUSH_TO_TALK)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -327,11 +328,11 @@ class ChannelFragment :
         val muted = shownSelf?.cannotTalk == true
         val showPttButton = !muted &&
             settings.isPushToTalkButtonShown &&
-            settings.inputMethod == Settings.ARRAY_INPUT_METHOD_PTT
+            settings.transmitMode == TransmitMode.PUSH_TO_TALK
         binding.pushtotalkView.isVisible = showPttButton
         binding.controlTalkState.isVisible = atBottom && !showPttButton
         binding.controlBar.isVisible = atBottom || showPttButton
-        controlBar?.showTalkState(settings.inputMethod, shownSelf?.isTalking == true)
+        controlBar?.showTalkState(settings.transmitMode, shownSelf?.isTalking == true)
 
         val showHoldButton = !muted && shownWhisperTarget != null && settings.isHoldToWhisper
         binding.targetPanelHold.visibility = if (showHoldButton) View.VISIBLE else View.GONE

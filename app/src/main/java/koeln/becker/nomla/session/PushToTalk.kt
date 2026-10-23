@@ -18,6 +18,7 @@ package koeln.becker.nomla.session
 
 import android.content.Context
 import koeln.becker.nomla.Settings
+import koeln.becker.nomla.mumble.audio.TransmitMode
 
 /**
  * The two halves of a talk key press, for every surface that has one: a hardware key, the talk
@@ -39,5 +40,5 @@ class PushToTalk(private val settings: Settings, private val sessions: SessionMa
         audio.setTalking(settings.isPushToTalkToggle && !audio.isTalking)
     }
 
-    private val isPushToTalk: Boolean get() = settings.inputMethod == Settings.ARRAY_INPUT_METHOD_PTT
+    private val isPushToTalk: Boolean get() = settings.transmitMode == TransmitMode.PUSH_TO_TALK
 }

@@ -32,6 +32,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.mumble.model.ServerState
 import koeln.becker.nomla.mumble.model.TalkState
 import koeln.becker.nomla.mumble.model.UserState
@@ -65,10 +66,10 @@ class ChannelFragmentControlBarTest {
         user(UserState(SELF, "me", 0, isSelfMuted = muted || deafened, isSelfDeafened = deafened))
     }
 
-    /** Shows the screen with [inputMethod], and the bar where [position] says, else where it is by default. */
-    private fun show(inputMethod: String = Settings.ARRAY_INPUT_METHOD_PTT, position: String? = null) {
+    /** Shows the screen with [transmitMode], and the bar where [position] says, else where it is by default. */
+    private fun show(transmitMode: TransmitMode = TransmitMode.PUSH_TO_TALK, position: String? = null) {
         preferences.edit(commit = true) {
-            putString(Settings.INPUT_METHOD.key, inputMethod)
+            putString(Settings.INPUT_METHOD.key, transmitMode.preferenceValue)
             position?.let { putString(Settings.CONTROL_BAR_POSITION.key, it) }
         }
         model = session.stubModel(me())
@@ -131,7 +132,7 @@ class ChannelFragmentControlBarTest {
 
     @Test
     fun `without push-to-talk the bottom bar shows whether we transmit`() {
-        show(inputMethod = Settings.ARRAY_INPUT_METHOD_VOICE)
+        show(transmitMode = TransmitMode.VOICE_ACTIVITY)
         val talkState = find<View>(R.id.control_talk_state)
 
         assertThat(find<View>(R.id.pushtotalk_view).visibility).isEqualTo(View.GONE)
@@ -159,7 +160,7 @@ class ChannelFragmentControlBarTest {
 
     @Test
     fun `at the top without push-to-talk nothing is left at the bottom`() {
-        show(inputMethod = Settings.ARRAY_INPUT_METHOD_CONTINUOUS, position = Settings.ARRAY_CONTROL_BAR_TOP)
+        show(transmitMode = TransmitMode.CONTINUOUS, position = Settings.ARRAY_CONTROL_BAR_TOP)
 
         assertThat(find<View>(R.id.control_bar).visibility).isEqualTo(View.GONE)
     }
@@ -222,7 +223,7 @@ class ChannelFragmentControlBarTest {
         setPreference(Settings.CONTROL_BAR_POSITION.key, Settings.ARRAY_CONTROL_BAR_TOP)
         assertThat(fragment.requireActivity().showSnackbar("two").anchorView?.id).isEqualTo(R.id.control_bar)
 
-        setPreference(Settings.INPUT_METHOD.key, Settings.ARRAY_INPUT_METHOD_VOICE)
+        setPreference(Settings.INPUT_METHOD.key, TransmitMode.VOICE_ACTIVITY.preferenceValue)
         assertThat(fragment.requireActivity().showSnackbar("three").anchorView).isNull()
     }
 
