@@ -73,7 +73,7 @@ class NomlaTcpTest {
         override fun onTLSCertificateChanged(chain: Array<X509Certificate>) { record("certificateChanged") }
         override fun onTCPConnectionFailed(e: NomlaException) { record("failed") }
         override fun onTCPConnectionDisconnect() { disconnects.incrementAndGet(); record("disconnect") }
-        override fun onTCPMessageReceived(type: NomlaTCPMessageType, length: Int, data: ByteArray) { record("message") }
+        override fun onTCPMessageReceived(type: NomlaTcpMessageType, length: Int, data: ByteArray) { record("message") }
         private fun record(name: String) { events.add(name to Thread.currentThread().name) }
         fun next(): Pair<String, String> =
             events.poll(5, TimeUnit.SECONDS) ?: throw AssertionError("no callback within 5s")
@@ -287,7 +287,7 @@ class NomlaTcpTest {
 
         transport.disconnect()
         assertThat(listener.next()).isEqualTo("disconnect" to "test-tcp-callbacks")
-        toClient.write(tcpFrame(NomlaTCPMessageType.Ping.ordinal)) // the server's answer only lands now
+        toClient.write(tcpFrame(NomlaTcpMessageType.Ping.ordinal)) // the server's answer only lands now
         toClient.flush()
 
         awaitFinished(transport)
@@ -328,7 +328,7 @@ class NomlaTcpTest {
         transport.connect("example.invalid", 64738, false)
         assertThat(queuedEstablished.await(5, TimeUnit.SECONDS)).isTrue()
         assertThat(reading.await(5, TimeUnit.SECONDS)).isTrue() // the read thread is inside readFrame
-        toClient.write(tcpFrame(NomlaTCPMessageType.Ping.ordinal))
+        toClient.write(tcpFrame(NomlaTcpMessageType.Ping.ordinal))
         toClient.flush()
 
         awaitFinished(transport)
@@ -370,7 +370,7 @@ class NomlaTcpTest {
         transport.connect("example.invalid", 64738, false)
         assertThat(listener.next()).isEqualTo("established" to "test-tcp-callbacks")
 
-        transport.sendMessage(byteArrayOf(1, 2, 3), 3, NomlaTCPMessageType.UDPTunnel)
+        transport.sendMessage(byteArrayOf(1, 2, 3), 3, NomlaTcpMessageType.UDPTunnel)
         transport.disconnect()
 
         assertThat(listener.next()).isEqualTo("disconnect" to "test-tcp-callbacks")
@@ -445,7 +445,7 @@ class NomlaTcpTest {
         assertThat(listener.next()).isEqualTo("established" to "test-tcp-callbacks")
 
         val packet = byteArrayOf(1, 2, 3, 4)
-        transport.sendMessage(packet, 3, NomlaTCPMessageType.UDPTunnel)
+        transport.sendMessage(packet, 3, NomlaTcpMessageType.UDPTunnel)
         assertThat(writing.await(5, TimeUnit.SECONDS)).isTrue()
         packet.fill(9) // the caller's next packet, while the first is still being written
         gate.countDown()

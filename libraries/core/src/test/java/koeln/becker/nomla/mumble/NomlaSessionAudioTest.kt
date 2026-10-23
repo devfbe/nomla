@@ -31,7 +31,7 @@ import koeln.becker.nomla.mumble.audio.capture.CaptureState
 import koeln.becker.nomla.mumble.audio.capture.VadConfig
 import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.exception.AudioInitializationException
-import koeln.becker.nomla.mumble.net.NomlaTCPMessageType
+import koeln.becker.nomla.mumble.net.NomlaTcpMessageType
 import koeln.becker.nomla.mumble.net.UdpProtocol
 import koeln.becker.nomla.mumble.protobuf.Mumble
 import koeln.becker.nomla.mumble.session.SessionState
@@ -81,7 +81,7 @@ class NomlaSessionAudioTest {
         h.session.connect()
         val tcp = h.openSocket(0)
         val version = Mumble.Version.newBuilder().setVersionV2(MumbleVersion.v2(1, 5, 0)).build()
-        tcp.simulateMessage(NomlaTCPMessageType.Version, version.toByteArray())
+        tcp.simulateMessage(NomlaTcpMessageType.Version, version.toByteArray())
         h.synchronize(tcp)
 
         audioUp(h)
@@ -172,7 +172,7 @@ class NomlaSessionAudioTest {
 
         // ServerSync for a session the user list never mentioned.
         tcp.simulateMessage(
-            koeln.becker.nomla.mumble.net.NomlaTCPMessageType.ServerSync,
+            koeln.becker.nomla.mumble.net.NomlaTcpMessageType.ServerSync,
             koeln.becker.nomla.mumble.protobuf.Mumble.ServerSync.newBuilder()
                 .setSession(4242).setMaxBandwidth(72_000).build().toByteArray(),
         )

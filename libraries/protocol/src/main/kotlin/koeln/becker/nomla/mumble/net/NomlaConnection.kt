@@ -182,7 +182,7 @@ internal class NomlaConnection(
         override val cryptState: CryptState get() = this@NomlaConnection.cryptState
         override val endpoint: Endpoint get() = checkNotNull(this@NomlaConnection.endpoint)
 
-        override fun sendTcp(message: MessageLite, type: NomlaTCPMessageType) = sendTCPMessage(message, type)
+        override fun sendTcp(message: MessageLite, type: NomlaTcpMessageType) = sendTCPMessage(message, type)
 
         override fun sendUdp(data: ByteArray, length: Int) {
             if (isConnected) udp?.sendMessage(data, length)
@@ -357,7 +357,7 @@ internal class NomlaConnection(
     }
 
     /** Sends a protobuf message over TCP. Can silently fail. */
-    fun sendTCPMessage(message: MessageLite, messageType: NomlaTCPMessageType) {
+    fun sendTCPMessage(message: MessageLite, messageType: NomlaTcpMessageType) {
         if (!isConnected) return
         tcp?.sendMessage(message, messageType)
     }
@@ -370,18 +370,18 @@ internal class NomlaConnection(
         if (!isConnected) return
         require(length <= data.size) { "Requested length $length is longer than available data length ${data.size}!" }
         if (!force && !protocol.usingUdp) {
-            tcp?.sendMessage(data, length, NomlaTCPMessageType.UDPTunnel)
+            tcp?.sendMessage(data, length, NomlaTcpMessageType.UDPTunnel)
         } else if (!params.tunnelVoice) {
             udp?.sendMessage(data, length)
         }
     }
 
-    override fun onTCPMessageReceived(type: NomlaTCPMessageType, length: Int, data: ByteArray) {
+    override fun onTCPMessageReceived(type: NomlaTcpMessageType, length: Int, data: ByteArray) {
         // Frames that arrive during teardown are dropped; the consumer's audio path is already gone.
         if (closed) return
         if (type.isLogged) NomlaLog.v(TAG, "IN: $type")
 
-        if (type == NomlaTCPMessageType.UDPTunnel) {
+        if (type == NomlaTcpMessageType.UDPTunnel) {
             onUDPDataReceived(data)
             return
         }
@@ -445,7 +445,7 @@ internal class NomlaConnection(
     }
 
     private fun onLegacyUdp(data: ByteArray) {
-        if ((data[0].toInt() and BYTE_MASK) ushr LEGACY_TYPE_SHIFT == NomlaUDPMessageType.UDPPing.ordinal) {
+        if ((data[0].toInt() and BYTE_MASK) ushr LEGACY_TYPE_SHIFT == NomlaUdpMessageType.UDPPing.ordinal) {
             protocol.onUdpPing(data)
         } else if (udpDecoder.decodeLegacy(data, data.size, voicePacket)) {
             dispatchVoice()

@@ -107,13 +107,13 @@ internal class ConnectionHarness(
         return tcp
     }
 
-    fun receive(type: NomlaTCPMessageType, message: MessageLite) {
+    fun receive(type: NomlaTcpMessageType, message: MessageLite) {
         tcp.simulateMessage(type, message.toByteArray())
         runCurrent()
     }
 
     fun synchronize(session: Int = 1, maxBandwidth: Int? = null) = receive(
-        NomlaTCPMessageType.ServerSync,
+        NomlaTcpMessageType.ServerSync,
         Mumble.ServerSync.newBuilder().setSession(session).apply { maxBandwidth?.let(::setMaxBandwidth) }.build(),
     )
 
@@ -154,7 +154,7 @@ internal fun textFrame(text: String): ByteArray = Mumble.TextMessage.newBuilder(
 
 /** A datagram of [size] bytes whose leading type nibble marks it as Opus voice data. */
 internal fun voiceDatagram(size: Int): ByteArray = ByteArray(size).also {
-    it[0] = ((NomlaUDPMessageType.UDPVoiceOpus.ordinal shl 5) and 0xFF).toByte()
+    it[0] = ((NomlaUdpMessageType.UDPVoiceOpus.ordinal shl 5) and 0xFF).toByte()
 }
 
 /** A thread's task queue, run by the test: tasks wait until [runAll]. */

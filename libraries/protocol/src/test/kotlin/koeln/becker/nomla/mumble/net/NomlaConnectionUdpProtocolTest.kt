@@ -35,7 +35,7 @@ class NomlaConnectionUdpProtocolTest {
 
     /** Copies of what the voice handler saw, since the packet object is reused. */
     private data class Heard(
-        val codec: NomlaUDPMessageType,
+        val codec: NomlaUdpMessageType,
         val context: Int,
         val session: Int,
         val frameNumber: Long,
@@ -63,7 +63,7 @@ class NomlaConnectionUdpProtocolTest {
 
     @Suppress("UnusedReceiverParameter") // Reads as what the server sends over its socket.
     private fun FakeTcpTransport.announce(version: Mumble.Version) {
-        h.receive(NomlaTCPMessageType.Version, version)
+        h.receive(NomlaTcpMessageType.Version, version)
         h.synchronize()
     }
 
@@ -83,7 +83,7 @@ class NomlaConnectionUdpProtocolTest {
         .toByteArray()
 
     private fun legacyAudio(opus: ByteArray): ByteArray = PacketBuffer.allocate(64).run {
-        append(((NomlaUDPMessageType.UDPVoiceOpus.ordinal shl 5) or VoicePacket.CONTEXT_SHOUT).toLong())
+        append(((NomlaUdpMessageType.UDPVoiceOpus.ordinal shl 5) or VoicePacket.CONTEXT_SHOUT).toLong())
         writeLong(7) // session
         writeLong(42) // sequence
         writeLong(opus.size.toLong())
@@ -116,7 +116,7 @@ class NomlaConnectionUdpProtocolTest {
 
         assertThat(connection.latency!!.udpMicros).isEqualTo(50_000L)
         assertThat(heard).containsExactly(
-            Heard(NomlaUDPMessageType.UDPVoiceOpus, 3, 7, 42, listOf<Byte>(0x11, 0x22), true, 0.5f),
+            Heard(NomlaUdpMessageType.UDPVoiceOpus, 3, 7, 42, listOf<Byte>(0x11, 0x22), true, 0.5f),
         )
     }
 
@@ -125,7 +125,7 @@ class NomlaConnectionUdpProtocolTest {
         val tcp = connect(clientV2 = MumbleVersion.v2(1, 5, 0), forceTcp = true)
         tcp.announce(v2Version(1, 5, 0))
 
-        tcp.simulateMessage(NomlaTCPMessageType.UDPTunnel, protobufAudio(byteArrayOf(0x33)))
+        tcp.simulateMessage(NomlaTcpMessageType.UDPTunnel, protobufAudio(byteArrayOf(0x33)))
         h.runCurrent()
 
         assertThat(connection.udpProtocol).isEqualTo(UdpProtocol.PROTOBUF)
@@ -157,12 +157,12 @@ class NomlaConnectionUdpProtocolTest {
         assertThat(udp.sent[0][0]).isEqualTo(0x20.toByte())
 
         udp.simulateDatagram(legacyAudio(byteArrayOf(0x55)))
-        tcp.simulateMessage(NomlaTCPMessageType.UDPTunnel, legacyAudio(byteArrayOf(0x66)))
+        tcp.simulateMessage(NomlaTcpMessageType.UDPTunnel, legacyAudio(byteArrayOf(0x66)))
         udp.simulateDatagram(protobufAudio(byteArrayOf(0x77)))
         h.runCurrent()
 
         // The protobuf packet reads as a legacy CELT one, which playback drops.
-        val opus = heard.filter { it.codec == NomlaUDPMessageType.UDPVoiceOpus }
+        val opus = heard.filter { it.codec == NomlaUdpMessageType.UDPVoiceOpus }
         assertThat(opus.map { it.opus }).containsExactly(listOf<Byte>(0x55), listOf<Byte>(0x66)).inOrder()
         assertThat(opus[0].context).isEqualTo(VoicePacket.CONTEXT_SHOUT)
         assertThat(opus[0].volume).isEqualTo(1f)

@@ -30,7 +30,7 @@ import org.robolectric.shadows.ShadowNetwork
 import koeln.becker.nomla.mumble.exception.NomlaException
 import koeln.becker.nomla.mumble.model.ChannelState
 import koeln.becker.nomla.mumble.model.WhisperTargetChannel
-import koeln.becker.nomla.mumble.net.NomlaTCPMessageType
+import koeln.becker.nomla.mumble.net.NomlaTcpMessageType
 import koeln.becker.nomla.mumble.protobuf.Mumble
 import koeln.becker.nomla.mumble.session.ClientCertificate
 import koeln.becker.nomla.mumble.session.DisconnectReason
@@ -672,12 +672,12 @@ class NomlaSessionConnectionTest {
         val h = start(autoReconnect = true)
         val tcp = h.connectAndSynchronize()
         tcp.simulateMessage(
-            NomlaTCPMessageType.UserState,
+            NomlaTcpMessageType.UserState,
             Mumble.UserState.newBuilder().setSession(4).setName("Mod").setChannelId(0).build().toByteArray(),
         )
 
         tcp.simulateMessage(
-            NomlaTCPMessageType.UserRemove,
+            NomlaTcpMessageType.UserRemove,
             Mumble.UserRemove.newBuilder().setSession(1).setActor(4).setReason("spam").build().toByteArray(),
         )
         h.drainUntil("the kick is reported") {

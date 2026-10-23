@@ -106,7 +106,7 @@ class NomlaConnectionDispatcherTest {
         val texts = (0 until 500).map { "message $it" }
 
         thread(name = "fake-tcp-read") {
-            texts.forEach { tcp.simulateMessage(NomlaTCPMessageType.TextMessage, textFrame(it)) }
+            texts.forEach { tcp.simulateMessage(NomlaTcpMessageType.TextMessage, textFrame(it)) }
         }
         repeat(4) { i -> thread(name = "poster $i") { repeat(100) { connection.post { Thread.yield() } } } }
 
@@ -143,7 +143,7 @@ class NomlaConnectionDispatcherTest {
                 .build().toByteArray()
         }
 
-        thread(name = "fake-tcp-read") { frames.forEach { tcp.simulateMessage(NomlaTCPMessageType.ChannelState, it) } }
+        thread(name = "fake-tcp-read") { frames.forEach { tcp.simulateMessage(NomlaTcpMessageType.ChannelState, it) } }
         awaitUntil(timeoutMillis = 30_000, description = "the last snapshot has every channel") {
             latest.get()?.channels?.size == 5_000
         }

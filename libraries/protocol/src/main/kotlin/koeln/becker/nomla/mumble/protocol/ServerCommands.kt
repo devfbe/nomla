@@ -19,7 +19,7 @@
 package koeln.becker.nomla.mumble.protocol
 
 import com.google.protobuf.MessageLite
-import koeln.becker.nomla.mumble.net.NomlaTCPMessageType
+import koeln.becker.nomla.mumble.net.NomlaTcpMessageType
 import koeln.becker.nomla.mumble.protobuf.Mumble
 import koeln.becker.nomla.mumble.util.MumbleVersion
 
@@ -28,20 +28,20 @@ import koeln.becker.nomla.mumble.util.MumbleVersion
  * drop them silently once the connection is gone. Any thread.
  */
 @Suppress("TooManyFunctions") // One function per request the protocol offers.
-internal class ServerCommands(private val send: (MessageLite, NomlaTCPMessageType) -> Unit) {
+internal class ServerCommands(private val send: (MessageLite, NomlaTcpMessageType) -> Unit) {
 
     /** The first two messages of every connection. Opus is the only codec this client offers. */
     fun handshake(release: String, osVersion: String, username: String?, password: String?, tokens: List<String>) {
-        send(MumbleVersion.clientVersion(release, "Android", osVersion), NomlaTCPMessageType.Version)
+        send(MumbleVersion.clientVersion(release, "Android", osVersion), NomlaTcpMessageType.Version)
         val auth = Mumble.Authenticate.newBuilder().setOpus(true).addAllTokens(tokens)
         username?.let(auth::setUsername)
         password?.let(auth::setPassword)
-        send(auth.build(), NomlaTCPMessageType.Authenticate)
+        send(auth.build(), NomlaTcpMessageType.Authenticate)
     }
 
     /** Replaces the access tokens; the server re-evaluates channel access with them. */
     fun sendAccessTokens(tokens: Collection<String>) =
-        send(Mumble.Authenticate.newBuilder().addAllTokens(tokens).build(), NomlaTCPMessageType.Authenticate)
+        send(Mumble.Authenticate.newBuilder().addAllTokens(tokens).build(), NomlaTcpMessageType.Authenticate)
 
     fun moveUser(session: Int, channel: Int) =
         userState(Mumble.UserState.newBuilder().setSession(session).setChannelId(channel))
@@ -60,11 +60,11 @@ internal class ServerCommands(private val send: (MessageLite, NomlaTCPMessageTyp
             .setPosition(position)
             .setTemporary(temporary)
             .build(),
-        NomlaTCPMessageType.ChannelState,
+        NomlaTcpMessageType.ChannelState,
     )
 
     fun removeChannel(channel: Int) =
-        send(Mumble.ChannelRemove.newBuilder().setChannelId(channel).build(), NomlaTCPMessageType.ChannelRemove)
+        send(Mumble.ChannelRemove.newBuilder().setChannelId(channel).build(), NomlaTcpMessageType.ChannelRemove)
 
     fun linkChannels(channel: Int, other: Int) =
         channelState(Mumble.ChannelState.newBuilder().setChannelId(channel).addLinksAdd(other))
@@ -73,7 +73,7 @@ internal class ServerCommands(private val send: (MessageLite, NomlaTCPMessageTyp
         channelState(Mumble.ChannelState.newBuilder().setChannelId(channel).addAllLinksRemove(others))
 
     fun requestPermissions(channel: Int) =
-        send(Mumble.PermissionQuery.newBuilder().setChannelId(channel).build(), NomlaTCPMessageType.PermissionQuery)
+        send(Mumble.PermissionQuery.newBuilder().setChannelId(channel).build(), NomlaTcpMessageType.PermissionQuery)
 
     fun requestComment(session: Int) = requestBlob(Mumble.RequestBlob.newBuilder().addSessionComment(session))
 
@@ -84,7 +84,7 @@ internal class ServerCommands(private val send: (MessageLite, NomlaTCPMessageTyp
 
     fun requestUserStats(session: Int) = send(
         Mumble.UserStats.newBuilder().setSession(session).setStatsOnly(false).build(),
-        NomlaTCPMessageType.UserStats,
+        NomlaTcpMessageType.UserStats,
     )
 
     /** User id 0 asks the server to register the user under their current name and certificate. */
@@ -92,7 +92,7 @@ internal class ServerCommands(private val send: (MessageLite, NomlaTCPMessageTyp
 
     fun kickBanUser(session: Int, reason: String?, ban: Boolean) = send(
         Mumble.UserRemove.newBuilder().setSession(session).setReason(reason).setBan(ban).build(),
-        NomlaTCPMessageType.UserRemove,
+        NomlaTcpMessageType.UserRemove,
     )
 
     fun setComment(session: Int, comment: String?) =
@@ -123,17 +123,17 @@ internal class ServerCommands(private val send: (MessageLite, NomlaTCPMessageTyp
 
     fun registerVoiceTarget(id: Int, target: Mumble.VoiceTarget.Target) = send(
         Mumble.VoiceTarget.newBuilder().setId(id).addTargets(target).build(),
-        NomlaTCPMessageType.VoiceTarget,
+        NomlaTcpMessageType.VoiceTarget,
     )
 
-    private fun userState(builder: Mumble.UserState.Builder) = send(builder.build(), NomlaTCPMessageType.UserState)
+    private fun userState(builder: Mumble.UserState.Builder) = send(builder.build(), NomlaTcpMessageType.UserState)
 
     private fun channelState(builder: Mumble.ChannelState.Builder) =
-        send(builder.build(), NomlaTCPMessageType.ChannelState)
+        send(builder.build(), NomlaTcpMessageType.ChannelState)
 
     private fun requestBlob(builder: Mumble.RequestBlob.Builder) =
-        send(builder.build(), NomlaTCPMessageType.RequestBlob)
+        send(builder.build(), NomlaTcpMessageType.RequestBlob)
 
     private fun textMessage(builder: Mumble.TextMessage.Builder) =
-        send(builder.build(), NomlaTCPMessageType.TextMessage)
+        send(builder.build(), NomlaTcpMessageType.TextMessage)
 }

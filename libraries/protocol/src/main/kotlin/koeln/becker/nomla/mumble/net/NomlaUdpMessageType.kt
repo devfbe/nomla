@@ -21,7 +21,7 @@ package koeln.becker.nomla.mumble.net
  * UDP packet types. The ordinals are the wire IDs, so the CELT and Speex entries stay although
  * only Opus is decoded.
  */
-internal enum class NomlaUDPMessageType {
+internal enum class NomlaUdpMessageType {
     UDPVoiceCELTAlpha,
     UDPPing,
     UDPVoiceSpeex,

@@ -26,7 +26,7 @@ import koeln.becker.nomla.mumble.audio.capture.NoopPreprocessor
 import koeln.becker.nomla.mumble.audio.encoder.Encoder
 import koeln.becker.nomla.mumble.audio.inputmode.ContinuousInputMode
 import koeln.becker.nomla.mumble.audio.inputmode.ToggleInputMode
-import koeln.becker.nomla.mumble.net.NomlaUDPMessageType
+import koeln.becker.nomla.mumble.net.NomlaUdpMessageType
 import koeln.becker.nomla.mumble.net.PacketBuffer
 import koeln.becker.nomla.mumble.net.UdpProtocol
 import koeln.becker.nomla.mumble.testutil.AllocationMeter.HALF_AN_OBJECT
@@ -120,7 +120,7 @@ class VoiceTransmitterTest {
 
     private fun transmitter(listener: AudioHandler.AudioEncodeListener, mode: InputMode = ContinuousInputMode()) =
         VoiceTransmitter(CapturePipeline(null, NoopPreprocessor, mode), listener).apply {
-            setCodec(NomlaUDPMessageType.UDPVoiceOpus) { FirstSampleEncoder() }
+            setCodec(NomlaUdpMessageType.UDPVoiceOpus) { FirstSampleEncoder() }
         }
 
     private fun frame(first: Int) = ShortArray(FRAME) { if (it == 0) first.toShort() else 0 }
@@ -133,7 +133,7 @@ class VoiceTransmitterTest {
     ) =
         VoiceTransmitter(CapturePipeline(null, NoopPreprocessor, mode), listener).apply {
             udpProtocol = protocol
-            setCodec(NomlaUDPMessageType.UDPVoiceOpus) { BufferingEncoder(framesPerPacket = 2) }
+            setCodec(NomlaUdpMessageType.UDPVoiceOpus) { BufferingEncoder(framesPerPacket = 2) }
         }
 
     private fun bytes(vararg values: Int) = values.map { it.toByte() }
@@ -251,7 +251,7 @@ class VoiceTransmitterTest {
         transmitter.onAudioInputReceived(frame(0x0102), FRAME)
         transmitter.onAudioInputReceived(frame(0x0304), FRAME)
 
-        val opus = NomlaUDPMessageType.UDPVoiceOpus.ordinal shl 5
+        val opus = NomlaUdpMessageType.UDPVoiceOpus.ordinal shl 5
         assertThat(listener.packets.map { it.toList() }).containsExactly(
             listOf((opus or 3).toByte(), 0, 2, 1, 2),
             listOf((opus or 3).toByte(), 1, 2, 3, 4),
@@ -341,6 +341,6 @@ class VoiceTransmitterTest {
     private companion object {
         const val FRAME = 480
         const val HOT_CALLS = 100_000
-        val OPUS = NomlaUDPMessageType.UDPVoiceOpus.ordinal shl 5
+        val OPUS = NomlaUdpMessageType.UDPVoiceOpus.ordinal shl 5
     }
 }

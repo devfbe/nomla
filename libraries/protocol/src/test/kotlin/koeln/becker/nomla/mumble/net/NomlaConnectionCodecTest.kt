@@ -30,7 +30,7 @@ class NomlaConnectionCodecTest {
     fun tearDown() = h.close()
 
     private fun codecVersion(opus: Boolean) = h.receive(
-        NomlaTCPMessageType.CodecVersion,
+        NomlaTcpMessageType.CodecVersion,
         Mumble.CodecVersion.newBuilder()
             .setAlpha(0x8000000b.toInt()).setBeta(0).setPreferAlpha(true).setOpus(opus)
             .build(),

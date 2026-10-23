@@ -37,7 +37,7 @@ internal object UdpAudioEncoder {
     private const val LEGACY_TERMINATOR = 1L shl 13
 
     /** The type bits of a legacy Opus packet, read once rather than per packet. */
-    private val LEGACY_OPUS = NomlaUDPMessageType.UDPVoiceOpus.ordinal shl 5
+    private val LEGACY_OPUS = NomlaUdpMessageType.UDPVoiceOpus.ordinal shl 5
 
     private const val TAG_TARGET = (1 shl 3) or WIRE_VARINT
     private const val TAG_FRAME_NUMBER = (4 shl 3) or WIRE_VARINT
@@ -111,13 +111,13 @@ internal class UdpPacketDecoder {
         val r = reader
         r.start(data, 0, length)
         val header = r.next()
-        val codec = NomlaUDPMessageType.entries.getOrNull(header ushr LEGACY_TYPE_SHIFT)
-            ?.takeIf { it != NomlaUDPMessageType.UDPPing }
-        out.codec = codec ?: NomlaUDPMessageType.UDPPing
+        val codec = NomlaUdpMessageType.entries.getOrNull(header ushr LEGACY_TYPE_SHIFT)
+            ?.takeIf { it != NomlaUdpMessageType.UDPPing }
+        out.codec = codec ?: NomlaUdpMessageType.UDPPing
         out.context = header and LEGACY_TARGET_MASK
         out.session = r.readMumbleVarint().toInt()
         out.frameNumber = r.readMumbleVarint()
-        if (codec != NomlaUDPMessageType.UDPVoiceOpus) return codec != null && r.ok
+        if (codec != NomlaUdpMessageType.UDPVoiceOpus) return codec != null && r.ok
 
         val sizeField = r.readMumbleVarint()
         val size = (sizeField and LEGACY_SIZE_MASK).toInt()

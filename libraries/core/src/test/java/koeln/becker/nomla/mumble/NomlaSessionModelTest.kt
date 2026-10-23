@@ -24,7 +24,7 @@ import org.robolectric.RobolectricTestRunner
 import koeln.becker.nomla.mumble.model.ServerState
 import koeln.becker.nomla.mumble.model.TalkState
 import koeln.becker.nomla.mumble.net.FakeTcpTransport
-import koeln.becker.nomla.mumble.net.NomlaTCPMessageType
+import koeln.becker.nomla.mumble.net.NomlaTcpMessageType
 import koeln.becker.nomla.mumble.protobuf.Mumble
 import koeln.becker.nomla.mumble.testutil.NomlaSessionHarness
 import koeln.becker.nomla.mumble.testutil.awaitUntil
@@ -47,7 +47,7 @@ class NomlaSessionModelTest {
     }
 
     private fun FakeTcpTransport.userJoins(session: Int, name: String) = simulateMessage(
-        NomlaTCPMessageType.UserState,
+        NomlaTcpMessageType.UserState,
         Mumble.UserState.newBuilder().setSession(session).setName(name).setChannelId(0).build().toByteArray(),
     )
 

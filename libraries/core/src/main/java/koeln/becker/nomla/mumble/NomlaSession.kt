@@ -67,7 +67,7 @@ import koeln.becker.nomla.mumble.model.localVolumeScope
 import koeln.becker.nomla.mumble.net.ConnectionParams
 import koeln.becker.nomla.mumble.net.ConnectionWarning
 import koeln.becker.nomla.mumble.net.NomlaConnection
-import koeln.becker.nomla.mumble.net.NomlaUDPMessageType
+import koeln.becker.nomla.mumble.net.NomlaUdpMessageType
 import koeln.becker.nomla.mumble.net.ReconnectPolicy
 import koeln.becker.nomla.mumble.net.TrustStore
 import koeln.becker.nomla.mumble.protocol.LocalInput
@@ -367,7 +367,7 @@ public class NomlaSession internal constructor(
         val params = AudioSessionParams(
             self = self,
             maxBandwidth = info.maxBandwidth,
-            codec = if (info.opus) NomlaUDPMessageType.UDPVoiceOpus else null,
+            codec = if (info.opus) NomlaUdpMessageType.UDPVoiceOpus else null,
             targetId = currentVoiceTargetId,
             inputMode = audioSession.inputMode,
             udpProtocol = connection.udpProtocol,

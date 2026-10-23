@@ -28,7 +28,7 @@ import koeln.becker.nomla.mumble.audio.capture.FarEndFrameChunker
 import koeln.becker.nomla.mumble.exception.AudioInitializationException
 import koeln.becker.nomla.mumble.exception.NativeAudioException
 import koeln.becker.nomla.mumble.model.TalkState
-import koeln.becker.nomla.mumble.net.NomlaUDPMessageType
+import koeln.becker.nomla.mumble.net.NomlaUdpMessageType
 import koeln.becker.nomla.mumble.net.VoicePacket
 import koeln.becker.nomla.mumble.util.NomlaLog
 import java.util.Arrays
@@ -252,8 +252,8 @@ internal class AudioOutput(
     }
 
     /** True for Opus; anything else is dropped, with one log line per output. */
-    private fun isDecodable(messageType: NomlaUDPMessageType): Boolean {
-        if (messageType == NomlaUDPMessageType.UDPVoiceOpus) return true
+    private fun isDecodable(messageType: NomlaUdpMessageType): Boolean {
+        if (messageType == NomlaUdpMessageType.UDPVoiceOpus) return true
         if (!loggedUnsupportedCodec) {
             loggedUnsupportedCodec = true
             NomlaLog.w(TAG, "Dropping $messageType voice packets: only Opus is supported")

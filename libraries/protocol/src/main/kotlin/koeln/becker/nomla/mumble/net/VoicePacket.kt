@@ -23,7 +23,7 @@ package koeln.becker.nomla.mumble.net
  */
 internal class VoicePacket {
     /** The codec; only Opus packets carry the fields below. */
-    var codec: NomlaUDPMessageType = NomlaUDPMessageType.UDPVoiceOpus
+    var codec: NomlaUdpMessageType = NomlaUdpMessageType.UDPVoiceOpus
         internal set
 
     /** Why this client receives the audio: one of the `CONTEXT_*` values, or another target id. */
@@ -55,7 +55,7 @@ internal class VoicePacket {
         internal set
 
     internal fun clear() {
-        codec = NomlaUDPMessageType.UDPVoiceOpus
+        codec = NomlaUdpMessageType.UDPVoiceOpus
         context = CONTEXT_NORMAL
         session = 0
         frameNumber = 0

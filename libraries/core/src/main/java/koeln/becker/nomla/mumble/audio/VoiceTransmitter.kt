@@ -21,7 +21,7 @@ package koeln.becker.nomla.mumble.audio
 import koeln.becker.nomla.mumble.audio.capture.CapturePipeline
 import koeln.becker.nomla.mumble.audio.encoder.Encoder
 import koeln.becker.nomla.mumble.exception.NativeAudioException
-import koeln.becker.nomla.mumble.net.NomlaUDPMessageType
+import koeln.becker.nomla.mumble.net.NomlaUdpMessageType
 import koeln.becker.nomla.mumble.net.PacketBuffer
 import koeln.becker.nomla.mumble.net.UdpAudioEncoder
 import koeln.becker.nomla.mumble.net.UdpProtocol
@@ -60,7 +60,7 @@ internal class VoiceTransmitter(
     @Volatile var udpProtocol = UdpProtocol.LEGACY
 
     /** Written under [encoderLock], read without it. */
-    @Volatile var codec: NomlaUDPMessageType? = null
+    @Volatile var codec: NomlaUdpMessageType? = null
         private set
 
     private val encoderLock = Any()
@@ -92,7 +92,7 @@ internal class VoiceTransmitter(
      * @param create builds the encoder for a non-null codec, or returns null if it has none.
      * @throws NativeAudioException from [create]; input stays off until the next [setCodec].
      */
-    fun setCodec(codec: NomlaUDPMessageType?, create: (NomlaUDPMessageType) -> Encoder?) {
+    fun setCodec(codec: NomlaUdpMessageType?, create: (NomlaUdpMessageType) -> Encoder?) {
         synchronized(encoderLock) {
             this.codec = codec
             encoder?.close()
@@ -103,7 +103,7 @@ internal class VoiceTransmitter(
     }
 
     /** Like [setCodec], but a no-op when [codec] is already set. @return whether it changed. */
-    fun setCodecIfChanged(codec: NomlaUDPMessageType?, create: (NomlaUDPMessageType) -> Encoder?): Boolean {
+    fun setCodecIfChanged(codec: NomlaUdpMessageType?, create: (NomlaUdpMessageType) -> Encoder?): Boolean {
         synchronized(encoderLock) {
             if (codec == this.codec) return false
             setCodec(codec, create)

@@ -44,7 +44,7 @@ class TcpFrameReaderTest {
 
         val read = NomlaTcp.readFrame(input)!!
 
-        assertThat(read.type).isEqualTo(NomlaTCPMessageType.ChannelState)
+        assertThat(read.type).isEqualTo(NomlaTcpMessageType.ChannelState)
         assertThat(read.data).isEqualTo(byteArrayOf(1, 2, 3))
     }
 
@@ -54,7 +54,7 @@ class TcpFrameReaderTest {
 
         assertThat(NomlaTcp.readFrame(input)).isNull()
         val next = NomlaTcp.readFrame(input)!!
-        assertThat(next.type).isEqualTo(NomlaTCPMessageType.Ping)
+        assertThat(next.type).isEqualTo(NomlaTcpMessageType.Ping)
         assertThat(next.data).isEmpty()
     }
 
@@ -83,11 +83,11 @@ class TcpFrameReaderTest {
         val input = DataInputStream(Dribbling(ByteArrayInputStream(bytes)))
 
         val first = NomlaTcp.readFrame(input)!!
-        assertThat(first.type).isEqualTo(NomlaTCPMessageType.ChannelState)
+        assertThat(first.type).isEqualTo(NomlaTcpMessageType.ChannelState)
         assertThat(first.data).isEqualTo(payload)
 
         val second = NomlaTcp.readFrame(input)!!
-        assertThat(second.type).isEqualTo(NomlaTCPMessageType.Ping)
+        assertThat(second.type).isEqualTo(NomlaTcpMessageType.Ping)
         assertThat(second.data).isEqualTo(byteArrayOf(42))
         assertThat(input.read()).isEqualTo(-1)
     }
@@ -104,7 +104,7 @@ class TcpFrameReaderTest {
     /** The last known type must not be mistaken for an unknown one by an off-by-one bound. */
     @Test
     fun theHighestKnownTypeIsAccepted() {
-        val last = NomlaTCPMessageType.values().last()
+        val last = NomlaTcpMessageType.values().last()
         val input = stream(tcpFrame(last.ordinal, byteArrayOf(5)))
 
         val read = NomlaTcp.readFrame(input)!!

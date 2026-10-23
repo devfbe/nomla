@@ -30,7 +30,7 @@ import koeln.becker.nomla.mumble.exception.NomlaException
 import koeln.becker.nomla.mumble.net.CryptState
 import koeln.becker.nomla.mumble.net.NomlaConnection
 import koeln.becker.nomla.mumble.net.NomlaSSLSocketFactory
-import koeln.becker.nomla.mumble.net.NomlaTCPMessageType
+import koeln.becker.nomla.mumble.net.NomlaTcpMessageType
 import koeln.becker.nomla.mumble.net.NomlaTcp
 import koeln.becker.nomla.mumble.net.NomlaUdp
 import koeln.becker.nomla.mumble.net.ReconnectPolicy
@@ -92,12 +92,12 @@ public class ScriptedConnections(reconnectBaseDelayMillis: Long, reconnectAttemp
     public fun synchronizeLatest(session: Int = 1) {
         val tcp = transports.last()
         tcp.listener.onTCPConnectionEstablished()
-        tcp.receive(NomlaTCPMessageType.ChannelState, Mumble.ChannelState.newBuilder().setChannelId(0).setName("Root"))
+        tcp.receive(NomlaTcpMessageType.ChannelState, Mumble.ChannelState.newBuilder().setChannelId(0).setName("Root"))
         tcp.receive(
-            NomlaTCPMessageType.UserState,
+            NomlaTcpMessageType.UserState,
             Mumble.UserState.newBuilder().setSession(session).setName("me").setChannelId(0),
         )
-        tcp.receive(NomlaTCPMessageType.ServerSync, Mumble.ServerSync.newBuilder().setSession(session))
+        tcp.receive(NomlaTcpMessageType.ServerSync, Mumble.ServerSync.newBuilder().setSession(session))
     }
 
     /** The latest attempt's socket fails with [message], as a dropped network does. */
@@ -136,14 +136,14 @@ public class ScriptedConnections(reconnectBaseDelayMillis: Long, reconnectAttemp
         }
 
         override fun connect(host: String, port: Int, useTor: Boolean) = Unit
-        override fun sendMessage(message: MessageLite, messageType: NomlaTCPMessageType) = Unit
-        override fun sendMessage(data: ByteArray, length: Int, messageType: NomlaTCPMessageType) = Unit
+        override fun sendMessage(message: MessageLite, messageType: NomlaTcpMessageType) = Unit
+        override fun sendMessage(data: ByteArray, length: Int, messageType: NomlaTcpMessageType) = Unit
 
         override fun disconnect() {
             disconnectCalls++
         }
 
-        fun receive(type: NomlaTCPMessageType, message: MessageLite.Builder) {
+        fun receive(type: NomlaTcpMessageType, message: MessageLite.Builder) {
             val bytes = message.build().toByteArray()
             listener.onTCPMessageReceived(type, bytes.size, bytes)
         }

@@ -45,7 +45,7 @@ internal class FakeTcpTransport(
     @Volatile var connectPort: Int = 0
     @Volatile var connectUseTor: Boolean = false
     @Volatile var disconnectCalls = 0
-    val sent = CopyOnWriteArrayList<NomlaTCPMessageType>()
+    val sent = CopyOnWriteArrayList<NomlaTcpMessageType>()
 
     /** The protobuf messages sent, in order; raw tunnelled frames are not included. */
     val sentMessages = CopyOnWriteArrayList<MessageLite>()
@@ -57,7 +57,7 @@ internal class FakeTcpTransport(
      * Called from [sendMessage], on whichever thread sends. Lets a test act while the protocol
      * context is in the middle of a message handler.
      */
-    @Volatile var onSend: ((NomlaTCPMessageType) -> Unit)? = null
+    @Volatile var onSend: ((NomlaTcpMessageType) -> Unit)? = null
 
     /** Whether the terminal callback [disconnect] dispatched actually ran. */
     val terminalDelivered = AtomicBoolean(false)
@@ -71,16 +71,16 @@ internal class FakeTcpTransport(
         // Published last: tests wait on this field, so everything else must be in place first.
         connectedInProtocolContext = inProtocolContext()
     }
-    override fun sendMessage(message: MessageLite, messageType: NomlaTCPMessageType) {
+    override fun sendMessage(message: MessageLite, messageType: NomlaTcpMessageType) {
         sentMessages += message
         record(messageType)
     }
-    override fun sendMessage(data: ByteArray, length: Int, messageType: NomlaTCPMessageType) {
+    override fun sendMessage(data: ByteArray, length: Int, messageType: NomlaTcpMessageType) {
         sentFrames += data.copyOf(length)
         record(messageType)
     }
 
-    private fun record(messageType: NomlaTCPMessageType) {
+    private fun record(messageType: NomlaTcpMessageType) {
         sent += messageType
         onSend?.invoke(messageType)
     }
@@ -97,7 +97,7 @@ internal class FakeTcpTransport(
     }
 
     fun simulateConnected() = post { it.onTCPConnectionEstablished() }
-    fun simulateMessage(type: NomlaTCPMessageType, data: ByteArray) =
+    fun simulateMessage(type: NomlaTcpMessageType, data: ByteArray) =
         post { it.onTCPMessageReceived(type, data.size, data) }
     fun simulateFailure(e: NomlaException) = post { it.onTCPConnectionFailed(e) }
     fun simulateHandshakeFailure(chain: Array<X509Certificate>) = post { it.onTLSHandshakeFailed(chain) }

@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import javax.net.ssl.SSLHandshakeException
 import javax.net.ssl.SSLSocket
 
-internal class TcpFrame(val type: NomlaTCPMessageType, val data: ByteArray)
+internal class TcpFrame(val type: NomlaTcpMessageType, val data: ByteArray)
 
 /**
  * The TLS/TCP connection to a Mumble server, framing protobuf messages. Single-use.
@@ -177,7 +177,7 @@ internal class NomlaTcp(
     }
 
     /** Thread-safe; writes in order after everything queued before. */
-    override fun sendMessage(message: MessageLite, messageType: NomlaTCPMessageType) {
+    override fun sendMessage(message: MessageLite, messageType: NomlaTcpMessageType) {
         enqueueSend {
             if (messageType.isLogged) NomlaLog.v(TAG, "OUT: $messageType")
             val out = output ?: return@enqueueSend logNoStream(messageType)
@@ -188,7 +188,7 @@ internal class NomlaTcp(
     }
 
     /** Thread-safe; writes a copy of [data], so the caller may reuse it. */
-    override fun sendMessage(data: ByteArray, length: Int, messageType: NomlaTCPMessageType) {
+    override fun sendMessage(data: ByteArray, length: Int, messageType: NomlaTcpMessageType) {
         val bytes = data.copyOf(length)
         enqueueSend {
             if (messageType.isLogged) NomlaLog.v(TAG, "OUT: $messageType")
@@ -199,7 +199,7 @@ internal class NomlaTcp(
         }
     }
 
-    private fun logNoStream(messageType: NomlaTCPMessageType) {
+    private fun logNoStream(messageType: NomlaTcpMessageType) {
         NomlaLog.w(TAG, "Dropping $messageType, the TCP connection has no stream")
     }
 
@@ -256,7 +256,7 @@ internal class NomlaTcp(
         fun onTLSCertificateChanged(chain: Array<X509Certificate>)
         fun onTCPConnectionFailed(e: NomlaException)
         fun onTCPConnectionDisconnect()
-        fun onTCPMessageReceived(type: NomlaTCPMessageType, length: Int, data: ByteArray)
+        fun onTCPMessageReceived(type: NomlaTcpMessageType, length: Int, data: ByteArray)
     }
 
     companion object {
@@ -278,7 +278,7 @@ internal class NomlaTcp(
             }
             val data = ByteArray(length)
             input.readFully(data)
-            val types = NomlaTCPMessageType.values()
+            val types = NomlaTcpMessageType.values()
             if (messageType < 0 || messageType >= types.size) {
                 NomlaLog.w(TAG, "Got unsupported messageType: $messageType")
                 return null

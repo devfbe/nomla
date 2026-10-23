@@ -32,7 +32,7 @@ import koeln.becker.nomla.mumble.audio.capture.CaptureState
 import koeln.becker.nomla.mumble.audio.inputmode.ContinuousInputMode
 import koeln.becker.nomla.mumble.exception.AudioInitializationException
 import koeln.becker.nomla.mumble.model.UserState
-import koeln.becker.nomla.mumble.net.NomlaUDPMessageType
+import koeln.becker.nomla.mumble.net.NomlaUdpMessageType
 import koeln.becker.nomla.mumble.net.MessageHandlerRegistry
 import koeln.becker.nomla.mumble.net.TcpMessageHandler
 import koeln.becker.nomla.mumble.net.VoicePacketHandler
@@ -46,7 +46,6 @@ import koeln.becker.nomla.mumble.testutil.SilentLogger
 import koeln.becker.nomla.mumble.testutil.awaitUntil
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CountDownLatch
-import kotlin.concurrent.thread
 
 /**
  * [AudioController] threading: the pipeline is created and torn down on the "nomla-audio-control"
@@ -85,7 +84,7 @@ class AudioControllerTest {
     private val context = RuntimeEnvironment.getApplication()
     private val controller = newController()
     private val params = AudioSessionParams(
-        UserState(1, "me", 0), -1, NomlaUDPMessageType.UDPVoiceOpus, 0, ContinuousInputMode(),
+        UserState(1, "me", 0), -1, NomlaUdpMessageType.UDPVoiceOpus, 0, ContinuousInputMode(),
     )
 
     private fun newController(mainHandler: Handler = Handler(Looper.getMainLooper())) = AudioController(

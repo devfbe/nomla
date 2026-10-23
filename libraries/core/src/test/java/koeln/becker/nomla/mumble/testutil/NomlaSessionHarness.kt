@@ -34,7 +34,7 @@ import koeln.becker.nomla.mumble.net.ConnectionParams
 import koeln.becker.nomla.mumble.net.FakeTcpTransport
 import koeln.becker.nomla.mumble.net.FakeTransports
 import koeln.becker.nomla.mumble.net.NomlaConnection
-import koeln.becker.nomla.mumble.net.NomlaTCPMessageType
+import koeln.becker.nomla.mumble.net.NomlaTcpMessageType
 import koeln.becker.nomla.mumble.net.ReconnectPolicy
 import koeln.becker.nomla.mumble.protobuf.Mumble
 import koeln.becker.nomla.mumble.session.ConnectionConfig
@@ -129,7 +129,7 @@ internal class NomlaSessionHarness(
         // `connected` is set before that callback is posted to the main looper.
         drainUntil("connection $index established") {
             session.connection?.isConnected == true &&
-                tcp.sent.contains(NomlaTCPMessageType.Authenticate)
+                tcp.sent.contains(NomlaTcpMessageType.Authenticate)
         }
         return tcp
     }
@@ -161,15 +161,15 @@ internal class NomlaSessionHarness(
 
     private fun feedSync(tcp: FakeTcpTransport, session: Int) {
         tcp.simulateMessage(
-            NomlaTCPMessageType.ChannelState,
+            NomlaTcpMessageType.ChannelState,
             Mumble.ChannelState.newBuilder().setChannelId(0).setName("Root").build().toByteArray(),
         )
         tcp.simulateMessage(
-            NomlaTCPMessageType.UserState,
+            NomlaTcpMessageType.UserState,
             Mumble.UserState.newBuilder().setSession(session).setName("me").setChannelId(0).build().toByteArray(),
         )
         tcp.simulateMessage(
-            NomlaTCPMessageType.ServerSync,
+            NomlaTcpMessageType.ServerSync,
             Mumble.ServerSync.newBuilder().setSession(session).setMaxBandwidth(72_000).build().toByteArray(),
         )
     }

@@ -27,7 +27,7 @@ import koeln.becker.nomla.mumble.protobuf.Mumble
  * TCP message types of the Mumble protocol. The ordinal is the wire id, so entries are never
  * reordered. [parser] is null for types the server never sends.
  */
-internal enum class NomlaTCPMessageType(private val parser: Parser<out MessageLite>?) {
+internal enum class NomlaTcpMessageType(private val parser: Parser<out MessageLite>?) {
     Version(Mumble.Version.parser()),
     UDPTunnel(Mumble.UDPTunnel.parser()),
     Authenticate(Mumble.Authenticate.parser()),

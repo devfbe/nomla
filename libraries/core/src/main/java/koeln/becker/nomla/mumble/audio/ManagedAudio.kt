@@ -21,7 +21,7 @@ import android.content.Context
 import koeln.becker.nomla.mumble.audio.capture.CaptureState
 import koeln.becker.nomla.mumble.audio.capture.InputMode
 import koeln.becker.nomla.mumble.model.UserState
-import koeln.becker.nomla.mumble.net.NomlaUDPMessageType
+import koeln.becker.nomla.mumble.net.NomlaUdpMessageType
 import koeln.becker.nomla.mumble.net.TcpMessageHandler
 import koeln.becker.nomla.mumble.net.UdpProtocol
 import koeln.becker.nomla.mumble.net.VoicePacketHandler
@@ -45,7 +45,7 @@ internal interface ManagedAudio {
 internal data class AudioSessionParams(
     val self: UserState,
     val maxBandwidth: Int,
-    val codec: NomlaUDPMessageType?,
+    val codec: NomlaUdpMessageType?,
     val targetId: Byte,
     val inputMode: InputMode,
     /** The connection's voice packet format. */

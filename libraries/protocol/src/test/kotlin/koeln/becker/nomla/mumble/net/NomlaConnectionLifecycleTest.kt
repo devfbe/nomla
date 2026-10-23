@@ -59,7 +59,7 @@ class NomlaConnectionLifecycleTest {
     @Test
     fun theServerIsOnlyKnownOnceSynchronized() {
         h.establish()
-        h.receive(NomlaTCPMessageType.Version, Mumble.Version.newBuilder().setRelease("1.4.0").setOs("Linux").build())
+        h.receive(NomlaTcpMessageType.Version, Mumble.Version.newBuilder().setRelease("1.4.0").setOs("Linux").build())
 
         assertThat(connection.serverInfo).isNull()
         assertThat(connection.latency).isNull()
@@ -94,7 +94,7 @@ class NomlaConnectionLifecycleTest {
         for (i in 0 until 5_000) {
             val state = Mumble.ChannelState.newBuilder().setChannelId(i).setName("channel $i")
             if (i > 0) state.parent = 0
-            tcp.simulateMessage(NomlaTCPMessageType.ChannelState, state.build().toByteArray())
+            tcp.simulateMessage(NomlaTcpMessageType.ChannelState, state.build().toByteArray())
         }
         h.runCurrent()
 
@@ -142,7 +142,7 @@ class NomlaConnectionLifecycleTest {
             .setReason("wrong password")
             .build()
 
-        h.receive(NomlaTCPMessageType.Reject, reject)
+        h.receive(NomlaTcpMessageType.Reject, reject)
         tcp.simulateSocketClosed()
         h.runCurrent()
 
@@ -163,7 +163,7 @@ class NomlaConnectionLifecycleTest {
             if (it is Mumble.UserRemove) order += "handler, connected: ${connection.isConnected}"
         }
 
-        h.receive(NomlaTCPMessageType.UserRemove, Mumble.UserRemove.newBuilder().setSession(7).setActor(3).build())
+        h.receive(NomlaTcpMessageType.UserRemove, Mumble.UserRemove.newBuilder().setSession(7).setActor(3).build())
 
         assertThat(order).containsExactly("handler, connected: true")
         val error = listener.disconnects.single()!!
@@ -175,7 +175,7 @@ class NomlaConnectionLifecycleTest {
         h.establish()
         h.synchronize(session = 7)
 
-        h.receive(NomlaTCPMessageType.UserRemove, Mumble.UserRemove.newBuilder().setSession(8).build())
+        h.receive(NomlaTcpMessageType.UserRemove, Mumble.UserRemove.newBuilder().setSession(8).build())
 
         assertThat(connection.isSynchronized).isTrue()
     }
@@ -213,7 +213,7 @@ class NomlaConnectionLifecycleTest {
         val seen = AtomicInteger()
         connection.addTcpHandler { if (it is Mumble.Version) seen.incrementAndGet() }
 
-        tcp.simulateMessage(NomlaTCPMessageType.Version, versionFrame)
+        tcp.simulateMessage(NomlaTcpMessageType.Version, versionFrame)
         connection.disconnect()
         h.runCurrent()
 
@@ -229,8 +229,8 @@ class NomlaConnectionLifecycleTest {
         connection.addTcpHandler { if (it is Mumble.Version) error("handler is broken") }
         connection.addTcpHandler { if (it is Mumble.TextMessage) survivors.incrementAndGet() }
 
-        h.receive(NomlaTCPMessageType.Version, Mumble.Version.newBuilder().setRelease("1.4.0").build())
-        h.receive(NomlaTCPMessageType.TextMessage, Mumble.TextMessage.newBuilder().setMessage("still here").build())
+        h.receive(NomlaTcpMessageType.Version, Mumble.Version.newBuilder().setRelease("1.4.0").build())
+        h.receive(NomlaTcpMessageType.TextMessage, Mumble.TextMessage.newBuilder().setMessage("still here").build())
 
         assertThat(survivors.get()).isEqualTo(1)
         assertThat(listener.disconnects).isEmpty()
@@ -242,7 +242,7 @@ class NomlaConnectionLifecycleTest {
         val tcp = h.establish()
         connection.addTcpHandler { if (it is Mumble.Version) throw AssertionError("broken invariant") }
 
-        tcp.simulateMessage(NomlaTCPMessageType.Version, versionFrame)
+        tcp.simulateMessage(NomlaTcpMessageType.Version, versionFrame)
         h.runCurrent()
 
         val error = listener.disconnects.single()!!
@@ -308,7 +308,7 @@ class NomlaConnectionLifecycleTest {
         val texts = (0 until 200).map { "message $it" }
 
         texts.forEachIndexed { i, text ->
-            tcp.simulateMessage(NomlaTCPMessageType.TextMessage, textFrame(text))
+            tcp.simulateMessage(NomlaTcpMessageType.TextMessage, textFrame(text))
             if (i % 50 == 0) connection.post { seen += "posted $i" }
         }
         h.runCurrent()
@@ -403,7 +403,7 @@ class NomlaConnectionLifecycleTest {
         val tcp = h.establish()
         // Under forced TCP the ServerSync handler's first act is this send: the user disconnects
         // while the protocol context is inside the handler.
-        tcp.onSend = { type -> if (type == NomlaTCPMessageType.UDPTunnel) connection.disconnect() }
+        tcp.onSend = { type -> if (type == NomlaTcpMessageType.UDPTunnel) connection.disconnect() }
 
         h.synchronize(session = 7)
 
@@ -437,7 +437,7 @@ class NomlaConnectionLifecycleTest {
     }
 
     private fun argumentFor(method: Method, type: Class<*>): Any = when {
-        type == NomlaTCPMessageType::class.java -> NomlaTCPMessageType.Version
+        type == NomlaTcpMessageType::class.java -> NomlaTcpMessageType.Version
         type == Int::class.javaPrimitiveType -> versionFrame.size
         // The only parameter type two callbacks share, and they need different bytes: a protobuf
         // for the TCP side, a datagram whose type nibble is a voice packet for the UDP side.

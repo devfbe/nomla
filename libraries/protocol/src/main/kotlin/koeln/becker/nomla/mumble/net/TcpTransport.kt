@@ -32,8 +32,8 @@ internal interface TcpTransport {
 
     /** Opens the connection. A second call is refused with a ConnectException. */
     fun connect(host: String, port: Int, useTor: Boolean)
-    fun sendMessage(message: MessageLite, messageType: NomlaTCPMessageType)
-    fun sendMessage(data: ByteArray, length: Int, messageType: NomlaTCPMessageType)
+    fun sendMessage(message: MessageLite, messageType: NomlaTcpMessageType)
+    fun sendMessage(data: ByteArray, length: Int, messageType: NomlaTcpMessageType)
 
     /**
      * Closes the socket. The listener's onTCPConnectionDisconnect follows exactly once, and it is

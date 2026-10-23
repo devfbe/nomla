@@ -35,7 +35,7 @@ import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.exception.AudioException
 import koeln.becker.nomla.mumble.exception.AudioInitializationException
 import koeln.becker.nomla.mumble.exception.NativeAudioException
-import koeln.becker.nomla.mumble.net.NomlaUDPMessageType
+import koeln.becker.nomla.mumble.net.NomlaUdpMessageType
 import koeln.becker.nomla.mumble.net.TcpMessageHandler
 import koeln.becker.nomla.mumble.net.VoicePacket
 import koeln.becker.nomla.mumble.net.VoicePacketHandler
@@ -153,9 +153,9 @@ internal class AudioHandler(
      * The encoder for [codec], or null (input disabled) for one it cannot encode.
      * @throws NativeAudioException if the encoder cannot be created.
      */
-    private fun createEncoder(codec: NomlaUDPMessageType): Encoder? = when (codec) {
+    private fun createEncoder(codec: NomlaUdpMessageType): Encoder? = when (codec) {
         // Resampling and preprocessing happen in capturePipeline, before the voice detector.
-        NomlaUDPMessageType.UDPVoiceOpus ->
+        NomlaUdpMessageType.UDPVoiceOpus ->
             OpusEncoder(SAMPLE_RATE, 1, FRAME_SIZE, framesPerPacket, bitrate, MAX_BUFFER_SIZE)
         else -> {
             NomlaLog.w(TAG, "Unsupported codec, input disabled.")
@@ -207,7 +207,7 @@ internal class AudioHandler(
         if (!isInitialized) return // Only listen to change events in this handler.
 
         // Without Opus there is no codec to encode with; null turns input off.
-        val newCodec = if (msg.opus) NomlaUDPMessageType.UDPVoiceOpus else null
+        val newCodec = if (msg.opus) NomlaUdpMessageType.UDPVoiceOpus else null
         try {
             transmitter.setCodecIfChanged(newCodec, ::createEncoder)
         } catch (e: NativeAudioException) {

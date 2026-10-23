@@ -54,7 +54,7 @@ class NomlaConnectionUdpRecoveryTest {
     private fun ConnectionHarness.feedPings(seconds: List<Long>, good: Int = 0) {
         for (s in seconds) {
             atSeconds(s)
-            receive(NomlaTCPMessageType.Ping, serverPing(good))
+            receive(NomlaTcpMessageType.Ping, serverPing(good))
         }
     }
 
@@ -89,7 +89,7 @@ class NomlaConnectionUdpRecoveryTest {
         assertThat(h.connection.isUsingUdp).isFalse()
         assertThat(h.listener.warnings).containsExactly(ConnectionWarning.UDP_THREAD_FAILED)
         assertThat(h.listener.allOnCallbackThread).isTrue()
-        assertThat(tcp.sent).contains(NomlaTCPMessageType.UDPTunnel) // tells the server to tunnel
+        assertThat(tcp.sent).contains(NomlaTcpMessageType.UDPTunnel) // tells the server to tunnel
         assertThat(h.udps).hasSize(1)
 
         h.advanceBy(1_000) // the first restart after 1 s
@@ -163,7 +163,7 @@ class NomlaConnectionUdpRecoveryTest {
     @Test
     fun theMumble15RulesDropTheSixteenBytePingThisClientUsedToSend() {
         val old = ByteArray(16).also {
-            it[0] = ((NomlaUDPMessageType.UDPPing.ordinal shl 5) and 0xFF).toByte()
+            it[0] = ((NomlaUdpMessageType.UDPPing.ordinal shl 5) and 0xFF).toByte()
             java.nio.ByteBuffer.wrap(it, 1, 8).putLong(300_000_000L)
         }
         assertThat(MumbleLegacyPingDecoder.decodeAsServer(old)).isNull()
@@ -263,7 +263,7 @@ class NomlaConnectionUdpRecoveryTest {
         h.synchronize()
 
         h.atSeconds(10)
-        h.receive(NomlaTCPMessageType.Ping, Mumble.Ping.newBuilder().setTimestamp(4_000_000L).build())
+        h.receive(NomlaTcpMessageType.Ping, Mumble.Ping.newBuilder().setTimestamp(4_000_000L).build())
 
         assertThat(h.connection.latency!!.tcpMicros).isEqualTo(6_000_000L)
     }
@@ -282,7 +282,7 @@ class NomlaConnectionUdpRecoveryTest {
         // TCP round trips of 10 and 30 ms, one UDP round trip of 4 ms.
         for ((sentAt, now) in listOf(0L to 10L, 40L to 70L)) {
             h.clock.set(now * 1_000_000L)
-            h.receive(NomlaTCPMessageType.Ping, Mumble.Ping.newBuilder().setTimestamp(sentAt * 1_000L).build())
+            h.receive(NomlaTcpMessageType.Ping, Mumble.Ping.newBuilder().setTimestamp(sentAt * 1_000L).build())
         }
         h.clock.set(80_000_000L)
         h.datagram(h.udps.single(), udpPingReply(sentAtMicros = 76_000L))
@@ -439,7 +439,7 @@ class NomlaConnectionUdpRecoveryTest {
         h.advanceBy(60_000)
 
         assertThat(h.udps).hasSize(2)
-        assertThat(tcp.sent).contains(NomlaTCPMessageType.UDPTunnel)
+        assertThat(tcp.sent).contains(NomlaTcpMessageType.UDPTunnel)
     }
 
     /**

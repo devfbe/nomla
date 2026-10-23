@@ -73,7 +73,7 @@ internal class ProtocolSession(
         /** Where the connection went; known before any server message arrives. */
         val endpoint: Endpoint
 
-        fun sendTcp(message: MessageLite, type: NomlaTCPMessageType)
+        fun sendTcp(message: MessageLite, type: NomlaTcpMessageType)
 
         /** Sends over UDP, whichever way voice currently goes. */
         fun sendUdp(data: ByteArray, length: Int)
@@ -212,7 +212,7 @@ internal class ProtocolSession(
                 }
             } else {
                 val reply = Mumble.CryptSetup.newBuilder().setClientNonce(ByteString.copyFrom(crypt.encryptIV))
-                link.sendTcp(reply.build(), NomlaTCPMessageType.CryptSetup)
+                link.sendTcp(reply.build(), NomlaTcpMessageType.CryptSetup)
             }
         } catch (e: InvalidKeyException) {
             link.fail(
@@ -226,7 +226,7 @@ internal class ProtocolSession(
 
     /** Received UDP packets stopped decrypting; asks the server for a fresh nonce. */
     fun requestCryptResync() {
-        link.sendTcp(Mumble.CryptSetup.newBuilder().build(), NomlaTCPMessageType.CryptSetup)
+        link.sendTcp(Mumble.CryptSetup.newBuilder().build(), NomlaTcpMessageType.CryptSetup)
     }
 
     private fun onPing(message: Mumble.Ping) {
@@ -280,7 +280,7 @@ internal class ProtocolSession(
             .setTcpPackets(tcpPingStats.count)
         if (udpPingStats.count > 0) ping.setUdpPingAvg(udpPingStats.average).setUdpPingVar(udpPingStats.variance)
         if (tcpPingStats.count > 0) ping.setTcpPingAvg(tcpPingStats.average).setTcpPingVar(tcpPingStats.variance)
-        link.sendTcp(ping.build(), NomlaTCPMessageType.Ping)
+        link.sendTcp(ping.build(), NomlaTcpMessageType.Ping)
     }
 
     /** The UDP transport's socket failed: tunnels the voice and rebuilds the transport later. */
@@ -306,7 +306,7 @@ internal class ProtocolSession(
 
     private fun sendTunnelRequest() {
         val packet = Mumble.UDPTunnel.newBuilder().setPacket(ByteString.copyFrom(ByteArray(FORCE_TCP_PACKET_BYTES)))
-        link.sendTcp(packet.build(), NomlaTCPMessageType.UDPTunnel)
+        link.sendTcp(packet.build(), NomlaTcpMessageType.UDPTunnel)
     }
 
     /**

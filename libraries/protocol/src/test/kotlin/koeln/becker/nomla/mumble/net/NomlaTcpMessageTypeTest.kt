@@ -28,7 +28,7 @@ class NomlaTcpMessageTypeTest {
     fun parsesAKnownMessageType() {
         val bytes = Mumble.ChannelState.newBuilder().setChannelId(5).setName("five").build().toByteArray()
 
-        val parsed = NomlaTCPMessageType.ChannelState.parse(bytes) as Mumble.ChannelState
+        val parsed = NomlaTcpMessageType.ChannelState.parse(bytes) as Mumble.ChannelState
 
         assertThat(parsed.channelId).isEqualTo(5)
         assertThat(parsed.name).isEqualTo("five")
@@ -36,15 +36,15 @@ class NomlaTcpMessageTypeTest {
 
     @Test
     fun onlyTheFrequentVoiceAndPingFramesAreLeftOutOfTheLog() {
-        val unlogged = NomlaTCPMessageType.entries.filterNot { it.isLogged }
+        val unlogged = NomlaTcpMessageType.entries.filterNot { it.isLogged }
 
-        assertThat(unlogged).containsExactly(NomlaTCPMessageType.UDPTunnel, NomlaTCPMessageType.Ping)
+        assertThat(unlogged).containsExactly(NomlaTcpMessageType.UDPTunnel, NomlaTcpMessageType.Ping)
     }
 
     /** Each type parses into the protobuf class of the same name, so a swapped parser shows up. */
     @Test
     fun everyServerSentTypeParsesIntoItsOwnMessageClass() {
-        for (type in NomlaTCPMessageType.entries - NomlaTCPMessageType.VoiceTarget) {
+        for (type in NomlaTcpMessageType.entries - NomlaTcpMessageType.VoiceTarget) {
             // An empty payload lacks required fields for some types; the parser still built one.
             val parsed = try {
                 type.parse(ByteArray(0))
@@ -58,7 +58,7 @@ class NomlaTcpMessageTypeTest {
     @Test
     fun voiceTargetIsNotAServerToClientMessage() {
         assertThrows(InvalidProtocolBufferException::class.java) {
-            NomlaTCPMessageType.VoiceTarget.parse(ByteArray(0))
+            NomlaTcpMessageType.VoiceTarget.parse(ByteArray(0))
         }
     }
 }
