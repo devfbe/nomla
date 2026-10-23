@@ -27,8 +27,8 @@ private const val VOICE_PROBABILITY_PERCENT = 50
  * produces on its own:
  * - [run] refuses a frame shorter than the state's frame size; [onRun] never sees it.
  * - [ctlInt] refuses any request outside [SpeexPreprocessorRequests.ALLOWED].
- * - requests in [refuse] also answer `-1`, as speex does for controls compiled out of this
- *   fixed-point build (`SET_AGC`, `SET_AGC_TARGET`). Kotlin cannot tell the two apart.
+ * - requests in [refuse] also answer `-1`, as speex does for a request it fails. Kotlin cannot
+ *   tell the two apart.
  */
 internal class FakeSpeexPreprocessApi(
     /** What `SPEEX_PREPROCESS_GET_PROB` answers, in percent, unclamped on purpose. */
@@ -44,7 +44,7 @@ internal class FakeSpeexPreprocessApi(
     /** Every request the stage issued, including refused ones. */
     val attemptedRequests = mutableListOf<Int>()
 
-    /** Requests this build answers with -1, as the fixed-point AGC controls do. */
+    /** Requests that answer -1 although the bridge lets them through. */
     val refuse = mutableSetOf<Int>()
 
     var runs = 0
@@ -108,20 +108,11 @@ internal class FakeSpeexPreprocessApi(
  */
 internal object SpeexPreprocessorRequests {
     const val SET_DENOISE = SpeexPreprocessNative.SPEEX_PREPROCESS_SET_DENOISE          // 0
-    const val SET_AGC = SpeexPreprocessNative.SPEEX_PREPROCESS_SET_AGC                  // 2
-    const val SET_VAD = SpeexPreprocessNative.SPEEX_PREPROCESS_SET_VAD                  // 4
-    const val SET_DEREVERB = SpeexPreprocessNative.SPEEX_PREPROCESS_SET_DEREVERB        // 8
-    const val SET_PROB_START = SpeexPreprocessNative.SPEEX_PREPROCESS_SET_PROB_START    // 14
-    const val GET_PROB_START = SpeexPreprocessNative.SPEEX_PREPROCESS_GET_PROB_START    // 15
     const val SET_NOISE_SUPPRESS = SpeexPreprocessNative.SPEEX_PREPROCESS_SET_NOISE_SUPPRESS // 18
     const val GET_PROB = SpeexPreprocessNative.SPEEX_PREPROCESS_GET_PROB                // 45
-    const val SET_AGC_TARGET = SpeexPreprocessNative.SPEEX_PREPROCESS_SET_AGC_TARGET    // 46
 
-    val ALLOWED = setOf(
-        SET_DENOISE, SET_AGC, SET_VAD, SET_DEREVERB, SET_PROB_START,
-        GET_PROB_START, SET_NOISE_SUPPRESS, GET_PROB, SET_AGC_TARGET,
-    )
+    val ALLOWED = setOf(SET_DENOISE, SET_NOISE_SUPPRESS, GET_PROB)
 
-    /** The two allowed requests that answer by writing `value[0]`; every other one is a write. */
-    val READ_DIRECTION = setOf(GET_PROB_START, GET_PROB)
+    /** The allowed request that answers by writing `value[0]`; every other one is a write. */
+    val READ_DIRECTION = setOf(GET_PROB)
 }

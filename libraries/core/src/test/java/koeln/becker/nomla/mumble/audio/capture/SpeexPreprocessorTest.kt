@@ -58,21 +58,17 @@ class SpeexPreprocessorTest {
         assertThat(failure).hasMessageThat().contains("speex")
     }
 
+    /** AGC, dereverb and speex's own VAD are never asked for; the whole set is pinned further down. */
     @Test
-    fun `enables denoise, never agc or dereverb`() {
+    fun `enables denoise`() {
         SpeexPreprocessor(api)
 
         assertThat(api.setCalls).contains(R.SET_DENOISE to 1)
-        // SET_AGC and SET_AGC_TARGET are compiled out of fixed-point libspeexdsp and answer -1;
-        // SET_DEREVERB is answered but never read by preprocess.c.
-        assertThat(api.attemptedRequests)
-            .containsNoneOf(R.SET_AGC, R.SET_AGC_TARGET, R.SET_DEREVERB)
     }
 
     /**
-     * `GET_PROB_START`/`SET_PROB_START` only tune speex's own VAD hysteresis, which affects just the
-     * return value of `speex_preprocess_run`. The stage reads `GET_PROB` directly instead, so
-     * neither request (nor `SET_VAD`) belongs here.
+     * Speex's VAD threshold only affects the return value of `speex_preprocess_run`; the stage
+     * reads `GET_PROB` directly instead of setting one.
      */
     @Test
     fun `B9 is satisfied by reading the probability, not by setting a threshold on it`() {
@@ -83,9 +79,6 @@ class SpeexPreprocessorTest {
 
         assertThat(probability).isEqualTo(0.42f)
         assertThat(api.getRequests).containsExactly(R.GET_PROB)
-        assertWithMessage("neither the legacy request nor its correction belongs in this stage")
-            .that(api.attemptedRequests)
-            .containsNoneOf(R.GET_PROB_START, R.SET_PROB_START, R.SET_VAD)
     }
 
     /**

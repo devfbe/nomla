@@ -79,9 +79,10 @@ constexpr std::size_t kInlinePacket = 4096;
  *   SPEEX_PREPROCESS_SET_AGC_LEVEL     (6)   reads the caller's int as a float.
  *   JITTER_BUFFER_SET_MAX_LATE_RATE    (10)  divides by the value, so 0 is a SIGFPE.
  *
- * Hence an allow list: a libspeexdsp update can add pointer-typed requests. A request may be added
- * only if the library treats ptr as exactly one spx_int32_t (read or written once) and touches
- * nothing outside the state's own allocation.
+ * Hence an allow list, holding just the requests Kotlin sends (SpeexJitterNative and
+ * SpeexPreprocessNative name them): a libspeexdsp update can add pointer-typed requests. A request
+ * may be added only if the library treats ptr as exactly one spx_int32_t (read or written once) and
+ * touches nothing outside the state's own allocation.
  *
  * Refusals: jitterCtl returns JITTER_BUFFER_BAD_ARGUMENT (-2), distinct from the library's -1 for an
  * unknown request. preprocessCtlInt returns -1 like speex_preprocess_ctl, because its status has no
@@ -90,7 +91,6 @@ constexpr std::size_t kInlinePacket = 4096;
 bool jitterRequestAllowed(jint request) {
     switch (request) {
         case JITTER_BUFFER_SET_MARGIN:            // 0
-        case JITTER_BUFFER_GET_MARGIN:            // 1
         case JITTER_BUFFER_GET_AVALIABLE_COUNT:   // 3, spelled that way by libspeexdsp
             return true;
         default:
@@ -101,14 +101,8 @@ bool jitterRequestAllowed(jint request) {
 bool preprocessRequestAllowed(jint request) {
     switch (request) {
         case SPEEX_PREPROCESS_SET_DENOISE:        // 0
-        case SPEEX_PREPROCESS_SET_AGC:            // 2
-        case SPEEX_PREPROCESS_SET_VAD:            // 4
-        case SPEEX_PREPROCESS_SET_DEREVERB:       // 8
-        case SPEEX_PREPROCESS_SET_PROB_START:     // 14
-        case SPEEX_PREPROCESS_GET_PROB_START:     // 15
         case SPEEX_PREPROCESS_SET_NOISE_SUPPRESS: // 18
         case SPEEX_PREPROCESS_GET_PROB:           // 45
-        case SPEEX_PREPROCESS_SET_AGC_TARGET:     // 46
             return true;
         default:
             return false;

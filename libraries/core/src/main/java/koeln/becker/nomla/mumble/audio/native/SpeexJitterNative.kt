@@ -33,7 +33,7 @@ internal interface SpeexJitterApi {
     /**
      * Runs `jitter_buffer_ctl` with `value[0]` as the in/out int argument.
      *
-     * Only `SET_MARGIN`, `GET_MARGIN` and `GET_AVAILABLE_COUNT` are let through; others return
+     * Only `SET_MARGIN` and `GET_AVAILABLE_COUNT` are let through; others return
      * `JITTER_BUFFER_BAD_ARGUMENT`, because e.g. the destroy-callback requests would treat the
      * bridge's int argument as a pointer.
      */
@@ -42,7 +42,7 @@ internal interface SpeexJitterApi {
 }
 
 internal object SpeexJitterNative : SpeexJitterApi {
-    // The first five are statuses [get] returns, the last three are [ctl] requests; only the
+    // The first four are statuses [get] returns, the last two are [ctl] requests; only the
     // requests are on the bridge's allow list.
     const val JITTER_BUFFER_OK = 0
     const val JITTER_BUFFER_MISSING = 1
@@ -51,7 +51,6 @@ internal object SpeexJitterNative : SpeexJitterApi {
     const val JITTER_BUFFER_INTERNAL_ERROR = -1
     const val JITTER_BUFFER_BAD_ARGUMENT = -2
     const val JITTER_BUFFER_SET_MARGIN = 0
-    const val JITTER_BUFFER_GET_MARGIN = 1
     const val JITTER_BUFFER_GET_AVAILABLE_COUNT = 3
 
     init {

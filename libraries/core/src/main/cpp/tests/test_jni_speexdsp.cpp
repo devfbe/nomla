@@ -361,9 +361,6 @@ static void test_jitter_ctl(Env& env) {
 
     value[0] = 20;
     CHECK(JB_CTL(e, nullptr, jb, 0 /* SET_MARGIN */, v) == 0, "SET_MARGIN is allowed");
-    value[0] = 0;
-    CHECK(JB_CTL(e, nullptr, jb, 1 /* GET_MARGIN */, v) == 0, "GET_MARGIN is allowed");
-    CHECK(value[0] == 20, "GET_MARGIN reads back what SET_MARGIN wrote");
     value[0] = -7;
     CHECK(JB_CTL(e, nullptr, jb, 3 /* GET_AVAILABLE_COUNT */, v) == 0,
           "GET_AVAILABLE_COUNT is allowed");
@@ -382,8 +379,8 @@ static void test_jitter_ctl(Env& env) {
     }
 
     /* Everything else, whether libspeexdsp knows it or not. 4 and 5 are the dangerous pair;
-     * 12345/-1 are not requests. */
-    const jint refused[] = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 2, 14, -1, 12345, 0x7fffffff};
+     * 1 (GET_MARGIN) is harmless but unused; 12345/-1 are not requests. */
+    const jint refused[] = {1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 2, 14, -1, 12345, 0x7fffffff};
     for (jint request : refused) {
         value[0] = 0x5a5a5a5a;
         CHECK(JB_CTL(e, nullptr, jb, request, v) == kJitterBadArgument,
@@ -410,27 +407,12 @@ static void test_preprocess_ctl(Env& env) {
     Array<jint> value(1);
     jintArray v = value.as<jintArray>();
 
-    /* The requests SpeexPreprocessNative names as constants and libspeexdsp implements here. */
-    const jint implemented[] = {0, 4, 8, 14, 15, 18, 45};
+    /* The requests SpeexPreprocessNative names as constants: SET_DENOISE, SET_NOISE_SUPPRESS, GET_PROB. */
+    const jint implemented[] = {0, 18, 45};
     for (jint request : implemented) {
         value[0] = 1;
         CHECK(PP_CTL(e, nullptr, st, request, v) == 0, "a named preprocess request is allowed");
     }
-    /* SET_AGC (2) and SET_AGC_TARGET (46) are allowed, but speex answers -1 to both: its AGC
-     * block sits behind #ifndef FIXED_POINT and this library is built with FIXED_POINT. That -1
-     * is libspeexdsp's, not the bridge's; only a native test can observe it. */
-    const jint agc[] = {2, 46};
-    for (jint request : agc) {
-        value[0] = 1;
-        CHECK(PP_CTL(e, nullptr, st, request, v) == -1,
-              "the AGC requests are allowed through and answered by speex, which lacks them here");
-    }
-    value[0] = 42;
-    CHECK(PP_CTL(e, nullptr, st, 14 /* SET_PROB_START */, v) == 0, "SET_PROB_START is allowed");
-    value[0] = 0;
-    CHECK(PP_CTL(e, nullptr, st, 15 /* GET_PROB_START */, v) == 0, "GET_PROB_START is allowed");
-    /* Stored as Q15 and scaled back by 100, so the round trip is within a percentage point. */
-    CHECK(value[0] >= 41 && value[0] <= 43, "GET_PROB_START reads back what SET_PROB_START wrote");
 
     /* Same three as JB(ctl): the state is dereferenced, and value[0] is read and written. */
     CHECK(PP_CTL(e, nullptr, 0, 0 /* SET_DENOISE */, v) == -1, "ctlInt with a null state is refused");
@@ -442,9 +424,9 @@ static void test_preprocess_ctl(Env& env) {
               "ctlInt with an empty value array is refused, not read");
     }
 
-    /* 24/25 store or write a pointer, 39/43 write ps_size ints, 6/7 read and write a float, and
-     * the rest are not part of this interface. */
-    const jint refused[] = {24, 25, 39, 43, 6, 7, 10, 12, 33, 35, 37, 41, 47, -1, 12345};
+    /* 24/25 store or write a pointer, 39/43 write ps_size ints, 6/7 read and write a float; 2, 4,
+     * 8, 14, 15 and 46 are harmless but unused, and the rest are not part of this interface. */
+    const jint refused[] = {24, 25, 39, 43, 6, 7, 2, 4, 8, 14, 15, 46, 10, 12, 33, 35, 37, 41, 47, -1, 12345};
     for (jint request : refused) {
         value[0] = 0x5a5a5a5a;
         CHECK(PP_CTL(e, nullptr, st, request, v) == -1,

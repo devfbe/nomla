@@ -43,9 +43,6 @@ internal interface SpeexPreprocessApi {
      * Only the `SPEEX_PREPROCESS_*` constants on [SpeexPreprocessNative] are let through; others
      * return -1 without reaching speex, because several requests (e.g. `GET_ECHO_STATE`,
      * `GET_PSD`) would treat the bridge's int argument as a pointer or a larger buffer.
-     *
-     * -1 also means the request is not implemented in this build: the AGC controls are compiled
-     * out of fixed-point libspeexdsp. The two cases are indistinguishable.
      */
     fun ctlInt(state: Long, request: Int, value: IntArray): Int
     fun destroy(state: Long)
@@ -53,14 +50,8 @@ internal interface SpeexPreprocessApi {
 
 internal object SpeexPreprocessNative : SpeexPreprocessApi {
     const val SPEEX_PREPROCESS_SET_DENOISE = 0
-    const val SPEEX_PREPROCESS_SET_AGC = 2
-    const val SPEEX_PREPROCESS_SET_VAD = 4
-    const val SPEEX_PREPROCESS_SET_DEREVERB = 8
-    const val SPEEX_PREPROCESS_SET_PROB_START = 14
-    const val SPEEX_PREPROCESS_GET_PROB_START = 15
     const val SPEEX_PREPROCESS_SET_NOISE_SUPPRESS = 18
     const val SPEEX_PREPROCESS_GET_PROB = 45
-    const val SPEEX_PREPROCESS_SET_AGC_TARGET = 46
 
     init {
         NomlaNativeLibrary.load()
