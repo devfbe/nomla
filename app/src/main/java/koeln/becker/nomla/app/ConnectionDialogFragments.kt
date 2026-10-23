@@ -168,8 +168,8 @@ class CertificateTrustDialogFragment : DialogFragment() {
                 certificate.subjectX500Principal.name,
                 certificate.notBefore.toString(),
                 certificate.notAfter.toString(),
-                fingerprint("SHA-1", encoded),
-                fingerprint("SHA-256", encoded),
+                CertificatePins.displayFingerprint(encoded, "SHA-1"),
+                CertificatePins.displayFingerprint(encoded, "SHA-256"),
             )
         } catch (e: GeneralSecurityException) {
             NomlaLog.w(TAG, "Could not read the certificate", e)
@@ -197,9 +197,5 @@ class CertificateTrustDialogFragment : DialogFragment() {
 
         private fun decodeCertificate(encoded: ByteArray): X509Certificate = CertificateFactory.getInstance("X.509")
             .generateCertificate(ByteArrayInputStream(encoded)) as X509Certificate
-
-        /** The [algorithm] fingerprint of [data] as colon-separated hex, e.g. "ab:cd:...". */
-        private fun fingerprint(algorithm: String, data: ByteArray): String =
-            CertificatePins.fingerprint(data, algorithm).chunked(2).joinToString(":")
     }
 }

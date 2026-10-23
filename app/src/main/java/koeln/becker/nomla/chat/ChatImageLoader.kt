@@ -49,7 +49,6 @@ import okhttp3.Request
 import okio.Buffer
 import koeln.becker.nomla.BuildConfig
 import koeln.becker.nomla.Settings
-import koeln.becker.nomla.mumble.util.toHex
 import java.io.IOException
 import java.io.InterruptedIOException
 import java.security.MessageDigest
@@ -276,7 +275,7 @@ class ChatImageLoader(
                 digest.update(source.substring(start, end).toByteArray(Charsets.UTF_8))
                 start = end
             }
-            return digest.digest().toHex()
+            return digest.digest().toHexString()
         }
     }
 }

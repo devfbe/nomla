@@ -17,7 +17,6 @@
 
 package koeln.becker.nomla.mumble.net
 
-import koeln.becker.nomla.mumble.util.toHex
 import java.net.InetAddress
 import java.security.KeyStore
 import java.security.MessageDigest
@@ -40,12 +39,20 @@ internal enum class TrustFailure { NONE, UNTRUSTED, CHANGED }
  * host name as its alias.
  */
 public object CertificatePins {
+    private val COLON_HEX = HexFormat { bytes.byteSeparator = ":" }
+
     /** Lower-case hex SHA-256 of the DER encoding: the pin. */
     public fun fingerprint(certificate: X509Certificate): String = fingerprint(certificate.encoded)
 
-    /** Lower-case hex [algorithm] digest of a DER-encoded certificate, [encoded]. */
-    public fun fingerprint(encoded: ByteArray, algorithm: String = "SHA-256"): String =
-        MessageDigest.getInstance(algorithm).digest(encoded).toHex()
+    /** Lower-case hex SHA-256 of a DER-encoded certificate, [encoded]: the pin. */
+    public fun fingerprint(encoded: ByteArray): String = digest(encoded, "SHA-256").toHexString()
+
+    /** The [algorithm] digest of [encoded] as colon-separated lower-case hex ("ab:cd:..."), for people to compare. */
+    public fun displayFingerprint(encoded: ByteArray, algorithm: String): String =
+        digest(encoded, algorithm).toHexString(COLON_HEX)
+
+    private fun digest(encoded: ByteArray, algorithm: String): ByteArray =
+        MessageDigest.getInstance(algorithm).digest(encoded)
 
     /** The trust store alias for [host]: lower case, without a trailing dot. */
     public fun aliasFor(host: String): String = HostnameMatcher.normalize(host)
