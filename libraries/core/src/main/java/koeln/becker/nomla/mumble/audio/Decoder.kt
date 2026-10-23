@@ -20,7 +20,7 @@ package koeln.becker.nomla.mumble.audio
 import koeln.becker.nomla.mumble.exception.NativeAudioException
 
 /** A native voice decoder producing float PCM. */
-internal interface IDecoder : AutoCloseable {
+internal interface Decoder : AutoCloseable {
     /**
      * Decodes [length] bytes of [input] from [offset] into [output], which holds at least
      * [frameSize] samples. A null [input] asks for loss concealment.

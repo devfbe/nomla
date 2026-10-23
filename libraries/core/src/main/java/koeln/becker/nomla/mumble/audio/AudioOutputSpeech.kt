@@ -77,7 +77,7 @@ internal class AudioOutputSpeech(
         fun gainOf(session: Int): Float = 1f
     }
 
-    private val decoder: IDecoder = OpusDecoder(AudioHandler.SAMPLE_RATE, 1, opusApi)
+    private val decoder: Decoder = OpusDecoder(AudioHandler.SAMPLE_RATE, 1, opusApi)
     private val jitterBuffer: SpeexJitterBuffer
     private val jitterLock = Any()
     private val audioBufferSize = AudioHandler.FRAME_SIZE * AudioHandler.MAX_PACKET_FRAMES

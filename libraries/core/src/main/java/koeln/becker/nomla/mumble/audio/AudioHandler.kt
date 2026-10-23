@@ -29,7 +29,7 @@ import koeln.becker.nomla.mumble.audio.capture.CapturePipeline
 import koeln.becker.nomla.mumble.audio.capture.CaptureRequest
 import koeln.becker.nomla.mumble.audio.capture.CaptureState
 import koeln.becker.nomla.mumble.audio.capture.PcmCaptureSourceFactory
-import koeln.becker.nomla.mumble.audio.encoder.IEncoder
+import koeln.becker.nomla.mumble.audio.encoder.Encoder
 import koeln.becker.nomla.mumble.audio.encoder.OpusEncoder
 import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.exception.AudioException
@@ -153,7 +153,7 @@ internal class AudioHandler(
      * The encoder for [codec], or null (input disabled) for one it cannot encode.
      * @throws NativeAudioException if the encoder cannot be created.
      */
-    private fun createEncoder(codec: NomlaUDPMessageType): IEncoder? = when (codec) {
+    private fun createEncoder(codec: NomlaUDPMessageType): Encoder? = when (codec) {
         // Resampling and preprocessing happen in capturePipeline, before the voice detector.
         NomlaUDPMessageType.UDPVoiceOpus ->
             OpusEncoder(SAMPLE_RATE, 1, FRAME_SIZE, framesPerPacket, bitrate, MAX_BUFFER_SIZE)

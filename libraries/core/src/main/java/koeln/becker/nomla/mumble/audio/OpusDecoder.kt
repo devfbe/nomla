@@ -27,7 +27,7 @@ internal class OpusDecoder(
     sampleRate: Int,
     channels: Int,
     private val api: OpusDecoderApi = OpusDecoderNative,
-) : IDecoder {
+) : Decoder {
     private val state: NativeHandle
 
     init {

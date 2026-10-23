@@ -19,7 +19,7 @@
 package koeln.becker.nomla.mumble.audio
 
 import koeln.becker.nomla.mumble.audio.capture.CapturePipeline
-import koeln.becker.nomla.mumble.audio.encoder.IEncoder
+import koeln.becker.nomla.mumble.audio.encoder.Encoder
 import koeln.becker.nomla.mumble.exception.NativeAudioException
 import koeln.becker.nomla.mumble.net.NomlaUDPMessageType
 import koeln.becker.nomla.mumble.net.PacketBuffer
@@ -64,7 +64,7 @@ internal class VoiceTransmitter(
         private set
 
     private val encoderLock = Any()
-    private var encoder: IEncoder? = null
+    private var encoder: Encoder? = null
     private var frameCounter = 0
 
     /** The number of the first frame in the encoder's packet. Capture thread, under [encoderLock]. */
@@ -92,7 +92,7 @@ internal class VoiceTransmitter(
      * @param create builds the encoder for a non-null codec, or returns null if it has none.
      * @throws NativeAudioException from [create]; input stays off until the next [setCodec].
      */
-    fun setCodec(codec: NomlaUDPMessageType?, create: (NomlaUDPMessageType) -> IEncoder?) {
+    fun setCodec(codec: NomlaUDPMessageType?, create: (NomlaUDPMessageType) -> Encoder?) {
         synchronized(encoderLock) {
             this.codec = codec
             encoder?.close()
@@ -103,7 +103,7 @@ internal class VoiceTransmitter(
     }
 
     /** Like [setCodec], but a no-op when [codec] is already set. @return whether it changed. */
-    fun setCodecIfChanged(codec: NomlaUDPMessageType?, create: (NomlaUDPMessageType) -> IEncoder?): Boolean {
+    fun setCodecIfChanged(codec: NomlaUDPMessageType?, create: (NomlaUDPMessageType) -> Encoder?): Boolean {
         synchronized(encoderLock) {
             if (codec == this.codec) return false
             setCodec(codec, create)
@@ -162,7 +162,7 @@ internal class VoiceTransmitter(
     }
 
     /** Encodes one frame and counts it. Called under [encoderLock]. */
-    private fun encodeFrame(encoder: IEncoder, samples: ShortArray, length: Int) {
+    private fun encodeFrame(encoder: Encoder, samples: ShortArray, length: Int) {
         if (encoder.bufferedFrames == 0) packetFrameNumber = frameCounter
         encoder.encode(samples, length)
         frameCounter++
@@ -173,7 +173,7 @@ internal class VoiceTransmitter(
      * a frame of silence, [frameLength] samples, carries the terminator: the frame that noticed the
      * end is not the speaker's to send. Called under [encoderLock].
      */
-    private fun endStream(encoder: IEncoder, frameLength: Int) {
+    private fun endStream(encoder: Encoder, frameLength: Int) {
         if (encoder.bufferedFrames == 0 && !encoder.isReady) {
             if (silence.size < frameLength) silence = ShortArray(frameLength)
             encodeFrame(encoder, silence, frameLength)
@@ -183,7 +183,7 @@ internal class VoiceTransmitter(
     }
 
     /** Sends the buffered audio of [encoder] to [listener], stamped with [target]. Under [encoderLock]. */
-    private fun send(encoder: IEncoder, target: Byte) {
+    private fun send(encoder: Encoder, target: Byte) {
         val protocol = udpProtocol
         val terminator = encoder.isTerminator
         val frameNumber = packetFrameNumber

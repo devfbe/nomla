@@ -21,7 +21,7 @@ import koeln.becker.nomla.mumble.exception.NativeAudioException
 import koeln.becker.nomla.mumble.net.PacketBuffer
 
 /** A native audio encoder that buffers frames and serves encoded packets. */
-internal interface IEncoder : AutoCloseable {
+internal interface Encoder : AutoCloseable {
     /** The number of frames buffered for the next packet. */
     val bufferedFrames: Int
 

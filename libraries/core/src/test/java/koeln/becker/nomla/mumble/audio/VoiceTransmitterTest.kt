@@ -23,7 +23,7 @@ import org.junit.Test
 import koeln.becker.nomla.mumble.audio.capture.CapturePipeline
 import koeln.becker.nomla.mumble.audio.capture.InputMode
 import koeln.becker.nomla.mumble.audio.capture.NoopPreprocessor
-import koeln.becker.nomla.mumble.audio.encoder.IEncoder
+import koeln.becker.nomla.mumble.audio.encoder.Encoder
 import koeln.becker.nomla.mumble.audio.inputmode.ContinuousInputMode
 import koeln.becker.nomla.mumble.audio.inputmode.ToggleInputMode
 import koeln.becker.nomla.mumble.net.NomlaUDPMessageType
@@ -34,7 +34,7 @@ import koeln.becker.nomla.mumble.testutil.AllocationMeter.worstPerCall
 
 class VoiceTransmitterTest {
     /** One frame per packet; the payload is the frame's first sample. Allocation-free. */
-    private class FirstSampleEncoder : IEncoder {
+    private class FirstSampleEncoder : Encoder {
         private var sample: Short = 0
         override var bufferedFrames = 0
             private set
@@ -63,7 +63,7 @@ class VoiceTransmitterTest {
      * once full, [terminate] pads a partly filled packet with silence and flags it, and an empty
      * buffer at [terminate] yields no packet. Each frame is encoded as its first sample, two bytes.
      */
-    private class BufferingEncoder(private val framesPerPacket: Int) : IEncoder {
+    private class BufferingEncoder(private val framesPerPacket: Int) : Encoder {
         private val samples = ShortArray(framesPerPacket)
         private var ready = false
         private var terminated = false

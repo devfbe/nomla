@@ -35,7 +35,7 @@ internal class OpusEncoder(
     bitrate: Int,
     maxBufferSize: Int,
     private val api: OpusEncoderApi = OpusEncoderNative,
-) : IEncoder {
+) : Encoder {
     private val buffer = ByteArray(maxBufferSize)
     private val audioBuffer = ShortArray(framesPerPacket * frameSize)
 
