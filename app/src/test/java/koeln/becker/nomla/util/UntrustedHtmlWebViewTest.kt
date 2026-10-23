@@ -20,9 +20,12 @@ package koeln.becker.nomla.util
 import android.app.Application
 import android.content.Intent
 import android.net.Uri
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -32,6 +35,11 @@ import org.robolectric.Shadows.shadowOf
 class UntrustedHtmlWebViewTest {
     private val app: Application = ApplicationProvider.getApplicationContext()
     private val webView = WebView(app).apply { configureForUntrustedHtml() }
+
+    private fun click(url: String): Boolean {
+        val request = mockk<WebResourceRequest> { every { this@mockk.url } returns Uri.parse(url) }
+        return shadowOf(webView).webViewClient.shouldOverrideUrlLoading(webView, request)
+    }
 
     @Test
     fun `network, file and content access are all blocked`() {
@@ -45,9 +53,7 @@ class UntrustedHtmlWebViewTest {
 
     @Test
     fun `an http link click opens an external viewer instead of navigating`() {
-        val client = shadowOf(webView).webViewClient
-        @Suppress("DEPRECATION")
-        val handled = client.shouldOverrideUrlLoading(webView, "https://example.org/a")
+        val handled = click("https://example.org/a")
 
         assertThat(handled).isTrue()
         val started = shadowOf(app).nextStartedActivity
@@ -58,9 +64,7 @@ class UntrustedHtmlWebViewTest {
 
     @Test
     fun `a link with an unexpected scheme is swallowed`() {
-        val client = shadowOf(webView).webViewClient
-        @Suppress("DEPRECATION")
-        val handled = client.shouldOverrideUrlLoading(webView, "file:///data/data/koeln.becker.nomla/x")
+        val handled = click("file:///data/data/koeln.becker.nomla/x")
 
         assertThat(handled).isTrue()
         assertThat(shadowOf(app).nextStartedActivity).isNull()

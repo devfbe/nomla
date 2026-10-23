@@ -44,15 +44,14 @@ fun WebView.configureForUntrustedHtml() {
 }
 
 private class ExternalLinkWebViewClient : WebViewClient() {
-    override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean =
+    /** Never navigates in place. */
+    override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
         openExternally(view, request.url)
+        return true
+    }
 
-    @Deprecated("Deprecated in Java")
-    override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean =
-        openExternally(view, Uri.parse(url))
-
-    private fun openExternally(view: WebView, uri: Uri): Boolean {
-        if (uri.scheme?.lowercase() !in EXTERNAL_SCHEMES) return true
+    private fun openExternally(view: WebView, uri: Uri) {
+        if (uri.scheme?.lowercase() !in EXTERNAL_SCHEMES) return
         val intent = Intent(Intent.ACTION_VIEW, uri)
             .addCategory(Intent.CATEGORY_BROWSABLE)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -61,6 +60,5 @@ private class ExternalLinkWebViewClient : WebViewClient() {
         } catch (e: ActivityNotFoundException) {
             NomlaLog.w(TAG, "No app to open $uri", e)
         }
-        return true
     }
 }
