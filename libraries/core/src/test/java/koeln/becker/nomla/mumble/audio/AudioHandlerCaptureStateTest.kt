@@ -31,18 +31,18 @@ import org.robolectric.shadows.ShadowAudioTrack
 import koeln.becker.nomla.mumble.audio.capture.CaptureState
 import koeln.becker.nomla.mumble.audio.capture.EchoCancellationMode
 import koeln.becker.nomla.mumble.audio.capture.NoiseSuppressionMode
-import koeln.becker.nomla.mumble.audio.capture.fakes.FakeCaptureSource
 import koeln.becker.nomla.mumble.audio.inputmode.ContinuousInputMode
 import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.mumble.testutil.NoopEncodeListener
 import koeln.becker.nomla.mumble.testutil.NoopOutputListener
 import koeln.becker.nomla.mumble.testutil.SilentLogger
+import koeln.becker.nomla.mumble.testutil.TestCaptureSource
 import koeln.becker.nomla.mumble.testutil.awaitUntil
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * What a session's capture reports reaches the pipeline's owner. The microphone is a
- * [FakeCaptureSource]; no codec (so no native Opus encoder) and no noise suppression or echo
+ * [TestCaptureSource]; no codec (so no native Opus encoder) and no noise suppression or echo
  * cancellation (so no native preprocessor), which leaves a pipeline the JVM can run.
  */
 @RunWith(RobolectricTestRunner::class)
@@ -68,7 +68,7 @@ class AudioHandlerCaptureStateTest {
         handler?.shutdown()
     }
 
-    private fun startedHandler(source: FakeCaptureSource): AudioHandler =
+    private fun startedHandler(source: TestCaptureSource): AudioHandler =
         AudioHandler(
             AudioHost(app, SilentLogger, NoopEncodeListener, NoopOutputListener),
             config,
@@ -82,7 +82,7 @@ class AudioHandlerCaptureStateTest {
 
     @Test
     fun thePlatformSilencingTheMicrophoneAndReleasingItReachesTheOwner() {
-        val source = FakeCaptureSource()
+        val source = TestCaptureSource()
         startedHandler(source)
         val platform = checkNotNull(source.silenceListener) { "capture registered no silence listener" }
 
@@ -94,7 +94,7 @@ class AudioHandlerCaptureStateTest {
 
     @Test
     fun aCaptureThatCannotStartReachesTheOwnerAsAnError() {
-        startedHandler(FakeCaptureSource(failStart = true))
+        startedHandler(TestCaptureSource(failStart = true))
 
         awaitUntil(description = "the capture error") { states.isNotEmpty() }
         assertThat(states.single()).isInstanceOf(CaptureState.Error::class.java)

@@ -27,8 +27,8 @@ import org.robolectric.RobolectricTestRunner
 import koeln.becker.nomla.mumble.audio.capture.AndroidAudioRecordSource
 import koeln.becker.nomla.mumble.audio.capture.CaptureState
 import koeln.becker.nomla.mumble.audio.capture.VoiceActivityDetector
-import koeln.becker.nomla.mumble.audio.capture.fakes.FakeCaptureSource
-import koeln.becker.nomla.mumble.audio.capture.fakes.FakeCaptureSource.Read
+import koeln.becker.nomla.mumble.testutil.TestCaptureSource
+import koeln.becker.nomla.mumble.testutil.TestCaptureSource.Read
 import koeln.becker.nomla.mumble.testutil.awaitUntil
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CountDownLatch
@@ -80,7 +80,7 @@ class AudioInputTest {
     }
 
     private fun start(
-        source: FakeCaptureSource,
+        source: TestCaptureSource,
         listener: AudioInput.AudioInputListener = AudioInput.AudioInputListener { _, _ -> },
         joinTimeoutMs: Long = 2000,
     ): AudioInput = AudioInput(listener, source, { states += it }, joinTimeoutMs).also {
@@ -91,8 +91,8 @@ class AudioInputTest {
     private fun waitUntil(what: String, condition: () -> Boolean) = awaitUntil(SETTLE_MS, what, condition)
 
     /** Starts capture on a source whose read hangs past its stop, and waits until it is inside one. */
-    private fun startHung(joinTimeoutMs: Long): Pair<FakeCaptureSource, AudioInput> {
-        val source = FakeCaptureSource(hangAfterStop = hung)
+    private fun startHung(joinTimeoutMs: Long): Pair<TestCaptureSource, AudioInput> {
+        val source = TestCaptureSource(hangAfterStop = hung)
         val audioInput = start(source, joinTimeoutMs = joinTimeoutMs)
         waitUntil("the capture thread is inside a read") { source.reads.get() > 0 }
         return source to audioInput
@@ -107,7 +107,7 @@ class AudioInputTest {
     fun `delivers frames in order on the capture thread in one reused buffer`() {
         val caller = Thread.currentThread()
         val latch = CountDownLatch(3)
-        val source = FakeCaptureSource(script = listOf(frame(1), frame(2), frame(3)))
+        val source = TestCaptureSource(script = listOf(frame(1), frame(2), frame(3)))
 
         start(source, recorder(latch))
 
@@ -122,10 +122,10 @@ class AudioInputTest {
 
     @Test
     fun `the frame is ten milliseconds at the source rate`() {
-        assertThat(AudioInput({ _, _ -> }, FakeCaptureSource()).frameSize).isEqualTo(480)
-        assertThat(AudioInput({ _, _ -> }, FakeCaptureSource(rate = 16000)).frameSize).isEqualTo(160)
-        assertThat(AudioInput({ _, _ -> }, FakeCaptureSource(rate = 8000)).frameSize).isEqualTo(80)
-        assertThat(AudioInput({ _, _ -> }, FakeCaptureSource(rate = 16000)).sampleRate).isEqualTo(16000)
+        assertThat(AudioInput({ _, _ -> }, TestCaptureSource()).frameSize).isEqualTo(480)
+        assertThat(AudioInput({ _, _ -> }, TestCaptureSource(sampleRate = 16000)).frameSize).isEqualTo(160)
+        assertThat(AudioInput({ _, _ -> }, TestCaptureSource(sampleRate = 8000)).frameSize).isEqualTo(80)
+        assertThat(AudioInput({ _, _ -> }, TestCaptureSource(sampleRate = 16000)).sampleRate).isEqualTo(16000)
     }
 
     /**
@@ -135,7 +135,7 @@ class AudioInputTest {
     @Test
     fun `a short read is padded instead of resending the previous frame's tail`() {
         val latch = CountDownLatch(2)
-        val source = FakeCaptureSource(script = listOf(frame(20000), frame(300, length = 100)))
+        val source = TestCaptureSource(script = listOf(frame(20000), frame(300, length = 100)))
 
         start(source, recorder(latch))
         assertThat(latch.await(SETTLE_MS, TimeUnit.MILLISECONDS)).isTrue()
@@ -159,7 +159,7 @@ class AudioInputTest {
     @Test
     fun `a read of zero samples delivers nothing`() {
         val latch = CountDownLatch(1)
-        val source = FakeCaptureSource(script = listOf(Read.Code(0), Read.Code(0), frame(7)))
+        val source = TestCaptureSource(script = listOf(Read.Code(0), Read.Code(0), frame(7)))
 
         start(source, recorder(latch))
         assertThat(latch.await(SETTLE_MS, TimeUnit.MILLISECONDS)).isTrue()
@@ -171,7 +171,7 @@ class AudioInputTest {
 
     @Test
     fun `isRecording follows the intent to record`() {
-        val source = FakeCaptureSource()
+        val source = TestCaptureSource()
         val audioInput = AudioInput({ _, _ -> }, source)
         input = audioInput
 
@@ -185,7 +185,7 @@ class AudioInputTest {
     /** The source is stopped before the join, which is what makes the blocked read return. */
     @Test
     fun `stopRecording stops the source and the capture thread really exits`() {
-        val source = FakeCaptureSource()
+        val source = TestCaptureSource()
         val audioInput = start(source)
         waitUntil("the capture thread started") { "start" in source.events }
 
@@ -207,7 +207,7 @@ class AudioInputTest {
         val lock = ReentrantLock()
         val condition = lock.newCondition()
         val entered = CountDownLatch(1)
-        val source = FakeCaptureSource(script = listOf(frame(1)))
+        val source = TestCaptureSource(script = listOf(frame(1)))
         val audioInput = start(source, { _, _ ->
             lock.withLock {
                 entered.countDown()
@@ -241,7 +241,7 @@ class AudioInputTest {
 
     @Test
     fun `stopping something that never started reports that nothing is running`() {
-        val audioInput = AudioInput({ _, _ -> }, FakeCaptureSource())
+        val audioInput = AudioInput({ _, _ -> }, TestCaptureSource())
         input = audioInput
 
         assertThat(audioInput.stopRecording()).isTrue()
@@ -251,7 +251,7 @@ class AudioInputTest {
     /** A second stop must not call `AudioRecord.stop()` again. */
     @Test
     fun `stopping twice does not touch the source a second time`() {
-        val source = FakeCaptureSource()
+        val source = TestCaptureSource()
         val audioInput = start(source)
         waitUntil("the capture thread started") { "start" in source.events }
         assertThat(audioInput.stopRecording()).isTrue()
@@ -275,7 +275,7 @@ class AudioInputTest {
 
     @Test
     fun `platform silencing is reported as capture states`() {
-        val source = FakeCaptureSource()
+        val source = TestCaptureSource()
         start(source)
         waitUntil("the silence listener was registered") { source.silenceListener != null }
 
@@ -287,7 +287,7 @@ class AudioInputTest {
 
     @Test
     fun `the silence listener is unregistered when recording stops`() {
-        val source = FakeCaptureSource()
+        val source = TestCaptureSource()
         val audioInput = start(source)
         waitUntil("the silence listener was registered") { source.silenceListener != null }
 
@@ -298,7 +298,7 @@ class AudioInputTest {
 
     @Test
     fun `a read error while recording is reported and ends the loop`() {
-        val source = FakeCaptureSource(script = listOf(frame(1), Read.Code(-3)))
+        val source = TestCaptureSource(script = listOf(frame(1), Read.Code(-3)))
         start(source)
         waitUntil("the error was reported") { states.isNotEmpty() }
 
@@ -315,7 +315,7 @@ class AudioInputTest {
      */
     @Test
     fun `a read that fails while we are stopping is not reported`() {
-        val source = FakeCaptureSource(codeAfterStop = AndroidAudioRecordSource.ERROR_RELEASED)
+        val source = TestCaptureSource(codeAfterStop = AndroidAudioRecordSource.ERROR_RELEASED)
         val audioInput = start(source)
         waitUntil("the capture thread started") { "start" in source.events }
 
@@ -326,7 +326,7 @@ class AudioInputTest {
 
     @Test
     fun `a source that cannot start is reported instead of looping`() {
-        val source = FakeCaptureSource(failStart = true)
+        val source = TestCaptureSource(failStart = true)
         start(source)
         waitUntil("the error was reported") { states.isNotEmpty() }
 
@@ -336,7 +336,7 @@ class AudioInputTest {
 
     @Test
     fun `shutdown stops before it releases, and releases once`() {
-        val source = FakeCaptureSource()
+        val source = TestCaptureSource()
         val audioInput = start(source)
         waitUntil("the capture thread started") { "start" in source.events }
 
@@ -350,7 +350,7 @@ class AudioInputTest {
     /** The rate is read once at construction; the source must not be touched after release. */
     @Test
     fun `the rate and the frame size still answer after shutdown`() {
-        val source = FakeCaptureSource(rate = 16000)
+        val source = TestCaptureSource(sampleRate = 16000)
         val audioInput = AudioInput({ _, _ -> }, source)
         input = audioInput
         audioInput.startRecording()
@@ -368,7 +368,7 @@ class AudioInputTest {
      */
     @Test
     fun `starting again while the capture thread is alive is refused`() {
-        val source = FakeCaptureSource()
+        val source = TestCaptureSource()
         val audioInput = start(source)
         waitUntil("the capture thread started") { "start" in source.events }
 
