@@ -15,6 +15,9 @@ gen/
 # Android
 local.properties
 
+# Native (CMake build trees of externalNativeBuild)
+.cxx/
+
 # Java
 *.class
 .direnv/
