@@ -72,11 +72,13 @@ gradle.projectsEvaluated {
     }
 }
 
-// The pre-merge check. The flavors share one test source set, so the app's unit and instrumented
-// tests are built and run for foss debug only; the other shipped variants are only assembled.
+// The pre-merge check, run locally and by .github/workflows/verify.yml. The flavors share one test
+// source set, so the app's unit and instrumented tests are built and run for foss debug only; the
+// other shipped variants are assembled and linted (bare `lint` would only cover one variant).
 tasks.register("verify") {
     group = "verification"
-    description = "Assembles every shipped variant, runs all unit tests once, builds the device tests, lints."
+    description = "Assembles every shipped variant, runs all unit and native host tests once, " +
+        "builds the device tests, lints every shipped variant, runs detekt."
     dependsOn(
         ":app:assembleFossDebug",
         ":app:assembleGoogDebug",
@@ -85,9 +87,13 @@ tasks.register("verify") {
         ":app:testFossDebugUnitTest",
         ":app:assembleFossDebugAndroidTest",
         ":app:lintFossDebug",
+        ":app:lintGoogDebug",
+        ":app:lintDonationDebug",
+        ":app:lintBetaDebug",
         ":app:detekt",
         ":libraries:core:lintDebug",
         ":libraries:core:testDebugUnitTest",
+        ":libraries:core:nativeHostTests",
         ":libraries:core:assembleDebugAndroidTest",
         ":libraries:core:detekt",
         ":libraries:protocol:test",

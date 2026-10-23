@@ -53,6 +53,9 @@
           androidSdk.androidsdk
           cmake
           ninja
+          # Host C/C++ compiler and binutils (objdump) for :libraries:core:nativeHostTests. mkShell
+          # brings them anyway; listed so the Studio launcher's PATH has them too.
+          stdenv.cc
           meson
           pkg-config
           python

@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import javax.inject.Inject
 
 /*
  * Copyright (C) 2014 Andrew Comminos
@@ -86,6 +87,71 @@ tasks.withType<KotlinCompile>().configureEach {
 // Coroutine debug mode, on under -ea, renames threads while a coroutine runs; devices run without it.
 tasks.withType<Test>().configureEach {
     systemProperty("kotlinx.coroutines.debug", "off")
+}
+
+/**
+ * Host build of the native tests (src/main/cpp/tests): plain and ASan/UBSan copies of the native
+ * code and its JNI bridges, run through ctest. No Android task builds them for the host. cmake,
+ * ninja, the compiler, objdump and JAVA_HOME (for jni.h) come from the nix dev shell, which both
+ * `nix develop` and `nix run .#android-studio` provide.
+ *
+ * HUMLA_REQUIRE_SANITIZERS makes a missing ASan/UBSan runtime a configure error instead of
+ * silently skipping the sanitized tests; --no-tests=error fails an empty run. Every step's exit
+ * code is checked, so a failing test (ctest exits non-zero) fails the task.
+ */
+abstract class NativeHostTests @Inject constructor(private val execOps: ExecOperations) : DefaultTask() {
+    /** All native sources: the tests build the libraries from ../ and ../third_party. */
+    @get:InputDirectory
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val sources: DirectoryProperty
+
+    /** The host toolchain is whatever PATH resolves; a new dev shell reruns the tests. */
+    @get:Input
+    abstract val toolchainPath: Property<String>
+
+    @get:Input
+    abstract val javaHome: Property<String>
+
+    /** The CMake build tree, kept between runs so ninja rebuilds incrementally. */
+    @get:Internal
+    abstract val cmakeBuildDir: DirectoryProperty
+
+    @get:OutputFile
+    abstract val junitReport: RegularFileProperty
+
+    @TaskAction
+    fun run() {
+        val testsDir = sources.get().dir("tests").asFile.absolutePath
+        val buildDir = cmakeBuildDir.get().asFile.absolutePath
+        val report = junitReport.get().asFile
+        report.delete()
+        execOps.exec {
+            environment("HUMLA_REQUIRE_SANITIZERS", "1")
+            commandLine("cmake", "-S", testsDir, "-B", buildDir, "-G", "Ninja")
+        }
+        execOps.exec {
+            // A changed CMakeLists.txt re-runs configure from inside the build; keep the flag set.
+            environment("HUMLA_REQUIRE_SANITIZERS", "1")
+            commandLine("cmake", "--build", buildDir)
+        }
+        execOps.exec {
+            commandLine(
+                "ctest", "--test-dir", buildDir, "--output-on-failure", "--no-tests=error",
+                "--parallel", Runtime.getRuntime().availableProcessors().toString(),
+                "--output-junit", report.absolutePath,
+            )
+        }
+    }
+}
+
+tasks.register<NativeHostTests>("nativeHostTests") {
+    group = "verification"
+    description = "Builds the native tests for the host and runs them, also under ASan/UBSan."
+    sources = layout.projectDirectory.dir("src/main/cpp")
+    toolchainPath = providers.environmentVariable("PATH").orElse("")
+    javaHome = providers.environmentVariable("JAVA_HOME").orElse("")
+    cmakeBuildDir = layout.buildDirectory.dir("native-host-tests")
+    junitReport = layout.buildDirectory.file("test-results/nativeHostTests/ctest-junit.xml")
 }
 
 dependencies {
