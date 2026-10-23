@@ -42,7 +42,7 @@ class ChannelMenu(
     private val channel: Int,
     private val state: () -> ChannelMenuState?,
     private val actions: Actions,
-) : PermissionsPopupMenu.IOnMenuPrepareListener {
+) : PermissionsPopupMenu.OnMenuPrepareListener {
 
     /** What the items do, for the channel they were picked on. */
     @Suppress("TooManyFunctions") // One per item.

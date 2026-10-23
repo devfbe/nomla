@@ -39,7 +39,7 @@ class PermissionsPopupMenuTest {
     private var requests = 0
     private val prepared = mutableListOf<Int>()
 
-    private val listener = object : PermissionsPopupMenu.IOnMenuPrepareListener {
+    private val listener = object : PermissionsPopupMenu.OnMenuPrepareListener {
         override fun onMenuPrepare(menu: Menu, permissions: Int) {
             prepared += permissions
         }

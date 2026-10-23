@@ -40,7 +40,7 @@ class PermissionsPopupMenu(
     context: Context,
     anchor: View,
     menuRes: Int,
-    private val prepareListener: IOnMenuPrepareListener,
+    private val prepareListener: OnMenuPrepareListener,
     private val permissions: Flow<Int>,
     private val requestPermissions: () -> Unit,
 ) : PopupMenu.OnDismissListener {
@@ -82,7 +82,7 @@ class PermissionsPopupMenu(
     }
 
     /** Handles the menu's items and enforces the channel permissions, disabling items as appropriate. */
-    interface IOnMenuPrepareListener : PopupMenu.OnMenuItemClickListener {
+    interface OnMenuPrepareListener : PopupMenu.OnMenuItemClickListener {
         fun onMenuPrepare(menu: Menu, permissions: Int)
     }
 }
