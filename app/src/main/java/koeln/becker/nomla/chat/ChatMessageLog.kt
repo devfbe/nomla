@@ -39,8 +39,6 @@ class ChatMessageLog(private val capacity: Int = MAX_ENTRIES) {
     /** The current history as a read-only snapshot per change. */
     val messages: StateFlow<List<ChatMessage>> = published.asStateFlow()
 
-    val size: Int get() = entries.size
-
     fun add(message: ChatMessage) {
         if (entries.size == capacity) entries.removeFirst()
         entries.addLast(message)

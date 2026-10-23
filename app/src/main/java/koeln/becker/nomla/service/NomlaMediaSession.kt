@@ -24,6 +24,7 @@ import android.os.Looper
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.view.KeyEvent
+import androidx.annotation.VisibleForTesting
 import androidx.core.content.IntentCompat
 import androidx.preference.PreferenceManager
 import kotlinx.coroutines.CoroutineScope
@@ -64,7 +65,8 @@ class NomlaMediaSession(
     /** Follows the session state between [attach] and [detach]. */
     private var stateUpdates: Job? = null
 
-    /** Public for tests; the framework calls it on [mainHandler]. */
+    /** The framework calls it on [mainHandler]. */
+    @VisibleForTesting
     val callback: MediaSessionCompat.Callback = object : MediaSessionCompat.Callback() {
         override fun onMediaButtonEvent(mediaButtonEvent: Intent): Boolean {
             val event = IntentCompat.getParcelableExtra(
@@ -76,13 +78,16 @@ class NomlaMediaSession(
         }
     }
 
+    @get:VisibleForTesting
     val isActive: Boolean
         get() = session?.isActive == true
 
+    @get:VisibleForTesting
     val sessionToken: MediaSessionCompat.Token?
         get() = session?.sessionToken
 
     /** The state the session advertises to the system (null while no session is held). */
+    @get:VisibleForTesting
     val playbackState: PlaybackStateCompat?
         get() = session?.controller?.playbackState
 
@@ -108,12 +113,14 @@ class NomlaMediaSession(
     }
 
     /** We are connected: hold an active session unless the action is NONE. */
+    @VisibleForTesting
     fun activate() {
         connected = true
         applyState()
     }
 
     /** We are disconnected (or shutting down): release the session. */
+    @VisibleForTesting
     fun deactivate() {
         connected = false
         applyState()

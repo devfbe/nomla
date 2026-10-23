@@ -30,7 +30,7 @@ class ChatMessageLogTest {
 
         repeat(ChatMessageLog.MAX_ENTRIES) { log.add(info("m$it")) }
 
-        assertThat(log.size).isEqualTo(ChatMessageLog.MAX_ENTRIES)
+        assertThat(log.snapshot()).hasSize(ChatMessageLog.MAX_ENTRIES)
         assertThat(log.snapshot().first().body).isEqualTo("m0")
         assertThat(log.snapshot().last().body).isEqualTo("m499")
     }
@@ -42,7 +42,7 @@ class ChatMessageLogTest {
 
         log.add(info("m500"))
 
-        assertThat(log.size).isEqualTo(ChatMessageLog.MAX_ENTRIES)
+        assertThat(log.snapshot()).hasSize(ChatMessageLog.MAX_ENTRIES)
         assertThat(log.snapshot().first().body).isEqualTo("m1")
         assertThat(log.snapshot().last().body).isEqualTo("m500")
     }
@@ -86,7 +86,6 @@ class ChatMessageLogTest {
 
         log.clear()
 
-        assertThat(log.size).isEqualTo(0)
         assertThat(log.snapshot()).isEmpty()
     }
 
