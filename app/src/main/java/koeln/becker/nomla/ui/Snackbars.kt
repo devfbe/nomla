@@ -86,7 +86,8 @@ fun Activity.showPermissionDeniedSnackbar(@StringRes text: Int): Snackbar =
 fun showPermissionDeniedSnackbar(view: View, @StringRes text: Int): Snackbar =
     showSnackbar(view, view.context.getString(text), R.string.open_settings) { view.context.openAppSettings() }
 
-private fun Context.openAppSettings() =
+/** Opens the system's settings page of this app, where a denied permission can be granted. */
+fun Context.openAppSettings() =
     startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, "package:$packageName".toUri()))
 
 /**

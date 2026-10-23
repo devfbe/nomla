@@ -16,15 +16,11 @@
  */
 package koeln.becker.nomla.audio
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
@@ -46,6 +42,7 @@ import koeln.becker.nomla.databinding.ItemAudioDeviceBinding
 import koeln.becker.nomla.preference.MeterScaleText
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.session.SessionSettings
+import koeln.becker.nomla.ui.microphoneRequest
 import koeln.becker.nomla.util.changes
 
 /**
@@ -73,9 +70,7 @@ class AudioPanelSheet : BottomSheetDialogFragment() {
     private var hysteresisDb = VadConfig.DEFAULT_HYSTERESIS_DB
     private var stateDescribedAt = 0L
 
-    private val requestMicrophone = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) startMicCheck() else showMicUnavailable()
-    }
+    private val microphone = microphoneRequest(onDenied = ::showMicUnavailable, onGranted = ::startMicCheck)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         BottomSheetAudioPanelBinding.inflate(inflater, container, false).root
@@ -124,7 +119,7 @@ class AudioPanelSheet : BottomSheetDialogFragment() {
             if (checked && !applyingSettings && mode != null) settings.noiseSuppressionMethod = mode.preferenceValue
         }
         binding.audioPanelMicToggle.setOnClickListener {
-            if (micCheck?.isRunning == true) stopMicCheck() else requestMicCheck()
+            if (micCheck?.isRunning == true) stopMicCheck() else microphone.run()
         }
         binding.audioPanelDoubleTalk.setOnClickListener {
             // The talk-over test needs the microphone for itself.
@@ -194,13 +189,6 @@ class AudioPanelSheet : BottomSheetDialogFragment() {
             view.isVisible = available
         }
         binding.audioPanelMicToggle.setText(if (running) R.string.mic_check_stop else R.string.mic_check_start)
-    }
-
-    /** Starts the check, asking for the microphone first if the user has not granted it yet. */
-    private fun requestMicCheck() {
-        val granted = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) ==
-            PackageManager.PERMISSION_GRANTED
-        if (granted) startMicCheck() else requestMicrophone.launch(Manifest.permission.RECORD_AUDIO)
     }
 
     private fun startMicCheck() {

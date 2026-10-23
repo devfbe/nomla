@@ -18,6 +18,7 @@ package koeln.becker.nomla.audio
 
 import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.view.Menu
@@ -66,6 +67,9 @@ import koeln.becker.nomla.testing.installSession
 import koeln.becker.nomla.testing.launchNomlaActivity
 import koeln.becker.nomla.testing.offerCommunicationDevices
 import koeln.becker.nomla.testing.platformDevice
+import koeln.becker.nomla.testing.resetSnackbars
+import koeln.becker.nomla.testing.snackbarAction
+import koeln.becker.nomla.testing.snackbarText
 import koeln.becker.nomla.testing.stubAudio
 import koeln.becker.nomla.testing.stubState
 
@@ -294,6 +298,31 @@ class AudioPanelSheetTest {
 
         assertThat(source.events.last()).isEqualTo("release")
         assertThat(panel.toggle().text.toString()).isEqualTo(app.getString(R.string.mic_check_start))
+    }
+
+    /** As the talk-over test: a denied microphone says why the check does not run and offers the settings. */
+    @Test
+    fun aDeniedMicrophoneSaysWhyTheCheckDoesNotRunAndOffersTheSettings() {
+        resetSnackbars()
+        shadowOf(app).denyPermissions(Manifest.permission.RECORD_AUDIO)
+        launch(DrawerAdapter.ITEM_FAVOURITES)
+        val panel = openPanel()
+
+        panel.toggle().performClick()
+        val request = requireNotNull(shadowOf(activity).lastRequestedPermission) { "nothing asked for a permission" }
+        assertThat(request.requestedPermissions.toList()).containsExactly(Manifest.permission.RECORD_AUDIO)
+        activity.onRequestPermissionsResult(
+            request.requestCode,
+            request.requestedPermissions,
+            intArrayOf(PackageManager.PERMISSION_DENIED),
+        )
+
+        assertThat(capture.request).isNull()
+        assertThat(panel.find<TextView>(R.id.audio_panel_meter_caption).text.toString())
+            .isEqualTo(app.getString(R.string.inputLevelMeterUnavailable))
+        val view = panel.requireView()
+        assertThat(snackbarText(view)).isEqualTo(app.getString(R.string.grant_perm_microphone))
+        assertThat(snackbarAction(view).text.toString()).isEqualTo(app.getString(R.string.open_settings))
     }
 
     /** The check would take the microphone from the call, so a connection shows why it is not there. */

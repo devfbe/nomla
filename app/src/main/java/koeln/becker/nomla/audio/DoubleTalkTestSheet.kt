@@ -16,14 +16,11 @@
  */
 package koeln.becker.nomla.audio
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
@@ -43,7 +40,7 @@ import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.databinding.BottomSheetDoubleTalkTestBinding
 import koeln.becker.nomla.session.SessionManager
-import koeln.becker.nomla.ui.showPermissionDeniedSnackbar
+import koeln.becker.nomla.ui.microphoneRequest
 import koeln.becker.nomla.util.appViewModels
 import koeln.becker.nomla.util.changes
 import kotlin.math.roundToInt
@@ -65,9 +62,7 @@ class DoubleTalkTestSheet : BottomSheetDialogFragment() {
     /** True while the user drags the slider: the value is applied, and stored when they let go. */
     private var dragging = false
 
-    private val requestMicrophone = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) model.start() else explainMicrophoneDenied()
-    }
+    private val microphone = microphoneRequest { model.start() }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         BottomSheetDoubleTalkTestBinding.inflate(inflater, container, false).root
@@ -97,9 +92,9 @@ class DoubleTalkTestSheet : BottomSheetDialogFragment() {
     }
 
     private fun bindControls(binding: BottomSheetDoubleTalkTestBinding) {
-        binding.doubleTalkToggle.setOnClickListener { if (model.isRunning) model.stop() else requestStart() }
+        binding.doubleTalkToggle.setOnClickListener { if (model.isRunning) model.stop() else microphone.run() }
         binding.doubleTalkRetry.setOnClickListener {
-            if (hasMicrophone()) model.retry() else requestMicrophone.launch(Manifest.permission.RECORD_AUDIO)
+            if (microphone.isGranted) model.retry() else microphone.run()
         }
         binding.doubleTalkStrengthReset.setOnClickListener { model.resetStrength() }
         binding.doubleTalkStrengthReset.contentDescription =
@@ -136,20 +131,6 @@ class DoubleTalkTestSheet : BottomSheetDialogFragment() {
     override fun onDestroyView() {
         binding = null
         super.onDestroyView()
-    }
-
-    private fun hasMicrophone(): Boolean =
-        ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) ==
-            PackageManager.PERMISSION_GRANTED
-
-    private fun requestStart() {
-        if (hasMicrophone()) model.start() else requestMicrophone.launch(Manifest.permission.RECORD_AUDIO)
-    }
-
-    /** As a connect explains it; in the sheet's own window, which would cover the activity's snackbar. */
-    private fun explainMicrophoneDenied() {
-        val view = view ?: return
-        showPermissionDeniedSnackbar(view, R.string.grant_perm_microphone)
     }
 
     private fun render(state: DoubleTalkTestUiState) {

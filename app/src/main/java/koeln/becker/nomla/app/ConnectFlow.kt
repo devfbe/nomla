@@ -18,16 +18,12 @@
 package koeln.becker.nomla.app
 
 import android.Manifest
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
@@ -37,6 +33,8 @@ import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.db.PublicServer
 import koeln.becker.nomla.session.SessionManager
+import koeln.becker.nomla.ui.isGranted
+import koeln.becker.nomla.ui.openAppSettings
 import koeln.becker.nomla.ui.showConfirmDialog
 import koeln.becker.nomla.ui.showPermissionDeniedSnackbar
 import koeln.becker.nomla.ui.showMessageDialog
@@ -99,8 +97,7 @@ class ConnectFlow(
                 settings.isNotificationPermissionAsked = value
             }
 
-        override fun isGranted(permission: String) =
-            ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED
+        override fun isGranted(permission: String) = activity.isGranted(permission)
 
         override fun shouldShowRationale(permission: String) =
             ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)
@@ -121,10 +118,7 @@ class ConnectFlow(
             activity.showConfirmDialog(
                 activity.getString(R.string.microphone_permission_settings),
                 R.string.open_settings,
-            ) {
-                val uri = Uri.fromParts("package", activity.packageName, null)
-                activity.startActivity(Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri))
-            }
+            ) { activity.openAppSettings() }
         }
 
         override fun onMicrophoneDenied() {

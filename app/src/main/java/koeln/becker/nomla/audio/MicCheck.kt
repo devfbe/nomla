@@ -20,12 +20,10 @@ package koeln.becker.nomla.audio
 
 import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.VisibleForTesting
-import androidx.core.content.ContextCompat
 import koeln.becker.nomla.mumble.audio.AndroidAudioTrackSink
 import koeln.becker.nomla.mumble.audio.CapturePreview
 import koeln.becker.nomla.mumble.audio.MeterReading
@@ -38,6 +36,7 @@ import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.exception.AudioInitializationException
 import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.Settings
+import koeln.becker.nomla.ui.isGranted
 
 /**
  * The microphone test behind a level meter: a [CapturePreview] built from the user's settings, its
@@ -59,11 +58,7 @@ class MicCheck(private val context: Context, private val onReading: (MeterReadin
      */
     fun start(loopback: Boolean, echoCategory: AudioDeviceCategory): VadConfig? {
         stop()
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            return null
-        }
+        if (!context.isGranted(Manifest.permission.RECORD_AUDIO)) return null
         val settings = Settings.getInstance(context)
         val vad = settings.vadConfig
         lateinit var started: CapturePreview
