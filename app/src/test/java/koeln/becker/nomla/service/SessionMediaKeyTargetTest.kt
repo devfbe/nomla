@@ -26,7 +26,7 @@ import io.mockk.verify
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.session.SessionManager
@@ -40,7 +40,7 @@ import koeln.becker.nomla.testing.stubState
 
 @RunWith(RobolectricTestRunner::class)
 class SessionMediaKeyTargetTest {
-    private val session = mockk<INomlaSession>(relaxed = true).also { installSession(it.stubConnected()) }
+    private val session = mockk<Session>(relaxed = true).also { installSession(it.stubConnected()) }
     private val audio = session.stubAudio()
     private val target = SessionMediaKeyTarget(SessionManager.get(ApplicationProvider.getApplicationContext<Context>()))
 

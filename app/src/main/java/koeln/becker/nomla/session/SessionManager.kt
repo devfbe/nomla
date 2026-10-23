@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.session.SessionConfig
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.chat.SessionChat
@@ -39,7 +39,7 @@ import koeln.becker.nomla.chat.SessionChat
  * Automatic reconnects happen inside one session, so the running service carries them.
  */
 class SessionManager(
-    private val newSession: (SessionConfig) -> INomlaSession,
+    private val newSession: (SessionConfig) -> Session,
     private val startForeground: () -> Unit,
     /** The chat history of the current session. */
     val chat: SessionChat,
@@ -49,11 +49,11 @@ class SessionManager(
         val sessionManager: SessionManager
     }
 
-    private val current = MutableStateFlow<INomlaSession?>(null)
+    private val current = MutableStateFlow<Session?>(null)
     private val mutableErrorShown = MutableStateFlow(false)
 
     /** The current session, or null before the first connect. */
-    val session: StateFlow<INomlaSession?> = current.asStateFlow()
+    val session: StateFlow<Session?> = current.asStateFlow()
 
     /** The current session's state; Disconnected without one. */
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -62,7 +62,7 @@ class SessionManager(
     val currentState: SessionState get() = current.value?.state?.value ?: SessionState.Disconnected()
 
     /** The current session while it is synchronized with its server. */
-    val connected: INomlaSession? get() = current.value?.takeIf { it.isConnected }
+    val connected: Session? get() = current.value?.takeIf { it.isConnected }
 
     /** Whether the session holds, or is re-establishing, a connection. */
     val isActive: Boolean get() = currentState !is SessionState.Disconnected
@@ -99,7 +99,7 @@ class SessionManager(
      * Makes [session] the current one and closes the previous. Its chat is followed before
      * anything can happen in it, and observers move to it before the previous one ends.
      */
-    internal fun adopt(session: INomlaSession) {
+    internal fun adopt(session: Session) {
         val previous = current.value
         mutableErrorShown.value = false
         chat.follow(session)
@@ -127,4 +127,4 @@ class SessionManager(
 }
 
 /** Whether the session is synchronized with its server; derived from its only state. */
-val INomlaSession.isConnected: Boolean get() = state.value == SessionState.Connected
+val Session.isConnected: Boolean get() = state.value == SessionState.Connected

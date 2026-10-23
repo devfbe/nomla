@@ -38,10 +38,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.mumble.util.NomlaLog
-import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.databinding.OverlayBinding
 import koeln.becker.nomla.session.SessionManager
@@ -58,7 +57,7 @@ class NomlaOverlay(private val context: Context, private val sessions: SessionMa
     private val overlayParams: WindowManager.LayoutParams
 
     /** The session the overlay shows, while it is shown. */
-    private var session: INomlaSession? = null
+    private var session: Session? = null
 
     /** Follows the users of our channel while the overlay is shown. */
     private var updates: Job? = null

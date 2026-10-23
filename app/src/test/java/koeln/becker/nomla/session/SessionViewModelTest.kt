@@ -26,7 +26,7 @@ import io.mockk.verify
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.TalkState
 import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.mumble.model.WhisperTarget
@@ -44,7 +44,7 @@ import koeln.becker.nomla.testing.stubTalkStates
 
 @RunWith(RobolectricTestRunner::class)
 class SessionViewModelTest {
-    private val session = mockk<INomlaSession>(relaxed = true)
+    private val session = mockk<Session>(relaxed = true)
     private val state = session.stubState(SessionState.Connecting)
     private val model = session.stubModel(selfServerState(UserState(1, "me", 0)))
     private val talkStates = session.stubTalkStates()

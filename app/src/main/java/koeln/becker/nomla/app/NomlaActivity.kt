@@ -43,7 +43,7 @@ import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.MumbleURLParser
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.session.NomlaEvent
@@ -240,7 +240,7 @@ class NomlaActivity :
         sessions.setAppVisible(false)
     }
 
-    private suspend fun followEvents(session: INomlaSession) {
+    private suspend fun followEvents(session: Session) {
         session.events.inMainThreadSlices().collect { event ->
             if (event is NomlaEvent.PermissionDenied) dialogs.showPermissionDenied(NoticeFormatter(this).denial(event))
         }
@@ -299,7 +299,7 @@ class NomlaActivity :
         }
     }
 
-    private fun confirmDisconnect(session: INomlaSession) {
+    private fun confirmDisconnect(session: Session) {
         showConfirmDialog(getString(R.string.disconnectSure, session.targetServer?.name), R.string.confirm) {
             sessions.disconnect()
             showDrawerFragment(DrawerAdapter.ITEM_FAVOURITES)

@@ -24,7 +24,7 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowLooper
 import koeln.becker.nomla.mumble.NomlaSession
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.audio.AudioSettings
 import koeln.becker.nomla.mumble.audio.PipelineSettings
 import koeln.becker.nomla.mumble.audio.routing.CommunicationDevices
@@ -259,7 +259,7 @@ internal fun testSession(
 }
 
 /** Why the session is not connected, in whichever state carries it. */
-internal val INomlaSession.reason: DisconnectReason?
+internal val Session.reason: DisconnectReason?
     get() = when (val state = state.value) {
         is SessionState.Disconnected -> state.reason
         is SessionState.ConnectionLost -> state.reason
@@ -267,10 +267,10 @@ internal val INomlaSession.reason: DisconnectReason?
         SessionState.Connecting, SessionState.Connected -> null
     }
 
-internal val INomlaSession.isReconnecting: Boolean
+internal val Session.isReconnecting: Boolean
     get() = state.value is SessionState.ConnectionLost || state.value is SessionState.Reconnecting
 
 /** Stores the Bluetooth wish the way the app's preference does: as part of the audio settings. */
-internal fun INomlaSession.setBluetoothAutomatic(on: Boolean) {
+internal fun Session.setBluetoothAutomatic(on: Boolean) {
     configure(config.copy(audio = config.audio.copy(bluetoothAutomatic = on)))
 }

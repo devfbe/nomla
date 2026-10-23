@@ -30,7 +30,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.android.controller.ActivityController
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
@@ -51,7 +51,7 @@ class ChannelFragmentTabsTest {
     private lateinit var controller: ActivityController<ServiceHostActivity>
     private lateinit var fragment: ChannelFragment
 
-    private val session = mockk<INomlaSession>(relaxed = true)
+    private val session = mockk<Session>(relaxed = true)
 
     @Before
     fun setUp() {

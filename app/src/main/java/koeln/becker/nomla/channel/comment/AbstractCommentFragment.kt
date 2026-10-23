@@ -34,7 +34,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.ServerState
 import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.DialogCommentBinding
@@ -121,7 +121,7 @@ abstract class AbstractCommentFragment : DialogFragment() {
      * Loads the comment once [extractor] finds it in the session's model. Stops waiting once it
      * has one, and at the latest in onDestroy.
      */
-    protected fun observeComment(session: INomlaSession, extractor: (ServerState) -> String?) {
+    protected fun observeComment(session: Session, extractor: (ServerState) -> String?) {
         stopObservingComment()
         commentUpdates = lifecycleScope.launch(Dispatchers.Main.immediate, CoroutineStart.UNDISPATCHED) {
             loadComment(session.model.mapNotNull { it?.let(extractor) }.first())
@@ -144,8 +144,8 @@ abstract class AbstractCommentFragment : DialogFragment() {
      * Requests the comment from the connected [session], which is expected to arrive in
      * [loadComment]. Not called if the comment came with the arguments.
      */
-    abstract fun requestComment(session: INomlaSession)
+    abstract fun requestComment(session: Session)
 
     /** Asks the connected [session] to replace the comment with [comment]. */
-    abstract fun editComment(session: INomlaSession, comment: String)
+    abstract fun editComment(session: Session, comment: String)
 }

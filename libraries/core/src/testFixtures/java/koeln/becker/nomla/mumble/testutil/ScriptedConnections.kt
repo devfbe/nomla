@@ -24,7 +24,7 @@ import com.google.protobuf.MessageLite
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import koeln.becker.nomla.mumble.NomlaSession
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.audio.capture.CaptureState
 import koeln.becker.nomla.mumble.exception.NomlaException
 import koeln.becker.nomla.mumble.net.CryptState
@@ -61,7 +61,7 @@ public class ScriptedConnections(reconnectBaseDelayMillis: Long, reconnectAttemp
     /** How often the transport of attempt [index] (0-based) was closed. */
     public fun disconnectCalls(index: Int): Int = transports[index].disconnectCalls
 
-    public fun session(context: Context, config: SessionConfig): INomlaSession {
+    public fun session(context: Context, config: SessionConfig): Session {
         val main = Handler(Looper.getMainLooper())
         return NomlaSession(
             context,

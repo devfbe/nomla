@@ -27,13 +27,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.shadows.ShadowDialog
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.MainScreen
-import koeln.becker.nomla.R
 import koeln.becker.nomla.db.PublicServer
 import koeln.becker.nomla.testing.installSession
 import koeln.becker.nomla.testing.launchNomlaActivity
@@ -69,7 +68,7 @@ class NomlaActivityPromptsTest {
 
     @Test
     fun aPermissionDenialIsAcknowledgedWithOk() {
-        val session = mockk<INomlaSession>(relaxed = true) {
+        val session = mockk<Session>(relaxed = true) {
             every { targetServer } returns Server(1, "Home", "example.org", 64738, "me", null)
         }
         session.stubState(SessionState.Connected)

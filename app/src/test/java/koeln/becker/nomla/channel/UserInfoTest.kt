@@ -25,7 +25,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.UserStats
 import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
@@ -78,7 +78,7 @@ class UserInfoTest {
     @Test
     fun theDialogRequestsStatsShowsThemAndRefreshesWhileOpen() {
         val context = Robolectric.buildActivity(ThemedActivity::class.java).setup().get()
-        val session = mockk<INomlaSession>(relaxed = true)
+        val session = mockk<Session>(relaxed = true)
         val actions = session.stubActions()
         installSession(session.stubConnected())
         val events = session.stubEvents()

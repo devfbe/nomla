@@ -41,7 +41,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.android.controller.ServiceController
 import org.robolectric.shadows.ShadowPowerManager
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.mumble.model.Message
 import koeln.becker.nomla.mumble.model.UserState
@@ -86,7 +86,7 @@ class NomlaServiceTest {
     private lateinit var hotCorner: NomlaHotCorner
     private val route = MutableStateFlow<Int?>(null)
     private val captureSilenced = MutableStateFlow(false)
-    private val session: INomlaSession = mockk(relaxed = true) {
+    private val session: Session = mockk(relaxed = true) {
         every { audio.route } returns route
         every { audio.captureSilenced } returns captureSilenced
         every { audio.transmitMode } returns TransmitMode.VOICE_ACTIVITY
@@ -109,7 +109,7 @@ class NomlaServiceTest {
         app.installContainer(
             AppContainer(app, app.scope) { config ->
                 created += config
-                mockk<INomlaSession>(relaxed = true).also { it.stubEvents(); it.stubState(SessionState.Connecting) }
+                mockk<Session>(relaxed = true).also { it.stubEvents(); it.stubState(SessionState.Connecting) }
             },
         )
         sessions = SessionManager.get(app)
@@ -200,7 +200,7 @@ class NomlaServiceTest {
         preferences().edit().putBoolean(Settings.USE_TOR.key, true).commit()
 
         move(SessionState.Disconnected())
-        installSession(mockk<INomlaSession>(relaxed = true).also { it.stubState(SessionState.Connecting) })
+        installSession(mockk<Session>(relaxed = true).also { it.stubState(SessionState.Connecting) })
         idleMainLooper()
 
         assertThat(foregroundText()).isEqualTo(app.getString(R.string.nomlaConnecting) + " (Tor)")
@@ -328,7 +328,7 @@ class NomlaServiceTest {
     private fun connectWithTheScreenOff() {
         move(SessionState.Disconnected())
         service.refuseForegroundStarts()
-        installSession(mockk<INomlaSession>(relaxed = true).also { it.stubState(SessionState.Connecting) })
+        installSession(mockk<Session>(relaxed = true).also { it.stubState(SessionState.Connecting) })
         idleMainLooper()
     }
 

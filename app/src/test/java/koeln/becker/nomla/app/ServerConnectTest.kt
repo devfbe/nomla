@@ -26,7 +26,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.session.SessionConfig
 import koeln.becker.nomla.mumble.session.SessionState
@@ -42,7 +42,7 @@ class ServerConnectTest {
 
     private val app = ApplicationProvider.getApplicationContext<NomlaApplication>()
     private val server = Server(1, "Home", "example.org", 64738, "me", null)
-    private val session = mockk<INomlaSession>(relaxed = true).stubDisconnected()
+    private val session = mockk<Session>(relaxed = true).stubDisconnected()
     private val configs = mutableListOf<SessionConfig>()
 
     @Test

@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.TalkState
 import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.mumble.session.SessionState
@@ -109,7 +109,7 @@ class SessionViewModel(private val sessions: SessionManager) : ViewModel() {
     val isWhisperActive: StateFlow<Boolean> =
         whisperSnapshot.map { it.active }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    private val connected: INomlaSession? get() = sessions.connected
+    private val connected: Session? get() = sessions.connected
 
     val serverName: String? get() = connected?.serverName
 

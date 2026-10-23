@@ -21,7 +21,7 @@ import koeln.becker.nomla.mumble.audio.AudioSettings
 import koeln.becker.nomla.mumble.model.Server
 
 /**
- * Everything a client configures a session with, handed to `INomlaSession.configure` as a whole.
+ * Everything a client configures a session with, handed to `Session.configure` as a whole.
  * [connection] takes effect on the next connection; everything else applies live.
  */
 public data class SessionConfig(

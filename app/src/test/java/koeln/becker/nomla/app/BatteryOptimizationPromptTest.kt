@@ -28,7 +28,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowDialog
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
@@ -53,12 +53,12 @@ class BatteryOptimizationPromptTest {
     }
 
     /** Makes [session] current; null stands for an ended one, as after leaving the app. */
-    private fun attach(session: INomlaSession?) {
-        installSession(session ?: mockk<INomlaSession>(relaxed = true).stubDisconnected())
+    private fun attach(session: Session?) {
+        installSession(session ?: mockk<Session>(relaxed = true).stubDisconnected())
         idleMainLooper()
     }
 
-    private fun connectedService() = mockk<INomlaSession>(relaxed = true).stubConnected()
+    private fun connectedService() = mockk<Session>(relaxed = true).stubConnected()
 
     private fun exempt(value: Boolean) {
         shadowOf(app.getSystemService(PowerManager::class.java))
@@ -86,7 +86,7 @@ class BatteryOptimizationPromptTest {
     @Test
     fun itIsOfferedWhenTheSessionBecomesSynchronized() {
         launch()
-        val session = mockk<INomlaSession>(relaxed = true).stubDisconnected()
+        val session = mockk<Session>(relaxed = true).stubDisconnected()
         attach(session)
         assertThat(promptShown()).isFalse()
 
@@ -100,7 +100,7 @@ class BatteryOptimizationPromptTest {
     fun itIsNotOfferedWhileDisconnected() {
         launch()
 
-        attach(mockk<INomlaSession>(relaxed = true).stubDisconnected())
+        attach(mockk<Session>(relaxed = true).stubDisconnected())
 
         assertThat(promptShown()).isFalse()
     }

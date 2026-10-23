@@ -19,18 +19,18 @@
 package koeln.becker.nomla.channel.comment
 
 import androidx.core.os.bundleOf
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 
 class ChannelDescriptionFragment : AbstractCommentFragment() {
 
     private val channelId: Int get() = requireArguments().getInt(ARG_CHANNEL)
 
-    override fun requestComment(session: INomlaSession) {
+    override fun requestComment(session: Session) {
         observeComment(session) { it.channel(channelId)?.description }
         session.actions.requestChannelDescription(channelId)
     }
 
-    override fun editComment(session: INomlaSession, comment: String) {
+    override fun editComment(session: Session, comment: String) {
         // Channel descriptions cannot be edited here yet.
     }
 

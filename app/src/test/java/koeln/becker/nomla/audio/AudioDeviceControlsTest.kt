@@ -30,7 +30,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import koeln.becker.nomla.mumble.AudioControls
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.audio.routing.CommunicationDevice
 import koeln.becker.nomla.mumble.audio.routing.PreferredAudioDevice
@@ -61,15 +61,15 @@ class AudioDeviceControlsTest {
     private val app: Application = ApplicationProvider.getApplicationContext()
     private val audioManager = app.getSystemService(AudioManager::class.java)
     private val settings: Settings get() = Settings.getInstance(app)
-    private var current: INomlaSession? = null
-    private lateinit var session: INomlaSession
+    private var current: Session? = null
+    private lateinit var session: Session
     private lateinit var audio: AudioControls
     private val controls = AudioDeviceControls(app, Settings.getInstance(app)) { current?.takeIf { it.isConnected } }
 
     @Before
     fun setUp() {
         audioManager.offerCommunicationDevices()
-        session = mockk<INomlaSession>(relaxed = true).stubConnected()
+        session = mockk<Session>(relaxed = true).stubConnected()
         audio = session.stubAudio()
         current = session
         every { audio.devices } returns listOf(earpiece, speaker, headset)

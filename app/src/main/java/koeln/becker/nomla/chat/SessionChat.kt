@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.mumble.session.inMainThreadSlices
@@ -60,7 +60,7 @@ class SessionChat(
     }
 
     /** Starts over with [session]; subscribed before this returns, so nothing it emits is missed. */
-    fun follow(session: INomlaSession) {
+    fun follow(session: Session) {
         following?.cancel()
         startOver()
         following = scope.launch(Dispatchers.Main.immediate, CoroutineStart.UNDISPATCHED) {

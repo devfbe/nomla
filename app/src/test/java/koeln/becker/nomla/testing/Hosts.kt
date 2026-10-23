@@ -29,7 +29,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import io.mockk.mockk
 import org.robolectric.Robolectric
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.channel.ChatViewModel
@@ -74,7 +74,7 @@ class ServiceHostActivity : ThemedActivity() {
         private set
 
     /** Makes [session] the current session, as a connect does. */
-    fun bind(session: INomlaSession) = installSession(session)
+    fun bind(session: Session) = installSession(session)
 
     override fun invalidateOptionsMenu() {
         menuInvalidations++

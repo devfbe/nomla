@@ -198,7 +198,7 @@ class NomlaSessionBluetoothTest {
         h.devices!!.available[7] = AudioDeviceInfo.TYPE_BLUETOOTH_SCO
         h.devices.names[7] = "Jabra"
         h.connectAndSynchronize()
-        val session: INomlaSession = h.session
+        val session: Session = h.session
 
         assertThat(session.audio.devices.map { it.id }).containsExactly(1, 2, 7).inOrder()
         assertThat(session.audio.activeDevice?.id).isEqualTo(2)
@@ -274,7 +274,7 @@ class NomlaSessionBluetoothTest {
         val h = start()
         h.phone()
         h.connectAndSynchronize()
-        val session: INomlaSession = h.session
+        val session: Session = h.session
         session.audio.selectDevice(1)
 
         session.audio.selectAutomaticDevice()

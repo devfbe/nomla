@@ -25,7 +25,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.session.ConnectionConfig
 import koeln.becker.nomla.mumble.session.DisconnectReason
@@ -43,12 +43,12 @@ import koeln.becker.nomla.testing.stubState
 /** One session per connect, the foreground service started for it, and the chat that follows it. */
 @RunWith(RobolectricTestRunner::class)
 class SessionManagerTest {
-    private val created = mutableListOf<INomlaSession>()
+    private val created = mutableListOf<Session>()
     private var foregroundStarts = 0
     private var endAtOnce = false
     private val sessions = SessionManager(
         newSession = { config ->
-            mockk<INomlaSession>(relaxed = true).also { session ->
+            mockk<Session>(relaxed = true).also { session ->
                 session.stubEvents()
                 val state = session.stubState(SessionState.Disconnected())
                 every { session.config } returns config

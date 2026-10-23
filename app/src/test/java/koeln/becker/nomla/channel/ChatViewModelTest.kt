@@ -33,7 +33,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.chat.OutgoingImagePreparer
@@ -47,7 +47,7 @@ import koeln.becker.nomla.testing.stubState
 @RunWith(RobolectricTestRunner::class)
 class ChatViewModelTest {
     private val app = ApplicationProvider.getApplicationContext<Application>()
-    private val session = mockk<INomlaSession>(relaxed = true)
+    private val session = mockk<Session>(relaxed = true)
     private val state = session.stubState(SessionState.Connected)
     private val actions = session.stubActions()
     private val preparer = mockk<OutgoingImagePreparer>()

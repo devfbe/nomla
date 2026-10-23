@@ -37,7 +37,7 @@ import koeln.becker.nomla.mumble.session.inMainThreadSlices
  * [model], what happens [events]; [actions] and [audio] act on it. Nothing here throws while
  * disconnected. Main thread, except for collecting the flows.
  */
-public interface INomlaSession : AutoCloseable {
+public interface Session : AutoCloseable {
     /** Whether the session is connected, and why it is not. */
     public val state: StateFlow<SessionState>
 

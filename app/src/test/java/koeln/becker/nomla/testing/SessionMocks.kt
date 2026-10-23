@@ -24,53 +24,53 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import io.mockk.mockk
 import koeln.becker.nomla.mumble.AudioControls
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.SessionActions
 import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.session.SessionManager
 import java.util.WeakHashMap
 
-private val stateFlows = WeakHashMap<INomlaSession, MutableStateFlow<SessionState>>()
-private val eventFlows = WeakHashMap<INomlaSession, MutableSharedFlow<NomlaEvent>>()
-private val audioMocks = WeakHashMap<INomlaSession, AudioControls>()
-private val actionMocks = WeakHashMap<INomlaSession, SessionActions>()
+private val stateFlows = WeakHashMap<Session, MutableStateFlow<SessionState>>()
+private val eventFlows = WeakHashMap<Session, MutableSharedFlow<NomlaEvent>>()
+private val audioMocks = WeakHashMap<Session, AudioControls>()
+private val actionMocks = WeakHashMap<Session, SessionActions>()
 
 /** The mocked session's audio controls, as a mock of their own so their calls can be counted. */
-fun INomlaSession.stubAudio(): AudioControls =
+fun Session.stubAudio(): AudioControls =
     audioMocks.getOrPut(this) {
         mockk<AudioControls>(relaxed = true).also { every { audio } returns it }
             .also { every { it.captureSilenced } returns MutableStateFlow(false) }
     }
 
 /** The mocked session's actions, as a mock of their own so their calls can be counted. */
-fun INomlaSession.stubActions(): SessionActions =
+fun Session.stubActions(): SessionActions =
     actionMocks.getOrPut(this) { mockk<SessionActions>(relaxed = true).also { every { actions } returns it } }
 
 /** The mocked session's state, stubbed as a flow the test moves; [state] now. */
-fun INomlaSession.stubState(state: SessionState): MutableStateFlow<SessionState> =
+fun Session.stubState(state: SessionState): MutableStateFlow<SessionState> =
     stateFlows.getOrPut(this) { MutableStateFlow(state).also { every { this@stubState.state } returns it } }
         .also { it.value = state }
 
 /** The mocked session's events, stubbed as a flow the test emits into; the same flow on every call. */
-fun INomlaSession.stubEvents(): MutableSharedFlow<NomlaEvent> = eventFlows.getOrPut(this) {
+fun Session.stubEvents(): MutableSharedFlow<NomlaEvent> = eventFlows.getOrPut(this) {
     MutableSharedFlow<NomlaEvent>(extraBufferCapacity = 64).also { every { events } returns it }
 }
 
-fun <T : INomlaSession> T.stubConnected(): T = apply {
+fun <T : Session> T.stubConnected(): T = apply {
     stubEvents()
     stubSnapshotsIfAbsent()
     stubState(SessionState.Connected)
 }
 
-fun <T : INomlaSession> T.stubDisconnected(): T = apply {
+fun <T : Session> T.stubDisconnected(): T = apply {
     stubEvents()
     stubSnapshotsIfAbsent()
     stubState(SessionState.Disconnected())
 }
 
 /** Makes [session] the app's current session, as a connect would. */
-fun installSession(session: INomlaSession) {
+fun installSession(session: Session) {
     session.stubEvents()
     session.stubSnapshotsIfAbsent()
     if (stateFlows[session] == null) session.stubState(SessionState.Connected)

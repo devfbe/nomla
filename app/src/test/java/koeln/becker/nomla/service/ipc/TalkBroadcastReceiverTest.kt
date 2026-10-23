@@ -25,7 +25,7 @@ import io.mockk.verify
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.testing.installSession
@@ -36,7 +36,7 @@ import koeln.becker.nomla.testing.stubState
 @RunWith(RobolectricTestRunner::class)
 class TalkBroadcastReceiverTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
-    private val session = mockk<INomlaSession>(relaxed = true).also { installSession(it.stubConnected()) }
+    private val session = mockk<Session>(relaxed = true).also { installSession(it.stubConnected()) }
     private val audio = session.stubAudio()
     private val sessions = SessionManager.get(context)
 

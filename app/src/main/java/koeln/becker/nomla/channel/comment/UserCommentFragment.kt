@@ -19,7 +19,7 @@
 package koeln.becker.nomla.channel.comment
 
 import androidx.core.os.bundleOf
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 
 /** Shows (and for the own user, edits) a user's comment. */
 class UserCommentFragment : AbstractCommentFragment() {
@@ -27,12 +27,12 @@ class UserCommentFragment : AbstractCommentFragment() {
     /** The session id of the user whose comment this is. */
     val user: Int get() = requireArguments().getInt(ARG_SESSION)
 
-    override fun requestComment(session: INomlaSession) {
+    override fun requestComment(session: Session) {
         observeComment(session) { it.user(user)?.comment }
         session.actions.requestComment(user)
     }
 
-    override fun editComment(session: INomlaSession, comment: String) = session.actions.setUserComment(user, comment)
+    override fun editComment(session: Session, comment: String) = session.actions.setUserComment(user, comment)
 
     companion object {
         private const val ARG_SESSION = "session"

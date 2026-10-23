@@ -24,7 +24,7 @@ import io.mockk.mockk
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.mumble.session.SessionState
@@ -41,7 +41,7 @@ import koeln.becker.nomla.testing.stubState
 @RunWith(RobolectricTestRunner::class)
 class NomlaActivityAppBarTest {
     private val app = ApplicationProvider.getApplicationContext<android.app.Application>()
-    private val session: INomlaSession = mockk(relaxed = true) {
+    private val session: Session = mockk(relaxed = true) {
         every { targetServer } returns Server(1, "Home", "example.org", 64738, "me", null)
     }
     private val state = session.stubState(SessionState.Connected)

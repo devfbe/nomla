@@ -32,7 +32,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import koeln.becker.nomla.mumble.AudioControls
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.WhisperTarget
 import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
@@ -51,7 +51,7 @@ import koeln.becker.nomla.testing.stubModel
 /** The prominent whisper panel: shown while a whisper target is armed, its stop button, and its text. */
 @RunWith(RobolectricTestRunner::class)
 class ChannelFragmentWhisperTest {
-    private val session: INomlaSession = mockk(relaxed = true)
+    private val session: Session = mockk(relaxed = true)
     private val actions = session.stubActions()
     private val audio: AudioControls = session.stubAudio()
     private val preferences =

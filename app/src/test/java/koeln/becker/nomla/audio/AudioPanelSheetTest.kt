@@ -44,7 +44,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.mumble.audio.capture.NoiseSuppressionMode
 import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
@@ -89,7 +89,7 @@ class AudioPanelSheetTest {
     private val source = TestCaptureSource(listOf(ShortArray(FRAME) { 1000 }), loopLastFrame = true)
     private val capture = TestCaptureSource.Factory(source)
 
-    private val session: INomlaSession = mockk(relaxed = true) {
+    private val session: Session = mockk(relaxed = true) {
         every { targetServer } returns Server(1, "Home", "example.org", 64738, "me", null)
     }
     private val audio = session.stubAudio()

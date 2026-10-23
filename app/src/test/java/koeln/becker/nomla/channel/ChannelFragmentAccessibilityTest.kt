@@ -36,7 +36,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.android.controller.ActivityController
 import koeln.becker.nomla.mumble.AudioControls
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.mumble.model.TalkState
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
@@ -57,7 +57,7 @@ class ChannelFragmentAccessibilityTest {
     private val preferences =
         PreferenceManager.getDefaultSharedPreferences(ApplicationProvider.getApplicationContext<Context>())
     private lateinit var fragment: ChannelFragment
-    private lateinit var session: INomlaSession
+    private lateinit var session: Session
     private lateinit var audio: AudioControls
     private lateinit var controller: ActivityController<ServiceHostActivity>
     private lateinit var talkStates: MutableStateFlow<Map<Int, TalkState>>

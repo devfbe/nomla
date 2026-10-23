@@ -47,7 +47,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.mumble.model.Message
 import koeln.becker.nomla.mumble.model.TalkState
@@ -175,7 +175,7 @@ class NomlaService :
     }
 
     /** Renders [session] until it is replaced. */
-    private suspend fun follow(session: INomlaSession): Unit = coroutineScope {
+    private suspend fun follow(session: Session): Unit = coroutineScope {
         collectEvents(this, session) { onEvent(session, it) }
         launch(start = CoroutineStart.UNDISPATCHED) { session.audio.route.drop(1).collect(::applyAudioRoute) }
         launch(start = CoroutineStart.UNDISPATCHED) {
@@ -251,7 +251,7 @@ class NomlaService :
      * leaves it: a reconnect restarting it from the background is refused on Android 12+, which
      * would leave the microphone dead.
      */
-    private fun renderSessionState(session: INomlaSession, state: SessionState) {
+    private fun renderSessionState(session: Session, state: SessionState) {
         // A replaced session may still report its end before its observer is cancelled.
         if (sessions.session.value !== session) return
         notification.title = session.serverName
@@ -320,7 +320,7 @@ class NomlaService :
         }
     }
 
-    private fun onEvent(session: INomlaSession, event: NomlaEvent) {
+    private fun onEvent(session: Session, event: NomlaEvent) {
         when (event) {
             is NomlaEvent.TextMessage -> onTextMessage(session, event.message)
             is NomlaEvent.PermissionDenied ->
@@ -336,14 +336,14 @@ class NomlaService :
      * background without while-in-use access) or let it be heard again. The notification says so
      * while it lasts, the chat once; the platform lifts it when the app comes to the foreground.
      */
-    private fun onMicrophoneBlocked(session: INomlaSession, blocked: Boolean) {
+    private fun onMicrophoneBlocked(session: Session, blocked: Boolean) {
         if (blocked == microphoneBlocked) return
         microphoneBlocked = blocked
         if (blocked) sessions.chat.warnOnce(getString(R.string.microphone_blocked))
         if (session.state.value == SessionState.Connected) renderSessionState(session, SessionState.Connected)
     }
 
-    private fun onTextMessage(session: INomlaSession, message: Message) {
+    private fun onTextMessage(session: Session, message: Message) {
         val strippedMessage = HtmlUtils.toPlainText(message.message)
         val ttsMessage = if (settings.isShortTextToSpeechMessagesEnabled) {
             HtmlUtils.toPlainTextWithShortLinks(message.message) { host ->
@@ -367,13 +367,13 @@ class NomlaService :
         if (settings.isChatNotifyEnabled) messageNotification.show(sender, strippedMessage, conversation(session))
     }
 
-    private fun onStartedTalking(session: INomlaSession) {
+    private fun onStartedTalking(session: Session) {
         val pttClick = settings.isPttSoundEnabled && session.audio.transmitMode == TransmitMode.PUSH_TO_TALK
         if (pttClick && session.isConnected) keyClickSound()
     }
 
     /** The session synchronized, the first time or again after a reconnect. */
-    private fun onSynchronized(session: INomlaSession) {
+    private fun onSynchronized(session: Session) {
         if (settings.isMuted || settings.isDeafened) {
             session.actions.setSelfMuteDeafState(settings.isMuted, settings.isDeafened)
         }
@@ -403,7 +403,7 @@ class NomlaService :
     }
 
     /** Our name, the channel a reply goes to and the server, for the chat notification. */
-    private fun conversation(session: INomlaSession): NomlaMessageNotification.Conversation {
+    private fun conversation(session: Session): NomlaMessageNotification.Conversation {
         val model = session.model.value
         return NomlaMessageNotification.Conversation(
             self = model?.self?.name,

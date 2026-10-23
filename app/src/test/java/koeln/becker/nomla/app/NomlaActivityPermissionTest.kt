@@ -31,7 +31,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowDialog
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
@@ -70,7 +70,7 @@ class NomlaActivityPermissionTest {
     }
 
     private fun connectElsewhere() {
-        installSession(mockk<INomlaSession>(relaxed = true).stubConnected())
+        installSession(mockk<Session>(relaxed = true).stubConnected())
         idleMainLooper()
     }
 

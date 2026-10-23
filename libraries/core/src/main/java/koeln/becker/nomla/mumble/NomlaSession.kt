@@ -117,7 +117,7 @@ public class NomlaSession internal constructor(
         { params, listener -> NomlaConnection(params, listener, mainHandler::post) },
     audioFactory: AudioHandlerFactory = DefaultAudioHandlerFactory,
     reconnectPolicy: ReconnectPolicy = ReconnectPolicy(),
-) : INomlaSession {
+) : Session {
 
     public constructor(context: Context, config: SessionConfig) : this(context, config, Handler(Looper.getMainLooper()))
 

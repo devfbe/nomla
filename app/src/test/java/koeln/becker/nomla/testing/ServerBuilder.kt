@@ -19,7 +19,7 @@ package koeln.becker.nomla.testing
 
 import io.mockk.every
 import kotlinx.coroutines.flow.MutableStateFlow
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.ChannelState
 import koeln.becker.nomla.mumble.model.ServerState
 import koeln.becker.nomla.mumble.model.TalkState
@@ -53,21 +53,21 @@ fun selfServerState(self: UserState): ServerState = serverState(self = self.sess
     user(self)
 }
 
-private val modelFlows = WeakHashMap<INomlaSession, MutableStateFlow<ServerState?>>()
-private val talkFlows = WeakHashMap<INomlaSession, MutableStateFlow<Map<Int, TalkState>>>()
+private val modelFlows = WeakHashMap<Session, MutableStateFlow<ServerState?>>()
+private val talkFlows = WeakHashMap<Session, MutableStateFlow<Map<Int, TalkState>>>()
 
 /** The mocked session's model, stubbed as a flow the test moves; [state] now. */
-fun INomlaSession.stubModel(state: ServerState?): MutableStateFlow<ServerState?> =
+fun Session.stubModel(state: ServerState?): MutableStateFlow<ServerState?> =
     modelFlows.getOrPut(this) { MutableStateFlow(state).also { every { this@stubModel.model } returns it } }
         .also { it.value = state }
 
 /** The mocked session's talk states, stubbed as a flow the test moves. */
-fun INomlaSession.stubTalkStates(states: Map<Int, TalkState> = emptyMap()): MutableStateFlow<Map<Int, TalkState>> =
+fun Session.stubTalkStates(states: Map<Int, TalkState> = emptyMap()): MutableStateFlow<Map<Int, TalkState>> =
     talkFlows.getOrPut(this) { MutableStateFlow(states).also { every { talkStates } returns it } }
         .also { it.value = states }
 
 /** Stubs the session's model and talk states as empty flows, unless a test stubbed them already. */
-internal fun INomlaSession.stubSnapshotsIfAbsent() {
+internal fun Session.stubSnapshotsIfAbsent() {
     if (modelFlows[this] == null) stubModel(null)
     if (talkFlows[this] == null) stubTalkStates()
 }

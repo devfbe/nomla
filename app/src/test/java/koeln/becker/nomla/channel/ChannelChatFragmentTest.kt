@@ -62,7 +62,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import org.robolectric.shadows.ShadowDialog
 import org.robolectric.shadows.ShadowPopupMenu
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.ChannelState
 import koeln.becker.nomla.mumble.model.ServerSettings
 import koeln.becker.nomla.mumble.model.ServerState
@@ -115,7 +115,7 @@ import java.io.ByteArrayOutputStream
 @RunWith(RobolectricTestRunner::class)
 class ChannelChatFragmentTest {
 
-    private val session: INomlaSession = mockk(relaxed = true)
+    private val session: Session = mockk(relaxed = true)
     private val actions = session.stubActions()
     private val model = session.stubModel(model())
     private val chat get() = SessionManager.get(ApplicationProvider.getApplicationContext<Context>()).chat
@@ -156,7 +156,7 @@ class ChannelChatFragmentTest {
     }
 
     /** Makes a session that has ended the current one, as if there were none. */
-    private fun unbind() = installSession(mockk<INomlaSession>(relaxed = true).stubDisconnected())
+    private fun unbind() = installSession(mockk<Session>(relaxed = true).stubDisconnected())
 
     /** Brings the host up, without a connected session unless [withSession], then attaches the fragment. */
     private fun launch(withSession: Boolean = true) {

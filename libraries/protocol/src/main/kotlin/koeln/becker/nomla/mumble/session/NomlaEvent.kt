@@ -21,7 +21,7 @@ import koeln.becker.nomla.mumble.model.UserStats
 import koeln.becker.nomla.mumble.util.VoiceTargetMode
 
 /**
- * Something that happened in a session, as published by `INomlaSession.events`. Whether the session
+ * Something that happened in a session, as published by `Session.events`. Whether the session
  * is connected is its `state`, and what the server holds is its `model`; events carry values only.
  */
 public sealed interface NomlaEvent {

@@ -33,7 +33,7 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.android.controller.ActivityController
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.net.NomlaCertificateGenerator
 import koeln.becker.nomla.mumble.session.DisconnectReason
@@ -67,7 +67,7 @@ class ConnectionDialogsTest {
 
     private val server = Server(1, "Home", "example.org", 64738, "me", null)
     private val context = ApplicationProvider.getApplicationContext<Context>()
-    private val session: INomlaSession = mockk(relaxed = true) {
+    private val session: Session = mockk(relaxed = true) {
         every { targetServer } returns server
     }
     private val sessions = SessionManager.get(context)

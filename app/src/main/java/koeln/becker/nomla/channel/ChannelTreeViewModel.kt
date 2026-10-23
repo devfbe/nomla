@@ -46,7 +46,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.ChannelState
 import koeln.becker.nomla.mumble.model.ServerState
 import koeln.becker.nomla.mumble.model.TalkState
@@ -142,7 +142,7 @@ class ChannelTreeViewModel(
         val showUserCount: Boolean,
     )
 
-    private val connected: INomlaSession? get() = sessions.connected
+    private val connected: Session? get() = sessions.connected
     private val current: ServerState? get() = connected?.model?.value
 
     fun setExpanded(channel: Int, expand: Boolean) = expanded.update { it + (channel to expand) }
@@ -317,7 +317,7 @@ class ChannelTreeViewModel(
         }
     }
 
-    private fun userOf(session: Int): Pair<INomlaSession, UserState>? {
+    private fun userOf(session: Int): Pair<Session, UserState>? {
         val nomla = connected
         val user = nomla?.model?.value?.user(session) ?: return null
         return nomla to user
@@ -325,7 +325,7 @@ class ChannelTreeViewModel(
 
     /** Stores a local choice about a registered [user] of a saved server, off the main thread. */
     private fun remember(
-        session: INomlaSession,
+        session: Session,
         user: UserState,
         write: koeln.becker.nomla.db.NomlaDatabase.(Long, Int) -> Unit,
     ) {

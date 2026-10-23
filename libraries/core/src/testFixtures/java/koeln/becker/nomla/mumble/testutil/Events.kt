@@ -23,7 +23,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.session.NomlaEvent
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -37,10 +37,10 @@ public fun <T> collectOnMain(flow: Flow<T>, block: (T) -> Unit): Job =
     }
 
 /** Calls [block] for each of this session's events; see [collectOnMain]. Cancel the job to stop. */
-internal fun INomlaSession.onEvents(block: (NomlaEvent) -> Unit): Job = collectOnMain(events, block)
+internal fun Session.onEvents(block: (NomlaEvent) -> Unit): Job = collectOnMain(events, block)
 
 /** Records this session's events; see [collectOnMain]. */
-internal class EventRecorder(session: INomlaSession) {
+internal class EventRecorder(session: Session) {
     val events: MutableList<NomlaEvent> = CopyOnWriteArrayList()
     val job: Job = session.onEvents { events += it }
 

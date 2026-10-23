@@ -19,7 +19,7 @@ package koeln.becker.nomla.app
 import android.app.Application
 import kotlinx.coroutines.CoroutineScope
 import koeln.becker.nomla.mumble.NomlaSession
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.session.SessionConfig
 import koeln.becker.nomla.chat.NoticeFormatter
 import koeln.becker.nomla.chat.SessionChat
@@ -32,7 +32,7 @@ import koeln.becker.nomla.ui.AppMessages
 class AppContainer(
     app: Application,
     scope: CoroutineScope,
-    newSession: (SessionConfig) -> INomlaSession = { config -> NomlaSession(app, config) },
+    newSession: (SessionConfig) -> Session = { config -> NomlaSession(app, config) },
 ) {
     val appMessages = AppMessages()
 

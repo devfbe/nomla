@@ -34,7 +34,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.android.controller.ActivityController
 import koeln.becker.nomla.mumble.AudioControls
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.R
@@ -55,7 +55,7 @@ import koeln.becker.nomla.testing.stubState
 @RunWith(RobolectricTestRunner::class)
 class ChannelFragmentTalkStateTest {
 
-    private lateinit var session: INomlaSession
+    private lateinit var session: Session
     private lateinit var audio: AudioControls
     private lateinit var controller: ActivityController<ServiceHostActivity>
     private lateinit var fragment: ChannelFragment

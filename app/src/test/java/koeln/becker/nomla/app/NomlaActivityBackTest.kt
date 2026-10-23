@@ -25,7 +25,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.shadows.ShadowDialog
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
@@ -39,7 +39,7 @@ import koeln.becker.nomla.testing.stubState
 @RunWith(RobolectricTestRunner::class)
 class NomlaActivityBackTest {
 
-    private val session: INomlaSession = mockk(relaxed = true) {
+    private val session: Session = mockk(relaxed = true) {
         every { targetServer } returns Server(1, "Home", "example.org", 64738, "me", null)
     }
     private val state = session.stubState(SessionState.Disconnected())
@@ -89,7 +89,7 @@ class NomlaActivityBackTest {
         state.value = SessionState.Connected
         idleMainLooper()
 
-        installSession(mockk<INomlaSession>(relaxed = true).also { it.stubState(SessionState.Connecting) })
+        installSession(mockk<Session>(relaxed = true).also { it.stubState(SessionState.Connecting) })
         idleMainLooper()
 
         assertThat(intercepted).isFalse()

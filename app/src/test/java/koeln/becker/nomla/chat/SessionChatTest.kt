@@ -25,7 +25,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
-import koeln.becker.nomla.mumble.INomlaSession
+import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.Message
 import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.mumble.session.SessionState
@@ -39,7 +39,7 @@ import koeln.becker.nomla.testing.stubState
 class SessionChatTest {
     private val app = RuntimeEnvironment.getApplication()
     private val chat = SessionChat(NoticeFormatter(app), MainScope(), capacity = 3)
-    private val session = mockk<INomlaSession>(relaxed = true)
+    private val session = mockk<Session>(relaxed = true)
     private val state = session.stubState(SessionState.Connected)
     private val events: MutableSharedFlow<NomlaEvent> = session.stubEvents()
 
@@ -169,7 +169,7 @@ class SessionChatTest {
         assertThat(chat.unread.value).isEqualTo(0)
 
         emit(NomlaEvent.TextMessage(message("two")))
-        chat.follow(mockk<INomlaSession>(relaxed = true).also { it.stubState(SessionState.Connected); it.stubEvents() })
+        chat.follow(mockk<Session>(relaxed = true).also { it.stubState(SessionState.Connected); it.stubEvents() })
         assertThat(chat.unread.value).isEqualTo(0)
 
         chat.follow(session)
