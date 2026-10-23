@@ -90,7 +90,8 @@ class AppContainer(
         /** Where screens compute for long: the key derivation of a certificate export. */
         val workDispatcher: CoroutineDispatcher = Dispatchers.Default,
         /** The foreground service's channel overlay. */
-        val newOverlay: (Context, SessionManager) -> NomlaOverlay = { context, sessions -> NomlaOverlay(context, sessions) },
+        val newOverlay: (Context, SessionManager) -> NomlaOverlay =
+            { context, sessions -> NomlaOverlay(context, sessions) },
         /** The foreground service's push-to-talk corner. */
         val newHotCorner: (Context, Int, NomlaHotCorner.NomlaHotCornerListener) -> NomlaHotCorner =
             { context, gravity, listener -> NomlaHotCorner(context, gravity, listener) },
@@ -146,15 +147,15 @@ class AppContainer(
 
     /** An object built from the part [part] reads, on first use and again once that part is replaced. */
     private class BuiltFrom<P : Any, T : Any>(private val part: () -> P, private val build: (P) -> T) {
-        private var builtFrom: P? = null
+        private var source: P? = null
         private var built: T? = null
 
         @Synchronized
         fun get(): T {
             val current = part()
-            built?.takeIf { builtFrom === current }?.let { return it }
+            built?.takeIf { source === current }?.let { return it }
             return build(current).also {
-                builtFrom = current
+                source = current
                 built = it
             }
         }
