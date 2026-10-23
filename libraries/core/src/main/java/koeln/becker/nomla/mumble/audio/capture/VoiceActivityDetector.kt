@@ -18,6 +18,7 @@
 package koeln.becker.nomla.mumble.audio.capture
 
 import koeln.becker.nomla.mumble.audio.PcmLevel
+import koeln.becker.nomla.mumble.util.NANOS_PER_MILLI
 
 /** Monotonic nanosecond clock; a `fun interface` because `() -> Long` boxes on every frame. */
 internal fun interface NanoClock {
@@ -133,8 +134,6 @@ internal class VoiceActivityDetector(
 
         /** [NO_SIGNAL] in dBFS (-192): finite and below [AdaptiveVadTracker.MIN_FLOOR_DBFS]. */
         const val NO_SIGNAL_DBFS = (NO_SIGNAL - 1f) * SCORE_RANGE_DB.toFloat()
-
-        private const val NANOS_PER_MILLI = 1_000_000L
 
         const val DEFAULT_FRAME_MS = 10f
     }

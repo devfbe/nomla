@@ -18,6 +18,8 @@
 
 package koeln.becker.nomla.mumble.net
 
+import koeln.becker.nomla.mumble.util.BYTE_MASK
+
 /**
  * Writes the voice packets this client sends, into a buffer the caller owns and resets: the header
  * first, then the Opus packet, then the trailer. Allocation-free.
@@ -298,7 +300,6 @@ private class WireReader {
 
     private companion object {
         val EMPTY = ByteArray(0)
-        const val BYTE_MASK = 0xFF
     }
 }
 

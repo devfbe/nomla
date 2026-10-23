@@ -18,6 +18,7 @@
 package koeln.becker.nomla.mumble.audio.capture
 
 import koeln.becker.nomla.mumble.audio.PcmLevel
+import koeln.becker.nomla.mumble.util.NANOS_PER_MILLI
 
 /**
  * Whether the far end (the remote users as played on the speaker) is talking, or was within the
@@ -35,7 +36,7 @@ internal class FarEndActivity(
     thresholdDbfs: Float = THRESHOLD_DBFS,
     holdMs: Long = HOLD_MS,
 ) {
-    private val holdNanos = holdMs * NANOS_PER_MS
+    private val holdNanos = holdMs * NANOS_PER_MILLI
 
     /** Mean square of a 16-bit frame at the threshold. */
     private val thresholdPower = PcmLevel.meanSquareAt(thresholdDbfs)
@@ -68,7 +69,5 @@ internal class FarEndActivity(
         const val THRESHOLD_DBFS = -50f
 
         const val HOLD_MS = 800L
-
-        private const val NANOS_PER_MS = 1_000_000L
     }
 }

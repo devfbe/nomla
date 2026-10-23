@@ -30,12 +30,12 @@ import koeln.becker.nomla.mumble.model.ServerInfo
 import koeln.becker.nomla.mumble.protobuf.Mumble
 import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.mumble.util.MumbleVersion
+import koeln.becker.nomla.mumble.util.NANOS_PER_MICRO
 import java.security.InvalidKeyException
 
 /** A tunnelled dummy packet; its arrival tells the server to tunnel voice over TCP from now on. */
 private const val FORCE_TCP_PACKET_BYTES = 3
 
-private const val NANOS_PER_MICRO = 1000
 private const val MICROS_PER_MILLI = 1_000.0
 private const val PING_INTERVAL_MILLIS = 5_000L
 

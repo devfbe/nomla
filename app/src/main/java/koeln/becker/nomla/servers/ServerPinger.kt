@@ -21,6 +21,7 @@ package koeln.becker.nomla.servers
 import kotlinx.coroutines.CancellationException
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.net.ServerResolver
+import koeln.becker.nomla.mumble.util.NANOS_PER_MILLI
 import koeln.becker.nomla.mumble.util.NomlaLog
 import java.net.DatagramPacket
 import java.net.DatagramSocket
@@ -32,7 +33,6 @@ private const val REQUEST_SIZE = 12
 private const val REPLY_SIZE = 24
 private const val TIMEOUT_MS = 1000
 private const val RECEIVE_BUFFER_BYTES = 1024
-private const val NANOS_PER_MILLI = 1_000_000
 
 /** Pings Mumble servers over UDP. [ping] blocks for up to a second, so call it off the main thread. */
 class ServerPinger(

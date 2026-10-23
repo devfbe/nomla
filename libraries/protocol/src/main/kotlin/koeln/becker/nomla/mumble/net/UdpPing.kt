@@ -18,11 +18,11 @@
 package koeln.becker.nomla.mumble.net
 
 import koeln.becker.nomla.mumble.protobuf.MumbleUDP
+import koeln.becker.nomla.mumble.util.BYTE_MASK
 import java.nio.BufferUnderflowException
 
 /** The legacy header keeps the message type in its top three bits. */
 private const val TYPE_SHIFT = 5
-private const val BYTE_MASK = 0xFF
 
 /**
  * The UDP connectivity ping, in the connection's [UdpProtocol].

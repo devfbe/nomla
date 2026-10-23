@@ -32,6 +32,7 @@ import koeln.becker.nomla.mumble.model.Latency
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.model.ServerInfo
 import koeln.becker.nomla.mumble.protobuf.Mumble
+import koeln.becker.nomla.mumble.util.BYTE_MASK
 import koeln.becker.nomla.mumble.util.NomlaLog
 import java.io.IOException
 import java.net.ConnectException
@@ -42,7 +43,6 @@ import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Executor
 import java.util.concurrent.atomic.AtomicReference
 
-private const val BYTE_MASK = 0xFF
 private const val LEGACY_TYPE_SHIFT = 5
 
 /** A key store file of CA certificates to trust besides the system's. */

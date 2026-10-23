@@ -19,6 +19,7 @@
 
 package koeln.becker.nomla.mumble.net
 
+import koeln.becker.nomla.mumble.util.BYTE_MASK
 import java.nio.ByteBuffer
 
 /** Reads and writes Mumble's packet data stream (its varint encoding) over a [ByteBuffer]. */
@@ -125,8 +126,6 @@ internal class PacketBuffer(private val buffer: ByteBuffer) {
     }
 
     companion object {
-        private const val BYTE_MASK = 0xFF
-
         fun allocate(len: Int): PacketBuffer = PacketBuffer(ByteBuffer.allocate(len))
     }
 }

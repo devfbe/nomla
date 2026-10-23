@@ -25,6 +25,7 @@ import koeln.becker.nomla.mumble.audio.native.SpeexJitterNative
 import koeln.becker.nomla.mumble.exception.NativeAudioException
 import koeln.becker.nomla.mumble.model.TalkState
 import koeln.becker.nomla.mumble.net.VoicePacket
+import koeln.becker.nomla.mumble.util.BYTE_MASK
 import java.util.Arrays
 import kotlin.math.ceil
 import kotlin.math.sin
@@ -48,7 +49,6 @@ private const val TRAILER_BYTES = Int.SIZE_BYTES + 1
 
 /** The user data after the stream ended. */
 private const val PASSIVE_FLAGS = 0xFF
-private const val BYTE_MASK = 0xFF
 
 /**
  * Decodes one user's incoming Opus stream through a jitter buffer into float PCM. Each [decode]

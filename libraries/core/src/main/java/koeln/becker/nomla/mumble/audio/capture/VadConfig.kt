@@ -17,6 +17,8 @@
 
 package koeln.becker.nomla.mumble.audio.capture
 
+import koeln.becker.nomla.mumble.util.NANOS_PER_MILLI
+
 /**
  * Preference values are stable on-disk identifiers. Unknown values fall back to [AMPLITUDE], what
  * older installs ran, so their `detection_threshold` slider keeps working.
@@ -79,8 +81,8 @@ public data class VadConfig(
 
         public const val DEFAULT_ONSET_FRAMES: Int = 1
 
-        /** Largest hold whose `holdTimeMs * 1_000_000` nanosecond deadline doesn't overflow. */
-        internal const val MAX_HOLD_MS: Long = Long.MAX_VALUE / 1_000_000L
+        /** Largest hold whose `holdTimeMs * NANOS_PER_MILLI` nanosecond deadline doesn't overflow. */
+        internal const val MAX_HOLD_MS: Long = Long.MAX_VALUE / NANOS_PER_MILLI
 
         /** The bounds of [manualFloorDbfs], which is also where an adaptive floor stays. */
         public const val MIN_FLOOR_DBFS: Float = AdaptiveVadTracker.MIN_FLOOR_DBFS

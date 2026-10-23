@@ -18,7 +18,6 @@
 package koeln.becker.nomla.mumble.util
 
 private const val DIGITS = "0123456789abcdef"
-private const val BYTE_MASK = 0xFF
 private const val NIBBLE_BITS = 4
 private const val NIBBLE_MASK = 0x0F
 

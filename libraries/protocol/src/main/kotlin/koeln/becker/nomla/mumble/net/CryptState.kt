@@ -17,6 +17,8 @@
  */
 package koeln.becker.nomla.mumble.net
 
+import koeln.becker.nomla.mumble.util.BYTE_MASK
+import koeln.becker.nomla.mumble.util.NANOS_PER_MICRO
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 
@@ -298,7 +300,6 @@ internal class CryptState {
         private const val SHIFT_BITS = 7
         /** The GF(2^128) reduction polynomial's low byte. */
         private const val GF_REDUCTION = 0x87
-        private const val BYTE_MASK = 0xFF
         /** The IV byte and three tag bytes in front of the cipher text. */
         private const val HEADER_SIZE = 4
         private const val IV_RANGE = 256
@@ -307,7 +308,6 @@ internal class CryptState {
         private const val LATE_WINDOW = 30
         private const val LATE = -1
         private const val REJECTED = Int.MIN_VALUE
-        private const val NANOS_PER_MICRO = 1000
 
         private fun xor(dst: ByteArray, a: ByteArray, b: ByteArray) {
             for (i in 0 until AES_BLOCK_SIZE) dst[i] = (a[i].toInt() xor b[i].toInt()).toByte()
