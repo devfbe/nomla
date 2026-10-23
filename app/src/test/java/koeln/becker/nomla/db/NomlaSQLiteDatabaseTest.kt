@@ -89,12 +89,11 @@ class NomlaSQLiteDatabaseTest {
         db.addPinnedChannel(2, 10)
 
         assertThat(db.getPinnedChannels(1)).containsExactly(10, 11)
-        assertThat(db.isChannelPinned(1, 11)).isTrue()
-        assertThat(db.isChannelPinned(2, 11)).isFalse()
+        assertThat(db.getPinnedChannels(2)).containsExactly(10)
 
         db.removePinnedChannel(1, 11)
-        assertThat(db.isChannelPinned(1, 11)).isFalse()
         assertThat(db.getPinnedChannels(1)).containsExactly(10)
+        assertThat(db.getPinnedChannels(2)).containsExactly(10)
     }
 
     @Test
@@ -149,20 +148,6 @@ class NomlaSQLiteDatabaseTest {
         assertThat(db.getCertificates()).isEmpty()
     }
 
-    /**
-     * Known defect, characterized: markCommentSeen stores the hash as a BLOB and isCommentSeen
-     * looks it up as TEXT, which never matches in SQLite. Nothing in the app calls either method.
-     */
-    @Test
-    fun aMarkedCommentNeverReadsAsSeen() {
-        val hash = byteArrayOf(0x41, 0x42)
-        assertThat(db.isCommentSeen("user", hash)).isFalse()
-
-        db.markCommentSeen("user", hash)
-
-        assertThat(db.isCommentSeen("user", hash)).isFalse()
-    }
-
     private fun tables(): Set<String> =
         db.readableDatabase.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null).use { c ->
             buildSet { while (c.moveToNext()) add(c.getString(0)) }
@@ -172,10 +157,11 @@ class NomlaSQLiteDatabaseTest {
     @Test
     fun aFreshDatabaseHasEveryTable() {
         assertThat(tables()).containsAtLeast(
-            "server", "favourites", "tokens", "comments", "local_mute", "local_ignore", "certificates",
+            "server", "favourites", "tokens", "local_mute", "local_ignore", "certificates",
             "local_volume",
         )
-        assertThat(db.readableDatabase.version).isEqualTo(NomlaSQLiteDatabase.CURRENT_DB_VERSION)
+        assertThat(tables()).doesNotContain("comments")
+        assertThat(db.readableDatabase.version).isEqualTo(1)
     }
 
     /** Every query closes its cursor, on every path (including a missing certificate id). */
@@ -197,18 +183,15 @@ class NomlaSQLiteDatabaseTest {
 
             recording.getServers()
             recording.getPinnedChannels(1)
-            recording.isChannelPinned(1, 2)
-            recording.isChannelPinned(1, 99)
             recording.getAccessTokens(1)
             recording.getLocalMutedUsers(1)
             recording.getLocalIgnoredUsers(1)
             recording.getCertificates()
             recording.getCertificateData(cert.id)
             recording.getCertificateData(cert.id + 1)
-            recording.isCommentSeen("who", byteArrayOf(1))
             recording.getLocalVolumes()
 
-            assertThat(opened).hasSize(12)
+            assertThat(opened).hasSize(9)
             assertThat(opened.filterNot { it.isClosed }).isEmpty()
         } finally {
             recording.close()

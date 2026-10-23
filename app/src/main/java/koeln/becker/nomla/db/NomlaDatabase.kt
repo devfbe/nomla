@@ -22,22 +22,15 @@ import koeln.becker.nomla.mumble.model.Server
 /** The app's persistent store. Every call blocks on disk I/O; see [NomlaRepository]. */
 @Suppress("TooManyFunctions") // One call per stored item kind and operation.
 interface NomlaDatabase {
-    fun open()
-    fun close()
-
     fun getServers(): List<Server>
     /** Stores [server] and returns it with its new id. */
     fun addServer(server: Server): Server
     fun updateServer(server: Server)
     fun removeServer(server: Server)
 
-    fun isCommentSeen(hash: String, commentHash: ByteArray): Boolean
-    fun markCommentSeen(hash: String, commentHash: ByteArray)
-
     fun getPinnedChannels(serverId: Long): List<Int>
     fun addPinnedChannel(serverId: Long, channelId: Int)
     fun removePinnedChannel(serverId: Long, channelId: Int)
-    fun isChannelPinned(serverId: Long, channelId: Int): Boolean
 
     fun getAccessTokens(serverId: Long): List<String>
     fun addAccessToken(serverId: Long, token: String)

@@ -17,6 +17,7 @@
 package koeln.becker.nomla.db
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,10 +29,10 @@ import koeln.becker.nomla.app.AppContainer
 
 /**
  * The app's one [NomlaDatabase]. UI code goes through [io] so that queries run off the main thread;
- * [database] is for callers that already are off it, or not yet migrated.
+ * [launchIo] is for writes that must not wait for the caller.
  */
 class NomlaRepository(
-    val database: NomlaDatabase,
+    @property:VisibleForTesting(otherwise = VisibleForTesting.PRIVATE) val database: NomlaDatabase,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
     /** For writes that must finish even when the screen that asked for them is gone. */

@@ -45,7 +45,6 @@ class NomlaSQLiteDatabase(
         db.execSQL(TABLE_SERVER_CREATE_SQL)
         db.execSQL(TABLE_FAVOURITES_CREATE_SQL)
         db.execSQL(TABLE_TOKENS_CREATE_SQL)
-        db.execSQL(TABLE_COMMENTS_CREATE_SQL)
         db.execSQL(TABLE_LOCAL_MUTE_CREATE_SQL)
         db.execSQL(TABLE_LOCAL_IGNORE_CREATE_SQL)
         db.execSQL(TABLE_CERTIFICATES_CREATE_SQL)
@@ -59,10 +58,6 @@ class NomlaSQLiteDatabase(
      */
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         error("No upgrade path from database version $oldVersion to $newVersion")
-    }
-
-    override fun open() {
-        // Nothing to do: the database opens on first access.
     }
 
     override fun getServers(): List<Server> =
@@ -121,16 +116,10 @@ class NomlaSQLiteDatabase(
         writableDatabase.insert(TABLE_FAVOURITES, null, values)
     }
 
-    override fun isChannelPinned(serverId: Long, channelId: Int): Boolean =
-        readableDatabase.query(
-            TABLE_FAVOURITES, arrayOf(FAVOURITES_CHANNEL),
-            "$FAVOURITES_SERVER=? AND $FAVOURITES_CHANNEL=?",
-            arrayOf(serverId.toString(), channelId.toString()), null, null, null,
-        ).use { it.moveToFirst() }
-
     override fun removePinnedChannel(serverId: Long, channelId: Int) {
         writableDatabase.delete(
-            TABLE_FAVOURITES, "server = ? AND channel = ?", arrayOf(serverId.toString(), channelId.toString()),
+            TABLE_FAVOURITES, "$FAVOURITES_SERVER=? AND $FAVOURITES_CHANNEL=?",
+            arrayOf(serverId.toString(), channelId.toString()),
         )
     }
 
@@ -243,22 +232,6 @@ class NomlaSQLiteDatabase(
         writableDatabase.delete(TABLE_CERTIFICATES, "$COLUMN_CERTIFICATES_ID=?", arrayOf(id.toString()))
     }
 
-    override fun isCommentSeen(hash: String, commentHash: ByteArray): Boolean =
-        readableDatabase.query(
-            TABLE_COMMENTS, arrayOf(COMMENTS_WHO, COMMENTS_COMMENT, COMMENTS_SEEN),
-            "$COMMENTS_WHO=? AND $COMMENTS_COMMENT=?",
-            arrayOf(hash, String(commentHash)), null, null, null,
-        ).use { it.moveToNext() }
-
-    override fun markCommentSeen(hash: String, commentHash: ByteArray) {
-        val values = ContentValues().apply {
-            put(COMMENTS_WHO, hash)
-            put(COMMENTS_COMMENT, commentHash)
-            put(COMMENTS_SEEN, "datetime('now')")
-        }
-        writableDatabase.replace(TABLE_COMMENTS, null, values)
-    }
-
     /** Every row, in order. The caller owns the cursor and closes it. */
     private inline fun <T> Cursor.readAll(row: () -> T): List<T> {
         val result = ArrayList<T>(count)
@@ -305,16 +278,6 @@ class NomlaSQLiteDatabase(
             "`" + TOKENS_SERVER + "` INTEGER NOT NULL" +
             ");"
 
-        const val TABLE_COMMENTS = "comments"
-        const val COMMENTS_WHO = "who"
-        const val COMMENTS_COMMENT = "comment"
-        const val COMMENTS_SEEN = "seen"
-        const val TABLE_COMMENTS_CREATE_SQL = "CREATE TABLE IF NOT EXISTS `" + TABLE_COMMENTS + "` (" +
-            "`" + COMMENTS_WHO + "` TEXT NOT NULL," +
-            "`" + COMMENTS_COMMENT + "` TEXT NOT NULL," +
-            "`" + COMMENTS_SEEN + "` DATE NOT NULL" +
-            ");"
-
         const val TABLE_LOCAL_MUTE = "local_mute"
         const val LOCAL_MUTE_SERVER = "server"
         const val LOCAL_MUTE_USER = "user"
@@ -351,6 +314,6 @@ class NomlaSQLiteDatabase(
             "`" + LOCAL_VOLUME_VOLUME + "` REAL NOT NULL" +
             ");"
 
-        const val CURRENT_DB_VERSION = 10
+        const val CURRENT_DB_VERSION = 1
     }
 }
