@@ -46,7 +46,7 @@ class NomlaConnectionLeakTest {
     private val udps = CopyOnWriteArrayList<NomlaUdp>()
 
     /** A server that accepts the TLS handshake and then stays silent until the socket is closed. */
-    private val silentServer = mockk<NomlaSSLSocketFactory>().also { factory ->
+    private val silentServer = mockk<NomlaSslSocketFactory>().also { factory ->
         every { factory.createSocket(any(), any()) } answers {
             val toClient = PipedOutputStream()
             val input = PipedInputStream(toClient, 64)
@@ -60,7 +60,7 @@ class NomlaConnectionLeakTest {
 
     /** The real transports, except that TCP talks to [silentServer]. */
     private val transports = object : NomlaConnection.TransportFactory {
-        override fun createTcp(socketFactory: NomlaSSLSocketFactory, scope: CoroutineScope): TcpTransport =
+        override fun createTcp(socketFactory: NomlaSslSocketFactory, scope: CoroutineScope): TcpTransport =
             NomlaTcp(silentServer, scope).also { tcps += it }
 
         override fun createUdp(

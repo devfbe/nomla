@@ -62,7 +62,7 @@ class NomlaTcpTest {
     private val callbackExecutor = Executors.newSingleThreadExecutor { Thread(it, "test-tcp-callbacks") }
     private val callbackDispatcher = callbackExecutor.asCoroutineDispatcher()
     private val listener = RecordingListener()
-    private val socketFactory = mockk<NomlaSSLSocketFactory>()
+    private val socketFactory = mockk<NomlaSslSocketFactory>()
     private var tcp: NomlaTcp? = null
 
     private class RecordingListener : NomlaTcp.TcpConnectionListener {
@@ -217,7 +217,7 @@ class NomlaTcpTest {
     }
 
     /**
-     * NomlaSSLSocketFactory.createSocket() connects with no timeout, so a blackholed server keeps
+     * NomlaSslSocketFactory.createSocket() connects with no timeout, so a blackholed server keeps
      * the read thread blocked with no socket for disconnect() to close. The caller must still be
      * told it is disconnected (the session releases its wake lock on that callback), and exactly
      * once when the read loop finally unwinds.

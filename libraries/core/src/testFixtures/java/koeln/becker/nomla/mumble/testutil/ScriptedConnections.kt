@@ -29,7 +29,7 @@ import koeln.becker.nomla.mumble.audio.capture.CaptureState
 import koeln.becker.nomla.mumble.exception.NomlaException
 import koeln.becker.nomla.mumble.net.CryptState
 import koeln.becker.nomla.mumble.net.NomlaConnection
-import koeln.becker.nomla.mumble.net.NomlaSSLSocketFactory
+import koeln.becker.nomla.mumble.net.NomlaSslSocketFactory
 import koeln.becker.nomla.mumble.net.NomlaTcpMessageType
 import koeln.becker.nomla.mumble.net.NomlaTcp
 import koeln.becker.nomla.mumble.net.NomlaUdp
@@ -108,7 +108,7 @@ public class ScriptedConnections(reconnectBaseDelayMillis: Long, reconnectAttemp
     }
 
     private inner class Transports : NomlaConnection.TransportFactory {
-        override fun createTcp(socketFactory: NomlaSSLSocketFactory, scope: CoroutineScope): TcpTransport =
+        override fun createTcp(socketFactory: NomlaSslSocketFactory, scope: CoroutineScope): TcpTransport =
             ScriptedTcp().also { transports += it }
 
         override fun createUdp(

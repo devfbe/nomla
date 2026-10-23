@@ -169,7 +169,7 @@ internal class FakeTransports(
     val tcps = CopyOnWriteArrayList<FakeTcpTransport>()
     val udps = CopyOnWriteArrayList<FakeUdpTransport>()
 
-    override fun createTcp(socketFactory: NomlaSSLSocketFactory, scope: CoroutineScope): TcpTransport =
+    override fun createTcp(socketFactory: NomlaSslSocketFactory, scope: CoroutineScope): TcpTransport =
         FakeTcpTransport(scope, inProtocolContext).also { tcps += it }
 
     override fun createUdp(

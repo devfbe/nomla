@@ -114,14 +114,14 @@ internal class NomlaConnection(
      * connection's scope: cancelled on disconnect, dispatching on the protocol context.
      */
     interface TransportFactory {
-        fun createTcp(socketFactory: NomlaSSLSocketFactory, scope: CoroutineScope): TcpTransport
+        fun createTcp(socketFactory: NomlaSslSocketFactory, scope: CoroutineScope): TcpTransport
 
         fun createUdp(cryptState: CryptState, listener: NomlaUdp.UdpConnectionListener, scope: CoroutineScope):
             UdpTransport
     }
 
     object DefaultTransportFactory : TransportFactory {
-        override fun createTcp(socketFactory: NomlaSSLSocketFactory, scope: CoroutineScope): TcpTransport =
+        override fun createTcp(socketFactory: NomlaSslSocketFactory, scope: CoroutineScope): TcpTransport =
             NomlaTcp(socketFactory, scope)
 
         override fun createUdp(
@@ -333,12 +333,12 @@ internal class NomlaConnection(
     }
 
     /** The server certificate must match the host the user entered, not an SRV target. */
-    private fun createSocketFactory(): NomlaSSLSocketFactory {
+    private fun createSocketFactory(): NomlaSslSocketFactory {
         val cause: Exception
         val message: String
         try {
             val keyStore = params.certificate?.let { Pkcs12Certificates.load(it, params.certificatePassword) }
-            return NomlaSSLSocketFactory(
+            return NomlaSslSocketFactory(
                 keyStore, params.certificatePassword,
                 params.trustStore?.path, params.trustStore?.password, params.trustStore?.format,
                 params.server.host,

@@ -51,7 +51,7 @@ internal class TcpFrame(val type: NomlaTcpMessageType, val data: ByteArray)
  * delivered (checked at delivery time). Cancelling [scope] closes the socket.
  */
 internal class NomlaTcp(
-    private val socketFactory: NomlaSSLSocketFactory,
+    private val socketFactory: NomlaSslSocketFactory,
     private val scope: CoroutineScope,
 ) : TcpTransport {
     private var listener: TcpConnectionListener? = null

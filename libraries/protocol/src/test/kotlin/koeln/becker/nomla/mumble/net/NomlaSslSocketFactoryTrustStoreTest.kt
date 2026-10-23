@@ -31,7 +31,7 @@ import java.security.KeyStore
  * Loading the trust store must close its file stream, or every connection leaks a descriptor.
  * Counted via this process's open descriptors for the store file in /proc/self/fd.
  */
-class NomlaSSLSocketFactoryTrustStoreTest {
+class NomlaSslSocketFactoryTrustStoreTest {
     @get:Rule
     val folder = TemporaryFolder()
 
@@ -58,7 +58,7 @@ class NomlaSSLSocketFactoryTrustStoreTest {
         assumeTrue(File("/proc/self/fd").isDirectory)
         val file = emptyStore("pw")
 
-        val store = NomlaSSLSocketFactory.loadTrustStore(file.path, "pw", "PKCS12")
+        val store = NomlaSslSocketFactory.loadTrustStore(file.path, "pw", "PKCS12")
 
         assertThat(store.size()).isEqualTo(0)
         assertThat(openDescriptorsFor(file)).isEqualTo(0)
@@ -69,7 +69,7 @@ class NomlaSSLSocketFactoryTrustStoreTest {
         assumeTrue(File("/proc/self/fd").isDirectory)
         val file = emptyStore("pw")
 
-        runCatching { NomlaSSLSocketFactory.loadTrustStore(file.path, "wrong", "PKCS12") }
+        runCatching { NomlaSslSocketFactory.loadTrustStore(file.path, "wrong", "PKCS12") }
             .onSuccess { throw AssertionError("a wrong password must not load") }
 
         assertThat(openDescriptorsFor(file)).isEqualTo(0)

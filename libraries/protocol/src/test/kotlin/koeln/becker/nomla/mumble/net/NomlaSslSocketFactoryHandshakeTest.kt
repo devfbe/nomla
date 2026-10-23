@@ -38,7 +38,7 @@ import javax.net.ssl.SSLServerSocket
 import javax.net.ssl.SSLSocket
 
 /** Real TLS handshakes over loopback, directly and through a SOCKS5 proxy as the Tor path does. */
-class NomlaSSLSocketFactoryHandshakeTest {
+class NomlaSslSocketFactoryHandshakeTest {
     private val pool = Executors.newCachedThreadPool()
     private val requestedSni = CopyOnWriteArrayList<String>()
     private val closeables = CopyOnWriteArrayList<AutoCloseable>()
@@ -118,7 +118,7 @@ class NomlaSSLSocketFactoryHandshakeTest {
     }
 
     private fun factory(peerHost: String, pins: KeyStore? = null) =
-        NomlaSSLSocketFactory(null, null, pins, TestCertificates.systemTrust(), peerHost)
+        NomlaSslSocketFactory(null, null, pins, TestCertificates.systemTrust(), peerHost)
 
     private fun SSLSocket.handshakeAndRead(): Int = use {
         soTimeout = 10_000

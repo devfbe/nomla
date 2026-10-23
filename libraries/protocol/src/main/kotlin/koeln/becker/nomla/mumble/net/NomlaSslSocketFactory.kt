@@ -40,7 +40,7 @@ import javax.net.ssl.X509TrustManager
  * @param peerHost The host name the user entered: certificates are verified against it, it is sent
  *        as SNI and it selects the pins, even when an SRV record points the connection at another host.
  */
-internal class NomlaSSLSocketFactory internal constructor(
+internal class NomlaSslSocketFactory internal constructor(
     keystore: KeyStore?,
     keystorePassword: String?,
     trustStore: KeyStore?,
@@ -108,7 +108,7 @@ internal class NomlaSSLSocketFactory internal constructor(
     }
 
     companion object {
-        private val TAG = NomlaSSLSocketFactory::class.java.name
+        private val TAG = NomlaSslSocketFactory::class.java.name
 
         private fun systemTrustManager(): X509TrustManager {
             val tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
