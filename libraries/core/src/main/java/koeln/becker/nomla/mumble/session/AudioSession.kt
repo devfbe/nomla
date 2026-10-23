@@ -30,7 +30,7 @@ import koeln.becker.nomla.mumble.audio.AudioSessionParams
 import koeln.becker.nomla.mumble.audio.AudioSettings
 import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.mumble.audio.capture.EchoCancellationMode
-import koeln.becker.nomla.mumble.audio.capture.IInputMode
+import koeln.becker.nomla.mumble.audio.capture.InputMode
 import koeln.becker.nomla.mumble.audio.capture.VoiceActivityDetector
 import koeln.becker.nomla.mumble.audio.inputmode.ActivityInputMode
 import koeln.becker.nomla.mumble.audio.inputmode.ContinuousInputMode
@@ -81,7 +81,7 @@ internal class AudioSession(
     private val continuousInputMode = ContinuousInputMode()
 
     /** Held by identity: the audio thread and [isTalking] must see the same toggle object. */
-    var inputMode: IInputMode = inputModeFor(settings.transmitMode)
+    var inputMode: InputMode = inputModeFor(settings.transmitMode)
         private set
 
     /** Engaged only while a session is synchronized. */
@@ -175,7 +175,7 @@ internal class AudioSession(
         controller.reconfigure(config, inputMode)
     }
 
-    private fun inputModeFor(mode: TransmitMode): IInputMode = when (mode) {
+    private fun inputModeFor(mode: TransmitMode): InputMode = when (mode) {
         TransmitMode.PUSH_TO_TALK -> toggleInputMode
         TransmitMode.CONTINUOUS -> continuousInputMode
         TransmitMode.VOICE_ACTIVITY -> activityInputMode

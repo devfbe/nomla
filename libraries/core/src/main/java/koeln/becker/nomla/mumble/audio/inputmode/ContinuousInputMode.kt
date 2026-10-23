@@ -18,9 +18,9 @@
 
 package koeln.becker.nomla.mumble.audio.inputmode
 
-import koeln.becker.nomla.mumble.audio.capture.IInputMode
+import koeln.becker.nomla.mumble.audio.capture.InputMode
 
 /** An input mode that always transmits audio. */
-internal class ContinuousInputMode : IInputMode {
+internal class ContinuousInputMode : InputMode {
     override fun shouldTransmit(pcm: ShortArray, length: Int, vadProbability: Float?): Boolean = true
 }

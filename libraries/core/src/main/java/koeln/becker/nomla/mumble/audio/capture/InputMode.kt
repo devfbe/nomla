@@ -19,7 +19,7 @@
 package koeln.becker.nomla.mumble.audio.capture
 
 /** A talk state engine, providing information regarding when it is appropriate to send audio. */
-internal interface IInputMode {
+internal interface InputMode {
     /**
      * Called for every frame after preprocessing, never gated on the talking state.
      *

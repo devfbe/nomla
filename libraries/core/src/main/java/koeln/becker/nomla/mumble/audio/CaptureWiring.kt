@@ -21,7 +21,7 @@ import koeln.becker.nomla.mumble.audio.capture.CapturePipeline
 import koeln.becker.nomla.mumble.audio.capture.CapturePreprocessorFactory
 import koeln.becker.nomla.mumble.audio.capture.EchoCancellationMode
 import koeln.becker.nomla.mumble.audio.capture.FarEndFrameChunker
-import koeln.becker.nomla.mumble.audio.capture.IInputMode
+import koeln.becker.nomla.mumble.audio.capture.InputMode
 import koeln.becker.nomla.mumble.audio.capture.NoiseSuppressionMode
 import koeln.becker.nomla.mumble.audio.capture.NoopPreprocessor
 import koeln.becker.nomla.mumble.audio.capture.Resampler
@@ -48,7 +48,7 @@ internal object CaptureWiring {
     @Suppress("LongParameterList") // Every setting the chain is built from, and the test seams.
     fun wire(
         inputSampleRate: Int,
-        inputMode: IInputMode,
+        inputMode: InputMode,
         amplitudeBoost: Float,
         noise: NoiseSuppressionMode,
         echo: EchoCancellationMode,

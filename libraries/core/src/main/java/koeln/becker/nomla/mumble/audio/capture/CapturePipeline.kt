@@ -49,7 +49,7 @@ internal class CaptureFrame internal constructor(val samples: ShortArray) {
 internal class CapturePipeline(
     resampler: Resampler?,
     private val preprocessor: CapturePreprocessor,
-    private val inputMode: IInputMode,
+    private val inputMode: InputMode,
     @Volatile var amplitudeBoost: Float = 1f,
     frameSize: Int = 480,
     private val log: (String) -> Unit = {},

@@ -370,7 +370,7 @@ class CapturePipelineTest {
     }
 
     /** Always transmits and records the length, and the level, it was asked to judge. */
-    private class RecordingInputMode : IInputMode {
+    private class RecordingInputMode : InputMode {
         val lengths = mutableListOf<Int>()
         val scores = mutableListOf<Float>()
 

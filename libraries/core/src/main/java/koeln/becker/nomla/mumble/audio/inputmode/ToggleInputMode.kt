@@ -18,7 +18,7 @@
 
 package koeln.becker.nomla.mumble.audio.inputmode
 
-import koeln.becker.nomla.mumble.audio.capture.IInputMode
+import koeln.becker.nomla.mumble.audio.capture.InputMode
 
 /**
  * An input mode that depends on a toggle, such as push to talk. The capture thread keeps running
@@ -26,7 +26,7 @@ import koeln.becker.nomla.mumble.audio.capture.IInputMode
  *
  * [inputOn] is written by the UI thread and read by the capture thread, hence `@Volatile`.
  */
-internal class ToggleInputMode : IInputMode {
+internal class ToggleInputMode : InputMode {
     @Volatile
     private var inputOn = false
 

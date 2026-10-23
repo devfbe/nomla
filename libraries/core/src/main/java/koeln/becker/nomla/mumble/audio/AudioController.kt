@@ -21,7 +21,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
 import koeln.becker.nomla.mumble.audio.capture.CaptureState
-import koeln.becker.nomla.mumble.audio.capture.IInputMode
+import koeln.becker.nomla.mumble.audio.capture.InputMode
 import koeln.becker.nomla.mumble.net.MessageHandlerRegistry
 import koeln.becker.nomla.mumble.util.NomlaLog
 
@@ -96,7 +96,7 @@ internal class AudioController(
      * (a rebuild is an audible gap). The config is compared by value, the input mode by identity
      * (it carries per-connection state). A pipeline that never came up is not rebuilt.
      */
-    fun reconfigure(config: AudioConfig, inputMode: IInputMode) {
+    fun reconfigure(config: AudioConfig, inputMode: InputMode) {
         handler.post {
             val current = session ?: return@post
             if (config == current.config && inputMode === current.params.inputMode) return@post

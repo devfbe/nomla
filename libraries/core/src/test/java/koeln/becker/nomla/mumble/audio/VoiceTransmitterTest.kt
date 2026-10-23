@@ -21,7 +21,7 @@ import com.google.common.truth.Truth.assertThat
 import com.google.common.truth.Truth.assertWithMessage
 import org.junit.Test
 import koeln.becker.nomla.mumble.audio.capture.CapturePipeline
-import koeln.becker.nomla.mumble.audio.capture.IInputMode
+import koeln.becker.nomla.mumble.audio.capture.InputMode
 import koeln.becker.nomla.mumble.audio.capture.NoopPreprocessor
 import koeln.becker.nomla.mumble.audio.encoder.IEncoder
 import koeln.becker.nomla.mumble.audio.inputmode.ContinuousInputMode
@@ -118,7 +118,7 @@ class VoiceTransmitterTest {
         }
     }
 
-    private fun transmitter(listener: AudioHandler.AudioEncodeListener, mode: IInputMode = ContinuousInputMode()) =
+    private fun transmitter(listener: AudioHandler.AudioEncodeListener, mode: InputMode = ContinuousInputMode()) =
         VoiceTransmitter(CapturePipeline(null, NoopPreprocessor, mode), listener).apply {
             setCodec(NomlaUDPMessageType.UDPVoiceOpus) { FirstSampleEncoder() }
         }
@@ -128,7 +128,7 @@ class VoiceTransmitterTest {
     /** A transmitter whose encoder puts two frames into a packet, as the default Opus setup does. */
     private fun bufferingTransmitter(
         listener: AudioHandler.AudioEncodeListener,
-        mode: IInputMode,
+        mode: InputMode,
         protocol: UdpProtocol,
     ) =
         VoiceTransmitter(CapturePipeline(null, NoopPreprocessor, mode), listener).apply {

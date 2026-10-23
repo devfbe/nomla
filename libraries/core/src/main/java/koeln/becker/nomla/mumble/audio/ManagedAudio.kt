@@ -19,7 +19,7 @@ package koeln.becker.nomla.mumble.audio
 
 import android.content.Context
 import koeln.becker.nomla.mumble.audio.capture.CaptureState
-import koeln.becker.nomla.mumble.audio.capture.IInputMode
+import koeln.becker.nomla.mumble.audio.capture.InputMode
 import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.mumble.net.NomlaUDPMessageType
 import koeln.becker.nomla.mumble.net.TcpMessageHandler
@@ -47,7 +47,7 @@ internal data class AudioSessionParams(
     val maxBandwidth: Int,
     val codec: NomlaUDPMessageType?,
     val targetId: Byte,
-    val inputMode: IInputMode,
+    val inputMode: InputMode,
     /** The connection's voice packet format. */
     val udpProtocol: UdpProtocol = UdpProtocol.LEGACY,
 )
