@@ -66,22 +66,27 @@ class OverlayUserAdapterTest {
 
     @Test
     fun theStateIconFollowsTheStatePriority() {
-        fun iconFor(user: UserState, talking: Boolean = true): Int {
-            adapter.submit(listOf(user), if (talking) mapOf(user.session to TalkState.TALKING) else emptyMap())
+        fun iconFor(user: UserState, talkState: TalkState? = TalkState.TALKING): Int {
+            adapter.submit(listOf(user), talkState?.let { mapOf(user.session to it) } ?: emptyMap())
             val view = adapter.getView(0, null, FrameLayout(context))
             return shadowOf(view.findViewById<ImageView>(R.id.user_row_state).drawable).createdFromResId
         }
         val user = users[0]
 
-        assertThat(iconFor(user, talking = false)).isEqualTo(R.drawable.outline_circle_talking_off)
+        assertThat(iconFor(user, talkState = null)).isEqualTo(R.drawable.outline_circle_talking_off)
+        assertThat(iconFor(user, TalkState.PASSIVE)).isEqualTo(R.drawable.outline_circle_talking_off)
         assertThat(iconFor(user)).isEqualTo(R.drawable.outline_circle_talking_on)
+        assertThat(iconFor(user, TalkState.WHISPERING)).isEqualTo(R.drawable.outline_circle_talking_on)
+        assertThat(iconFor(user, TalkState.SHOUTING)).isEqualTo(R.drawable.outline_circle_talking_on)
         assertThat(iconFor(user.copy(isSuppressed = true))).isEqualTo(R.drawable.outline_circle_suppressed)
         assertThat(iconFor(user.copy(isSuppressed = true, isMuted = true)))
             .isEqualTo(R.drawable.outline_circle_server_muted)
+        assertThat(iconFor(user.copy(isMuted = true, isSelfMuted = true))).isEqualTo(R.drawable.outline_circle_muted)
         val serverDeafened = user.copy(isMuted = true, isDeafened = true)
         assertThat(iconFor(serverDeafened)).isEqualTo(R.drawable.outline_circle_server_deafened)
-        // Unlike the channel list, the overlay puts the self flags above the server ones.
-        assertThat(iconFor(serverDeafened.copy(isSelfMuted = true))).isEqualTo(R.drawable.outline_circle_muted)
+        // As in the channel list, a server deafen outranks a self mute, and a self deafen outranks both.
+        assertThat(iconFor(serverDeafened.copy(isSelfMuted = true)))
+            .isEqualTo(R.drawable.outline_circle_server_deafened)
         assertThat(iconFor(serverDeafened.copy(isSelfMuted = true, isSelfDeafened = true)))
             .isEqualTo(R.drawable.outline_circle_deafened)
     }

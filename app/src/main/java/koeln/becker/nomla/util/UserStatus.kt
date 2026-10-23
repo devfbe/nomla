@@ -18,6 +18,7 @@
 package koeln.becker.nomla.util
 
 import android.content.Context
+import androidx.annotation.DrawableRes
 import koeln.becker.nomla.mumble.model.TalkState
 import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.R
@@ -38,6 +39,24 @@ enum class UserStatus {
     }
 }
 
+/** Whether [talkState] is any kind of talking (normal, shout or whisper); null is silent. */
+private fun isTalking(talkState: TalkState?): Boolean = talkState != null && talkState != TalkState.PASSIVE
+
+/**
+ * The drawable of a user's state icon: [status] by its priority, then whether the user talks. The
+ * channel list shows a silent user's avatar instead of [R.drawable.outline_circle_talking_off] when it has one.
+ */
+@DrawableRes
+fun stateIconRes(status: UserStatus, talkState: TalkState?): Int = when (status) {
+    UserStatus.SELF_DEAFENED -> R.drawable.outline_circle_deafened
+    UserStatus.DEAFENED -> R.drawable.outline_circle_server_deafened
+    UserStatus.SELF_MUTED -> R.drawable.outline_circle_muted
+    UserStatus.MUTED -> R.drawable.outline_circle_server_muted
+    UserStatus.SUPPRESSED -> R.drawable.outline_circle_suppressed
+    UserStatus.NONE ->
+        if (isTalking(talkState)) R.drawable.outline_circle_talking_on else R.drawable.outline_circle_talking_off
+}
+
 /**
  * What a user's state icon shows, for accessibility services, by the same priority as the channel
  * list's icon; null for a user who is just silent.
@@ -49,7 +68,7 @@ fun talkStateDescription(context: Context, status: UserStatus, talkState: TalkSt
         UserStatus.SELF_MUTED -> R.string.a11y_state_muted
         UserStatus.MUTED -> R.string.a11y_state_server_muted
         UserStatus.SUPPRESSED -> R.string.a11y_state_suppressed
-        UserStatus.NONE -> if (talkState != null && talkState != TalkState.PASSIVE) {
+        UserStatus.NONE -> if (isTalking(talkState)) {
             R.string.a11y_state_talking
         } else {
             return null

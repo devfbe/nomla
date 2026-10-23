@@ -43,8 +43,8 @@ import koeln.becker.nomla.databinding.ChannelListenerRowBinding
 import koeln.becker.nomla.databinding.ChannelRowBinding
 import koeln.becker.nomla.databinding.ChannelUserRowBinding
 import koeln.becker.nomla.drawable.CircleDrawable
-import koeln.becker.nomla.util.UserStatus
 import koeln.becker.nomla.util.dp
+import koeln.becker.nomla.util.stateIconRes
 import koeln.becker.nomla.util.talkStateDescription
 
 /**
@@ -288,19 +288,10 @@ class ChannelListAdapter(
 
     private fun stateIcon(row: ChannelRow.User, talkState: TalkState): Drawable {
         val resources = context.resources
-        val id = when (row.status) {
-            UserStatus.SELF_DEAFENED -> R.drawable.outline_circle_deafened
-            UserStatus.DEAFENED -> R.drawable.outline_circle_server_deafened
-            UserStatus.SELF_MUTED -> R.drawable.outline_circle_muted
-            UserStatus.MUTED -> R.drawable.outline_circle_server_muted
-            UserStatus.SUPPRESSED -> R.drawable.outline_circle_suppressed
-            UserStatus.NONE -> if (talkState != TalkState.PASSIVE) {
-                R.drawable.outline_circle_talking_on
-            } else {
-                avatar(row.avatar)?.let { return CircleDrawable(resources, it) }
-                // Also when the avatar does not decode.
-                R.drawable.outline_circle_talking_off
-            }
+        val id = stateIconRes(row.status, talkState)
+        if (id == R.drawable.outline_circle_talking_off) {
+            // Without an avatar, or one that does not decode, the silent icon stays.
+            avatar(row.avatar)?.let { return CircleDrawable(resources, it) }
         }
         return checkNotNull(ResourcesCompat.getDrawable(resources, id, null))
     }

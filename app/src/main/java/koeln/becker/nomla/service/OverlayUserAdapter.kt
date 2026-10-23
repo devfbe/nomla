@@ -26,9 +26,9 @@ import android.widget.BaseAdapter
 import androidx.core.view.ViewCompat
 import koeln.becker.nomla.mumble.model.TalkState
 import koeln.becker.nomla.mumble.model.UserState
-import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.OverlayUserRowBinding
 import koeln.becker.nomla.util.UserStatus
+import koeln.becker.nomla.util.stateIconRes
 import koeln.becker.nomla.util.talkStateDescription
 
 /** The users of one channel, with how each of them talks. */
@@ -56,19 +56,10 @@ class OverlayUserAdapter(private val context: Context) : BaseAdapter() {
             ?: OverlayUserRowBinding.inflate(LayoutInflater.from(context), parent, false)
         val user = getItem(position)
         val talkState = talkStates[user.session]
+        val status = UserStatus.of(user)
         binding.userRowName.text = user.name
-        binding.userRowState.setImageResource(
-            when {
-                user.isSelfDeafened -> R.drawable.outline_circle_deafened
-                user.isSelfMuted -> R.drawable.outline_circle_muted
-                user.isDeafened -> R.drawable.outline_circle_server_deafened
-                user.isMuted -> R.drawable.outline_circle_server_muted
-                user.isSuppressed -> R.drawable.outline_circle_suppressed
-                talkState == TalkState.TALKING -> R.drawable.outline_circle_talking_on
-                else -> R.drawable.outline_circle_talking_off
-            }
-        )
-        ViewCompat.setStateDescription(binding.root, talkStateDescription(context, UserStatus.of(user), talkState))
+        binding.userRowState.setImageResource(stateIconRes(status, talkState))
+        ViewCompat.setStateDescription(binding.root, talkStateDescription(context, status, talkState))
         return binding.root
     }
 }
