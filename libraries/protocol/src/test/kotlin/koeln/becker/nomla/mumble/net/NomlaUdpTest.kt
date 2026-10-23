@@ -55,7 +55,7 @@ class NomlaUdpTest {
         val errors = LinkedBlockingQueue<Exception>()
         override fun onUDPDataReceived(data: ByteArray) { received.add(Thread.currentThread().name to data) }
         override fun onUDPConnectionError(e: Exception) { errors.add(e) }
-        override fun resyncCryptState() {}
+        override fun resyncCryptState() = Unit
     }
 
     private fun startClient(): NomlaUdp {

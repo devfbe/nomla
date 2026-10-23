@@ -140,7 +140,7 @@ class NotificationPostingTest {
     }
 
     private object NoopActions : NomlaReconnectNotification.OnActionListener {
-        override fun onReconnectNotificationDismissed() {}
-        override fun reconnect() {}
+        override fun onReconnectNotificationDismissed() = Unit
+        override fun reconnect() = Unit
     }
 }

@@ -2,8 +2,6 @@
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
-    <ID>EmptyFunctionBlock:ChannelChatFragment.kt$ChannelChatFragment.&lt;no name provided&gt;${}</ID>
-    <ID>EmptyFunctionBlock:NotificationPostingTest.kt$NotificationPostingTest.NoopActions${}</ID>
     <ID>LargeClass:ChannelChatFragmentTest.kt$ChannelChatFragmentTest</ID>
     <ID>LargeClass:NomlaServiceTest.kt$NomlaServiceTest</ID>
     <ID>LongParameterList:ChatAdapterTest.kt$ChatAdapterTest$( actor: Int = 7, actorName: String? = "alice", channels: List&lt;ChannelState&gt; = emptyList(), trees: List&lt;ChannelState&gt; = emptyList(), users: List&lt;UserState&gt; = emptyList(), body: String = "hi", )</ID>
