@@ -20,9 +20,9 @@
 package koeln.becker.nomla.mumble.audio
 
 /** Sums float PCM sources and converts to 16-bit PCM, clipping naively to [-1, 1]. */
-internal class BasicClippingShortMixer : IAudioMixer<FloatArray, ShortArray> {
+internal class BasicClippingShortMixer : AudioMixer<FloatArray, ShortArray> {
     override fun mix(
-        sources: List<IAudioMixerSource<FloatArray>>,
+        sources: List<AudioMixerSource<FloatArray>>,
         buffer: ShortArray,
         bufferOffset: Int,
         bufferLength: Int,

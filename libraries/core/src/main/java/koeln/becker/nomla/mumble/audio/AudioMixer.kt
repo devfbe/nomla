@@ -19,8 +19,7 @@
 
 package koeln.becker.nomla.mumble.audio
 
-/** A source for an [IAudioMixer], holding its samples in a buffer of type [T]. */
-internal interface IAudioMixerSource<T> {
-    val samples: T
-    val numSamples: Int
+/** Mixes [AudioMixerSource]s with buffers of type [T] into a destination buffer of type [U]. */
+internal fun interface AudioMixer<T, U> {
+    fun mix(sources: List<AudioMixerSource<T>>, buffer: U, bufferOffset: Int, bufferLength: Int)
 }

@@ -21,7 +21,7 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
 class BasicClippingShortMixerTest {
-    private class Source(override val samples: FloatArray) : IAudioMixerSource<FloatArray> {
+    private class Source(override val samples: FloatArray) : AudioMixerSource<FloatArray> {
         override val numSamples: Int get() = samples.size
     }
 

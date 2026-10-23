@@ -66,7 +66,7 @@ internal class AudioOutputSpeech(
     private val opusApi: OpusDecoderApi = OpusDecoderNative,
     jitterApi: SpeexJitterApi = SpeexJitterNative,
     private val averageAvailable: FloatArray = FloatArray(1),
-) : IAudioMixerSource<FloatArray>, AutoCloseable {
+) : AudioMixerSource<FloatArray>, AutoCloseable {
 
     /** Called on the playback thread for every decoded frame: must neither block nor allocate. */
     fun interface Listener {

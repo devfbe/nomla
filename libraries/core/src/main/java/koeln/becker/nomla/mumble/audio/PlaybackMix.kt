@@ -25,9 +25,9 @@ private const val TAG = "PlaybackMix"
  * The talkers being played and one mix of them, decoded inline on the playback thread. Reuses its
  * lists, so a mix allocates nothing. Not thread-safe: `AudioOutput` guards it with its packet lock.
  */
-internal class PlaybackMix(private val mixer: IAudioMixer<FloatArray, ShortArray> = BasicClippingShortMixer()) {
+internal class PlaybackMix(private val mixer: AudioMixer<FloatArray, ShortArray> = BasicClippingShortMixer()) {
     private val speeches = ArrayList<AudioOutputSpeech>()
-    private val sources = ArrayList<IAudioMixerSource<FloatArray>>()
+    private val sources = ArrayList<AudioMixerSource<FloatArray>>()
 
     /** A decoder that keeps failing would otherwise log from the playback loop every frame. */
     private var decodeFailureLogged = false
