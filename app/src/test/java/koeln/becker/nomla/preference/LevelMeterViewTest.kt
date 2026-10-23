@@ -42,7 +42,7 @@ class LevelMeterViewTest {
         assertThat(MeterScale.position(-200f)).isEqualTo(0f)
         assertThat(MeterScale.position(20f)).isEqualTo(1f)
         // The two levels the pipeline can really produce at the extremes both land inside.
-        assertThat(MeterScale.position(VadConfig.NO_SIGNAL_DBFS)).isEqualTo(0f)
+        assertThat(MeterScale.position(NO_SIGNAL_DBFS)).isEqualTo(0f)
         assertThat(MeterScale.position(VadConfig.MIN_FLOOR_DBFS)).isEqualTo(0f)
         assertThat(MeterScale.position(VadConfig.MAX_FLOOR_DBFS)).isGreaterThan(0f)
     }
@@ -50,7 +50,7 @@ class LevelMeterViewTest {
     /** The measured floor and a normal talker sit apart from each other and away from both ends. */
     @Test
     fun `the default floor and a normal talker are far apart in the middle of the bar`() {
-        val floor = MeterScale.position(VadConfig.DEFAULT_FLOOR_DBFS)
+        val floor = MeterScale.position(DEFAULT_FLOOR_DBFS)
         val talker = MeterScale.position(-20f)
         assertThat(floor).isIn(com.google.common.collect.Range.closed(0.2f, 0.5f))
         assertThat(talker).isIn(com.google.common.collect.Range.closed(0.6f, 0.9f))
@@ -127,5 +127,13 @@ class LevelMeterViewTest {
         assertThat(MeterScaleText.db(-32.6f)).isEqualTo("-33")
         assertThat(MeterScaleText.dbOrDash(null)).isEqualTo(MeterScaleText.NONE)
         assertThat(MeterScaleText.dbOrDash(-45f)).isEqualTo("-45")
+    }
+
+    private companion object {
+        /** The level the pipeline gives a silent frame (`VoiceActivityDetector.NO_SIGNAL_DBFS`). */
+        const val NO_SIGNAL_DBFS = -192f
+
+        /** The hand-set floor's default (`AdaptiveVadTracker.DEFAULT_FLOOR_DBFS`). */
+        const val DEFAULT_FLOOR_DBFS = -45f
     }
 }

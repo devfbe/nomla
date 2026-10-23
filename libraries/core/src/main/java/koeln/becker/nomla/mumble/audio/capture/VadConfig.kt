@@ -82,15 +82,9 @@ public data class VadConfig(
         /** Largest hold whose `holdTimeMs * 1_000_000` nanosecond deadline doesn't overflow. */
         internal const val MAX_HOLD_MS: Long = Long.MAX_VALUE / 1_000_000L
 
-        public const val DEFAULT_SNR_FRACTION: Float = AdaptiveVadTracker.DEFAULT_FRACTION
-
         /** The bounds of [manualFloorDbfs], which is also where an adaptive floor stays. */
         public const val MIN_FLOOR_DBFS: Float = AdaptiveVadTracker.MIN_FLOOR_DBFS
         public const val MAX_FLOOR_DBFS: Float = AdaptiveVadTracker.MAX_FLOOR_DBFS
-        public const val DEFAULT_FLOOR_DBFS: Float = AdaptiveVadTracker.DEFAULT_FLOOR_DBFS
-
-        /** The level a silent frame is measured at. */
-        public const val NO_SIGNAL_DBFS: Float = VoiceActivityDetector.NO_SIGNAL_DBFS
 
         /** Legacy single slider: stop = start - 0.15. */
         public fun amplitude(

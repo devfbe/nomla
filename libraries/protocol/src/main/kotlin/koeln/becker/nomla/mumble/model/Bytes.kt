@@ -18,8 +18,6 @@ package koeln.becker.nomla.mumble.model
 
 /** Immutable bytes compared by content, so they can sit in a snapshot's data classes. */
 public class Bytes private constructor(private val data: ByteArray) {
-    public val size: Int get() = data.size
-
     /** A copy the caller may keep and change. */
     public fun toByteArray(): ByteArray = data.copyOf()
 

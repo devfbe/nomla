@@ -34,16 +34,12 @@ public enum class NoiseSuppressionMode(public val preferenceValue: String) {
 
 /**
  * Which canceller runs: WebRTC's AEC3 or none. The platform `AcousticEchoCanceler` is not offered: in
- * front of AEC3 it would hand it an already-altered echo. Unknown values read as [NONE].
+ * front of AEC3 it would hand it an already-altered echo. The app picks it per kind of device, so it
+ * is never read from a stored value; [preferenceValue] only names it in the log.
  */
 public enum class EchoCancellationMode(public val preferenceValue: String) {
     NONE("none"),
-    WEBRTC("webrtc");
-
-    public companion object {
-        public fun fromPreferenceValue(value: String?): EchoCancellationMode =
-            entries.firstOrNull { it.preferenceValue == value } ?: NONE
-    }
+    WEBRTC("webrtc")
 }
 
 /** android.media.audiofx effects attached to the AudioRecord session. */

@@ -273,11 +273,6 @@ public class DoubleTalkSelfTest internal constructor(
         restartRequested = true
     }
 
-    /** Starts the measurement over, with the listening phase, keeping the audio running. */
-    public fun restartMeasurement() {
-        restartRequested = true
-    }
-
     /** Stops both threads, releases the recorder, the track and the chain, and restores the route. */
     public fun stop() {
         running = false

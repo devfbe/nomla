@@ -21,24 +21,6 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
 class ModesTest {
-    /** The platform canceller is no longer offered; stored "system"/"android" values read as none. */
-    @Test
-    fun `the retired platform canceller values read as none`() {
-        assertThat(EchoCancellationMode.fromPreferenceValue("system")).isEqualTo(EchoCancellationMode.NONE)
-        assertThat(EchoCancellationMode.fromPreferenceValue("android")).isEqualTo(EchoCancellationMode.NONE)
-    }
-
-    @Test
-    fun `webrtc echo value is recognised`() {
-        assertThat(EchoCancellationMode.fromPreferenceValue("webrtc")).isEqualTo(EchoCancellationMode.WEBRTC)
-    }
-
-    @Test
-    fun `unknown or missing echo value falls back to none`() {
-        assertThat(EchoCancellationMode.fromPreferenceValue("bogus")).isEqualTo(EchoCancellationMode.NONE)
-        assertThat(EchoCancellationMode.fromPreferenceValue(null)).isEqualTo(EchoCancellationMode.NONE)
-    }
-
     @Test
     fun `noise suppression values map and default to speex`() {
         assertThat(NoiseSuppressionMode.fromPreferenceValue("rnnoise")).isEqualTo(NoiseSuppressionMode.RNNOISE)
@@ -51,9 +33,6 @@ class ModesTest {
     fun `every mode round-trips through its preference value`() {
         for (mode in NoiseSuppressionMode.entries) {
             assertThat(NoiseSuppressionMode.fromPreferenceValue(mode.preferenceValue)).isEqualTo(mode)
-        }
-        for (mode in EchoCancellationMode.entries) {
-            assertThat(EchoCancellationMode.fromPreferenceValue(mode.preferenceValue)).isEqualTo(mode)
         }
     }
 

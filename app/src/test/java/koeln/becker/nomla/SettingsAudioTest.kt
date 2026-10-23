@@ -192,7 +192,7 @@ class SettingsAudioTest {
         assertThat(settings.vadMode).isEqualTo(VadMode.ADAPTIVE)
         val config = settings.vadConfig
         assertThat(config.mode).isEqualTo(VadMode.ADAPTIVE)
-        assertThat(config.snrFraction).isWithin(0.001f).of(VadConfig.DEFAULT_SNR_FRACTION)
+        assertThat(config.snrFraction).isWithin(0.001f).of(DEFAULT_SNR_FRACTION)
         assertThat(config.holdTimeMs).isEqualTo(250L)
         assertThat(config.adaptiveFloor).isTrue()
     }
@@ -309,5 +309,10 @@ class SettingsAudioTest {
                 assertThat(effects.automaticGainControl).isEqualTo(agc)
             }
         }
+    }
+
+    private companion object {
+        /** The library's default fraction (`AdaptiveVadTracker.DEFAULT_FRACTION`), which the app keeps. */
+        const val DEFAULT_SNR_FRACTION = 0.65f
     }
 }
