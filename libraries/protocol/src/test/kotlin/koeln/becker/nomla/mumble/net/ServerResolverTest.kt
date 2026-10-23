@@ -21,6 +21,7 @@ import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
+import org.minidns.record.SRV
 import koeln.becker.nomla.mumble.model.Server
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -77,5 +78,35 @@ class ServerResolverTest {
         for (host in listOf("256.1.1.1", "1.2.3", "1.2.3.4.example", "10.0.0.1a")) resolver.resolve(server(host))
 
         assertThat(lookups).containsExactly("256.1.1.1", "1.2.3", "1.2.3.4.example", "10.0.0.1a").inOrder()
+    }
+
+    // --- choosing among SRV records (RFC 2782) ---------------------------------------------------
+
+    @Test
+    fun theLowestPriorityRecordIsChosen() {
+        val answers = listOf(
+            SRV(20, 100, 1000, "backup.example"),
+            SRV(10, 0, 2000, "primary.example"),
+            SRV(30, 100, 3000, "last.example"),
+        )
+
+        repeat(50) {
+            assertThat(ServerResolver.pickSrv(answers)).isEqualTo(Endpoint("primary.example", 2000))
+        }
+    }
+
+    @Test
+    fun aWeightOfZeroIsNeverChosenOverAWeightedRecordOfTheSamePriority() {
+        val answers = listOf(SRV(10, 0, 1000, "zero.example"), SRV(10, 5, 2000, "weighted.example"))
+
+        repeat(50) {
+            assertThat(ServerResolver.pickSrv(answers)).isEqualTo(Endpoint("weighted.example", 2000))
+        }
+    }
+
+    /** RFC 2782: a lone record with the target "." means the service is decidedly not available. */
+    @Test
+    fun aLoneRootTargetIsNoRecord() {
+        assertThat(ServerResolver.pickSrv(listOf(SRV(0, 0, 0, ".")))).isNull()
     }
 }

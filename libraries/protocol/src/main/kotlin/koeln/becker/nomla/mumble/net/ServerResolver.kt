@@ -22,6 +22,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.minidns.hla.ResolverApi
+import org.minidns.record.SRV
 import org.minidns.util.SrvUtil
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.util.Constants
@@ -71,12 +72,7 @@ public class ServerResolver internal constructor(
                 when {
                     answers == null -> null.also { NomlaLog.d(TAG, "resolveSrv $name: ${result.responseCode}") }
                     answers.isEmpty() -> null.also { NomlaLog.d(TAG, "resolveSrv $name: empty answer") }
-                    else -> {
-                        // TODO SRV just picking the first record.
-                        val srv = SrvUtil.sortSrvRecords(answers)[0]
-                        NomlaLog.d(TAG, "resolved $name SRV: $srv")
-                        Endpoint(srv.target.toString(), srv.port)
-                    }
+                    else -> pickSrv(answers).also { NomlaLog.d(TAG, "resolved $name SRV: $it") }
                 }
             } catch (e: IOException) {
                 NomlaLog.d(TAG, "exception in srvResolve: $e")
@@ -87,5 +83,13 @@ public class ServerResolver internal constructor(
                 null
             }
         }
+
+        /**
+         * The record to connect to, chosen as RFC 2782 says: the lowest priority, then at random
+         * by weight among equal priorities ([SrvUtil.sortSrvRecords] does both). Null for a lone
+         * record whose target is "." (no service there), which that sort answers with no records.
+         */
+        fun pickSrv(answers: Collection<SRV>): Endpoint? =
+            SrvUtil.sortSrvRecords(answers).firstOrNull()?.let { Endpoint(it.target.toString(), it.port) }
     }
 }
