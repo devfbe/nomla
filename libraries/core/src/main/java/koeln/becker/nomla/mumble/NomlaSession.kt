@@ -59,7 +59,6 @@ import koeln.becker.nomla.mumble.model.ServerState
 import koeln.becker.nomla.mumble.model.TalkState
 import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.mumble.model.WhisperTarget
-import koeln.becker.nomla.mumble.model.WhisperTargetList
 import koeln.becker.nomla.mumble.model.localVolumeScope
 import koeln.becker.nomla.mumble.net.ConnectionParams
 import koeln.becker.nomla.mumble.net.ConnectionWarning
@@ -82,6 +81,7 @@ import koeln.becker.nomla.mumble.session.SessionLifecycle
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.mumble.session.SessionWakeLock
 import koeln.becker.nomla.mumble.session.TalkStates
+import koeln.becker.nomla.mumble.session.VoiceTargets
 import koeln.becker.nomla.mumble.session.disconnectReasonOf
 import koeln.becker.nomla.mumble.session.messageRes
 import koeln.becker.nomla.mumble.util.NomlaLog
@@ -175,12 +175,6 @@ public class NomlaSession internal constructor(
     /** The certificate problem the connection reported ahead of its end, if any. */
     private var tlsFailure: DisconnectReason? = null
 
-    private var currentVoiceTargetId: Byte = 0
-    private val whisperTargetList = WhisperTargetList()
-
-    /** The registered whisper target's slot, armed or active; 0 while none is registered. */
-    private var armedWhisperId: Byte = 0
-
     internal val logger: NomlaLogger get() = notices.logger
 
     private val audioInputListener = object : AudioHandler.AudioEncodeListener {
@@ -219,6 +213,8 @@ public class NomlaSession internal constructor(
         },
     )
 
+    private val voiceTargets = VoiceTargets(audioSession::setVoiceTargetId, notices::emit)
+
     override val state: StateFlow<SessionState> get() = lifecycle.state
 
     override val targetServer: Server? get() = config.connection.server
@@ -238,7 +234,7 @@ public class NomlaSession internal constructor(
         val state = lifecycle.current
         if (state != SessionState.Connecting && state !is SessionState.Reconnecting) return
         // The voice target can be set while disconnected; whisper slots were cleared at the last end.
-        currentVoiceTargetId = 0
+        voiceTargets.resetTarget()
         tlsFailure = null
         val config = config.connection
         val server = config.server
@@ -350,7 +346,7 @@ public class NomlaSession internal constructor(
             self = self,
             maxBandwidth = info.maxBandwidth,
             codec = if (info.opus) NomlaUdpMessageType.UDPVoiceOpus else null,
-            targetId = currentVoiceTargetId,
+            targetId = voiceTargets.id,
             inputMode = audioSession.inputMode,
             udpProtocol = connection.udpProtocol,
         )
@@ -381,9 +377,7 @@ public class NomlaSession internal constructor(
             playbackParams = PlaybackParams.DEFAULT
         }
         mutableTalkStates.clear()
-        currentVoiceTargetId = 0
-        armedWhisperId = 0
-        whisperTargetList.clear()
+        voiceTargets.clear()
         if (next is SessionState.Disconnected) {
             // A late, reason-free report after cancelReconnect keeps the cancelled session's reason
             // and must not claim to have given up.
@@ -421,18 +415,11 @@ public class NomlaSession internal constructor(
         }
     }
 
-    /**
-     * The active voice target: 0 is normal speech, 1-30 are whisper targets, 31 is the server
-     * loopback. Also reaches the running pipeline, so the next rebuild keeps targeting it.
-     */
+    /** The active voice target, see [VoiceTargets.id]. */
     internal var voiceTargetId: Byte
-        get() = currentVoiceTargetId
+        get() = voiceTargets.id
         set(targetId) {
-            // `!= 0` rather than `> 0`: a negative byte masks to a negative value.
-            require((targetId.toInt() and 0x1F.inv()) == 0) { "Target ID must be at most 5 bits." }
-            currentVoiceTargetId = targetId
-            audioSession.setVoiceTargetId(targetId)
-            emit(NomlaEvent.VoiceTargetChanged(VoiceTargetMode.fromId(targetId)))
+            voiceTargets.id = targetId
         }
 
     override val serverInfo: ServerInfo? get() = connection?.serverInfo
@@ -559,40 +546,20 @@ public class NomlaSession internal constructor(
 
         override fun setLocalVolume(session: Int, volume: Float) = local(LocalInput.Volume(session, volume))
 
-        override val voiceTargetMode: VoiceTargetMode get() = VoiceTargetMode.fromId(currentVoiceTargetId)
+        override val voiceTargetMode: VoiceTargetMode get() = voiceTargets.mode
 
-        override val whisperTarget: WhisperTarget?
-            get() = armedWhisperId.takeIf { it > 0 }?.let { whisperTargetList[it] }
+        override val whisperTarget: WhisperTarget? get() = voiceTargets.whisperTarget
 
-        override val isWhisperActive: Boolean
-            get() = armedWhisperId > 0 && currentVoiceTargetId == armedWhisperId
+        override val isWhisperActive: Boolean get() = voiceTargets.isWhisperActive
 
         override fun whisperTo(target: WhisperTarget, activate: Boolean): Boolean {
             val commands = synced() ?: return false
-            if (armedWhisperId > 0) whisperTargetList.free(armedWhisperId)
-            val id = whisperTargetList.append(target)
-            if (id >= 0) {
-                commands.registerVoiceTarget(id.toInt(), target.createTarget())
-                armedWhisperId = id
-                voiceTargetId = if (activate) id else 0
-            }
-            return id >= 0
+            return voiceTargets.whisperTo(target, activate, commands)
         }
 
-        override fun setWhisperActive(active: Boolean) {
-            val id = armedWhisperId
-            if (id <= 0) return
-            voiceTargetId = if (active) id else 0
-        }
+        override fun setWhisperActive(active: Boolean) = voiceTargets.setWhisperActive(active)
 
-        override fun stopWhispering() {
-            val id = armedWhisperId
-            if (id <= 0) return
-            whisperTargetList.free(id)
-            armedWhisperId = 0
-            // Last: the change it publishes must already find the target gone.
-            voiceTargetId = 0
-        }
+        override fun stopWhispering() = voiceTargets.stopWhispering()
     }
 
     private inner class Audio : AudioControls {
