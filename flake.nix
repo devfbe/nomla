@@ -44,9 +44,11 @@
         # Java/JDK 21
         jdk = pkgs.jdk21;
 
-        # Python and build tools
+        # Python for tools/room-test
         python = pkgs.python3;
 
+        # Everything native is built with CMake and Ninja (webrtc-audio-processing's meson lists are
+        # transcribed into webrtc_apm/CMakeLists.txt), so no meson, pkg-config or autotools.
         buildInputs = with pkgs; [
           jdk
           gradle
@@ -56,13 +58,8 @@
           # Host C/C++ compiler and binutils (objdump) for :libraries:core:nativeHostTests. mkShell
           # brings them anyway; listed so the Studio launcher's PATH has them too.
           stdenv.cc
-          meson
-          pkg-config
           python
           git
-          autoconf
-          automake
-          libtool
           clang-tools
         ];
 
