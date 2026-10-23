@@ -24,7 +24,6 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import koeln.becker.nomla.mumble.model.Server
-import koeln.becker.nomla.mumble.util.NomlaLog
 
 /**
  * Server passwords, access tokens and certificate blobs are stored encrypted, see [SecretCodec].
@@ -53,48 +52,13 @@ class NomlaSQLiteDatabase(
         db.execSQL(TABLE_LOCAL_VOLUME_CREATE_SQL)
     }
 
+    /**
+     * Every Nomla install starts at [CURRENT_DB_VERSION], the first schema Nomla shipped, so no
+     * upgrade step exists yet. A later schema change adds its step here, keyed on [oldVersion];
+     * reaching this without one is a programming error, not something to repair silently.
+     */
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        NomlaLog.w(TAG, "Database upgrade from $oldVersion to $newVersion")
-        if (oldVersion <= PRE_FAVOURITES_DB_VERSION) db.execSQL(TABLE_FAVOURITES_CREATE_SQL)
-        if (oldVersion <= PRE_TOKENS_DB_VERSION) db.execSQL(TABLE_TOKENS_CREATE_SQL)
-        if (oldVersion <= PRE_COMMENTS_DB_VERSION) db.execSQL(TABLE_COMMENTS_CREATE_SQL)
-        if (oldVersion <= PRE_LOCAL_MUTE_DB_VERSION) db.execSQL(TABLE_LOCAL_MUTE_CREATE_SQL)
-        if (oldVersion <= PRE_LOCAL_IGNORE_DB_VERSION) db.execSQL(TABLE_LOCAL_IGNORE_CREATE_SQL)
-        if (oldVersion <= PRE_CERTIFICATES_DB_VERSION) db.execSQL(TABLE_CERTIFICATES_CREATE_SQL)
-        if (oldVersion <= PRE_ENCRYPTED_SECRETS_DB_VERSION) sealPlainSecrets(db)
-        if (oldVersion <= PRE_LOCAL_VOLUME_DB_VERSION) db.execSQL(TABLE_LOCAL_VOLUME_CREATE_SQL)
-    }
-
-    /** Encrypts every secret still stored in plain text. Values that cannot be sealed stay as they are. */
-    private fun sealPlainSecrets(db: SQLiteDatabase) {
-        val passwords = arrayOf(SERVER_ID, SERVER_PASSWORD)
-        db.query(TABLE_SERVER, passwords, "$SERVER_PASSWORD IS NOT NULL", null, null, null, null)
-            .use { c ->
-                while (c.moveToNext()) {
-                    val plain = c.getString(1)
-                    if (SecretCodec.isSealed(plain)) continue
-                    val values = ContentValues().apply { put(SERVER_PASSWORD, secrets.sealString(plain)) }
-                    db.update(TABLE_SERVER, values, "$SERVER_ID=?", arrayOf(c.getLong(0).toString()))
-                }
-            }
-        db.query(TABLE_TOKENS, arrayOf(TOKENS_ID, TOKENS_VALUE), null, null, null, null, null).use { c ->
-            while (c.moveToNext()) {
-                val plain = c.getString(1)
-                if (SecretCodec.isSealed(plain)) continue
-                val values = ContentValues().apply { put(TOKENS_VALUE, secrets.sealString(plain)) }
-                db.update(TABLE_TOKENS, values, "$TOKENS_ID=?", arrayOf(c.getLong(0).toString()))
-            }
-        }
-        val certificates = arrayOf(COLUMN_CERTIFICATES_ID, COLUMN_CERTIFICATES_DATA)
-        db.query(TABLE_CERTIFICATES, certificates, null, null, null, null, null)
-            .use { c ->
-                while (c.moveToNext()) {
-                    val plain = c.getBlob(1)
-                    if (SecretCodec.isSealed(plain)) continue
-                    val values = ContentValues().apply { put(COLUMN_CERTIFICATES_DATA, secrets.sealBlob(plain)) }
-                    db.update(TABLE_CERTIFICATES, values, "$COLUMN_CERTIFICATES_ID=?", arrayOf(c.getLong(0).toString()))
-                }
-            }
+        error("No upgrade path from database version $oldVersion to $newVersion")
     }
 
     override fun open() {
@@ -303,8 +267,6 @@ class NomlaSQLiteDatabase(
     }
 
     companion object {
-        private val TAG = NomlaSQLiteDatabase::class.java.name
-
         const val DATABASE_NAME = "mumble.db"
 
         const val TABLE_SERVER = "server"
@@ -389,14 +351,6 @@ class NomlaSQLiteDatabase(
             "`" + LOCAL_VOLUME_VOLUME + "` REAL NOT NULL" +
             ");"
 
-        const val PRE_FAVOURITES_DB_VERSION = 2
-        const val PRE_TOKENS_DB_VERSION = 3
-        const val PRE_COMMENTS_DB_VERSION = 4
-        const val PRE_LOCAL_MUTE_DB_VERSION = 5
-        const val PRE_LOCAL_IGNORE_DB_VERSION = 6
-        const val PRE_CERTIFICATES_DB_VERSION = 7
-        const val PRE_ENCRYPTED_SECRETS_DB_VERSION = 8
-        const val PRE_LOCAL_VOLUME_DB_VERSION = 9
         const val CURRENT_DB_VERSION = 10
     }
 }

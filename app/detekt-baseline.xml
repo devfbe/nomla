@@ -2,7 +2,6 @@
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
-    <ID>CyclomaticComplexMethod:NomlaSQLiteDatabase.kt$NomlaSQLiteDatabase$private fun sealPlainSecrets(db: SQLiteDatabase)</ID>
     <ID>EmptyFunctionBlock:ChannelChatFragment.kt$ChannelChatFragment.&lt;no name provided&gt;${}</ID>
     <ID>EmptyFunctionBlock:NotificationPostingTest.kt$NotificationPostingTest.NoopActions${}</ID>
     <ID>LargeClass:ChannelChatFragmentTest.kt$ChannelChatFragmentTest</ID>

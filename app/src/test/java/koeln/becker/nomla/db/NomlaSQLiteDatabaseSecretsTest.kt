@@ -19,7 +19,6 @@ package koeln.becker.nomla.db
 
 import android.content.ContentValues
 import android.content.Context
-import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
@@ -119,8 +118,9 @@ class NomlaSQLiteDatabaseSecretsTest {
         assertThat(db.getAccessTokens(2)).containsExactly("a")
     }
 
+    /** Rows written while the Keystore did not work hold plain text; they still read back. */
     @Test
-    fun plainTextRowsFromBeforeEncryptionAreStillRead() {
+    fun plainTextRowsAreStillRead() {
         val db = open()
         val w = db.writableDatabase
         w.insert("server", null, ContentValues().apply {
@@ -135,43 +135,6 @@ class NomlaSQLiteDatabaseSecretsTest {
         assertThat(db.getCertificateData(id)).isEqualTo(p12)
         db.removeAccessToken(1, "oldtok")
         assertThat(db.getAccessTokens(1)).isEmpty()
-    }
-
-    @Test
-    fun upgradingEncryptsExistingPlainTextSecrets() {
-        // A version 8 database as the previous release wrote it.
-        object : SQLiteOpenHelper(context, name, null, NomlaSQLiteDatabase.PRE_ENCRYPTED_SECRETS_DB_VERSION) {
-            override fun onCreate(db: SQLiteDatabase) {
-                db.execSQL(NomlaSQLiteDatabase.TABLE_SERVER_CREATE_SQL)
-                db.execSQL(NomlaSQLiteDatabase.TABLE_TOKENS_CREATE_SQL)
-                db.execSQL(NomlaSQLiteDatabase.TABLE_CERTIFICATES_CREATE_SQL)
-                db.execSQL(NomlaSQLiteDatabase.TABLE_FAVOURITES_CREATE_SQL)
-                db.execSQL(NomlaSQLiteDatabase.TABLE_COMMENTS_CREATE_SQL)
-                db.execSQL(NomlaSQLiteDatabase.TABLE_LOCAL_MUTE_CREATE_SQL)
-                db.execSQL(NomlaSQLiteDatabase.TABLE_LOCAL_IGNORE_CREATE_SQL)
-                db.insert("server", null, ContentValues().apply {
-                    put("name", "old"); put("host", "old.example"); put("port", 64738)
-                    put("username", "me"); put("password", "legacy")
-                })
-                db.insert("server", null, ContentValues().apply {
-                    put("name", "nopw"); put("host", "n.example"); put("port", 64738); put("username", "me")
-                })
-                db.insert("tokens", null, ContentValues().apply { put("server", 1); put("value", "oldtok") })
-                db.insert("certificates", null, ContentValues().apply { put("name", "old.p12"); put("data", p12) })
-            }
-            override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) = Unit
-        }.also { opened += it }.writableDatabase.close()
-
-        val db = open()
-
-        assertThat(db.getServers().map { it.password }).containsExactly("legacy", null)
-        assertThat(db.getAccessTokens(1)).containsExactly("oldtok")
-        assertThat(db.getCertificateData(db.getCertificates().single().id)).isEqualTo(p12)
-        val sealedPasswords = raw("SELECT password FROM server WHERE password IS NOT NULL")
-            .map { SecretCodec.isSealed(it as String) }
-        assertThat(sealedPasswords).containsExactly(true)
-        assertThat(SecretCodec.isSealed(raw("SELECT value FROM tokens").single() as String)).isTrue()
-        assertThat(SecretCodec.isSealed(raw("SELECT data FROM certificates").single() as ByteArray)).isTrue()
     }
 
     @Test

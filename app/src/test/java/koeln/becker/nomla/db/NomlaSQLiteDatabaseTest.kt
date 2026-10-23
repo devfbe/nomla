@@ -168,22 +168,14 @@ class NomlaSQLiteDatabaseTest {
             buildSet { while (c.moveToNext()) add(c.getString(0)) }
         }
 
-    /** Each upgrade step creates exactly the table its version introduced, and nothing older. */
+    /** A fresh install gets the whole schema at once; there is no older version to upgrade from. */
     @Test
-    fun anUpgradeCreatesTheTablesNewerThanTheOldVersion() {
-        val w = db.writableDatabase
-        val sinceV5 = listOf("local_mute", "local_ignore", "certificates", "local_volume")
-        for (t in sinceV5) w.execSQL("DROP TABLE $t")
-
-        db.onUpgrade(w, 5, NomlaSQLiteDatabase.CURRENT_DB_VERSION)
-        assertThat(tables()).containsAtLeastElementsIn(sinceV5)
-
-        val added = listOf("favourites", "tokens", "comments") + sinceV5
-        for (t in added) w.execSQL("DROP TABLE $t")
-        // A version 2 database has a server table and nothing else; the upgrade then also seals
-        // its passwords, so every table it touches has to exist by then.
-        db.onUpgrade(w, 2, NomlaSQLiteDatabase.CURRENT_DB_VERSION)
-        assertThat(tables()).containsAtLeastElementsIn(added)
+    fun aFreshDatabaseHasEveryTable() {
+        assertThat(tables()).containsAtLeast(
+            "server", "favourites", "tokens", "comments", "local_mute", "local_ignore", "certificates",
+            "local_volume",
+        )
+        assertThat(db.readableDatabase.version).isEqualTo(NomlaSQLiteDatabase.CURRENT_DB_VERSION)
     }
 
     /** Every query closes its cursor, on every path (including a missing certificate id). */
