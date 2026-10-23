@@ -11,7 +11,6 @@ androidx-activity = "1.13.0"
 androidx-annotation = "1.11.0"
 androidx-cardview = "1.0.0"
 androidx-core = "1.19.1"
-androidx-documentfile = "1.1.0"
 androidx-exifinterface = "1.4.2"
 androidx-fragment = "1.9.1"
 androidx-media = "1.8.0"
@@ -51,7 +50,6 @@ androidx-activity = { module = "androidx.activity:activity", version.ref = "andr
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-cardview = { module = "androidx.cardview:cardview", version.ref = "androidx-cardview" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
-androidx-documentfile = { module = "androidx.documentfile:documentfile", version.ref = "androidx-documentfile" }
 androidx-exifinterface = { module = "androidx.exifinterface:exifinterface", version.ref = "androidx-exifinterface" }
 androidx-fragment = { module = "androidx.fragment:fragment", version.ref = "androidx-fragment" }
 androidx-media = { module = "androidx.media:media", version.ref = "androidx-media" }

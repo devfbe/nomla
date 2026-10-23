@@ -21,7 +21,6 @@ package koeln.becker.nomla.preference
 import android.app.Application
 import android.net.Uri
 import androidx.annotation.StringRes
-import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
@@ -37,6 +36,7 @@ import koeln.becker.nomla.R
 import koeln.becker.nomla.db.DatabaseCertificate
 import koeln.becker.nomla.db.NomlaRepository
 import koeln.becker.nomla.ui.AppMessages
+import koeln.becker.nomla.util.displayName
 import java.io.FileNotFoundException
 import java.io.IOException
 
@@ -151,7 +151,7 @@ internal class CertificateExportViewModel(
             NomlaLog.w(TAG, "Could not prepare certificate for export", e)
             return R.string.certificate_load_failed
         }
-        val name = DocumentFile.fromSingleUri(app, uri)?.name ?: "<unknown>"
+        val name = app.contentResolver.displayName(uri) ?: "<unknown>"
         val error = withContext(workDispatcher) {
             try {
                 val os = app.contentResolver.openOutputStream(uri) ?: throw FileNotFoundException(uri.toString())

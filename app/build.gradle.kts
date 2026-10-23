@@ -116,19 +116,16 @@ androidComponents {
 
 dependencies {
     implementation(project(":libraries:core"))
-    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.cardview)
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.documentfile)
     implementation(libs.androidx.fragment)
     implementation(libs.androidx.media)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.viewpager2)
-    implementation(libs.androidx.exifinterface)
     implementation(libs.material)
     implementation(libs.androidx.preference)
     implementation(libs.coil.core)
@@ -141,6 +138,8 @@ dependencies {
     testImplementation(testFixtures(project(":libraries:core")))
     testImplementation(libs.androidx.fragment.testing)
     testImplementation(libs.okhttp.mockwebserver)
+    // Writes the EXIF orientation of test images; the app leaves EXIF to ImageDecoder.
+    testImplementation(libs.androidx.exifinterface)
     androidTestImplementation(libs.bundles.android.test)
     // A manifest-only artifact: it must reach the merged debug manifest Robolectric reads.
     debugImplementation(libs.androidx.fragment.testing.manifest)

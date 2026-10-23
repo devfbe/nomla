@@ -20,7 +20,6 @@ package koeln.becker.nomla.preference
 
 import android.app.Application
 import android.net.Uri
-import android.provider.OpenableColumns
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -36,6 +35,7 @@ import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.R
 import koeln.becker.nomla.db.NomlaRepository
 import koeln.becker.nomla.ui.AppMessages
+import koeln.becker.nomla.util.displayName
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
@@ -111,9 +111,7 @@ internal class CertificateImportViewModel(
     private suspend fun read(uri: Uri): CertificateImportState {
         val bytes = readBytes(uri) ?: return CertificateImportState.Finished
         pkcs12 = bytes
-        val displayName = app.contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
-            ?.use { if (it.moveToFirst()) it.getString(0) else null }
-            ?: (UUID.randomUUID().toString() + ".p12")
+        val displayName = app.contentResolver.displayName(uri) ?: (UUID.randomUUID().toString() + ".p12")
         return store(displayName, bytes, CharArray(0))
     }
 
