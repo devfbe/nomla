@@ -108,6 +108,7 @@ public data class VadConfig(
             onsetFrames: Int = DEFAULT_ONSET_FRAMES,
         ): VadConfig = VadConfig(VadMode.PROBABILITY, start, stop, holdTimeMs, onsetFrames = onsetFrames)
 
+        @Suppress("LongParameterList") // One per tuning of the adaptive mode, all defaulted.
         public fun adaptive(
             snrFraction: Float = AdaptiveVadTracker.DEFAULT_FRACTION,
             holdTimeMs: Long = DEFAULT_HOLD_MS,

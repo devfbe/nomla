@@ -47,6 +47,7 @@ class InputLevelMeterPreferenceTest {
         caption = view.findViewById(R.id.level_meter_caption)
     }
 
+    @Suppress("LongParameterList") // One per field of the reading, all defaulted.
     private fun reading(
         levelDbfs: Float = -30f,
         floorDbfs: Float? = -45f,

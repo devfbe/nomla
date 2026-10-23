@@ -71,6 +71,7 @@ class ChatAdapterTest {
     private val pressed = mutableListOf<Pair<String, View>>()
     private val url = "https://x.org/a.png"
 
+    @Suppress("LongParameterList") // The adapter's own parameters, each with the default a test keeps.
     private fun adapter(
         parser: ChatContentParser = ChatContentParser("[image]"),
         scope: CoroutineScope = CoroutineScope(Dispatchers.Unconfined),
@@ -307,6 +308,7 @@ class ChatAdapterTest {
 
     private fun channel(name: String?) = ChannelState(0, name)
 
+    @Suppress("LongParameterList") // One per field of the message, all defaulted.
     private fun text(
         actor: Int = 7,
         actorName: String? = "alice",
