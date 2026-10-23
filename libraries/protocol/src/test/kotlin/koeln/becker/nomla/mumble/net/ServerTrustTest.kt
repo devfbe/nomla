@@ -140,11 +140,15 @@ class ServerTrustTest {
         assertThat(HostnameMatcher.matches("mumble.example.org", cert)).isFalse()
     }
 
+    /** A literal that is not an exact address names no certificate, not even through a DNS SAN. */
     @Test
-    fun `ip literals are recognised`() {
-        assertThat(HostnameMatcher.isIpLiteral("10.1.2.3")).isTrue()
-        assertThat(HostnameMatcher.isIpLiteral("::1")).isTrue()
-        assertThat(HostnameMatcher.isIpLiteral("mumble.example.org")).isFalse()
-        assertThat(HostnameMatcher.isIpLiteral("abc.onion")).isFalse()
+    fun `a short or out-of-range ipv4 literal matches nothing`() {
+        val cert = TestCertificates.leaf(
+            dnsNames = listOf("127.1", "999.0.2.7"),
+            ipAddresses = listOf("127.0.0.1"),
+        ).certificate
+        assertThat(HostnameMatcher.matches("127.1", cert)).isFalse()
+        assertThat(HostnameMatcher.matches("999.0.2.7", cert)).isFalse()
+        assertThat(HostnameMatcher.matches("127.0.0.1", cert)).isTrue()
     }
 }

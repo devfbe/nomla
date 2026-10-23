@@ -97,7 +97,7 @@ internal class NomlaSslSocketFactory internal constructor(
         configure(context.socketFactory.createSocket(InetAddress.getByName(host), port) as SSLSocket)
 
     private fun configure(socket: SSLSocket): SSLSocket {
-        if (peerHost.isNotEmpty() && !HostnameMatcher.isIpLiteral(peerHost)) {
+        if (peerHost.isNotEmpty() && !IpLiteral.isIpLiteral(peerHost)) {
             try {
                 socket.sslParameters = socket.sslParameters.apply { serverNames = listOf(SNIHostName(peerHost)) }
             } catch (e: IllegalArgumentException) {

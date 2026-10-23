@@ -17,6 +17,7 @@
 
 package koeln.becker.nomla.chat
 
+import koeln.becker.nomla.mumble.net.IpLiteral
 import okhttp3.Dispatcher
 import okhttp3.Dns
 import okhttp3.Interceptor
@@ -81,9 +82,6 @@ private const val MAX_CONCURRENT_REQUESTS = 3
 /** Long enough for the usual canonicalisation chain, short enough to bound the work. */
 private const val MAX_REDIRECTS = 5
 
-/** What OkHttp treats as an IP literal and connects to without a [Dns] lookup. */
-private val IP_LITERAL = Regex("([0-9a-fA-F]*:[0-9a-fA-F:.]*)|([\\d.]+)")
-
 /** Refuses a name when any of its addresses is refused: the connection may use any of them. */
 private class PolicyDns(private val policy: AddressPolicy, private val delegate: Dns) : Dns {
     override fun lookup(hostname: String): List<InetAddress> {
@@ -124,15 +122,15 @@ private class RequestGuard(
         }
     }
 
-    /** OkHttp connects to an IP literal without asking [Dns]; judge it before any socket exists. */
+    /**
+     * OkHttp connects to an IP literal without asking [Dns]; judge it before any socket exists.
+     * [IpLiteral.isIpLiteral] covers every host OkHttp takes for one, and a literal that is not an
+     * exact address (`127.1`, `2130706433`) is refused rather than guessed at.
+     */
     private fun checkLiteral(host: String) {
-        if (!IP_LITERAL.matches(host)) return
-        val address = try {
-            InetAddress.getByName(host)
-        } catch (e: UnknownHostException) {
-            throw ImageRefusedException(ImageError.NETWORK, e)
-        }
-        if (!policy.isAllowed(address)) throw ImageRefusedException(ImageError.NETWORK)
+        if (!IpLiteral.isIpLiteral(host)) return
+        val address = IpLiteral.parse(host)
+        if (address == null || !policy.isAllowed(address)) throw ImageRefusedException(ImageError.NETWORK)
     }
 
     private fun capped(response: Response): Response {

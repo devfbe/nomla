@@ -52,17 +52,20 @@ public class ServerResolver internal constructor(
         val host = server.host
         return when {
             server.port != 0 -> Endpoint(host, server.port)
-            useTor || isNumericAddress(host) || host.endsWith(".onion") -> Endpoint(host, Constants.DEFAULT_PORT)
+            useTor || hasNoSrvRecord(host) -> Endpoint(host, Constants.DEFAULT_PORT)
             else -> withContext(io) { srvLookup(host) } ?: Endpoint(host, Constants.DEFAULT_PORT)
         }
     }
 
     internal companion object {
         private const val TAG = "ServerResolver"
-        private val IPV4 = Regex("""^(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}$""")
 
-        /** An IPv4 or IPv6 literal, which has no SRV record; no host name contains a colon. */
-        fun isNumericAddress(host: String): Boolean = ':' in host || IPV4.matches(host)
+        /**
+         * An exact address or an onion service. No host name contains a colon; anything else that
+         * merely looks numeric ("256.1.1.1", "1.2.3") is a name to look up.
+         */
+        private fun hasNoSrvRecord(host: String): Boolean =
+            ':' in host || IpLiteral.parse(host) != null || host.endsWith(".onion")
 
         private fun lookupSrv(host: String): Endpoint? {
             val name = "_mumble._tcp.$host"

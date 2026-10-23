@@ -17,7 +17,6 @@
 
 package koeln.becker.nomla.mumble.net
 
-import java.net.InetAddress
 import java.security.KeyStore
 import java.security.MessageDigest
 import java.security.cert.CertificateException
@@ -73,14 +72,13 @@ public object CertificatePins {
 internal object HostnameMatcher {
     private const val SAN_DNS = 2
     private const val SAN_IP = 7
-    private val IPV4 = Regex("""^\d{1,3}(\.\d{1,3}){3}$""")
 
     internal fun normalize(host: String): String = host.trim().trimEnd('.').lowercase(Locale.ROOT)
 
-    /** True for IPv4 and IPv6 literals, which are matched against IP SANs and never sent as SNI. */
-    fun isIpLiteral(host: String): Boolean = host.contains(':') || IPV4.matches(host)
-
-    /** Whether [certificate] names [host]. The subject CN is not consulted. */
+    /**
+     * Whether [certificate] names [host]. The subject CN is not consulted. An IP literal is matched
+     * against IP SANs only, and only if it is an exact address ([IpLiteral.parse]).
+     */
     fun matches(host: String, certificate: X509Certificate): Boolean {
         val names = try {
             certificate.subjectAlternativeNames ?: return false
@@ -89,21 +87,11 @@ internal object HostnameMatcher {
         }
         val target = normalize(host.removePrefix("[").removeSuffix("]"))
         if (target.isEmpty()) return false
-        return if (isIpLiteral(target)) {
-            val address = parseIp(target) ?: return false
-            names.any { it.size >= 2 && it[0] == SAN_IP && parseIp(it[1] as? String) == address }
+        return if (IpLiteral.isIpLiteral(target)) {
+            val address = IpLiteral.parse(target) ?: return false
+            names.any { it.size >= 2 && it[0] == SAN_IP && (it[1] as? String)?.let(IpLiteral::parse) == address }
         } else {
             names.any { it.size >= 2 && it[0] == SAN_DNS && matchesDnsName(target, it[1] as? String) }
-        }
-    }
-
-    private fun parseIp(literal: String?): InetAddress? {
-        if (literal == null || !isIpLiteral(literal)) return null
-        return try {
-            InetAddress.getByName(literal) // a literal never triggers a lookup
-        } catch (_: Exception) {
-            // Not an address after all: no SAN can match it.
-            null
         }
     }
 
