@@ -31,12 +31,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -80,6 +77,7 @@ import koeln.becker.nomla.mumble.session.DisconnectReason
 import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.mumble.session.NetworkMonitor
 import koeln.becker.nomla.mumble.session.SessionConfig
+import koeln.becker.nomla.mumble.session.SessionEvents
 import koeln.becker.nomla.mumble.session.SessionLifecycle
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.mumble.session.SessionWakeLock
@@ -124,16 +122,10 @@ public class NomlaSession internal constructor(
     override var config: SessionConfig = config
         private set
 
-    /**
-     * Emitted from any thread without suspending. Beyond [EVENT_BUFFER] events not yet collected
-     * by the slowest collector, the oldest are dropped.
-     */
-    private val mutableEvents = MutableSharedFlow<NomlaEvent>(
-        extraBufferCapacity = EVENT_BUFFER,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST,
-    )
+    /** Info notices are held back until the connection is synchronized. */
+    private val notices = SessionEvents { connection?.isSynchronized == true }
 
-    override val events: SharedFlow<NomlaEvent> = mutableEvents.asSharedFlow()
+    override val events: SharedFlow<NomlaEvent> get() = notices.events
 
     private val scope = CoroutineScope(SupervisorJob() + mainHandler.asCoroutineDispatcher())
 
@@ -189,17 +181,7 @@ public class NomlaSession internal constructor(
     /** The registered whisper target's slot, armed or active; 0 while none is registered. */
     private var armedWhisperId: Byte = 0
 
-    /** Last warning logged, so a refusal repeated per reconnect attempt is logged once. */
-    @Volatile
-    private var lastWarning: String? = null
-
-    internal val logger = object : NomlaLogger {
-        override fun logInfo(message: String) = emit(NomlaEvent.LogMessage(NomlaEvent.Level.INFO, message))
-
-        override fun logWarning(message: String) = warn(message)
-
-        override fun logError(message: String) = emit(NomlaEvent.LogMessage(NomlaEvent.Level.ERROR, message))
-    }
+    internal val logger: NomlaLogger get() = notices.logger
 
     private val audioInputListener = object : AudioHandler.AudioEncodeListener {
         override fun onAudioEncoded(data: ByteArray, length: Int) {
@@ -227,13 +209,13 @@ public class NomlaSession internal constructor(
         communicationDevices ?: AndroidCommunicationDevices(
             context.getSystemService(AudioManager::class.java),
             mainHandler,
-        ) { warnOnce(context.getString(R.string.bluetooth_sco_denied)) },
+        ) { notices.warnOnce(context.getString(R.string.bluetooth_sco_denied)) },
         mainHandler,
         config.audio,
         object : AudioSession.Listener {
-            override fun onRouteRefused() = warnOnce(context.getString(R.string.audio_route_refused))
+            override fun onRouteRefused() = notices.warnOnce(context.getString(R.string.audio_route_refused))
 
-            override fun onAudioFailed(message: String) = warn(message)
+            override fun onAudioFailed(message: String) = notices.warn(message)
         },
     )
 
@@ -359,7 +341,7 @@ public class NomlaSession internal constructor(
             // ServerSync named no known user: keep the session up without a microphone.
             NomlaLog.e(TAG, "No session user after ServerSync; audio not started")
             audioSession.engageRoute()
-            warn(context.getString(R.string.no_session_user))
+            notices.warn(context.getString(R.string.no_session_user))
             return
         }
         // Read on the main thread after ServerSync; a connection that ended since has no info.
@@ -405,33 +387,15 @@ public class NomlaSession internal constructor(
         if (next is SessionState.Disconnected) {
             // A late, reason-free report after cancelReconnect keeps the cancelled session's reason
             // and must not claim to have given up.
-            if (autoReconnect && next.reason === reason) warn(context.getString(R.string.reconnect_gave_up))
+            if (autoReconnect && next.reason === reason) notices.warn(context.getString(R.string.reconnect_gave_up))
             audioSession.endSession()
         }
     }
 
-    internal fun onConnectionWarning(warning: ConnectionWarning) = warn(context.getString(warning.messageRes))
-
-    private fun warn(message: String) {
-        lastWarning = message
-        emit(NomlaEvent.LogMessage(NomlaEvent.Level.WARNING, message))
-    }
-
-    /**
-     * Delivers [message] unless it repeats the last warning. Compared with the last line rather
-     * than per type, so the log never ends on a line that contradicts the current state.
-     */
-    private fun warnOnce(message: String) {
-        if (message != lastWarning) warn(message)
-    }
+    internal fun onConnectionWarning(warning: ConnectionWarning) = notices.warn(context.getString(warning.messageRes))
 
     /** Publishes [event]; info notices only once synchronized. Any thread. */
-    internal fun emit(event: NomlaEvent) {
-        if (event is NomlaEvent.Notice && event.level == NomlaEvent.Level.INFO && connection?.isSynchronized != true) {
-            return
-        }
-        mutableEvents.tryEmit(event)
-    }
+    internal fun emit(event: NomlaEvent) = notices.emit(event)
 
     /** Hands [input] to the model's writer; ignored without a connection. */
     private fun local(input: LocalInput) {
@@ -692,8 +656,5 @@ public class NomlaSession internal constructor(
     private companion object {
         private const val TAG = "NomlaSession"
         private val dnsLookupInstalled = AtomicBoolean()
-
-        /** Events a collector may fall behind before the oldest are dropped. */
-        private const val EVENT_BUFFER = 8_192
     }
 }
