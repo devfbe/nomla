@@ -50,13 +50,11 @@ import koeln.becker.nomla.mumble.audio.routing.CommunicationDevices
 import koeln.becker.nomla.mumble.exception.NomlaException
 import koeln.becker.nomla.mumble.model.Latency
 import koeln.becker.nomla.mumble.model.LocalUserSettings
-import koeln.becker.nomla.mumble.model.Message
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.model.ServerInfo
 import koeln.becker.nomla.mumble.model.ServerState
 import koeln.becker.nomla.mumble.model.TalkState
 import koeln.becker.nomla.mumble.model.UserState
-import koeln.becker.nomla.mumble.model.WhisperTarget
 import koeln.becker.nomla.mumble.model.localVolumeScope
 import koeln.becker.nomla.mumble.net.ConnectionParams
 import koeln.becker.nomla.mumble.net.ConnectionWarning
@@ -64,7 +62,6 @@ import koeln.becker.nomla.mumble.net.NomlaConnection
 import koeln.becker.nomla.mumble.net.NomlaUdpMessageType
 import koeln.becker.nomla.mumble.net.ReconnectPolicy
 import koeln.becker.nomla.mumble.net.TrustStore
-import koeln.becker.nomla.mumble.protocol.LocalInput
 import koeln.becker.nomla.mumble.protocol.ModelHandler
 import koeln.becker.nomla.mumble.protocol.ServerCommands
 import koeln.becker.nomla.mumble.session.AndroidNetworkMonitor
@@ -85,21 +82,22 @@ import koeln.becker.nomla.mumble.session.disconnectReasonOf
 import koeln.becker.nomla.mumble.session.messageRes
 import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.mumble.util.NomlaLogger
-import koeln.becker.nomla.mumble.util.VoiceTargetMode
 import java.security.cert.X509Certificate
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * One session with a server, as a plain object: the connection with its automatic reconnects
- * ([SessionLifecycle]), the server's model ([ModelHandler]), the requests to it ([ServerCommands])
- * and the audio pipeline and routing ([AudioSession]).
+ * ([SessionLifecycle]), the server's model ([SessionModel]), the requests to it
+ * ([DefaultSessionActions] over [ServerCommands]), the voice and whisper targets ([VoiceTargets]),
+ * the event stream ([SessionEvents]) and the audio pipeline and routing ([AudioSession]). This
+ * class builds each connection attempt and wires its callbacks to them.
  *
  * Confined to [mainHandler]'s thread: every call, connection callback, reconnect timer and network
  * callback runs there. The model is written on the protocol context and the pipeline runs on its
  * own threads; [state] and [events] may be collected anywhere. The parameters after [config] are
  * the platform, replaceable for tests.
  */
-@Suppress("TooManyFunctions", "LongParameterList") // The protocol's whole client API; the platform seams.
+@Suppress("TooManyFunctions", "LongParameterList") // Session calls, connection callbacks; the platform seams.
 public class NomlaSession internal constructor(
     private val context: Context,
     config: SessionConfig,
@@ -371,12 +369,6 @@ public class NomlaSession internal constructor(
     /** Publishes [event]; info notices only once synchronized. Any thread. */
     internal fun emit(event: NomlaEvent) = notices.emit(event)
 
-    /** Hands [input] to the model's writer; ignored without a connection. */
-    private fun local(input: LocalInput) {
-        val handler = serverModel.handler ?: return
-        connection?.post { handler.onLocal(input) }
-    }
-
     /** The active voice target, see [VoiceTargets.id]. */
     internal var voiceTargetId: Byte
         get() = voiceTargets.id
@@ -388,141 +380,17 @@ public class NomlaSession internal constructor(
 
     override val latency: Latency? get() = connection?.latency
 
-    override val actions: SessionActions = Actions()
+    override val actions: SessionActions = DefaultSessionActions(
+        currentModel = { serverModel.value },
+        // The requests of the synchronized connection; null outside of one.
+        synced = { commands.takeIf { connection?.isSynchronized == true } },
+        // Hands the input to the model's writer; ignored without a connection.
+        local = { input -> serverModel.handler?.let { handler -> connection?.post { handler.onLocal(input) } } },
+        emit = ::emit,
+        voiceTargets = voiceTargets,
+    )
 
     override val audio: AudioControls = Audio()
-
-    /** The requests of the synchronized connection; null outside of one. */
-    private fun synced(): ServerCommands? = commands.takeIf { connection?.isSynchronized == true }
-
-    @Suppress("TooManyFunctions") // SessionActions, one request each.
-    private inner class Actions : SessionActions {
-        private val model: ServerState? get() = serverModel.value
-
-        override fun joinChannel(channel: Int) {
-            val self = model?.selfSession ?: return
-            synced()?.moveUser(self, channel)
-        }
-
-        override fun moveUser(session: Int, channel: Int) {
-            synced()?.moveUser(session, channel)
-        }
-
-        override fun createChannel(parent: Int, name: String, description: String, position: Int, temporary: Boolean) {
-            synced()?.createChannel(parent, name, description, position, temporary)
-        }
-
-        override fun removeChannel(channel: Int) {
-            synced()?.removeChannel(channel)
-        }
-
-        override fun linkChannels(channel: Int, other: Int) {
-            synced()?.linkChannels(channel, other)
-        }
-
-        override fun unlinkChannels(channel: Int, other: Int) {
-            synced()?.unlinkChannels(channel, listOf(other))
-        }
-
-        override fun unlinkAllChannels(channel: Int) {
-            val links = model?.channel(channel)?.links ?: return
-            synced()?.unlinkChannels(channel, links.toList())
-        }
-
-        override fun setListening(channel: Int, listen: Boolean) {
-            val self = model?.selfSession ?: return
-            synced()?.setListening(self, channel, listen)
-        }
-
-        override fun sendAccessTokens(tokens: List<String>) {
-            synced()?.sendAccessTokens(tokens)
-        }
-
-        override fun requestPermissions(channel: Int) {
-            synced()?.requestPermissions(channel)
-        }
-
-        override fun requestComment(session: Int) {
-            synced()?.requestComment(session)
-        }
-
-        override fun requestChannelDescription(channel: Int) {
-            synced()?.requestChannelDescription(channel)
-        }
-
-        override fun requestUserStats(session: Int) {
-            synced()?.requestUserStats(session)
-        }
-
-        override fun registerUser(session: Int) {
-            synced()?.registerUser(session)
-        }
-
-        override fun kickBanUser(session: Int, reason: String?, ban: Boolean) {
-            synced()?.kickBanUser(session, reason, ban)
-        }
-
-        override fun setUserComment(session: Int, comment: String?) {
-            synced()?.setComment(session, comment)
-        }
-
-        override fun setPrioritySpeaker(session: Int, priority: Boolean) {
-            synced()?.setPrioritySpeaker(session, priority)
-        }
-
-        override fun setMuteDeafState(session: Int, mute: Boolean, deaf: Boolean) {
-            synced()?.setMuteDeaf(session, mute, deaf)
-        }
-
-        override fun setSelfMuteDeafState(mute: Boolean, deaf: Boolean) {
-            synced()?.setSelfMuteDeaf(mute, deaf)
-        }
-
-        override fun sendUserTextMessage(session: Int, message: String): Message? = send { model, commands ->
-            commands.textToUser(session, message)
-            // A message to an unknown session carries no user.
-            val users = listOfNotNull(model.user(session))
-            Message(model.selfSession!!, model.self?.name, emptyList(), emptyList(), users, message)
-        }
-
-        override fun sendChannelTextMessage(channel: Int, message: String, tree: Boolean): Message? =
-            send { model, commands ->
-                commands.textToChannel(channel, message, tree)
-                // An unknown channel is left out, as above.
-                val channels = listOfNotNull(model.channel(channel))
-                val trees = if (tree) channels else emptyList()
-                Message(model.selfSession!!, model.self?.name, channels, trees, emptyList(), message)
-            }
-
-        /** Sends and publishes what [build] makes, once the own session is known; null otherwise. */
-        private inline fun send(build: (ServerState, ServerCommands) -> Message): Message? {
-            val commands = synced()
-            val model = model?.takeIf { it.selfSession != null }
-            if (commands == null || model == null) return null
-            return build(model, commands).also { emit(NomlaEvent.MessageSent(it)) }
-        }
-
-        override fun setLocalMuted(session: Int, muted: Boolean) = local(LocalInput.Mute(session, muted))
-
-        override fun setLocalIgnored(session: Int, ignored: Boolean) = local(LocalInput.Ignore(session, ignored))
-
-        override fun setLocalVolume(session: Int, volume: Float) = local(LocalInput.Volume(session, volume))
-
-        override val voiceTargetMode: VoiceTargetMode get() = voiceTargets.mode
-
-        override val whisperTarget: WhisperTarget? get() = voiceTargets.whisperTarget
-
-        override val isWhisperActive: Boolean get() = voiceTargets.isWhisperActive
-
-        override fun whisperTo(target: WhisperTarget, activate: Boolean): Boolean {
-            val commands = synced() ?: return false
-            return voiceTargets.whisperTo(target, activate, commands)
-        }
-
-        override fun setWhisperActive(active: Boolean) = voiceTargets.setWhisperActive(active)
-
-        override fun stopWhispering() = voiceTargets.stopWhispering()
-    }
 
     private inner class Audio : AudioControls {
         override val route: StateFlow<Int?> get() = audioSession.route
