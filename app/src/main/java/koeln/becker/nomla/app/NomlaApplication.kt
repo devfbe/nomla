@@ -20,7 +20,6 @@ package koeln.becker.nomla.app
 
 import android.app.Application
 import android.content.SharedPreferences
-import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.setApplicationLocales
 import androidx.core.content.edit
@@ -33,57 +32,23 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import koeln.becker.nomla.Settings
-import koeln.becker.nomla.db.NomlaRepository
-import koeln.becker.nomla.db.NomlaSQLiteDatabase
 import koeln.becker.nomla.log.AppLog
-import koeln.becker.nomla.session.SessionManager
-import koeln.becker.nomla.ui.AppMessages
-import koeln.becker.nomla.util.ApplicationScope
 import koeln.becker.nomla.util.changes
 
-class NomlaApplication :
-    Application(),
-    NomlaRepository.Owner,
-    ApplicationScope.Owner,
-    SessionManager.Owner,
-    AppMessages.Owner {
+class NomlaApplication : Application(), AppContainer.Owner {
 
-    override val scope: CoroutineScope = MainScope()
+    private val scope: CoroutineScope = MainScope()
+
+    private lateinit var current: AppContainer
 
     /** Built in [onCreate], before any component of the app runs. */
-    lateinit var container: AppContainer
-        private set
-
-    /** Replaces the container, e.g. with one whose sessions are fakes. */
-    @VisibleForTesting
-    internal fun installContainer(container: AppContainer) {
-        this.container = container
-    }
-
-    override val sessionManager: SessionManager get() = container.sessionManager
-
-    override val appMessages: AppMessages get() = container.appMessages
-
-    @Volatile
-    private var installedRepository: NomlaRepository? = null
-
-    /** The single database of the process, opened on first use and never closed. */
-    override val repository: NomlaRepository
-        get() = installedRepository ?: synchronized(this) {
-            installedRepository ?: NomlaRepository(NomlaSQLiteDatabase(this)).also { installedRepository = it }
-        }
-
-    /** Replaces the repository, before anything used it. */
-    @VisibleForTesting
-    fun installRepository(repository: NomlaRepository) {
-        installedRepository = repository
-    }
+    override val container: AppContainer get() = current
 
     override fun onCreate() {
         super.onCreate()
         AppLog.install()
         DebugStrictMode.install()
-        container = AppContainer(this, scope)
+        current = AppContainer(this, scope)
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
         applyTheme(preferences)
         scope.launch(start = CoroutineStart.UNDISPATCHED) {

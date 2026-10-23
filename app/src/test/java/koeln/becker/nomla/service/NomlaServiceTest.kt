@@ -54,7 +54,6 @@ import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
-import koeln.becker.nomla.app.AppContainer
 import koeln.becker.nomla.app.NomlaApplication
 import koeln.becker.nomla.service.ipc.TalkBroadcastReceiver
 import koeln.becker.nomla.session.SessionManager
@@ -106,12 +105,14 @@ class NomlaServiceTest {
     @Before
     fun setUp() {
         shadowOf(app).grantPermissions(android.Manifest.permission.POST_NOTIFICATIONS)
-        app.installContainer(
-            AppContainer(app, app.scope) { config ->
-                created += config
-                mockk<Session>(relaxed = true).also { it.stubEvents(); it.stubState(SessionState.Connecting) }
-            },
-        )
+        app.container.replaceParts { parts ->
+            parts.copy(
+                newSession = { _, config ->
+                    created += config
+                    mockk<Session>(relaxed = true).also { it.stubEvents(); it.stubState(SessionState.Connecting) }
+                },
+            )
+        }
         sessions = SessionManager.get(app)
         installSession(session)
         controller = createNomlaService()

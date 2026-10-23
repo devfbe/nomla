@@ -31,6 +31,6 @@ fun installDatabase(
     database: NomlaDatabase = NomlaSQLiteDatabase(ApplicationProvider.getApplicationContext()),
 ): NomlaDatabase {
     ApplicationProvider.getApplicationContext<NomlaApplication>()
-        .installRepository(NomlaRepository(database, Dispatchers.Unconfined))
+        .container.replaceParts { it.copy(newRepository = { NomlaRepository(database, Dispatchers.Unconfined) }) }
     return database
 }

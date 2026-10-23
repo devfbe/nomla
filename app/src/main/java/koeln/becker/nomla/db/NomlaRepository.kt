@@ -24,6 +24,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import koeln.becker.nomla.app.AppContainer
 
 /**
  * The app's one [NomlaDatabase]. UI code goes through [io] so that queries run off the main thread;
@@ -44,12 +45,8 @@ class NomlaRepository(
 
     val pinnedChannels = PinnedChannels(this, scope)
 
-    /** Implemented by the Application, which owns the process's repository. */
-    interface Owner {
-        val repository: NomlaRepository
-    }
-
     companion object {
-        fun get(context: Context): NomlaRepository = (context.applicationContext as Owner).repository
+        /** The process's repository, from the [AppContainer]. */
+        fun get(context: Context): NomlaRepository = AppContainer.of(context).repository
     }
 }

@@ -18,13 +18,9 @@ package koeln.becker.nomla.util
 
 import android.content.Context
 import kotlinx.coroutines.CoroutineScope
+import koeln.becker.nomla.app.AppContainer
 
-/** The scope for work that must outlive the screen that started it. */
+/** The scope for work that must outlive the screen that started it, from the [AppContainer]. */
 object ApplicationScope {
-    /** Implemented by the Application. */
-    interface Owner {
-        val scope: CoroutineScope
-    }
-
-    fun of(context: Context): CoroutineScope = (context.applicationContext as Owner).scope
+    fun of(context: Context): CoroutineScope = AppContainer.of(context).scope
 }

@@ -36,7 +36,6 @@ import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.mumble.testutil.ScriptedConnections
 import koeln.becker.nomla.mumble.testutil.awaitUntil
 import koeln.becker.nomla.R
-import koeln.becker.nomla.app.AppContainer
 import koeln.becker.nomla.app.NomlaApplication
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.testing.createNomlaService
@@ -60,9 +59,7 @@ class NomlaServiceForegroundTest {
     @Before
     fun setUp() {
         shadowOf(app).grantPermissions(android.Manifest.permission.POST_NOTIFICATIONS)
-        app.installContainer(
-            AppContainer(app, app.scope) { config -> server.session(app, config) },
-        )
+        app.container.replaceParts { it.copy(newSession = { _, config -> server.session(app, config) }) }
         sessions = SessionManager.get(app)
         sessions.connect(
             SessionConfig(

@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import koeln.becker.nomla.R
+import koeln.becker.nomla.app.AppContainer
 
 /**
  * Shows [text] at the bottom of [view]'s window, above [anchor] if given; [action] labels a button
@@ -104,12 +105,9 @@ class AppMessages {
         pending.trySend(text)
     }
 
-    interface Owner {
-        val appMessages: AppMessages
-    }
-
     companion object {
-        fun get(context: Context): AppMessages = (context.applicationContext as Owner).appMessages
+        /** The process's messages, from the [AppContainer]. */
+        fun get(context: Context): AppMessages = AppContainer.of(context).appMessages
 
         fun post(context: Context, @StringRes text: Int) = get(context).post(context.getString(text))
     }

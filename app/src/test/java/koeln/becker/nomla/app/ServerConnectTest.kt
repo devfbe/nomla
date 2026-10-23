@@ -48,7 +48,7 @@ class ServerConnectTest {
     @Test
     fun aSessionIsConnectedForTheServerAndTheServiceStarted() {
         installDatabase(mockk(relaxed = true))
-        app.installContainer(AppContainer(app, app.scope) { config -> configs += config; session })
+        app.container.replaceParts { it.copy(newSession = { _, config -> configs += config; session }) }
         every { session.connect() } answers { session.stubState(SessionState.Connecting) }
 
         startServerConnect(app, server)
@@ -64,7 +64,7 @@ class ServerConnectTest {
     @Test
     fun aSessionThatEndedAtOnceStartsNoService() {
         installDatabase(mockk(relaxed = true))
-        app.installContainer(AppContainer(app, app.scope) { config -> configs += config; session })
+        app.container.replaceParts { it.copy(newSession = { _, config -> configs += config; session }) }
 
         startServerConnect(app, server)
         drainMainUntil { configs.isNotEmpty() }

@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.flowOf
 import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.session.SessionConfig
 import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.app.AppContainer
 import koeln.becker.nomla.chat.SessionChat
 
 /**
@@ -44,11 +45,6 @@ class SessionManager(
     /** The chat history of the current session. */
     val chat: SessionChat,
 ) {
-    /** Implemented by the Application, which owns the process's session manager. */
-    interface Owner {
-        val sessionManager: SessionManager
-    }
-
     private val current = MutableStateFlow<Session?>(null)
     private val mutableErrorShown = MutableStateFlow(false)
 
@@ -122,7 +118,8 @@ class SessionManager(
     }
 
     companion object {
-        fun get(context: Context): SessionManager = (context.applicationContext as Owner).sessionManager
+        /** The process's session manager, from the [AppContainer]. */
+        fun get(context: Context): SessionManager = AppContainer.of(context).sessionManager
     }
 }
 
