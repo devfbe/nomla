@@ -35,6 +35,8 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.GraphicsMode
 import koeln.becker.nomla.Settings
+import koeln.becker.nomla.app.AppContainer
+import koeln.becker.nomla.testing.replaceParts
 import java.net.InetAddress
 import java.net.SocketTimeoutException
 import java.security.MessageDigest
@@ -56,7 +58,6 @@ class ChatImageLoaderTest {
     @After
     fun tearDown() {
         server.close()
-        ChatImageLoaders.setForTests(null)
         Settings.getInstance(context).isTorEnabled = false
     }
 
@@ -241,7 +242,7 @@ class ChatImageLoaderTest {
     @Test
     fun theRealLoaderRefusesTheLocalNetwork() = runBlocking {
         serve(TestImages.png(40, 40))
-        val result = ChatImageLoaders.get(context).loadThumbnail(url(), 240, 240)
+        val result = AppContainer.of(context).chatImageLoader.loadThumbnail(url(), 240, 240)
 
         assertWithMessage("a loopback <img src> from a chat message was fetched")
             .that(server.requestCount).isEqualTo(0)
@@ -251,7 +252,7 @@ class ChatImageLoaderTest {
     @Test
     fun theRealLoaderLoadsNothingExternalUnderTor() = runBlocking {
         Settings.getInstance(context).isTorEnabled = true
-        val loader = ChatImageLoaders.get(context)
+        val loader = AppContainer.of(context).chatImageLoader
 
         assertThat(loader.loadThumbnail("https://example.org/a.png", 240, 240))
             .isEqualTo(ImageResult.Failed(ImageError.EXTERNAL_DISABLED))
@@ -265,10 +266,11 @@ class ChatImageLoaderTest {
 
     @Test
     fun theProcessWideLoaderIsSharedAndOverridableForTests() {
-        assertThat(ChatImageLoaders.get(context)).isSameInstanceAs(ChatImageLoaders.get(context))
+        val container = AppContainer.of(context)
+        assertThat(container.chatImageLoader).isSameInstanceAs(container.chatImageLoader)
         val stub = loader()
-        ChatImageLoaders.setForTests(stub)
-        assertThat(ChatImageLoaders.get(context)).isSameInstanceAs(stub)
+        replaceParts { it.copy(newChatImageLoader = { _, _ -> stub }) }
+        assertThat(container.chatImageLoader).isSameInstanceAs(stub)
     }
 
     @Test

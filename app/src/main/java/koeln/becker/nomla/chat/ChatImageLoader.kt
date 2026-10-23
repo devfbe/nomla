@@ -20,7 +20,6 @@ package koeln.becker.nomla.chat
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.LruCache
-import androidx.annotation.VisibleForTesting
 import coil3.ImageLoader
 import coil3.decode.DataSource
 import coil3.fetch.FetchResult
@@ -216,6 +215,16 @@ class ChatImageLoader(
         private const val HASH_CHUNK_CHARS = 8 * 1024
 
         /**
+         * The process's loader, kept by the `AppContainer` so the thumbnail cache survives fragment
+         * recreation: the real client, fetching remote images only while [settings] allow them.
+         */
+        fun create(context: Context, settings: Settings): ChatImageLoader {
+            val allowed = { settings.shouldLoadExternalImages }
+            val http = chatImageHttpClient(networkAllowed = allowed, userAgent = "Nomla/" + BuildConfig.VERSIONTAG)
+            return ChatImageLoader(context, imageLoader(context, http), http, allowed)
+        }
+
+        /**
          * The Coil image loader behind [ChatImageLoader]: remote images only through [http], no disk
          * cache, no components found through the service loader (which would bring an unguarded
          * network fetcher), software bitmaps from `BitmapFactory`.
@@ -269,31 +278,5 @@ class ChatImageLoader(
             }
             return digest.digest().toHex()
         }
-    }
-}
-
-/** Process-wide loader so the thumbnail cache survives fragment recreation. */
-object ChatImageLoaders {
-    @Volatile
-    private var instance: ChatImageLoader? = null
-
-    fun get(context: Context): ChatImageLoader {
-        instance?.let { return it }
-        val app = context.applicationContext
-        return synchronized(this) {
-            instance ?: create(app).also { instance = it }
-        }
-    }
-
-    private fun create(app: Context): ChatImageLoader {
-        val allowed = { Settings.getInstance(app).shouldLoadExternalImages }
-        val http = chatImageHttpClient(networkAllowed = allowed, userAgent = "Nomla/" + BuildConfig.VERSIONTAG)
-        return ChatImageLoader(app, ChatImageLoader.imageLoader(app, http), http, allowed)
-    }
-
-    /** Test seam: installs [loader] as the process-wide instance, or `null` to restore the real one. */
-    @VisibleForTesting
-    fun setForTests(loader: ChatImageLoader?) {
-        instance = loader
     }
 }

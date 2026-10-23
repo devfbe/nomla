@@ -24,6 +24,7 @@ import koeln.becker.nomla.mumble.NomlaSession
 import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.session.SessionConfig
 import koeln.becker.nomla.Settings
+import koeln.becker.nomla.chat.ChatImageLoader
 import koeln.becker.nomla.chat.NoticeFormatter
 import koeln.becker.nomla.chat.SessionChat
 import koeln.becker.nomla.db.NomlaRepository
@@ -60,6 +61,8 @@ class AppContainer(
         val newSession: (Context, SessionConfig) -> Session = { context, config -> NomlaSession(context, config) },
         /** Opens the database. */
         val newRepository: (Context) -> NomlaRepository = { context -> NomlaRepository(NomlaSQLiteDatabase(context)) },
+        /** Builds the loader of chat images. */
+        val newChatImageLoader: (Context, Settings) -> ChatImageLoader = ChatImageLoader::create,
     )
 
     @Volatile
@@ -81,6 +84,11 @@ class AppContainer(
 
     /** The single database of the process, opened on first use and never closed. */
     val repository: NomlaRepository get() = repositoryOf.get()
+
+    private val chatImageLoaderOf = BuiltFrom({ parts.newChatImageLoader }) { it(app, settings) }
+
+    /** One for the process, so the thumbnail cache survives fragment recreation; built on first use. */
+    val chatImageLoader: ChatImageLoader get() = chatImageLoaderOf.get()
 
     val appMessages = AppMessages()
 

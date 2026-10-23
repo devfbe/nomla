@@ -18,7 +18,6 @@ package koeln.becker.nomla.testing
 
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.Dispatchers
-import koeln.becker.nomla.app.NomlaApplication
 import koeln.becker.nomla.db.NomlaDatabase
 import koeln.becker.nomla.db.NomlaRepository
 import koeln.becker.nomla.db.NomlaSQLiteDatabase
@@ -30,7 +29,6 @@ import koeln.becker.nomla.db.NomlaSQLiteDatabase
 fun installDatabase(
     database: NomlaDatabase = NomlaSQLiteDatabase(ApplicationProvider.getApplicationContext()),
 ): NomlaDatabase {
-    ApplicationProvider.getApplicationContext<NomlaApplication>()
-        .container.replaceParts { it.copy(newRepository = { NomlaRepository(database, Dispatchers.Unconfined) }) }
+    replaceParts { it.copy(newRepository = { NomlaRepository(database, Dispatchers.Unconfined) }) }
     return database
 }

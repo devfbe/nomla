@@ -44,7 +44,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -59,6 +58,7 @@ import koeln.becker.nomla.testing.snackbarAction
 import koeln.becker.nomla.testing.snackbarText
 import koeln.becker.nomla.testing.FileProviderCache
 import koeln.becker.nomla.testing.QueueingDispatcher
+import koeln.becker.nomla.testing.replaceParts
 import koeln.becker.nomla.testing.tapThrough
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -98,7 +98,7 @@ class ImageViewerDialogFragmentTest {
             http = http,
             externalImagesAllowed = { true },
             ioDispatcher = ioDispatcher,
-        ).also { ChatImageLoaders.setForTests(it) }
+        ).also { installed -> replaceParts { it.copy(newChatImageLoader = { _, _ -> installed }) } }
     }
 
     @Before
@@ -106,13 +106,6 @@ class ImageViewerDialogFragmentTest {
         FileProviderCache.clear()
         resetSnackbars()
     }
-
-    @After
-    fun removeLoader() {
-        ChatImageLoaders.setForTests(null)
-        loader = null
-    }
-
 
     /** A finger's tap on [id], which must be laid out: an unmeasured button would silently miss. */
     private fun ImageViewerDialogFragment.tap(id: Int) {
@@ -330,7 +323,7 @@ class ImageViewerDialogFragmentTest {
         coEvery { mocked.fetchBytes(any()) } returns bytes
         coEvery { mocked.decodeFull(any(), any(), any()) } returns
             ImageResult.Ready(Bitmap.createBitmap(4, 4, Bitmap.Config.ARGB_8888))
-        ChatImageLoaders.setForTests(mocked)
+        replaceParts { it.copy(newChatImageLoader = { _, _ -> mocked }) }
     }
 
     /**
@@ -556,7 +549,7 @@ class ImageViewerDialogFragmentTest {
             // This test is about the decode result, so the byte fetch always succeeds.
             coEvery { mocked.fetchBytes(any()) } returns TestImages.png(4, 4)
             coEvery { mocked.decodeFull(any(), any(), any()) } returns outcome
-            ChatImageLoaders.setForTests(mocked)
+            replaceParts { it.copy(newChatImageLoader = { _, _ -> mocked }) }
             launched { fragment ->
                 idleMainLooper()
                 fragment.assertShowsTheFailure()

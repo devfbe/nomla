@@ -74,7 +74,6 @@ import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.chat.ChatAdapter
 import koeln.becker.nomla.chat.ChatImageLoader
-import koeln.becker.nomla.chat.ChatImageLoaders
 import koeln.becker.nomla.chat.FailingOutputStream
 import koeln.becker.nomla.chat.FixedRowMediaProvider
 import koeln.becker.nomla.chat.ChatMessage
@@ -98,6 +97,7 @@ import koeln.becker.nomla.testing.drainMainUntil
 import koeln.becker.nomla.testing.info
 import koeln.becker.nomla.testing.installSession
 import koeln.becker.nomla.testing.layOut
+import koeln.becker.nomla.testing.replaceParts
 import koeln.becker.nomla.testing.stubActions
 import koeln.becker.nomla.testing.stubConnected
 import koeln.becker.nomla.testing.stubModel
@@ -136,7 +136,6 @@ class ChannelChatFragmentTest {
     @After
     fun tearDown() {
         if (this::controller.isInitialized) controller.close()
-        ChatImageLoaders.setForTests(null)
     }
 
     /** Delivered at once: the fragment collects on the immediate main dispatcher. */
@@ -744,7 +743,7 @@ class ChannelChatFragmentTest {
             asked += Triple(firstArg(), secondArg(), thirdArg())
             ImageResult.Ready(bitmap)
         }
-        ChatImageLoaders.setForTests(loader)
+        replaceParts { it.copy(newChatImageLoader = { _, _ -> loader }) }
         return loader to asked
     }
 

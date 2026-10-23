@@ -56,9 +56,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import koeln.becker.nomla.R
+import koeln.becker.nomla.app.AppContainer
 import koeln.becker.nomla.chat.ChatAdapter
 import koeln.becker.nomla.chat.ChatContentParser
-import koeln.becker.nomla.chat.ChatImageLoaders
 import koeln.becker.nomla.chat.ChatMessage
 import koeln.becker.nomla.chat.ImageActionFeedback
 import koeln.becker.nomla.chat.ImageSource
@@ -124,7 +124,7 @@ class ChannelChatFragment : Fragment(), MenuProvider {
         chatList.layoutManager = LinearLayoutManager(requireContext()).apply { stackFromEnd = true }
         val adapter = ChatAdapter(
             parser = ChatContentParser(getString(R.string.chat_image_placeholder)),
-            loader = ChatImageLoaders.get(requireContext()),
+            loader = AppContainer.of(requireContext()).chatImageLoader,
             thumbnailPx = resources.getDimensionPixelSize(R.dimen.chat_thumbnail_max),
             selfSessionId = ::sessionId,
             onImageClicked = ::openImageViewer,
@@ -272,7 +272,7 @@ class ChannelChatFragment : Fragment(), MenuProvider {
     internal fun saveImage(source: String) {
         if (view == null || imageAction?.isActive == true) return
         if (!ImageSource.isInline(source)) return openImageViewer(source, ImageViewerDialogFragment.Action.SAVE)
-        val loader = ChatImageLoaders.get(requireContext())
+        val loader = AppContainer.of(requireContext()).chatImageLoader
         imageAction = viewLifecycleOwner.lifecycleScope.launch {
             saveChatImage(imageIoDispatcher, imageFeedback) { loader.fetchBytes(source) }
         }
@@ -283,7 +283,7 @@ class ChannelChatFragment : Fragment(), MenuProvider {
     internal fun shareImage(source: String) {
         if (view == null || imageAction?.isActive == true) return
         if (!ImageSource.isInline(source)) return openImageViewer(source, ImageViewerDialogFragment.Action.SHARE)
-        val loader = ChatImageLoaders.get(requireContext())
+        val loader = AppContainer.of(requireContext()).chatImageLoader
         imageAction = viewLifecycleOwner.lifecycleScope.launch {
             shareChatImage(imageIoDispatcher, source, imageFeedback) { loader.fetchBytes(source) }
         }

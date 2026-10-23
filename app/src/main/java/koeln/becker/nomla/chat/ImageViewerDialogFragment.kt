@@ -32,6 +32,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import koeln.becker.nomla.R
+import koeln.becker.nomla.app.AppContainer
 import koeln.becker.nomla.databinding.DialogImageViewerBinding
 import koeln.becker.nomla.ui.showSnackbar
 import koeln.becker.nomla.util.Edge
@@ -116,7 +117,7 @@ class ImageViewerDialogFragment : DialogFragment() {
         }
 
         val metrics = resources.displayMetrics
-        val loader = ChatImageLoaders.get(requireContext())
+        val loader = AppContainer.of(requireContext()).chatImageLoader
         viewLifecycleOwner.lifecycleScope.launch {
             // Fetched here, not in the share path, so what leaves the app is what was shown.
             val bytes = try {
