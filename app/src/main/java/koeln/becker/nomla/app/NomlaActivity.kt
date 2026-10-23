@@ -44,7 +44,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import koeln.becker.nomla.mumble.Session
-import koeln.becker.nomla.mumble.model.MumbleURLParser
+import koeln.becker.nomla.mumble.model.MumbleUrlParser
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.mumble.session.SessionState
@@ -207,7 +207,7 @@ class NomlaActivity :
     /** Offers to save and connect to the server a mumble:// [url] names. */
     private fun offerServerFromUrl(url: String?) {
         try {
-            val server = MumbleURLParser.parseURL(url)
+            val server = MumbleUrlParser.parseURL(url)
             ServerEditFragment.newInstance(server, ServerEditFragment.Mode.LINK)
                 .show(supportFragmentManager, "url_edit")
         } catch (e: MalformedURLException) {

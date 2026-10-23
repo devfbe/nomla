@@ -21,7 +21,7 @@ import koeln.becker.nomla.mumble.util.Constants
 import java.net.MalformedURLException
 
 /** Parses `mumble://` URLs (https://wiki.mumble.info/wiki/Mumble_URL). */
-public object MumbleURLParser {
+public object MumbleUrlParser {
     private val URL_PATTERN =
         Regex("mumble://((?<user>[^:]+)?(:(?<password>.+?))?@)?(?<host>.+?)(:(?<port>[0-9]+?))?/")
     private const val MAX_PORT = 65535
