@@ -23,12 +23,9 @@ import android.content.Context
 import android.media.AudioManager
 import android.os.Handler
 import android.os.Looper
-import androidx.annotation.VisibleForTesting
-import koeln.becker.nomla.mumble.audio.AndroidAudioTrackSink
 import koeln.becker.nomla.mumble.audio.CapturePreview
 import koeln.becker.nomla.mumble.audio.MeterReading
 import koeln.becker.nomla.mumble.audio.PcmPlaybackSinkFactory
-import koeln.becker.nomla.mumble.audio.capture.AndroidAudioRecordSource
 import koeln.becker.nomla.mumble.audio.capture.EchoCancellationMode
 import koeln.becker.nomla.mumble.audio.capture.PcmCaptureSourceFactory
 import koeln.becker.nomla.mumble.audio.capture.VadConfig
@@ -40,12 +37,18 @@ import koeln.becker.nomla.ui.isGranted
 
 /**
  * The microphone test behind a level meter: a [CapturePreview] built from the user's settings, its
- * readings handed to [onReading] on the main thread. Main thread only.
+ * readings handed to [onReading] on the main thread. Main thread only. It captures from
+ * [captureFactory] and plays back to [sinkFactory]; screens get one from `AppContainer.micCheck`.
  *
  * It takes the microphone and may switch the phone to communication mode, which quietens other
  * apps' audio, so callers start it only when the user asks and stop it when their screen pauses.
  */
-class MicCheck(private val context: Context, private val onReading: (MeterReading) -> Unit) {
+class MicCheck(
+    private val context: Context,
+    private val captureFactory: PcmCaptureSourceFactory,
+    private val sinkFactory: PcmPlaybackSinkFactory,
+    private val onReading: (MeterReading) -> Unit,
+) {
     private val mainHandler = Handler(Looper.getMainLooper())
     private var preview: CapturePreview? = null
 
@@ -101,20 +104,7 @@ class MicCheck(private val context: Context, private val onReading: (MeterReadin
         mainHandler.removeCallbacksAndMessages(null)
     }
 
-    companion object {
+    private companion object {
         private const val TAG = "MicCheck"
-
-        /** Where the test gets its microphone and speaker; replaced in tests. */
-        @VisibleForTesting
-        var captureFactory: PcmCaptureSourceFactory = AndroidAudioRecordSource.Factory()
-
-        @VisibleForTesting
-        var sinkFactory: PcmPlaybackSinkFactory = AndroidAudioTrackSink.Factory()
-
-        @VisibleForTesting
-        fun resetFactories() {
-            captureFactory = AndroidAudioRecordSource.Factory()
-            sinkFactory = AndroidAudioTrackSink.Factory()
-        }
     }
 }

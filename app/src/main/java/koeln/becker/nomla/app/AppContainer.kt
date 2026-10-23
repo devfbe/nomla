@@ -22,8 +22,14 @@ import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.CoroutineScope
 import koeln.becker.nomla.mumble.NomlaSession
 import koeln.becker.nomla.mumble.Session
+import koeln.becker.nomla.mumble.audio.AndroidAudioTrackSink
+import koeln.becker.nomla.mumble.audio.MeterReading
+import koeln.becker.nomla.mumble.audio.PcmPlaybackSinkFactory
+import koeln.becker.nomla.mumble.audio.capture.AndroidAudioRecordSource
+import koeln.becker.nomla.mumble.audio.capture.PcmCaptureSourceFactory
 import koeln.becker.nomla.mumble.session.SessionConfig
 import koeln.becker.nomla.Settings
+import koeln.becker.nomla.audio.MicCheck
 import koeln.becker.nomla.chat.ChatImageLoader
 import koeln.becker.nomla.chat.NoticeFormatter
 import koeln.becker.nomla.chat.SessionChat
@@ -63,6 +69,10 @@ class AppContainer(
         val newRepository: (Context) -> NomlaRepository = { context -> NomlaRepository(NomlaSQLiteDatabase(context)) },
         /** Builds the loader of chat images. */
         val newChatImageLoader: (Context, Settings) -> ChatImageLoader = ChatImageLoader::create,
+        /** The microphone of the microphone test. */
+        val micCapture: PcmCaptureSourceFactory = AndroidAudioRecordSource.Factory(),
+        /** The speaker the microphone test plays back to. */
+        val micPlayback: PcmPlaybackSinkFactory = AndroidAudioTrackSink.Factory(),
     )
 
     @Volatile
@@ -101,6 +111,10 @@ class AppContainer(
     init {
         SessionSettingsSync(app, sessionManager, appMessages).start(scope)
     }
+
+    /** A microphone test for a screen on [context]; see [MicCheck]. */
+    fun micCheck(context: Context, onReading: (MeterReading) -> Unit): MicCheck =
+        MicCheck(context, parts.micCapture, parts.micPlayback, onReading)
 
     /** An object built from the part [part] reads, on first use and again once that part is replaced. */
     private class BuiltFrom<P : Any, T : Any>(private val part: () -> P, private val build: (P) -> T) {

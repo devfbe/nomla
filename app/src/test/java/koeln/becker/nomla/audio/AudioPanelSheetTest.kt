@@ -38,7 +38,6 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -69,6 +68,7 @@ import koeln.becker.nomla.testing.installSession
 import koeln.becker.nomla.testing.launchNomlaActivity
 import koeln.becker.nomla.testing.offerCommunicationDevices
 import koeln.becker.nomla.testing.platformDevice
+import koeln.becker.nomla.testing.replaceParts
 import koeln.becker.nomla.testing.resetSnackbars
 import koeln.becker.nomla.testing.snackbarAction
 import koeln.becker.nomla.testing.snackbarText
@@ -98,8 +98,7 @@ class AudioPanelSheetTest {
 
     @Before
     fun setUp() {
-        MicCheck.captureFactory = capture
-        MicCheck.sinkFactory = TestPlaybackSink.Factory(TestPlaybackSink())
+        replaceParts { it.copy(micCapture = capture, micPlayback = TestPlaybackSink.Factory(TestPlaybackSink())) }
         shadowOf(app).grantPermissions(Manifest.permission.RECORD_AUDIO)
         audioManager.offerCommunicationDevices(
             listOf(
@@ -111,11 +110,6 @@ class AudioPanelSheetTest {
             CommunicationDevice(1, AudioDeviceInfo.TYPE_BUILTIN_EARPIECE, "Pixel"),
             CommunicationDevice(2, AudioDeviceInfo.TYPE_BUILTIN_SPEAKER, "Pixel"),
         )
-    }
-
-    @After
-    fun resetSeams() {
-        MicCheck.resetFactories()
     }
 
     /** Starts the activity on the drawer screen [screen], with the session current. */

@@ -47,19 +47,16 @@ class MicCheckTest {
     private val capture = TestCaptureSource.Factory(source)
     private val sink = TestPlaybackSink.Factory(TestPlaybackSink())
     private val readings = mutableListOf<MeterReading>()
-    private val check = MicCheck(app) { readings += it }
+    private val check = MicCheck(app, capture, sink) { readings += it }
 
     @Before
-    fun seams() {
-        MicCheck.captureFactory = capture
-        MicCheck.sinkFactory = sink
+    fun grantTheMicrophone() {
         shadowOf(app).grantPermissions(Manifest.permission.RECORD_AUDIO)
     }
 
     @After
-    fun resetSeams() {
+    fun stopTheCheck() {
         check.stop()
-        MicCheck.resetFactories()
     }
 
     @Test

@@ -38,6 +38,7 @@ import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
+import koeln.becker.nomla.app.AppContainer
 import koeln.becker.nomla.databinding.BottomSheetAudioPanelBinding
 import koeln.becker.nomla.databinding.ItemAudioDeviceBinding
 import koeln.becker.nomla.preference.MeterScaleText
@@ -81,7 +82,7 @@ class AudioPanelSheet : BottomSheetDialogFragment() {
         val binding = BottomSheetAudioPanelBinding.bind(view)
         this.binding = binding
         controls = AudioDeviceControls(requireContext(), settings) { sessions.connected }
-        micCheck = MicCheck(requireContext(), ::showReading)
+        micCheck = AppContainer.of(requireContext()).micCheck(requireContext(), ::showReading)
         for (heading in listOf(
             binding.audioPanelTitle, binding.audioPanelDevicesLabel, binding.audioPanelTransmitLabel,
             binding.audioPanelNoiseLabel, binding.audioPanelMicLabel,

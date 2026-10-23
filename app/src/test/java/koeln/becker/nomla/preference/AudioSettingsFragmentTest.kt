@@ -27,7 +27,6 @@ import androidx.preference.PreferenceManager
 import androidx.preference.SwitchPreferenceCompat
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -41,8 +40,8 @@ import koeln.becker.nomla.mumble.testutil.TestPlaybackSink
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
-import koeln.becker.nomla.audio.MicCheck
 import koeln.becker.nomla.testing.openScreen
+import koeln.becker.nomla.testing.replaceParts
 
 /** The live meter only takes the microphone, and the audio mode, while the user asks for it. */
 @RunWith(RobolectricTestRunner::class)
@@ -55,14 +54,8 @@ class AudioSettingsFragmentTest {
 
     @Before
     fun seams() {
-        MicCheck.captureFactory = capture
-        MicCheck.sinkFactory = sink
+        replaceParts { it.copy(micCapture = capture, micPlayback = sink) }
         shadowOf(app).grantPermissions(Manifest.permission.RECORD_AUDIO)
-    }
-
-    @After
-    fun resetSeams() {
-        MicCheck.resetFactories()
     }
 
     private val activity by lazy { Robolectric.buildActivity(SettingsActivity::class.java).setup().get() }

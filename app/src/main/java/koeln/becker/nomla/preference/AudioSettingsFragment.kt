@@ -42,6 +42,7 @@ import koeln.becker.nomla.mumble.audio.routing.listCommunicationDevices
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
+import koeln.becker.nomla.app.AppContainer
 import koeln.becker.nomla.audio.DoubleTalkTestSheet
 import koeln.becker.nomla.audio.MicCheck
 import koeln.becker.nomla.session.SessionManager
@@ -155,7 +156,7 @@ open class AudioSettingsFragment : NomlaPreferenceFragment(R.xml.settings_audio)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        micCheck = MicCheck(requireContext()) { reading ->
+        micCheck = AppContainer.of(requireContext()).micCheck(requireContext()) { reading ->
             findPreference<InputLevelMeterPreference>(KEY_METER)?.setReading(reading)
         }
         // A running preview is rebuilt from the same settings the service reconfigures from.
