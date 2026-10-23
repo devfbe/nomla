@@ -64,9 +64,7 @@ internal class OpusEncoder(
 
     override fun encode(input: ShortArray, inputSize: Int): Int {
         if (bufferedFrames >= framesPerPacket) throw BufferOverflowException()
-        if (inputSize != frameSize) {
-            throw IllegalArgumentException("This Opus encoder implementation requires a constant frame size.")
-        }
+        require(inputSize == frameSize) { "This Opus encoder implementation requires a constant frame size." }
         terminated = false
         System.arraycopy(input, 0, audioBuffer, frameSize * bufferedFrames, frameSize)
         bufferedFrames++

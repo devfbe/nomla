@@ -243,7 +243,7 @@ internal class AudioOutput(
 
     /**
      * Fetches audio data from registered audio output users and mixes them into the given buffer.
-     * TODO: add priority speaker support.
+     * Priority speakers are mixed like everyone else.
      * @return true if the buffer contains audio data.
      */
     private fun fetchAudio(buffer: ShortArray, bufferOffset: Int, bufferSize: Int): Boolean {
