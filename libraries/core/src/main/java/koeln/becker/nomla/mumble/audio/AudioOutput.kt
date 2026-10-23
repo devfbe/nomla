@@ -44,6 +44,7 @@ private const val MS_PER_SECOND = 1000L
  *
  * @param farEnd receives every mixed buffer as the AEC3 far-end reference, or null when the
  *               WebRTC canceller is not in the capture chain. Used only by the playback thread.
+ * @param joinTimeoutMs how long [stopPlaying] waits for the playback thread to end.
  */
 internal class AudioOutput(
     private val listener: AudioOutputListener,
@@ -52,7 +53,8 @@ internal class AudioOutput(
     private val speechFactory: SpeechFactory = SpeechFactory { session, samples, listener, averageAvailable ->
         AudioOutputSpeech(session, samples, listener, averageAvailable = averageAvailable)
     },
-) : Runnable {
+    private val joinTimeoutMs: Long = AudioInput.DEFAULT_JOIN_TIMEOUT_MS,
+) {
 
     fun interface SpeechFactory {
         fun create(
@@ -96,7 +98,8 @@ internal class AudioOutput(
     }
 
     fun startPlaying(audioStream: Int): Thread? {
-        if (thread != null || running) return null
+        // A thread a timed-out stop left behind still owns its track.
+        if (thread?.isAlive == true || running) return null
 
         val minBufferSize = AudioTrack.getMinBufferSize(
             AudioHandler.SAMPLE_RATE,
@@ -113,15 +116,22 @@ internal class AudioOutput(
                 "(system minimum $minBufferSize bytes)",
         )
 
-        audioTrack = buildTrack(audioStream, sizes.trackBytes)
+        // Handed to the thread, which owns it from here: a timed-out stop clears the field only.
+        val track = buildTrack(audioStream, sizes.trackBytes)
+        audioTrack = track
 
-        val t = Thread(this)
+        val t = Thread { play(track) }
         thread = t
         running = true
         t.start()
         return t
     }
 
+    /**
+     * Ends the playback thread and waits up to [joinTimeoutMs] for it. Pausing the track returns a
+     * write that blocks for room at once. A thread that does not end in time is logged and left to
+     * finish on its own; it releases its track as it ends, in either case.
+     */
     fun stopPlaying() {
         if (!running) return
 
@@ -131,18 +141,26 @@ internal class AudioOutput(
             inactiveLock.notify()
         }
         try {
-            thread?.join()
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
+            audioTrack?.pause()
+        } catch (e: IllegalStateException) {
+            NomlaLog.d(TAG, "Track already released by the playback thread: $e")
         }
-        thread = null
+        val t = thread
+        try {
+            t?.join(joinTimeoutMs)
+        } catch (_: InterruptedException) {
+            // Restore the flag so callers further up see the cancellation.
+            Thread.currentThread().interrupt()
+        }
+        val exited = t?.isAlive != true
+        if (!exited) NomlaLog.e(TAG, "playback thread still running after $joinTimeoutMs ms; leaving it to end")
+        thread = if (exited) null else t
 
         packetLock.withLock {
             mix.clear { it.close() }
             audioOutputs.clear()
             averageAvailable.clear()
         }
-        audioTrack?.release()
         audioTrack = null
     }
 
@@ -151,10 +169,18 @@ internal class AudioOutput(
     @VisibleForTesting
     internal fun playbackTrack(): AudioTrack? = audioTrack
 
-    override fun run() {
+    /** The playback thread: plays until [stopPlaying], then releases [track]. */
+    private fun play(track: AudioTrack) {
         NomlaLog.v(TAG, "Started thread.")
         Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO)
-        val track = audioTrack!!
+        try {
+            playUntilStopped(track)
+        } finally {
+            track.release()
+        }
+    }
+
+    private fun playUntilStopped(track: AudioTrack) {
         track.play()
 
         val pcm = ShortArray(bufferSize)
