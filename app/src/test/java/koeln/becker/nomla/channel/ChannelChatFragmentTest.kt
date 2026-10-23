@@ -27,7 +27,6 @@ import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.view.Window
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
@@ -37,6 +36,7 @@ import android.widget.PopupMenu
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuItemImpl
+import androidx.core.view.allViews
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -621,13 +621,8 @@ class ChannelChatFragmentTest {
         drainMainUntil { runCatching { verify { actions.sendChannelTextMessage(any(), any(), any()) } }.isSuccess }
     }
 
-    private fun View.firstImageView(): ImageView? {
-        if (this is ImageView && contentDescription != null) return this
-        if (this is ViewGroup) {
-            for (i in 0 until childCount) getChildAt(i).firstImageView()?.let { return it }
-        }
-        return null
-    }
+    private fun View.firstImageView(): ImageView? =
+        allViews.filterIsInstance<ImageView>().firstOrNull { it.contentDescription != null }
 
     /** The hint sets the compose box width, so a changed hint has to reach layout. */
     @Test

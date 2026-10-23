@@ -95,11 +95,10 @@ sealed class ImageSource {
 
         private fun parseData(uri: String): ImageSource {
             val comma = uri.indexOf(',')
-            if (comma < 0) return Unsupported
-            if (!uri.substring(0, comma).endsWith(BASE64_MARKER, ignoreCase = true)) return Unsupported
+            if (comma < 0 || !uri.substring(0, comma).endsWith(BASE64_MARKER, ignoreCase = true)) return Unsupported
             return try {
                 Data(Base64.getMimeDecoder().decode(uri.substring(comma + 1)))
-            } catch (e: IllegalArgumentException) {
+            } catch (_: IllegalArgumentException) {
                 Unsupported
             }
         }

@@ -54,16 +54,16 @@ class BluetoothScoToggle(
      * Move the preference to [enabled]. Turning it off always succeeds; turning it on persists
      * nothing unless `BLUETOOTH_CONNECT` is already granted.
      */
-    fun request(enabled: Boolean): Result {
-        if (!enabled) {
+    fun request(enabled: Boolean): Result = when {
+        !enabled -> {
             settings.isBluetoothScoEnabled = false
-            return Result.Disabled
+            Result.Disabled
         }
-        if (!hasPermission(context)) {
-            return Result.PermissionNeeded
+        !hasPermission(context) -> Result.PermissionNeeded
+        else -> {
+            settings.isBluetoothScoEnabled = true
+            Result.Enabled
         }
-        settings.isBluetoothScoEnabled = true
-        return Result.Enabled
     }
 
     fun toggle(): Result = request(!settings.isBluetoothScoEnabled)

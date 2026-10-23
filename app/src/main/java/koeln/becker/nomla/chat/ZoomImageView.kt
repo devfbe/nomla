@@ -193,8 +193,8 @@ class ZoomImageView @JvmOverloads constructor(
     /** Whether there is an image with a size, in a view with a size. */
     private fun canFit(): Boolean {
         val d = drawable ?: return false
-        if (width == 0 || height == 0) return false
-        return d.intrinsicWidth > 0 && d.intrinsicHeight > 0
+        val viewHasSize = width != 0 && height != 0
+        return viewHasSize && d.intrinsicWidth > 0 && d.intrinsicHeight > 0
     }
 
     private fun applyState() {

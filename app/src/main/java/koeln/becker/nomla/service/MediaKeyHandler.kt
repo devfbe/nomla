@@ -37,14 +37,19 @@ class MediaKeyHandler(
      * us; acting on the UP would open the microphone every time the assistant is summoned.
      */
     fun onKeyEvent(event: KeyEvent): Boolean {
-        if (event.keyCode !in HANDLED_KEYS) return false
-        if (!target.isConnected) return false
-        val action = settings.mediaButtonAction
+        val handled = event.keyCode in HANDLED_KEYS && target.isConnected
+        val action = if (handled) settings.mediaButtonAction else MediaButtonAction.NONE
         if (action == MediaButtonAction.NONE) return false
-        if (event.action != KeyEvent.ACTION_DOWN) return true
-        if (event.repeatCount != 0) return true
-        if (event.flags and KeyEvent.FLAG_CANCELED != 0) return true
+        if (isFreshPress(event)) perform(action)
+        return true
+    }
 
+    /** An uncanceled ACTION_DOWN with repeatCount 0. */
+    private fun isFreshPress(event: KeyEvent): Boolean =
+        event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0 &&
+            (event.flags and KeyEvent.FLAG_CANCELED) == 0
+
+    private fun perform(action: MediaButtonAction) {
         when (action) {
             MediaButtonAction.AUTO ->
                 if (target.transmitMode == TransmitMode.PUSH_TO_TALK) {
@@ -53,9 +58,8 @@ class MediaKeyHandler(
                     target.toggleSelfMute()
                 }
             MediaButtonAction.MUTE -> target.toggleSelfMute()
-            MediaButtonAction.NONE -> Unit // returned above
+            MediaButtonAction.NONE -> Unit // onKeyEvent returns before
         }
-        return true
     }
 
     companion object {

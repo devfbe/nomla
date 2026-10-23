@@ -94,28 +94,33 @@ class NomlaConnectionNotification private constructor(
             service.getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID, notification)
             return true
         }
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                service.startForeground(NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_MICROPHONE)
-            } else {
-                service.startForeground(NOTIFICATION_ID, notification)
+        if (enterForeground(notification)) {
+            isForeground = true
+            val filter = IntentFilter().apply {
+                addAction(BROADCAST_DEAFEN)
+                addAction(BROADCAST_MUTE)
+                addAction(BROADCAST_DISCONNECT)
+                addAction(BROADCAST_CANCEL_RECONNECT)
             }
-        } catch (e: ForegroundServiceStartNotAllowedException) {
-            NomlaLog.w(TAG, "Foreground service start not allowed", e)
-            return false
-        } catch (e: SecurityException) {
-            NomlaLog.w(TAG, "Not permitted to start a microphone foreground service", e)
-            return false
+            ContextCompat.registerReceiver(service, notificationReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
         }
-        isForeground = true
-        val filter = IntentFilter().apply {
-            addAction(BROADCAST_DEAFEN)
-            addAction(BROADCAST_MUTE)
-            addAction(BROADCAST_DISCONNECT)
-            addAction(BROADCAST_CANCEL_RECONNECT)
+        return isForeground
+    }
+
+    /** @return false if the platform refused the foreground start. */
+    private fun enterForeground(notification: Notification): Boolean = try {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            service.startForeground(NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_MICROPHONE)
+        } else {
+            service.startForeground(NOTIFICATION_ID, notification)
         }
-        ContextCompat.registerReceiver(service, notificationReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
-        return true
+        true
+    } catch (e: ForegroundServiceStartNotAllowedException) {
+        NomlaLog.w(TAG, "Foreground service start not allowed", e)
+        false
+    } catch (e: SecurityException) {
+        NomlaLog.w(TAG, "Not permitted to start a microphone foreground service", e)
+        false
     }
 
     /** Leaves the foreground, removes the notification and unregisters the action receiver. */

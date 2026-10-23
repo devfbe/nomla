@@ -11,17 +11,8 @@
     <ID>LongParameterList:ZoomState.kt$ZoomState$( factor: Float, focusX: Float, focusY: Float, viewWidth: Float, viewHeight: Float, imageWidth: Float, imageHeight: Float, )</ID>
     <ID>LoopWithTooManyJumpStatements:SessionSettingsSyncTest.kt$SessionSettingsSyncTest$while</ID>
     <ID>NestedBlockDepth:ManifestAuditTest.kt$ManifestAuditTest$@Test fun theBackupRulesFileExcludesCloudBackupButNotDeviceTransfer()</ID>
-    <ID>ReturnCount:BluetoothScoToggle.kt$BluetoothScoToggle$fun request(enabled: Boolean): Result</ID>
-    <ID>ReturnCount:CertificateImportActivityTest.kt$CertificateImportActivityTest$private fun findEditText(view: View): EditText?</ID>
-    <ID>ReturnCount:ChannelChatFragmentTest.kt$ChannelChatFragmentTest$private fun View.firstImageView(): ImageView?</ID>
     <ID>ReturnCount:ChatImageLoader.kt$ChatImageLoader$suspend fun loadThumbnail(source: String, maxWidth: Int, maxHeight: Int): ImageResult</ID>
-    <ID>ReturnCount:ImageSource.kt$ImageSource.Companion$private fun parseData(uri: String): ImageSource</ID>
-    <ID>ReturnCount:MediaKeyHandler.kt$MediaKeyHandler$fun onKeyEvent(event: KeyEvent): Boolean</ID>
-    <ID>ReturnCount:NomlaConnectionNotification.kt$NomlaConnectionNotification$fun show(): Boolean</ID>
-    <ID>ReturnCount:PublicServerListFragment.kt$PublicServerListFragment$override fun onMenuItemSelected(menuItem: MenuItem): Boolean</ID>
-    <ID>ReturnCount:ZoomImageView.kt$ZoomImageView$private fun canFit(): Boolean</ID>
     <ID>SwallowedException:HtmlUtils.kt$HtmlUtils$e: IllegalArgumentException</ID>
-    <ID>SwallowedException:ImageSource.kt$ImageSource.Companion$e: IllegalArgumentException</ID>
     <ID>SwallowedException:ImageViewerDialogFragment.kt$ImageViewerDialogFragment$e: IOException</ID>
     <ID>SwallowedException:ImageViewerDialogFragment.kt$ImageViewerDialogFragment$e: ImageFetchException</ID>
     <ID>SwallowedException:NomlaTrustStoreTest.kt$NomlaTrustStoreTest$e: IOException</ID>

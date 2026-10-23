@@ -30,9 +30,9 @@ import android.os.ParcelFileDescriptor
 import android.text.InputType
 import android.text.method.PasswordTransformationMethod
 import android.view.View
-import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.allViews
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
 import org.junit.After
@@ -242,11 +242,5 @@ class CertificateImportActivityTest {
         assertThat(storedCertificates()).hasSize(1)
     }
 
-    private fun findEditText(view: View): EditText? {
-        if (view is EditText) return view
-        if (view is ViewGroup) {
-            for (i in 0 until view.childCount) findEditText(view.getChildAt(i))?.let { return it }
-        }
-        return null
-    }
+    private fun findEditText(view: View): EditText? = view.allViews.filterIsInstance<EditText>().firstOrNull()
 }
