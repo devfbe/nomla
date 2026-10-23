@@ -18,10 +18,10 @@
 package koeln.becker.nomla.testing
 
 import koeln.becker.nomla.mumble.model.Message
-import koeln.becker.nomla.chat.IChatMessage
+import koeln.becker.nomla.chat.ChatMessage
 
 /** A text message without targets. */
 fun textMessage(body: String, actor: Int = -1, actorName: String? = null, receivedTime: Long = 0L) =
     Message(actor, actorName, emptyList(), emptyList(), emptyList(), body, receivedTime)
 
-fun info(body: String) = IChatMessage.InfoMessage(IChatMessage.InfoMessage.Type.INFO, body)
+fun info(body: String) = ChatMessage.InfoMessage(ChatMessage.InfoMessage.Type.INFO, body)

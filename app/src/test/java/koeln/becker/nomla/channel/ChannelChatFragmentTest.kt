@@ -77,7 +77,7 @@ import koeln.becker.nomla.chat.ChatImageLoader
 import koeln.becker.nomla.chat.ChatImageLoaders
 import koeln.becker.nomla.chat.FailingOutputStream
 import koeln.becker.nomla.chat.FixedRowMediaProvider
-import koeln.becker.nomla.chat.IChatMessage
+import koeln.becker.nomla.chat.ChatMessage
 import koeln.becker.nomla.chat.ImageError
 import koeln.becker.nomla.chat.ImageFetchException
 import koeln.becker.nomla.chat.ImageGallerySaver
@@ -145,10 +145,10 @@ class ChannelChatFragmentTest {
     }
 
     /** Adds a line to the chat log the way the session's events do. */
-    private fun add(message: IChatMessage) {
+    private fun add(message: ChatMessage) {
         val event = when (message) {
-            is IChatMessage.TextMessage -> NomlaEvent.TextMessage(message.message)
-            is IChatMessage.InfoMessage -> NomlaEvent.LogMessage(NomlaEvent.Level.INFO, message.body)
+            is ChatMessage.TextMessage -> NomlaEvent.TextMessage(message.message)
+            is ChatMessage.InfoMessage -> NomlaEvent.LogMessage(NomlaEvent.Level.INFO, message.body)
             else -> error("not a chat line: $message")
         }
         session.stubEvents().tryEmit(event)
@@ -781,8 +781,8 @@ class ChannelChatFragmentTest {
      */
     @Test
     fun yourOwnMessagesAreAlignedToYourSideAndOtherPeoplesAreNot() {
-        add(IChatMessage.TextMessage(textMessage("mine", actor = 7, actorName = "Me")))
-        add(IChatMessage.TextMessage(textMessage("theirs", actor = 9, actorName = "Ann")))
+        add(ChatMessage.TextMessage(textMessage("mine", actor = 7, actorName = "Me")))
+        add(ChatMessage.TextMessage(textMessage("theirs", actor = 9, actorName = "Ann")))
         launch()
         drainMainUntil { itemCount() == 2 }
         layOutHost()

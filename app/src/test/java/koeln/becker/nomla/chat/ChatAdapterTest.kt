@@ -78,7 +78,7 @@ class ChatAdapterTest {
         parseDispatcher: CoroutineDispatcher = Dispatchers.Default,
         selfSessionId: () -> Int = { 42 },
         decodeDispatcher: CoroutineDispatcher = Dispatchers.Unconfined,
-        diff: DiffUtil.ItemCallback<IChatMessage> = ChatAdapter.DIFF,
+        diff: DiffUtil.ItemCallback<ChatMessage> = ChatAdapter.DIFF,
     ) = ChatAdapter(
         parser = parser,
         loader = fakeLoader(decodeDispatcher),
@@ -124,12 +124,12 @@ class ChatAdapterTest {
     private fun tapRow(holder: ChatAdapter.Holder, targetId: Int) =
         tapThrough(holder.itemView, holder.itemView.findViewById(targetId))
 
-    private suspend fun ChatAdapter.show(messages: List<IChatMessage>) {
+    private suspend fun ChatAdapter.show(messages: List<ChatMessage>) {
         submitMessages(messages)
         idleMainLooper()
     }
 
-    private suspend fun ChatAdapter.show(vararg messages: IChatMessage) = show(messages.toList())
+    private suspend fun ChatAdapter.show(vararg messages: ChatMessage) = show(messages.toList())
 
     private fun ChatAdapter.imageHolderAt(position: Int) =
         holderAt(position, ChatAdapter.TYPE_IMAGE) as ChatAdapter.ImageHolder
@@ -166,7 +166,7 @@ class ChatAdapterTest {
         adapter.show(messages)
         adapter.show(messages)
 
-        // Parsed once per message: the second submit reads IChatMessage.content.
+        // Parsed once per message: the second submit reads ChatMessage.content.
         assertThat(parseThreads).hasSize(2)
         assertThat(parseThreads).doesNotContain(Looper.getMainLooper().thread.id)
         assertThat(messages[0].content).isInstanceOf(ChatContent.Text::class.java)
@@ -314,7 +314,7 @@ class ChatAdapterTest {
         trees: List<ChannelState> = emptyList(),
         users: List<UserState> = emptyList(),
         body: String = "hi",
-    ) = IChatMessage.TextMessage(Message(actor, actorName, channels, trees, users, body))
+    ) = ChatMessage.TextMessage(Message(actor, actorName, channels, trees, users, body))
 
     private fun ChatAdapter.textHolderAt(position: Int) =
         holderAt(position, getItemViewType(position)) as ChatAdapter.TextHolder
@@ -583,12 +583,12 @@ class ChatAdapterTest {
     fun theDifferOnlyEverAsksAboutTheContentsOfOneAndTheSameInstance() = runTest {
         // areContentsTheSame can be a constant: DiffUtil only asks it about pairs areItemsTheSame
         // merged, and that merges by identity.
-        val pairs = mutableListOf<Pair<IChatMessage, IChatMessage>>()
-        val recording = object : DiffUtil.ItemCallback<IChatMessage>() {
-            override fun areItemsTheSame(oldItem: IChatMessage, newItem: IChatMessage) =
+        val pairs = mutableListOf<Pair<ChatMessage, ChatMessage>>()
+        val recording = object : DiffUtil.ItemCallback<ChatMessage>() {
+            override fun areItemsTheSame(oldItem: ChatMessage, newItem: ChatMessage) =
                 ChatAdapter.DIFF.areItemsTheSame(oldItem, newItem)
 
-            override fun areContentsTheSame(oldItem: IChatMessage, newItem: IChatMessage): Boolean {
+            override fun areContentsTheSame(oldItem: ChatMessage, newItem: ChatMessage): Boolean {
                 pairs += oldItem to newItem
                 return ChatAdapter.DIFF.areContentsTheSame(oldItem, newItem)
             }
@@ -632,7 +632,7 @@ class ChatAdapterTest {
     @Test
     fun theListIsSnapshotted() = runTest {
         val adapter = adapter()
-        val log = mutableListOf<IChatMessage>(info("one"))
+        val log = mutableListOf<ChatMessage>(info("one"))
         adapter.submitMessages(log)
         idleMainLooper()
 
@@ -755,7 +755,7 @@ class ChatAdapterTest {
         every { parser.parse(any()) } answers { parsed.incrementAndGet(); callOriginal() }
         val adapter = adapter(parser)
 
-        val log = mutableListOf<IChatMessage>()
+        val log = mutableListOf<ChatMessage>()
         repeat(400) {
             log += info("message $it")
             adapter.submitMessages(log)

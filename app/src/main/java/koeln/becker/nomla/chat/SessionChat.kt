@@ -48,7 +48,7 @@ class SessionChat(
     private var starts = 0
 
     /** The history, newest last; a new list per change. */
-    val messages: StateFlow<List<IChatMessage>> get() = log.messages
+    val messages: StateFlow<List<ChatMessage>> get() = log.messages
 
     /** Messages received from others since the chat was last shown. */
     val unread: StateFlow<Int> = unreadCount.asStateFlow()
@@ -95,26 +95,26 @@ class SessionChat(
 
     /** Adds a warning of the app's own, unless it repeats the last line. */
     fun warnOnce(text: String) {
-        val last = log.messages.value.lastOrNull() as? IChatMessage.InfoMessage
-        if (last?.type == IChatMessage.InfoMessage.Type.WARNING && last.body == text) return
-        log.add(IChatMessage.InfoMessage(IChatMessage.InfoMessage.Type.WARNING, text))
+        val last = log.messages.value.lastOrNull() as? ChatMessage.InfoMessage
+        if (last?.type == ChatMessage.InfoMessage.Type.WARNING && last.body == text) return
+        log.add(ChatMessage.InfoMessage(ChatMessage.InfoMessage.Type.WARNING, text))
     }
 
     private fun onEvent(event: NomlaEvent) {
         when (event) {
-            is NomlaEvent.Notice -> log.add(IChatMessage.InfoMessage(infoType(event.level), notices.format(event)))
+            is NomlaEvent.Notice -> log.add(ChatMessage.InfoMessage(infoType(event.level), notices.format(event)))
             is NomlaEvent.TextMessage -> {
-                log.add(IChatMessage.TextMessage(event.message))
+                log.add(ChatMessage.TextMessage(event.message))
                 if (!shown) unreadCount.value++
             }
-            is NomlaEvent.MessageSent -> log.add(IChatMessage.TextMessage(event.message))
+            is NomlaEvent.MessageSent -> log.add(ChatMessage.TextMessage(event.message))
             else -> Unit
         }
     }
 
     private fun infoType(level: NomlaEvent.Level) = when (level) {
-        NomlaEvent.Level.INFO -> IChatMessage.InfoMessage.Type.INFO
-        NomlaEvent.Level.WARNING -> IChatMessage.InfoMessage.Type.WARNING
-        NomlaEvent.Level.ERROR -> IChatMessage.InfoMessage.Type.ERROR
+        NomlaEvent.Level.INFO -> ChatMessage.InfoMessage.Type.INFO
+        NomlaEvent.Level.WARNING -> ChatMessage.InfoMessage.Type.WARNING
+        NomlaEvent.Level.ERROR -> ChatMessage.InfoMessage.Type.ERROR
     }
 }

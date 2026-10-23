@@ -21,7 +21,7 @@ package koeln.becker.nomla.chat
 import koeln.becker.nomla.mumble.model.Message
 
 /** A general chat message, either a text message from a user or an informational notice. */
-interface IChatMessage {
+interface ChatMessage {
     /** The (HTML) body of the message. */
     val body: String
 
@@ -35,7 +35,7 @@ interface IChatMessage {
     fun accept(visitor: Visitor)
 
     /** A text message from a user. */
-    class TextMessage(val message: Message) : IChatMessage {
+    class TextMessage(val message: Message) : ChatMessage {
         override val body: String get() = message.message
         override val receivedTime: Long get() = message.receivedTime
         @Volatile override var content: ChatContent? = null
@@ -43,7 +43,7 @@ interface IChatMessage {
     }
 
     /** An informational message about the server or client state. */
-    class InfoMessage(val type: Type, override val body: String) : IChatMessage {
+    class InfoMessage(val type: Type, override val body: String) : ChatMessage {
         override val receivedTime: Long = System.currentTimeMillis()
         @Volatile override var content: ChatContent? = null
         override fun accept(visitor: Visitor) = visitor.visit(this)

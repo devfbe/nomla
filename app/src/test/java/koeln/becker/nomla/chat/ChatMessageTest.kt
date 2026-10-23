@@ -24,12 +24,12 @@ import koeln.becker.nomla.mumble.model.Message
 import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.testing.textMessage
 
-class IChatMessageTest {
+class ChatMessageTest {
 
     @Test
     fun textMessageExposesUnderlyingMessage() {
         val msg = textMessage("<b>hi</b>", actor = 7, actorName = "alice")
-        val chat = IChatMessage.TextMessage(msg)
+        val chat = ChatMessage.TextMessage(msg)
         assertThat(chat.body).isEqualTo("<b>hi</b>")
         assertThat(chat.receivedTime).isEqualTo(msg.receivedTime)
         assertThat(chat.message).isSameInstanceAs(msg)
@@ -38,8 +38,8 @@ class IChatMessageTest {
     @Test
     fun infoMessageCarriesTypeAndBody() {
         val before = System.currentTimeMillis()
-        val chat = IChatMessage.InfoMessage(IChatMessage.InfoMessage.Type.WARNING, "careful")
-        assertThat(chat.type).isEqualTo(IChatMessage.InfoMessage.Type.WARNING)
+        val chat = ChatMessage.InfoMessage(ChatMessage.InfoMessage.Type.WARNING, "careful")
+        assertThat(chat.type).isEqualTo(ChatMessage.InfoMessage.Type.WARNING)
         assertThat(chat.body).isEqualTo("careful")
         assertThat(chat.receivedTime).isAtLeast(before)
     }
@@ -47,12 +47,12 @@ class IChatMessageTest {
     @Test
     fun visitorDispatchesOnConcreteType() {
         val seen = mutableListOf<String>()
-        val visitor = object : IChatMessage.Visitor {
-            override fun visit(message: IChatMessage.TextMessage) { seen += "text" }
-            override fun visit(message: IChatMessage.InfoMessage) { seen += "info" }
+        val visitor = object : ChatMessage.Visitor {
+            override fun visit(message: ChatMessage.TextMessage) { seen += "text" }
+            override fun visit(message: ChatMessage.InfoMessage) { seen += "info" }
         }
-        IChatMessage.TextMessage(textMessage("x")).accept(visitor)
-        IChatMessage.InfoMessage(IChatMessage.InfoMessage.Type.INFO, "y").accept(visitor)
+        ChatMessage.TextMessage(textMessage("x")).accept(visitor)
+        ChatMessage.InfoMessage(ChatMessage.InfoMessage.Type.INFO, "y").accept(visitor)
         assertThat(seen).containsExactly("text", "info").inOrder()
     }
 

@@ -46,7 +46,7 @@ import kotlinx.coroutines.withContext
 import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.Settings
-import koeln.becker.nomla.chat.IChatMessage
+import koeln.becker.nomla.chat.ChatMessage
 import koeln.becker.nomla.chat.OutgoingImageEncoder
 import koeln.becker.nomla.chat.OutgoingImagePreparer
 import koeln.becker.nomla.chat.outgoingMessageHtml
@@ -75,7 +75,7 @@ class ChatViewModel(
         data object TooLarge : ImageEvent
     }
 
-    val messages: StateFlow<List<IChatMessage>> get() = sessions.chat.messages
+    val messages: StateFlow<List<ChatMessage>> get() = sessions.chat.messages
 
     /** Messages received since the chat tab was last shown. */
     val unread: StateFlow<Int> get() = sessions.chat.unread

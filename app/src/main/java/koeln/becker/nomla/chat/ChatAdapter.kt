@@ -76,8 +76,8 @@ constructor(
     private val onImageLongPressed: (source: String, anchor: View) -> Unit,
     private val scope: CoroutineScope,
     private val parseDispatcher: CoroutineDispatcher = Dispatchers.Default,
-    differConfig: AsyncDifferConfig<IChatMessage> = AsyncDifferConfig.Builder(DIFF).build(),
-) : ListAdapter<IChatMessage, ChatAdapter.Holder>(differConfig) {
+    differConfig: AsyncDifferConfig<ChatMessage> = AsyncDifferConfig.Builder(DIFF).build(),
+) : ListAdapter<ChatMessage, ChatAdapter.Holder>(differConfig) {
 
     private val timeFormat: DateFormat = DateFormat.getTimeInstance()
 
@@ -85,12 +85,12 @@ constructor(
     private var submitGeneration = 0
 
     /**
-     * Parses every message that has no [IChatMessage.content] yet on [parseDispatcher], then submits
+     * Parses every message that has no [ChatMessage.content] yet on [parseDispatcher], then submits
      * the list on the caller's (main) thread. The only entry point: calling `submitList` directly
      * would let [getItemViewType] see an unparsed message. Parses can finish out of order, so a
      * stale one is dropped (`AsyncListDiffer`'s own generation counter starts too late for that).
      */
-    suspend fun submitMessages(messages: List<IChatMessage>) {
+    suspend fun submitMessages(messages: List<ChatMessage>) {
         val snapshot = messages.toList()
         val generation = ++submitGeneration
         withContext(parseDispatcher) {
@@ -106,7 +106,7 @@ constructor(
         val message = getItem(position)
         return when {
             message.content is ChatContent.Image -> TYPE_IMAGE
-            message is IChatMessage.InfoMessage -> TYPE_INFO
+            message is ChatMessage.InfoMessage -> TYPE_INFO
             else -> TYPE_TEXT
         }
     }
@@ -152,16 +152,16 @@ constructor(
         }
     }
 
-    private fun bindHeader(holder: Holder, message: IChatMessage) {
-        message.accept(object : IChatMessage.Visitor {
-            override fun visit(message: IChatMessage.TextMessage) {
+    private fun bindHeader(holder: Holder, message: ChatMessage) {
+        message.accept(object : ChatMessage.Visitor {
+            override fun visit(message: ChatMessage.TextMessage) {
                 holder.box.gravity =
                     if (message.message.actor == selfSessionId()) Gravity.END else Gravity.START
                 holder.target.text = targetLabel(holder.itemView.context, message.message)
                 holder.target.visibility = View.VISIBLE
             }
 
-            override fun visit(message: IChatMessage.InfoMessage) {
+            override fun visit(message: ChatMessage.InfoMessage) {
                 holder.box.gravity = Gravity.START
                 holder.target.visibility = View.GONE
             }
@@ -243,11 +243,11 @@ constructor(
          * `===` (not `==`) keeps two identical-looking messages as two rows. [areContentsTheSame] is
          * only asked about identical objects, so it is `true` by construction.
          */
-        val DIFF: DiffUtil.ItemCallback<IChatMessage> = object : DiffUtil.ItemCallback<IChatMessage>() {
-            override fun areItemsTheSame(oldItem: IChatMessage, newItem: IChatMessage) =
+        val DIFF: DiffUtil.ItemCallback<ChatMessage> = object : DiffUtil.ItemCallback<ChatMessage>() {
+            override fun areItemsTheSame(oldItem: ChatMessage, newItem: ChatMessage) =
                 oldItem === newItem
 
-            override fun areContentsTheSame(oldItem: IChatMessage, newItem: IChatMessage) = true
+            override fun areContentsTheSame(oldItem: ChatMessage, newItem: ChatMessage) = true
         }
     }
 }

@@ -69,10 +69,10 @@ class SessionChatTest {
             kick,
         )
 
-        assertThat(chat.messages.value.map { (it as IChatMessage.InfoMessage).type to it.body }).containsExactly(
-            IChatMessage.InfoMessage.Type.WARNING to "careful",
-            IChatMessage.InfoMessage.Type.ERROR to "broken",
-            IChatMessage.InfoMessage.Type.WARNING to NoticeFormatter(app).format(kick),
+        assertThat(chat.messages.value.map { (it as ChatMessage.InfoMessage).type to it.body }).containsExactly(
+            ChatMessage.InfoMessage.Type.WARNING to "careful",
+            ChatMessage.InfoMessage.Type.ERROR to "broken",
+            ChatMessage.InfoMessage.Type.WARNING to NoticeFormatter(app).format(kick),
         ).inOrder()
     }
 
@@ -83,7 +83,7 @@ class SessionChatTest {
 
         emit(NomlaEvent.TextMessage(received), NomlaEvent.MessageSent(sent))
 
-        assertThat(chat.messages.value.map { (it as IChatMessage.TextMessage).message })
+        assertThat(chat.messages.value.map { (it as ChatMessage.TextMessage).message })
             .containsExactly(received, sent).inOrder()
     }
 
@@ -106,9 +106,9 @@ class SessionChatTest {
         emit(NomlaEvent.LogMessage(NomlaEvent.Level.WARNING, "one"))
 
         @Suppress("UNCHECKED_CAST")
-        val log = chat.messages.value as MutableList<IChatMessage>
+        val log = chat.messages.value as MutableList<ChatMessage>
         assertThrows(UnsupportedOperationException::class.java) {
-            log.add(IChatMessage.InfoMessage(IChatMessage.InfoMessage.Type.INFO, "sneaked in"))
+            log.add(ChatMessage.InfoMessage(ChatMessage.InfoMessage.Type.INFO, "sneaked in"))
         }
     }
 

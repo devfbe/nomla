@@ -29,29 +29,29 @@ import java.util.Collections
  * calls. Add a lock together with any writer on another thread.
  */
 class ChatMessageLog(private val capacity: Int = MAX_ENTRIES) {
-    private val entries = ArrayDeque<IChatMessage>()
-    private val published = MutableStateFlow<List<IChatMessage>>(emptyList())
+    private val entries = ArrayDeque<ChatMessage>()
+    private val published = MutableStateFlow<List<ChatMessage>>(emptyList())
 
     init {
         require(capacity > 0) { "capacity must be positive, was $capacity" }
     }
 
     /** The current history as a read-only snapshot per change. */
-    val messages: StateFlow<List<IChatMessage>> = published.asStateFlow()
+    val messages: StateFlow<List<ChatMessage>> = published.asStateFlow()
 
     val size: Int get() = entries.size
 
-    fun add(message: IChatMessage) {
+    fun add(message: ChatMessage) {
         if (entries.size == capacity) entries.removeFirst()
         entries.addLast(message)
         publish()
     }
 
     /** A read-only copy of the list; later additions do not change it. */
-    fun snapshot(): List<IChatMessage> = published.value
+    fun snapshot(): List<ChatMessage> = published.value
 
     /** Puts [earlier] back before the current entries, dropping the oldest beyond [capacity]. */
-    fun restore(earlier: List<IChatMessage>) {
+    fun restore(earlier: List<ChatMessage>) {
         val merged = earlier + entries
         entries.clear()
         entries.addAll(merged.takeLast(capacity))

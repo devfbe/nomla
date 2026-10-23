@@ -59,7 +59,7 @@ import koeln.becker.nomla.R
 import koeln.becker.nomla.chat.ChatAdapter
 import koeln.becker.nomla.chat.ChatContentParser
 import koeln.becker.nomla.chat.ChatImageLoaders
-import koeln.becker.nomla.chat.IChatMessage
+import koeln.becker.nomla.chat.ChatMessage
 import koeln.becker.nomla.chat.ImageActionFeedback
 import koeln.becker.nomla.chat.ImageSource
 import koeln.becker.nomla.chat.ImageViewerDialogFragment
@@ -73,7 +73,7 @@ import koeln.becker.nomla.ui.showSnackbar
 private const val PREVIEW_SCREEN_FRACTION = 3
 
 /**
- * The chat tab: a [RecyclerView] of [IChatMessage]s plus the compose row, over the parent's
+ * The chat tab: a [RecyclerView] of [ChatMessage]s plus the compose row, over the parent's
  * [ChatViewModel]. Parsing and rendering live in [ChatAdapter]. [openImageViewer] is the uniqueness
  * gate `ChatAdapter.onImageClicked` requires, and the adapter gets a `lifecycleScope`
  * (`Dispatchers.Main.immediate`) because its coroutines touch views.
@@ -290,7 +290,7 @@ class ChannelChatFragment : Fragment(), MenuProvider {
     }
 
     /** Shows [messages] and scrolls to the newest one. */
-    private suspend fun submit(adapter: ChatAdapter, messages: List<IChatMessage>) {
+    private suspend fun submit(adapter: ChatAdapter, messages: List<ChatMessage>) {
         adapter.submitMessages(messages)
         chatList.post { if (adapter.itemCount > 0) chatList.scrollToPosition(adapter.itemCount - 1) }
     }

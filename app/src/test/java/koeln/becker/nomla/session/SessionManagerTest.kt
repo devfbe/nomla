@@ -34,7 +34,7 @@ import koeln.becker.nomla.mumble.session.SessionConfig
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.mumble.testutil.collectOnMain
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
-import koeln.becker.nomla.chat.IChatMessage
+import koeln.becker.nomla.chat.ChatMessage
 import koeln.becker.nomla.chat.NoticeFormatter
 import koeln.becker.nomla.chat.SessionChat
 import koeln.becker.nomla.testing.stubEvents
@@ -206,7 +206,7 @@ class SessionManagerTest {
         sessions.chat.warnOnce("refused")
         sessions.chat.warnOnce("refused")
 
-        assertThat(sessions.chat.messages.value.map { (it as IChatMessage.InfoMessage).body })
+        assertThat(sessions.chat.messages.value.map { (it as ChatMessage.InfoMessage).body })
             .containsExactly("refused")
     }
 }
