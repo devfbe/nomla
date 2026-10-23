@@ -1,4 +1,4 @@
-/* Embeds weights_blob.bin; HUMLA_RNNOISE_BLOB_PATH is passed by CMake.
+/* Embeds weights_blob.bin; NOMLA_RNNOISE_BLOB_PATH is passed by CMake.
  *
  * .hidden is spelled out because -fvisibility=hidden is a compiler flag and does not reach the
  * assembler: without it these two symbols land in .dynsym of every shared library that links
@@ -8,7 +8,7 @@
     .globl nomla_rnnoise_model_blob
     .hidden nomla_rnnoise_model_blob
 nomla_rnnoise_model_blob:
-    .incbin HUMLA_RNNOISE_BLOB_PATH
+    .incbin NOMLA_RNNOISE_BLOB_PATH
 nomla_rnnoise_model_blob_end:
     .balign 4
     .globl nomla_rnnoise_model_blob_size

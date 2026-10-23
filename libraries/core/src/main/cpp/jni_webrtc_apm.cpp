@@ -66,15 +66,15 @@ jint process(JNIEnv* env, jlong handle, jshortArray frame,
     return err;
 }
 
-/* aec3Tuning: null for webrtc's default AEC3 config, else exactly HUMLA_AEC3_PARAM_COUNT values
+/* aec3Tuning: null for webrtc's default AEC3 config, else exactly NOMLA_AEC3_PARAM_COUNT values
  * (Aec3Param in Aec3Tuning.kt); any other length is refused with 0 rather than read short. */
 jlong create(JNIEnv* env, jobject, jint sampleRate, jboolean aec, jboolean ns, jint nsLevel, jboolean agc,
              jboolean highPass, jfloatArray aec3Tuning) noexcept {
-    float tuning[HUMLA_AEC3_PARAM_COUNT];
+    float tuning[NOMLA_AEC3_PARAM_COUNT];
     const float* tuningOrNull = nullptr;
     if (aec3Tuning != nullptr) {
-        if (env->GetArrayLength(aec3Tuning) != HUMLA_AEC3_PARAM_COUNT) return 0;
-        env->GetFloatArrayRegion(aec3Tuning, 0, HUMLA_AEC3_PARAM_COUNT, tuning);
+        if (env->GetArrayLength(aec3Tuning) != NOMLA_AEC3_PARAM_COUNT) return 0;
+        env->GetFloatArrayRegion(aec3Tuning, 0, NOMLA_AEC3_PARAM_COUNT, tuning);
         tuningOrNull = tuning;
     }
     nomla_apm_config cfg{aec ? 1 : 0, ns ? 1 : 0, nsLevel, agc ? 1 : 0, highPass ? 1 : 0, tuningOrNull};

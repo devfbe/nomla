@@ -14,11 +14,11 @@ set(THIRD_PARTY "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
 # the library does not re-export its static C++ runtime.
 #
 # check_library.cmake asserts both properties after every link.
-set(HUMLA_LINK_OPTIONS "-Wl,-z,max-page-size=16384" "-Wl,--exclude-libs,ALL")
+set(NOMLA_LINK_OPTIONS "-Wl,-z,max-page-size=16384" "-Wl,--exclude-libs,ALL")
 
 # Symbols of the JNI translation units themselves are not reached by --exclude-libs; JNI_OnLoad
 # keeps default visibility explicitly.
-set(HUMLA_JNI_C_OPTIONS -fvisibility=hidden)
+set(NOMLA_JNI_C_OPTIONS -fvisibility=hidden)
 
 # Fails the build when the library exports anything but JNI_OnLoad, or has a segment that is not
 # 16 KB aligned (see check_library.cmake).
@@ -79,6 +79,6 @@ add_subdirectory(webrtc_apm)
 add_library(nomla_native SHARED
     jni_onload.cpp jni_opus.cpp jni_speexdsp.cpp jni_rnnoise.cpp jni_webrtc_apm.cpp)
 target_link_libraries(nomla_native PRIVATE opus speexdsp nomla_rnnoise nomla_apm log)
-target_link_options(nomla_native PRIVATE ${HUMLA_LINK_OPTIONS})
-target_compile_options(nomla_native PRIVATE ${HUMLA_JNI_C_OPTIONS})
+target_link_options(nomla_native PRIVATE ${NOMLA_LINK_OPTIONS})
+target_compile_options(nomla_native PRIVATE ${NOMLA_JNI_C_OPTIONS})
 nomla_check_library(nomla_native)

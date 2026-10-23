@@ -45,32 +45,32 @@ static void speech_in_noise(void) {
     double vad_voiced = 0, vad_noise = 0;
     int n_voiced = 0, n_noise = 0, vad_in_range = 1;
     seed = 4242;
-    int16_t frame[HUMLA_RNNOISE_FRAME_SIZE];
-    double clean[HUMLA_RNNOISE_FRAME_SIZE];
+    int16_t frame[NOMLA_RNNOISE_FRAME_SIZE];
+    double clean[NOMLA_RNNOISE_FRAME_SIZE];
     for (int n = 0; n < frames; n++) {
         /* 25 frames voiced, 25 frames pause; the edges are skipped when measuring. */
         int phase = n % 50;
         int voiced = phase < 25;
-        for (int i = 0; i < HUMLA_RNNOISE_FRAME_SIZE; i++) {
-            double t = (double)(n * HUMLA_RNNOISE_FRAME_SIZE + i) / 48000.0;
+        for (int i = 0; i < NOMLA_RNNOISE_FRAME_SIZE; i++) {
+            double t = (double)(n * NOMLA_RNNOISE_FRAME_SIZE + i) / 48000.0;
             double s = 0;
             if (voiced) for (int k = 1; k <= 20; k++) s += sin(2 * pi * 140.0 * k * t) / k;
             clean[i] = 3000.0 * s;
             frame[i] = (int16_t)lrint(clean[i] + noise_sample() / 4);
         }
-        double in_e = energy(frame, HUMLA_RNNOISE_FRAME_SIZE);
+        double in_e = energy(frame, NOMLA_RNNOISE_FRAME_SIZE);
         float p = nomla_rnnoise_process(h, frame);
         if (!(p >= 0.0f && p <= 1.0f)) vad_in_range = 0;
         if (n < warmup) continue;
         if (voiced && phase >= 5 && phase < 22) {
             double ce = 0;
-            for (int i = 0; i < HUMLA_RNNOISE_FRAME_SIZE; i++) ce += clean[i] * clean[i];
-            voiced_in += ce / HUMLA_RNNOISE_FRAME_SIZE;
-            voiced_out += energy(frame, HUMLA_RNNOISE_FRAME_SIZE);
+            for (int i = 0; i < NOMLA_RNNOISE_FRAME_SIZE; i++) ce += clean[i] * clean[i];
+            voiced_in += ce / NOMLA_RNNOISE_FRAME_SIZE;
+            voiced_out += energy(frame, NOMLA_RNNOISE_FRAME_SIZE);
             vad_voiced += p; n_voiced++;
         } else if (!voiced && phase >= 30) {
             noise_in += in_e;
-            noise_out += energy(frame, HUMLA_RNNOISE_FRAME_SIZE);
+            noise_out += energy(frame, NOMLA_RNNOISE_FRAME_SIZE);
             vad_noise += p; n_noise++;
         }
     }
@@ -90,22 +90,22 @@ int main(void) {
     nomla_rnnoise *h = nomla_rnnoise_create();
     CHECK(h != NULL, "create returns a state (embedded model loads)");
     if (!h) return 1;
-    CHECK(HUMLA_RNNOISE_FRAME_SIZE == 480, "frame size is 480 samples (10 ms @ 48 kHz)");
+    CHECK(NOMLA_RNNOISE_FRAME_SIZE == 480, "frame size is 480 samples (10 ms @ 48 kHz)");
 
-    int16_t frame[HUMLA_RNNOISE_FRAME_SIZE];
+    int16_t frame[NOMLA_RNNOISE_FRAME_SIZE];
     memset(frame, 0, sizeof frame);
     float p = nomla_rnnoise_process(h, frame);
     CHECK(p >= 0.0f && p <= 1.0f, "probability is within [0,1]");
     CHECK(p < 0.5f, "silence is not classified as voice");
-    CHECK(energy(frame, HUMLA_RNNOISE_FRAME_SIZE) == 0.0, "silence in gives silence out");
+    CHECK(energy(frame, NOMLA_RNNOISE_FRAME_SIZE) == 0.0, "silence in gives silence out");
 
     /* 1 s of white noise: RNNoise must attenuate it. Compare the last 50 frames (after warm-up). */
     double in_e = 0, out_e = 0;
     for (int n = 0; n < 100; n++) {
-        for (int i = 0; i < HUMLA_RNNOISE_FRAME_SIZE; i++) frame[i] = noise_sample();
-        double ie = energy(frame, HUMLA_RNNOISE_FRAME_SIZE);
+        for (int i = 0; i < NOMLA_RNNOISE_FRAME_SIZE; i++) frame[i] = noise_sample();
+        double ie = energy(frame, NOMLA_RNNOISE_FRAME_SIZE);
         nomla_rnnoise_process(h, frame);
-        if (n >= 50) { in_e += ie; out_e += energy(frame, HUMLA_RNNOISE_FRAME_SIZE); }
+        if (n >= 50) { in_e += ie; out_e += energy(frame, NOMLA_RNNOISE_FRAME_SIZE); }
     }
     /* RNNoise gates stationary white noise almost completely (~80 dB on the host). 20 dB fails
        a badly degraded model while leaving headroom for architecture-dependent DSP. */
@@ -123,11 +123,11 @@ int main(void) {
     nomla_rnnoise *b = nomla_rnnoise_create();
     CHECK(a != NULL && b != NULL, "two states can be live at once on the shared blob");
     if (a && b) {
-        int16_t fa[HUMLA_RNNOISE_FRAME_SIZE], fb[HUMLA_RNNOISE_FRAME_SIZE];
+        int16_t fa[NOMLA_RNNOISE_FRAME_SIZE], fb[NOMLA_RNNOISE_FRAME_SIZE];
         int identical = 1;
         seed = 999;
         for (int n = 0; n < 20; n++) {
-            for (int i = 0; i < HUMLA_RNNOISE_FRAME_SIZE; i++) fa[i] = fb[i] = noise_sample();
+            for (int i = 0; i < NOMLA_RNNOISE_FRAME_SIZE; i++) fa[i] = fb[i] = noise_sample();
             float pa = nomla_rnnoise_process(a, fa);
             float pb = nomla_rnnoise_process(b, fb);
             if (pa != pb || memcmp(fa, fb, sizeof fa) != 0) identical = 0;
@@ -144,7 +144,7 @@ int main(void) {
         nomla_rnnoise *cycle = nomla_rnnoise_create();
         CHECK(cycle != NULL, "create succeeds on every cycle");
         if (!cycle) break;
-        int16_t f[HUMLA_RNNOISE_FRAME_SIZE];
+        int16_t f[NOMLA_RNNOISE_FRAME_SIZE];
         memset(f, 0, sizeof f);
         nomla_rnnoise_process(cycle, f);
         nomla_rnnoise_destroy(cycle);

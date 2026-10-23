@@ -27,16 +27,16 @@ import koeln.becker.nomla.mumble.audio.capture.fakes.FakeWebRtcApmApi
 class Aec3TuningTest {
 
     /**
-     * The array is indexed by ordinal on this side and by the `HUMLA_AEC3_*` enum on the native
+     * The array is indexed by ordinal on this side and by the `NOMLA_AEC3_*` enum on the native
      * side; a missing, extra or reordered name would silently set the wrong field.
      */
     @Test
-    fun `the parameters are the HUMLA_AEC3 enum of nomla_apm_h, name for name and in order`() {
+    fun `the parameters are the NOMLA_AEC3 enum of nomla_apm_h, name for name and in order`() {
         val header = File("src/main/cpp/webrtc_apm/nomla_apm.h").readText()
-        val names = Regex("""^\s*HUMLA_AEC3_(\w+)\s*,""", RegexOption.MULTILINE)
+        val names = Regex("""^\s*NOMLA_AEC3_(\w+)\s*,""", RegexOption.MULTILINE)
             .findAll(header).map { it.groupValues[1] }.toList()
 
-        assertThat(header).contains("HUMLA_AEC3_PARAM_COUNT\n")
+        assertThat(header).contains("NOMLA_AEC3_PARAM_COUNT\n")
         assertThat(Aec3Param.entries.map { it.name }).containsExactlyElementsIn(names).inOrder()
     }
 

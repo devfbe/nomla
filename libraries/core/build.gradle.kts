@@ -95,7 +95,7 @@ tasks.withType<Test>().configureEach {
  * ninja, the compiler, objdump and JAVA_HOME (for jni.h) come from the nix dev shell, which both
  * `nix develop` and `nix run .#android-studio` provide.
  *
- * HUMLA_REQUIRE_SANITIZERS makes a missing ASan/UBSan runtime a configure error instead of
+ * NOMLA_REQUIRE_SANITIZERS makes a missing ASan/UBSan runtime a configure error instead of
  * silently skipping the sanitized tests; --no-tests=error fails an empty run. Every step's exit
  * code is checked, so a failing test (ctest exits non-zero) fails the task.
  */
@@ -126,12 +126,12 @@ abstract class NativeHostTests @Inject constructor(private val execOps: ExecOper
         val report = junitReport.get().asFile
         report.delete()
         execOps.exec {
-            environment("HUMLA_REQUIRE_SANITIZERS", "1")
+            environment("NOMLA_REQUIRE_SANITIZERS", "1")
             commandLine("cmake", "-S", testsDir, "-B", buildDir, "-G", "Ninja")
         }
         execOps.exec {
             // A changed CMakeLists.txt re-runs configure from inside the build; keep the flag set.
-            environment("HUMLA_REQUIRE_SANITIZERS", "1")
+            environment("NOMLA_REQUIRE_SANITIZERS", "1")
             commandLine("cmake", "--build", buildDir)
         }
         execOps.exec {

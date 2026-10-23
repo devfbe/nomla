@@ -49,12 +49,12 @@ target_include_directories(nomla_rnnoise
 #   but documents the flag model/weights_blob.bin was dumped with; the dump command in
 #   model/README.md must keep it, or the blob gains float weights that change the arithmetic.
 # USE_WEIGHTS_FILE: our choice (denoise.c:298) — no built-in arrays, model comes from the blob.
-# HUMLA_RNNOISE_BLOB_PATH: consumed by the .incbin in model/rnnoise_model_blob.S.
+# NOMLA_RNNOISE_BLOB_PATH: consumed by the .incbin in model/rnnoise_model_blob.S.
 target_compile_definitions(nomla_rnnoise PRIVATE
     RNNOISE_BUILD
     DISABLE_DEBUG_FLOAT
     USE_WEIGHTS_FILE
-    HUMLA_RNNOISE_BLOB_PATH="${RNNOISE_MODEL_DIR}/weights_blob.bin")
+    NOMLA_RNNOISE_BLOB_PATH="${RNNOISE_MODEL_DIR}/weights_blob.bin")
 target_compile_options(nomla_rnnoise PRIVATE -O2 -fvisibility=hidden -Wno-unused-function)
 set_property(TARGET nomla_rnnoise PROPERTY POSITION_INDEPENDENT_CODE ON)
 # Rebuild the blob object when the weights change.

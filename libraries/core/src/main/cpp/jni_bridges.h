@@ -22,8 +22,8 @@
  * Each returns false, with a Java exception pending, if a class or method it binds is missing or a
  * signature does not match the Kotlin `external fun`. jni_registrations.txt lists every binding.
  */
-#ifndef HUMLA_JNI_BRIDGES_H
-#define HUMLA_JNI_BRIDGES_H
+#ifndef NOMLA_JNI_BRIDGES_H
+#define NOMLA_JNI_BRIDGES_H
 
 #include <jni.h>
 
@@ -36,4 +36,4 @@ bool registerWebRtcApmNatives(JNIEnv* env);
 
 }  // namespace nomla
 
-#endif  // HUMLA_JNI_BRIDGES_H
+#endif  // NOMLA_JNI_BRIDGES_H

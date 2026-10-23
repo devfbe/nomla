@@ -272,13 +272,13 @@ int main(void) {
     /* ---- 5. AEC3 tuning. ----
      * webrtc's defaults passed back in must give the very same canceller as no tuning at all (the
      * app's default path stays what it was), and a tuning must actually reach the suppressor. */
-    float tuning[HUMLA_AEC3_PARAM_COUNT];
+    float tuning[NOMLA_AEC3_PARAM_COUNT];
     nomla_apm_aec3_defaults(tuning);
-    CHECK(tuning[HUMLA_AEC3_NORMAL_HF_ENR_SUPPRESS] == 0.1f, "defaults: normal hf enr_suppress is 0.1");
-    CHECK(tuning[HUMLA_AEC3_DNE_HOLD_DURATION] == 50.f, "defaults: dominant near-end hold is 50 blocks");
-    CHECK(tuning[HUMLA_AEC3_FILTER_REFINED_LENGTH_BLOCKS] == 13.f, "defaults: refined filter is 13 blocks");
-    CHECK(tuning[HUMLA_AEC3_EP_ECHO_CAN_SATURATE] == 1.f, "defaults: booleans read as 1");
-    CHECK(tuning[HUMLA_AEC3_COMFORT_NOISE_FLOOR_DBFS] < -96.f, "defaults: the last parameter is written");
+    CHECK(tuning[NOMLA_AEC3_NORMAL_HF_ENR_SUPPRESS] == 0.1f, "defaults: normal hf enr_suppress is 0.1");
+    CHECK(tuning[NOMLA_AEC3_DNE_HOLD_DURATION] == 50.f, "defaults: dominant near-end hold is 50 blocks");
+    CHECK(tuning[NOMLA_AEC3_FILTER_REFINED_LENGTH_BLOCKS] == 13.f, "defaults: refined filter is 13 blocks");
+    CHECK(tuning[NOMLA_AEC3_EP_ECHO_CAN_SATURATE] == 1.f, "defaults: booleans read as 1");
+    CHECK(tuning[NOMLA_AEC3_COMFORT_NOISE_FLOOR_DBFS] < -96.f, "defaults: the last parameter is written");
 
     double e_null = 0, e_defaults = 0, e_tuned = 0;
     uint32_t h_null = run_tuned(NULL, &e_null);
@@ -286,12 +286,12 @@ int main(void) {
     CHECK(h_null != 0 && h_defaults != 0, "AEC3 is created with and without a tuning");
     CHECK(h_null == h_defaults, "webrtc's defaults as a tuning give bit-identical output to no tuning");
 
-    float transparent[HUMLA_AEC3_PARAM_COUNT];
+    float transparent[NOMLA_AEC3_PARAM_COUNT];
     memcpy(transparent, tuning, sizeof tuning);
-    transparent[HUMLA_AEC3_NORMAL_LF_ENR_TRANSPARENT] = 50.f;
-    transparent[HUMLA_AEC3_NORMAL_LF_ENR_SUPPRESS] = 60.f;
-    transparent[HUMLA_AEC3_NORMAL_HF_ENR_TRANSPARENT] = 50.f;
-    transparent[HUMLA_AEC3_NORMAL_HF_ENR_SUPPRESS] = 60.f;
+    transparent[NOMLA_AEC3_NORMAL_LF_ENR_TRANSPARENT] = 50.f;
+    transparent[NOMLA_AEC3_NORMAL_LF_ENR_SUPPRESS] = 60.f;
+    transparent[NOMLA_AEC3_NORMAL_HF_ENR_TRANSPARENT] = 50.f;
+    transparent[NOMLA_AEC3_NORMAL_HF_ENR_SUPPRESS] = 60.f;
     uint32_t h_tuned = run_tuned(transparent, &e_tuned);
     printf("double-talk output: default %.1f dB, transparent normal masks %.1f dB\n",
            to_db(e_null), to_db(e_tuned));
@@ -299,17 +299,17 @@ int main(void) {
     CHECK(e_tuned > e_null, "more transparent masks let more through in double talk");
 
     nomla_apm_config tuned_cfg = {1, 0, 0, 0, 1, NULL};
-    float bad[HUMLA_AEC3_PARAM_COUNT];
+    float bad[NOMLA_AEC3_PARAM_COUNT];
     memcpy(bad, tuning, sizeof tuning);
-    bad[HUMLA_AEC3_DNE_ENR_THRESHOLD] = NAN;
+    bad[NOMLA_AEC3_DNE_ENR_THRESHOLD] = NAN;
     tuned_cfg.aec3_tuning = bad;
     CHECK(nomla_apm_create(kRate, &tuned_cfg) == NULL, "a NaN in the tuning is refused");
     memcpy(bad, tuning, sizeof tuning);
-    bad[HUMLA_AEC3_NEAREND_HF_ENR_TRANSPARENT] = bad[HUMLA_AEC3_NEAREND_HF_ENR_SUPPRESS];
+    bad[NOMLA_AEC3_NEAREND_HF_ENR_TRANSPARENT] = bad[NOMLA_AEC3_NEAREND_HF_ENR_SUPPRESS];
     CHECK(nomla_apm_create(kRate, &tuned_cfg) == NULL,
           "a masking pair with enr_transparent not below enr_suppress is refused");
     memcpy(bad, tuning, sizeof tuning);
-    bad[HUMLA_AEC3_FILTER_REFINED_LENGTH_BLOCKS] = -1.f;
+    bad[NOMLA_AEC3_FILTER_REFINED_LENGTH_BLOCKS] = -1.f;
     CHECK(nomla_apm_create(kRate, &tuned_cfg) == NULL, "a negative filter length is refused");
     nomla_apm_config ns_tuned = {0, 1, 2, 0, 1, bad};
     nomla_apm *ignored = nomla_apm_create(kRate, &ns_tuned);

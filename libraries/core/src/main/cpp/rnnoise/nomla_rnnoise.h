@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef HUMLA_RNNOISE_H
-#define HUMLA_RNNOISE_H
+#ifndef NOMLA_RNNOISE_H
+#define NOMLA_RNNOISE_H
 #include <stdint.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
-#define HUMLA_RNNOISE_FRAME_SIZE 480
+#define NOMLA_RNNOISE_FRAME_SIZE 480
 typedef struct nomla_rnnoise nomla_rnnoise;
 /* Allocates a denoiser using the embedded model. Returns NULL on failure. */
 nomla_rnnoise *nomla_rnnoise_create(void);
 /* Denoises one 10 ms 48 kHz mono frame in place and returns the VAD probability [0,1].
-   h must be non-NULL and frame must hold exactly HUMLA_RNNOISE_FRAME_SIZE samples; both are
+   h must be non-NULL and frame must hold exactly NOMLA_RNNOISE_FRAME_SIZE samples; both are
    preconditions, not checked. A nomla_rnnoise is not thread-safe, but separate instances are
    independent and may run concurrently. */
 float nomla_rnnoise_process(nomla_rnnoise *h, int16_t *frame);

@@ -96,7 +96,7 @@ static void test_rnnoise(Env& env) {
 
     /* A frame of exactly FRAME_SIZE is processed and the VAD probability is in range. */
     {
-        Array<jshort> frame(HUMLA_RNNOISE_FRAME_SIZE);
+        Array<jshort> frame(NOMLA_RNNOISE_FRAME_SIZE);
         rng = 9u;
         for (jsize i = 0; i < frame.length(); i++) frame[i] = noise();
         jfloat p = RN_PROCESS(e, nullptr, h, frame.as<jshortArray>());
@@ -106,26 +106,26 @@ static void test_rnnoise(Env& env) {
     /* A longer frame is accepted; only the first FRAME_SIZE samples may be touched. The tail is
      * poisoned with a sentinel to detect a wrapper reading or writing past 480. */
     {
-        Array<jshort> frame(HUMLA_RNNOISE_FRAME_SIZE + 64);
-        for (jsize i = HUMLA_RNNOISE_FRAME_SIZE; i < frame.length(); i++) frame[i] = 0x5a5a;
+        Array<jshort> frame(NOMLA_RNNOISE_FRAME_SIZE + 64);
+        for (jsize i = NOMLA_RNNOISE_FRAME_SIZE; i < frame.length(); i++) frame[i] = 0x5a5a;
         jfloat p = RN_PROCESS(e, nullptr, h, frame.as<jshortArray>());
         CHECK(p >= 0.0f, "rnnoise accepts an over-long frame");
         bool tail_intact = true;
-        for (jsize i = HUMLA_RNNOISE_FRAME_SIZE; i < frame.length(); i++)
+        for (jsize i = NOMLA_RNNOISE_FRAME_SIZE; i < frame.length(); i++)
             if (frame[i] != jshort(0x5a5a)) tail_intact = false;
         CHECK(tail_intact, "rnnoise does not write past FRAME_SIZE");
     }
 
     /* A frame one sample short must be refused, not processed (a heap overflow otherwise). */
     {
-        Array<jshort> frame(HUMLA_RNNOISE_FRAME_SIZE - 1);
+        Array<jshort> frame(NOMLA_RNNOISE_FRAME_SIZE - 1);
         CHECK(RN_PROCESS(e, nullptr, h, frame.as<jshortArray>()) < 0.0f,
               "rnnoise refuses a frame shorter than FRAME_SIZE");
     }
 
     CHECK(RN_PROCESS(e, nullptr, 0, nullptr) < 0.0f, "rnnoise processFrame(0, null) reports an error");
     {
-        Array<jshort> frame(HUMLA_RNNOISE_FRAME_SIZE);
+        Array<jshort> frame(NOMLA_RNNOISE_FRAME_SIZE);
         CHECK(RN_PROCESS(e, nullptr, 0, frame.as<jshortArray>()) < 0.0f,
               "rnnoise processFrame with a null handle reports an error");
         CHECK(RN_PROCESS(e, nullptr, h, nullptr) < 0.0f,
@@ -139,7 +139,7 @@ static void test_rnnoise(Env& env) {
 
     /* And a handle that was destroyed must not be processed. */
     {
-        Array<jshort> frame(HUMLA_RNNOISE_FRAME_SIZE);
+        Array<jshort> frame(NOMLA_RNNOISE_FRAME_SIZE);
         CHECK(RN_PROCESS(e, nullptr, h, frame.as<jshortArray>()) < 0.0f,
               "rnnoise processFrame on a destroyed handle reports an error");
     }
@@ -158,7 +158,7 @@ static void test_apm_arguments(Env& env) {
     /* The AEC3 tuning array must have exactly one value per parameter: a short one would be read
      * past its end, a long one would mean the two sides disagree about the layout. */
     {
-        Array<jfloat> shorter(HUMLA_AEC3_PARAM_COUNT - 1), longer(HUMLA_AEC3_PARAM_COUNT + 1);
+        Array<jfloat> shorter(NOMLA_AEC3_PARAM_COUNT - 1), longer(NOMLA_AEC3_PARAM_COUNT + 1);
         nomla_apm_aec3_defaults(longer.data());  // valid values, so only the length is wrong
         CHECK(APM_CREATE(e, nullptr, kRate, JNI_TRUE, JNI_FALSE, 0, JNI_FALSE, JNI_TRUE,
                          shorter.as<jfloatArray>()) == 0,
@@ -167,7 +167,7 @@ static void test_apm_arguments(Env& env) {
                          longer.as<jfloatArray>()) == 0,
               "apm create refuses an AEC3 tuning one value long");
 
-        Array<jfloat> defaults(HUMLA_AEC3_PARAM_COUNT);
+        Array<jfloat> defaults(NOMLA_AEC3_PARAM_COUNT);
         nomla_apm_aec3_defaults(defaults.data());
         jlong tuned = APM_CREATE(e, nullptr, kRate, JNI_TRUE, JNI_FALSE, 0, JNI_FALSE, JNI_TRUE,
                                  defaults.as<jfloatArray>());

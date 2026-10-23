@@ -18,7 +18,7 @@
 /*
  * JNI bridge for RNNoise; the Kotlin side is RnnoiseNative.kt.
  *
- * nomla_rnnoise_process writes exactly HUMLA_RNNOISE_FRAME_SIZE samples into a bare int16_t*, so
+ * nomla_rnnoise_process writes exactly NOMLA_RNNOISE_FRAME_SIZE samples into a bare int16_t*, so
  * shorter arrays are refused here. Handles may arrive after release() (see jni_native_handle.h).
  *
  * Every function is noexcept as a backstop: an exception unwinding into the JVM is undefined.
@@ -50,11 +50,11 @@ jfloat processFrame(JNIEnv* env, jobject, jlong handle, jshortArray frame) noexc
     auto* denoiser = static_cast<nomla_rnnoise*>(denoisers().get(handle));
     if (denoiser == nullptr || frame == nullptr) return -1.0f;
     // A short frame would be an out-of-bounds write inside rnnoise.
-    if (env->GetArrayLength(frame) < HUMLA_RNNOISE_FRAME_SIZE) return -1.0f;
-    jshort data[HUMLA_RNNOISE_FRAME_SIZE];
-    env->GetShortArrayRegion(frame, 0, HUMLA_RNNOISE_FRAME_SIZE, data);
+    if (env->GetArrayLength(frame) < NOMLA_RNNOISE_FRAME_SIZE) return -1.0f;
+    jshort data[NOMLA_RNNOISE_FRAME_SIZE];
+    env->GetShortArrayRegion(frame, 0, NOMLA_RNNOISE_FRAME_SIZE, data);
     float probability = nomla_rnnoise_process(denoiser, reinterpret_cast<int16_t*>(data));
-    env->SetShortArrayRegion(frame, 0, HUMLA_RNNOISE_FRAME_SIZE, data);
+    env->SetShortArrayRegion(frame, 0, NOMLA_RNNOISE_FRAME_SIZE, data);
     return probability;
 }
 

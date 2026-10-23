@@ -28,8 +28,8 @@
  * table on purpose, so a bridge calling something new crashes on a null pointer instead of
  * silently doing nothing.
  */
-#ifndef HUMLA_TESTS_JNI_ENV_STUB_H
-#define HUMLA_TESTS_JNI_ENV_STUB_H
+#ifndef NOMLA_TESTS_JNI_ENV_STUB_H
+#define NOMLA_TESTS_JNI_ENV_STUB_H
 
 #include <jni.h>
 
@@ -243,4 +243,4 @@ class Array {
 
 }  // namespace jnistub
 
-#endif  /* HUMLA_TESTS_JNI_ENV_STUB_H */
+#endif  /* NOMLA_TESTS_JNI_ENV_STUB_H */

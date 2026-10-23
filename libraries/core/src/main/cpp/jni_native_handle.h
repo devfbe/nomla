@@ -41,8 +41,8 @@
  * Threading: get() is lock-free and safe from the audio thread. add() and release() take a mutex
  * and may allocate; they belong to the owning thread and are never called per frame.
  */
-#ifndef HUMLA_JNI_NATIVE_HANDLE_H
-#define HUMLA_JNI_NATIVE_HANDLE_H
+#ifndef NOMLA_JNI_NATIVE_HANDLE_H
+#define NOMLA_JNI_NATIVE_HANDLE_H
 
 #include <jni.h>
 
@@ -181,4 +181,4 @@ HandleTable& handleTable() {
 
 }  // namespace nomla
 
-#endif  // HUMLA_JNI_NATIVE_HANDLE_H
+#endif  // NOMLA_JNI_NATIVE_HANDLE_H

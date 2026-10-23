@@ -19,8 +19,8 @@
  * Shared helpers for the JNI bridges: registration tables whose signatures are derived from the C++
  * function types, and array-region buffers that avoid Get*ArrayElements.
  */
-#ifndef HUMLA_JNI_COMMON_H
-#define HUMLA_JNI_COMMON_H
+#ifndef NOMLA_JNI_COMMON_H
+#define NOMLA_JNI_COMMON_H
 
 #include <jni.h>
 
@@ -152,4 +152,4 @@ inline void writeInt(JNIEnv* env, jintArray target, jint value) {
 
 }  // namespace nomla
 
-#endif  // HUMLA_JNI_COMMON_H
+#endif  // NOMLA_JNI_COMMON_H

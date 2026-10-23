@@ -26,12 +26,12 @@ extern const unsigned int nomla_rnnoise_model_blob_size;
 struct nomla_rnnoise {
     RNNModel *model;
     DenoiseState *st;
-    float in[HUMLA_RNNOISE_FRAME_SIZE];
-    float out[HUMLA_RNNOISE_FRAME_SIZE];
+    float in[NOMLA_RNNOISE_FRAME_SIZE];
+    float out[NOMLA_RNNOISE_FRAME_SIZE];
 };
 
 nomla_rnnoise *nomla_rnnoise_create(void) {
-    if (rnnoise_get_frame_size() != HUMLA_RNNOISE_FRAME_SIZE) return NULL;
+    if (rnnoise_get_frame_size() != NOMLA_RNNOISE_FRAME_SIZE) return NULL;
     nomla_rnnoise *h = calloc(1, sizeof *h);
     if (!h) return NULL;
     h->model = rnnoise_model_from_buffer(nomla_rnnoise_model_blob, (int)nomla_rnnoise_model_blob_size);
@@ -45,9 +45,9 @@ nomla_rnnoise *nomla_rnnoise_create(void) {
 /* h and frame are preconditions (see nomla_rnnoise.h) and are dereferenced unconditionally,
    unlike in nomla_rnnoise_destroy, which tolerates NULL. The JNI bridge guarantees both. */
 float nomla_rnnoise_process(nomla_rnnoise *h, int16_t *frame) {
-    for (int i = 0; i < HUMLA_RNNOISE_FRAME_SIZE; i++) h->in[i] = (float)frame[i];
+    for (int i = 0; i < NOMLA_RNNOISE_FRAME_SIZE; i++) h->in[i] = (float)frame[i];
     float p = rnnoise_process_frame(h->st, h->out, h->in);
-    for (int i = 0; i < HUMLA_RNNOISE_FRAME_SIZE; i++) {
+    for (int i = 0; i < NOMLA_RNNOISE_FRAME_SIZE; i++) {
         float v = h->out[i];
         if (v > 32767.f) v = 32767.f; else if (v < -32768.f) v = -32768.f;
         frame[i] = (int16_t)lrintf(v);
