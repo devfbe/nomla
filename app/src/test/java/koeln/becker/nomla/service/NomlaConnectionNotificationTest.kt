@@ -432,14 +432,14 @@ class NomlaConnectionNotificationTest {
         assertThat(service.foregroundServiceType).isEqualTo(ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE)
     }
 
-    /** Below 34 the call without a type takes every type the manifest declares. */
+    /** Below 34 the type is optional; the manifest's one, microphone, is passed all the same. */
     @Test
     @Config(sdk = [33])
-    fun belowAndroid14TheForegroundTakesTheManifestTypes() {
+    fun belowAndroid14TheForegroundIsTypedAsMicrophoneToo() {
         NomlaConnectionNotification.create(service, "Connecting", listener).show()
 
         assertThat(shadowOf(service).isForegroundStopped).isFalse()
-        assertThat(service.foregroundServiceType).isEqualTo(ServiceInfo.FOREGROUND_SERVICE_TYPE_NONE)
+        assertThat(service.foregroundServiceType).isEqualTo(ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE)
     }
 
     private companion object {

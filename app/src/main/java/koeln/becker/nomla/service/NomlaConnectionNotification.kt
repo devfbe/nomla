@@ -30,8 +30,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
-import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.MainScreen
@@ -109,11 +109,8 @@ class NomlaConnectionNotification private constructor(
 
     /** @return false if the platform refused the foreground start. */
     private fun enterForeground(notification: Notification): Boolean = try {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            service.startForeground(NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_MICROPHONE)
-        } else {
-            service.startForeground(NOTIFICATION_ID, notification)
-        }
+        // The type is the manifest's one: required from Android 14 on, the same as no type before.
+        ServiceCompat.startForeground(service, NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_MICROPHONE)
         true
     } catch (e: ForegroundServiceStartNotAllowedException) {
         NomlaLog.w(TAG, "Foreground service start not allowed", e)
