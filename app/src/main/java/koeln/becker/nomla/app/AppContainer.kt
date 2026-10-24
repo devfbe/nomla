@@ -138,7 +138,7 @@ class AppContainer(
     )
 
     init {
-        SessionSettingsSync(app, sessionManager, appMessages).start(scope)
+        SessionSettingsSync(app, settings, sessionManager, appMessages).start(scope)
     }
 
     /** A microphone test for a screen on [context]; see [MicCheck]. */

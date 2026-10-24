@@ -33,18 +33,19 @@ import koeln.becker.nomla.ui.AppMessages
  */
 class SessionSettingsSync(
     private val context: Context,
+    private val settings: Settings,
     private val sessions: SessionManager,
     private val messages: AppMessages,
 ) {
     fun start(scope: CoroutineScope): Job = scope.launch(Dispatchers.Main.immediate, CoroutineStart.UNDISPATCHED) {
-        Settings.getInstance(context).changes(OBSERVED_KEYS).collect(::onPreferenceChanged)
+        settings.changes(OBSERVED_KEYS).collect(::onPreferenceChanged)
     }
 
     internal fun onPreferenceChanged(key: String) {
         val session = sessions.session.value
         if (key in SessionSettings.AUDIO_KEYS && session != null) {
             // The result is ignored: audio settings never require a reconnect.
-            session.configure(SessionSettings.withAudioSettings(session.config, Settings.getInstance(context)))
+            session.configure(SessionSettings.withAudioSettings(session.config, settings))
         }
         if (key in RECONNECT_KEYS && sessions.connected != null) {
             messages.post(context.getString(R.string.change_requires_reconnect))

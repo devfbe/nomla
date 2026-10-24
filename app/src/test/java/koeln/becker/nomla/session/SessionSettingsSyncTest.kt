@@ -276,12 +276,12 @@ class SessionSettingsSyncTest {
         for (key in listOf(Settings.CERT_ID.key, Settings.FORCE_TCP.key, Settings.USE_TOR.key)) {
             val messages = AppMessages()
             session.stubState(SessionState.Connecting)
-            SessionSettingsSync(context, SessionManager.get(context), messages)
+            SessionSettingsSync(context, Settings.getInstance(context), SessionManager.get(context), messages)
                 .onPreferenceChanged(key)
             assertThat(nextMessage(messages)).isNull()
 
             session.stubState(SessionState.Connected)
-            SessionSettingsSync(context, SessionManager.get(context), messages)
+            SessionSettingsSync(context, Settings.getInstance(context), SessionManager.get(context), messages)
                 .onPreferenceChanged(key)
             assertThat(nextMessage(messages)).isEqualTo(context.getString(R.string.change_requires_reconnect))
         }
