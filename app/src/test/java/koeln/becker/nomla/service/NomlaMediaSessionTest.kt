@@ -22,8 +22,7 @@ import android.content.ContextWrapper
 import android.content.Intent
 import android.content.SharedPreferences
 import android.media.session.MediaSession
-import android.support.v4.media.session.MediaSessionCompat
-import android.support.v4.media.session.PlaybackStateCompat
+import android.media.session.PlaybackState
 import android.view.KeyEvent
 import androidx.preference.PreferenceManager
 import androidx.test.core.app.ApplicationProvider
@@ -64,17 +63,27 @@ class NomlaMediaSessionTest {
 
     @Test
     fun activeSessionReportsPlayingSoMediaKeysAreRoutedToIt() {
-        assertThat(mediaSession.playbackState).isNull()
+        // Robolectric's MediaController does not read the state back, so it is caught on the way in.
+        val handedOut = mockk<MediaSession>(relaxed = true)
+        val advertised = slot<PlaybackState>()
+        var created = 0
+        val owner = NomlaMediaSession(context, target, Settings.getInstance(context)) { _, _ ->
+            created++
+            handedOut
+        }
+        assertThat(created).isEqualTo(0)
 
-        mediaSession.activate()
+        owner.activate()
 
-        val state = mediaSession.playbackState!!
-        assertThat(state.state).isEqualTo(PlaybackStateCompat.STATE_PLAYING)
+        verify(exactly = 1) { handedOut.setPlaybackState(capture(advertised)) }
+        verify(exactly = 1) { handedOut.isActive = true }
+        val state = advertised.captured
+        assertThat(state.state).isEqualTo(PlaybackState.STATE_PLAYING)
         // PLAY and PAUSE are advertised next to PLAY_PAUSE because AVRCP headsets that track
         // their own play state send those two keycodes instead of the combined one.
-        assertThat(state.actions and PlaybackStateCompat.ACTION_PLAY_PAUSE).isNotEqualTo(0L)
-        assertThat(state.actions and PlaybackStateCompat.ACTION_PLAY).isNotEqualTo(0L)
-        assertThat(state.actions and PlaybackStateCompat.ACTION_PAUSE).isNotEqualTo(0L)
+        assertThat(state.actions and PlaybackState.ACTION_PLAY_PAUSE).isNotEqualTo(0L)
+        assertThat(state.actions and PlaybackState.ACTION_PLAY).isNotEqualTo(0L)
+        assertThat(state.actions and PlaybackState.ACTION_PAUSE).isNotEqualTo(0L)
     }
 
     @Test
@@ -121,12 +130,17 @@ class NomlaMediaSessionTest {
         assertThat(mediaSession.sessionToken).isEqualTo(first)
     }
 
+    /**
+     * The framework callback does not filter by key action, so one press (DOWN + UP) arrives as
+     * two events and must toggle exactly once.
+     */
     @Test
-    fun callbackForwardsMediaButtonToHandler() {
+    fun callbackForwardsBothKeyActionsAndOnePressTogglesOnce() {
         mediaSession.activate()
 
         val handledDown = mediaSession.callback.onMediaButtonEvent(
             mediaButtonIntent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_HEADSETHOOK))
+        assertThat(target.isTalking).isTrue()
         val handledUp = mediaSession.callback.onMediaButtonEvent(
             mediaButtonIntent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HEADSETHOOK))
 
@@ -141,27 +155,17 @@ class NomlaMediaSessionTest {
         assertThat(target.isTalking).isFalse()
     }
 
-    /**
-     * The androidx.media callback does not filter by key action, so one press (DOWN + UP) arrives
-     * as two events and must toggle exactly once.
-     */
+    /** A key the handler leaves alone falls through to the framework default, which ignores it. */
     @Test
-    fun theLibraryPassesBothKeyActionsThroughToTheHandler() {
+    fun callbackLeavesUnhandledKeysToTheFrameworkDefault() {
         mediaSession.activate()
-        val frameworkCallback = MediaSessionCompat.Callback::class.java
-            .getDeclaredField("mCallbackFwk")
-            .apply { isAccessible = true }
-            .get(mediaSession.callback) as MediaSession.Callback
 
-        val handledDown = frameworkCallback.onMediaButtonEvent(
-            mediaButtonIntent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_HEADSETHOOK))
-        assertThat(target.isTalking).isTrue()
-        val handledUp = frameworkCallback.onMediaButtonEvent(
-            mediaButtonIntent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HEADSETHOOK))
+        val handled = mediaSession.callback.onMediaButtonEvent(
+            mediaButtonIntent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT))
 
-        assertThat(handledDown).isTrue()
-        assertThat(handledUp).isTrue()
-        assertThat(target.isTalking).isTrue()
+        assertThat(handled).isFalse()
+        assertThat(target.isTalking).isFalse()
+        assertThat(target.stopTalkingCalls).isEqualTo(0)
     }
 
     @Test
@@ -187,7 +191,7 @@ class NomlaMediaSessionTest {
         assertThat(mediaSession.isActive).isFalse()
     }
 
-    /** MediaSessionCompat must be driven from a looper thread, so a change elsewhere is posted. */
+    /** MediaSession must be driven from a looper thread, so a change elsewhere is posted. */
     @Test
     fun aStateChangeOffTheMainThreadIsAppliedOnTheMainLooper() {
         mediaSession.attach(state)
@@ -305,7 +309,7 @@ class NomlaMediaSessionTest {
      */
     @Test
     fun givingUpTheSessionHandsItBackToTheSystem() {
-        val handedOut = mockk<MediaSessionCompat>(relaxed = true)
+        val handedOut = mockk<MediaSession>(relaxed = true)
         val owner = NomlaMediaSession(context, target, Settings.getInstance(context)) { _, _ ->
             handedOut
         }

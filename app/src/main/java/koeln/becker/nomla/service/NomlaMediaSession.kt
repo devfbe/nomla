@@ -19,10 +19,10 @@ package koeln.becker.nomla.service
 
 import android.content.Context
 import android.content.Intent
+import android.media.session.MediaSession
+import android.media.session.PlaybackState
 import android.os.Handler
 import android.os.Looper
-import android.support.v4.media.session.MediaSessionCompat
-import android.support.v4.media.session.PlaybackStateCompat
 import android.view.KeyEvent
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.IntentCompat
@@ -43,7 +43,7 @@ import koeln.becker.nomla.util.changes
 private const val TAG = "NomlaMediaSession"
 
 /**
- * Owns a [MediaSessionCompat] that is active exactly while Nomla is connected and the headset
+ * Owns a [MediaSession] that is active exactly while Nomla is connected and the headset
  * button action is not [MediaButtonAction.NONE], so headset and Bluetooth (AVRCP) media buttons
  * reach [MediaKeyHandler] even with the screen off. With NONE no session is held, because an
  * active PLAYING session takes play/pause away from every other app.
@@ -55,26 +55,29 @@ class NomlaMediaSession(
     private val target: MediaKeyTarget,
     private val settings: Settings,
     /** Test seam: a dropped reference is indistinguishable from a released session otherwise. */
-    private val sessionFactory: (Context, String) -> MediaSessionCompat = ::MediaSessionCompat,
+    private val sessionFactory: (Context, String) -> MediaSession = ::MediaSession,
 ) {
     private val handler = MediaKeyHandler(settings, target)
     private val mainHandler = Handler(Looper.getMainLooper())
-    private var session: MediaSessionCompat? = null
+    private var session: MediaSession? = null
     private var connected = false
 
     /** Follows the session state between [attach] and [detach]. */
     private var stateUpdates: Job? = null
 
-    /** The framework calls it on [mainHandler]. */
+    /**
+     * The framework calls it on [mainHandler], once per key action: a press arrives as DOWN and UP,
+     * and [MediaKeyHandler] acts on the DOWN only.
+     */
     @VisibleForTesting
-    val callback: MediaSessionCompat.Callback = object : MediaSessionCompat.Callback() {
+    val callback: MediaSession.Callback = object : MediaSession.Callback() {
         override fun onMediaButtonEvent(mediaButtonEvent: Intent): Boolean {
             val event = IntentCompat.getParcelableExtra(
                 mediaButtonEvent, Intent.EXTRA_KEY_EVENT, KeyEvent::class.java,
-            ) ?: return false
-            // No super fallback: the compat base returns false from SDK 27 on; on false androidx
-            // runs the framework default itself.
-            return handler.onKeyEvent(event)
+            ) ?: return super.onMediaButtonEvent(mediaButtonEvent)
+            // An event the handler leaves alone gets the framework default (play/pause dispatch to
+            // the no-op transport callbacks), as androidx.media did before.
+            return handler.onKeyEvent(event) || super.onMediaButtonEvent(mediaButtonEvent)
         }
     }
 
@@ -83,13 +86,8 @@ class NomlaMediaSession(
         get() = session?.isActive == true
 
     @get:VisibleForTesting
-    val sessionToken: MediaSessionCompat.Token?
+    val sessionToken: MediaSession.Token?
         get() = session?.sessionToken
-
-    /** The state the session advertises to the system (null while no session is held). */
-    @get:VisibleForTesting
-    val playbackState: PlaybackStateCompat?
-        get() = session?.controller?.playbackState
 
     /** Follows [state], the current session's, until [detach]. */
     fun attach(state: Flow<SessionState>) {
@@ -137,15 +135,15 @@ class NomlaMediaSession(
             // Explicit handler: ensureSession runs on main today, but don't depend on it.
             setCallback(callback, mainHandler)
             setPlaybackState(
-                PlaybackStateCompat.Builder()
+                PlaybackState.Builder()
                     .setActions(
-                        PlaybackStateCompat.ACTION_PLAY_PAUSE or
-                            PlaybackStateCompat.ACTION_PLAY or
-                            PlaybackStateCompat.ACTION_PAUSE,
+                        PlaybackState.ACTION_PLAY_PAUSE or
+                            PlaybackState.ACTION_PLAY or
+                            PlaybackState.ACTION_PAUSE,
                     )
                     .setState(
-                        PlaybackStateCompat.STATE_PLAYING,
-                        PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN,
+                        PlaybackState.STATE_PLAYING,
+                        PlaybackState.PLAYBACK_POSITION_UNKNOWN,
                         1f,
                     )
                     .build(),
