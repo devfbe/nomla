@@ -136,7 +136,6 @@
         <item quantity="one">%d usuari</item>
         <item quantity="other">%d usuaris</item>
     </plurals>
-    <string name="donation_thanks">Gràcies per la donació.</string>
     <string name="default_">Predeterminat</string>
     <string name="orbot_not_installed">L\'apliació Orbot no està instal·lada. No s\'usa Tor.</string>
     <string name="grant_perm_draw_over_apps">Permeteu a l\'aplicació mostrar-se per sobre d\'altres aplicacions.</string>

@@ -7,7 +7,6 @@
         <item quantity="few">%d uživatelé</item>
         <item quantity="other">%d uživatelů</item>
     </plurals>
-    <string name="donation_thanks">Děkujeme vám za váš dar.</string>
     <string name="default_">Výchozí</string>
     <string name="orbot_tor_failed">Nepodařilo se připojit k místnímu Tor proxy serveru na portu %d (SOCKS).
 \n

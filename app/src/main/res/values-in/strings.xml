@@ -116,7 +116,6 @@
     <string name="grant_perm_notifications">Mohon izinkan pengiriman notifikasi.</string>
     <string name="orbot_not_installed">Aplikasi Orbot tidak terinstal. Tor tidak digunakan.</string>
     <string name="default_">Default</string>
-    <string name="donation_thanks">Terima kasih atas donasi anda.</string>
     <string name="image_confirm_send">Kirim gambar ini?</string>
     <plurals name="search_channel_users">
         <item quantity="other">%d user</item>

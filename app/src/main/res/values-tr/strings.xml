@@ -12,7 +12,6 @@
         <item quantity="one">%d kullanıcı</item>
         <item quantity="other">%d kullanıcı</item>
     </plurals>
-    <string name="donation_thanks">Bağış için teşekkürler.</string>
     <string name="default_">Öntanımlı</string>
     <string name="orbot_tor_failed">%d bağlantı noktasındaki yerel Tor vekil sunucusuna (SOCKS) bağlanılamadı.
 \n

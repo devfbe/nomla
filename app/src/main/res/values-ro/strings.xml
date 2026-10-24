@@ -292,7 +292,6 @@
     <string name="orbot_not_installed">Aplicația Orbot nu este instalată. Tor nu este folosit.</string>
     <string name="orbot_tor_failed">Nu s-a putut conecta la proxy-ul Tor local pe portul %d (SOCKS).\n\nAsigură-te că aplicația Orbot rulează.</string>
     <string name="default_">Implicit</string>
-    <string name="donation_thanks">Mulțumim pentru donație.</string>
     <string name="image_confirm_send">Trimiți această imagine?</string>
     <plurals name="search_channel_users">
         <item quantity="one">%d utilizator</item>

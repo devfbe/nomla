@@ -29,7 +29,6 @@
     <string name="donate_dialog_positivebutton_goog">支持 Nomla</string>
     <string name="donate_thanks_goog">感謝你的支持！</string>
     <string name="donate_dialog_message_goog">感謝你使用 Nomla！懇請考慮小額贊助使 Nomla 得以持續活躍並移除此訊息。</string>
-    <string name="donation_thanks">感謝你的贊助。</string>
     <string name="server_match_info">名稱: %1$s\n主機: %2$s:%3$d\n使用者數: %4$d / %5$d\n版本: %6$s\n國家: %7$s\n延遲: %8$d ms</string>
     <string name="server_match_not_found">找不到伺服器</string>
     <string name="server_match_found">成功尋找到伺服器</string>

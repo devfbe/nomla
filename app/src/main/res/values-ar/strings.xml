@@ -133,7 +133,6 @@
     <string name="context_channel_link">اربط</string>
     <string name="context_channel_unlink_all">فك الربط</string>
     <string name="default_">الافتراضي</string>
-    <string name="donation_thanks">شكرًا على التبرع.</string>
     <plurals name="search_channel_users">
         <item quantity="zero">لا مستخدمين</item>
         <item quantity="one">مستخدم واحد</item>

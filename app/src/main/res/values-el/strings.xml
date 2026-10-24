@@ -167,7 +167,6 @@
     <string name="change_requires_reconnect">Επανασυνδεθείτε για να χρησιμοποιήσετε τις νέες ρυθμίσεις.</string>
     <string name="shout_configure">Ρύθμιση παραμέτρων φωνητικού στόχου</string>
     <string name="shout_failed">Δεν ήταν δυνατή η δημιουργία φωνητικού στόχου.</string>
-    <string name="donation_thanks">Σας ευχαριστούμε για τη δωρεά.</string>
     <string name="image_confirm_send">Αποστολή αυτής της εικόνας;</string>
     <string name="orbot_not_installed">Η εφαρμογή Orbot δεν είναι εγκατεστημένη. Δεν χρησιμοποιείτε το Tor.</string>
     <plurals name="search_channel_users">

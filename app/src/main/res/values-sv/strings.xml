@@ -30,7 +30,6 @@
     <string name="orbot_tor_failed">Kunde inte ansluta till en lokal Tor-proxy på port %d (SOCKS).
 \n
 \nVänligen försäkra dig om att Orbot-appen körs.</string>
-    <string name="donation_thanks">Tack för donationen.</string>
     <string name="image_confirm_send">Skicka den här bilden?</string>
     <string name="drawer_favorites">Favoriter</string>
     <string name="drawer_header_servers">Servrar</string>

@@ -258,7 +258,6 @@
     <string name="orbot_not_installed">Ứng dụng Orbot chưa được cài đặt. Không dùng Tor.</string>
     <string name="orbot_tor_failed">Không thể kết nối tới proxy Tor cục bộ trên cổng %d (SOCKS).\n\nHãy đảm bảo ứng dụng Orbot đang chạy.</string>
     <string name="default_">Mặc định</string>
-    <string name="donation_thanks">Cảm ơn bạn đã ủng hộ.</string>
     <string name="image_confirm_send">Gửi hình ảnh này?</string>
     <plurals name="search_channel_users">
         <item quantity="other">%d người dùng</item>

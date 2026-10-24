@@ -265,7 +265,6 @@
     <string name="orbot_not_installed">Lietotne Orbot nav instalēta. Tor netiek izmantots.</string>
     <string name="orbot_tor_failed">Neizdevās savienoties ar lokālo Tor starpniekserveri portā %d (SOCKS).\n\nLūdzu, pārliecinieties, ka lietotne Orbot darbojas.</string>
     <string name="default_">Noklusējums</string>
-    <string name="donation_thanks">Paldies par ziedojumu.</string>
     <string name="image_confirm_send">Sūtīt šo attēlu?</string>
     <plurals name="search_channel_users">
         <item quantity="zero">%d lietotāju</item>

@@ -53,7 +53,6 @@
         <item quantity="one">%d bruker</item>
         <item quantity="other">%d brukere</item>
     </plurals>
-    <string name="donation_thanks">Takk for din donasjon.</string>
     <string name="default_">Forvalg</string>
     <string name="orbot_tor_failed">Kunne ikke koble til lokal Tor-mellomtjener på port %d (SOCKS).
 \n

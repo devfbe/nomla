@@ -97,7 +97,6 @@
     <string name="overlay">In Sovrimpressione</string>
     <string name="user_menu_deafen">Escluditi</string>
     <string name="user_menu_priority_speaker">Altoparlante prioritario</string>
-    <string name="donation_thanks">Grazie per la donazione.</string>
     <string name="default_">Predefinito</string>
     <string name="orbot_tor_failed">Impossibile connettersi al proxy locale Tor sulla porta %d (SOCKS).
 \n

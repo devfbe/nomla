@@ -5,7 +5,6 @@
         <item quantity="one">%d käyttäjä</item>
         <item quantity="other">%d käyttäjät</item>
     </plurals>
-    <string name="donation_thanks">Kiitos lahjoituksesta.</string>
     <string name="default_">Oletus</string>
     <string name="orbot_tor_failed">Yhteyttä paikalliseen Tor-välityspalvelimeen portissa %d (SOCKS) ei voitu muodostaa.
 \n

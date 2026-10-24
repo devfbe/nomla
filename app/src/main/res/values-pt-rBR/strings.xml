@@ -40,7 +40,6 @@
         <item quantity="one">%d usuário</item>
         <item quantity="other">%d usuários</item>
     </plurals>
-    <string name="donation_thanks">Obrigado pela doação.</string>
     <string name="default_">Padrão</string>
     <string name="orbot_tor_failed">Não foi possível conectar ao proxy Tor local na porta %d (SOCKS).
 \n

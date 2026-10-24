@@ -3,7 +3,6 @@
     <plurals name="search_channel_users">
         <item quantity="other">%d ชื่อผู้ใช้</item>
     </plurals>
-    <string name="donation_thanks">ขอบคุณที่บริจาค.</string>
     <string name="default_">ค่าปกติ</string>
     <string name="orbot_tor_failed">ไม่สามารถเชื่อมต่อ local Tor proxy on port %d (SOCKS).
 \n

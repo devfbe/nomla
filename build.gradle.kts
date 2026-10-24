@@ -88,7 +88,6 @@ tasks.register("verify") {
         ":app:assembleFossDebugAndroidTest",
         ":app:lintFossDebug",
         ":app:lintGoogDebug",
-        ":app:lintDonationDebug",
         ":app:lintBetaDebug",
         ":app:detekt",
         ":libraries:core:lintDebug",

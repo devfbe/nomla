@@ -159,7 +159,6 @@
 \n
 \nUpewnij się, że aplikacja Orbot jest uruchomiona.</string>
     <string name="default_">Domyślny</string>
-    <string name="donation_thanks">Dziękujemy za darowiznę.</string>
     <plurals name="search_channel_users">
         <item quantity="one">%d użytkownik</item>
         <item quantity="few">%d użytkowników</item>

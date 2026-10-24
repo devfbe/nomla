@@ -146,7 +146,6 @@
 \n
 \nПереконайтеся, що програма Orbot запущена.</string>
     <string name="default_">За замовчуванням</string>
-    <string name="donation_thanks">Дякуємо за пожертвування.</string>
     <string name="image_confirm_send">Надіслати це зображення?</string>
     <plurals name="search_channel_users">
         <item quantity="one">%d користувач</item>

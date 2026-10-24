@@ -63,10 +63,6 @@ android {
             dimension = "release"
             applicationId = "koeln.becker.nomla"
         }
-        create("donation") {
-            dimension = "release"
-            applicationId = "koeln.becker.nomla.donation"
-        }
         create("beta") {
             dimension = "release"
             applicationId = "koeln.becker.nomla.beta"

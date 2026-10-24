@@ -151,7 +151,6 @@
     <string name="change_requires_reconnect">Stellen Sie die Verbindung wieder her, um neue Einstellungen zu verwenden.</string>
     <string name="chat_message_tts_short_link">(Link zu %1$s)</string>
     <string name="error_writing_to_storage">Konnte nicht auf externen Speicher schreiben.</string>
-    <string name="donation_thanks">Danke für die Spende.</string>
     <string name="orbot_tor_failed">Keine Verbindung zum lokalen Tor-Proxy auf SOCKS-Port %d.\n\nBitte stellen Sie sicher, dass die Orbot-App läuft.</string>
     <string name="orbot_not_installed">Die Orbot-App ist nicht installiert. Tor wird nicht benutzt.</string>
     <string name="grant_perm_draw_over_apps">Bitte erlauben Sie Nomla, über anderen Apps angezeigt zu werden.</string>

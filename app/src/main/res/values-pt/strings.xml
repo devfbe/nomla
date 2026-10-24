@@ -92,7 +92,6 @@
     <string name="drawer_not_connected">Desconectado</string>
     <string name="drawer_close">Fechar barra de navegação</string>
     <string name="drawer_open">Abrir barra de navegação</string>
-    <string name="donation_thanks">Agradecemos sua doação.</string>
     <string name="server_info_version">%1$s (%2$s)</string>
     <plurals name="search_channel_users">
         <item quantity="one">%d usuário</item>

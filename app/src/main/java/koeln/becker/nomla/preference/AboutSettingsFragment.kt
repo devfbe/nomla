@@ -88,7 +88,6 @@ class AboutSettingsFragment : NomlaPreferenceFragment(R.xml.settings_about) {
                 append("\nBeta flavor with versioncode ${BuildConfig.VERSION_CODE}")
                 append("\nBuildtime ${format.format(Date(BuildConfig.TIMESTAMP))} UTC")
             }
-            "donation" -> append("\n*) ${getString(R.string.donation_thanks)}")
         }
     }
 }

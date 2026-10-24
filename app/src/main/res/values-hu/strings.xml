@@ -128,7 +128,6 @@
     <string name="grant_perm_microphone">Kérlek, adj engedélyt a mikrofonhoz.</string>
     <string name="shout_configure">Hangcél konfigurálása</string>
     <string name="default_">Alapértelmezett</string>
-    <string name="donation_thanks">Köszönjük a támogatást.</string>
     <string name="image_confirm_send">Elküldöd az üzenetet?</string>
     <string name="error_fetching_servers">Nem sikerült lekérni a szerverek listáját.
 \nBiztosan csatlakozva vagy az Internethez?</string>

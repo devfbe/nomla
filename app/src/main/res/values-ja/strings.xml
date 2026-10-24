@@ -299,7 +299,6 @@
     <string name="orbot_not_installed">Orbot アプリがインストールされていません。Tor は使用されません。</string>
     <string name="orbot_tor_failed">ポート %d (SOCKS) のローカル Tor プロキシに接続できませんでした。\n\nOrbot アプリが実行中であることを確認してください。</string>
     <string name="default_">デフォルト</string>
-    <string name="donation_thanks">寄付をありがとうございます。</string>
     <string name="image_confirm_send">この画像を送信しますか?</string>
     <string name="app_news">新機能</string>
     <string name="app_news_summary">最新の更新を表示</string>

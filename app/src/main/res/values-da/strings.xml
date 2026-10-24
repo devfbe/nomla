@@ -54,7 +54,6 @@
     <string name="invalid_certificate">Ugyldigt certifikat kunne ikke indlæses.</string>
     <string name="context_channel_link">Link</string>
     <string name="default_">Standard</string>
-    <string name="donation_thanks">Tak for donationen.</string>
     <plurals name="search_channel_users">
         <item quantity="one">%d bruger</item>
         <item quantity="other">%d brugere</item>

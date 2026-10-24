@@ -153,7 +153,6 @@
     <string name="grant_perm_draw_over_apps">பிற பயன்பாடுகளைக் காண்பிக்க இசைவு வழங்கவும்.</string>
     <string name="orbot_not_installed">ஆர்போட் பயன்பாடு நிறுவப்படவில்லை. டோர் பயன்படுத்தவில்லை.</string>
     <string name="default_">இயல்புநிலை</string>
-    <string name="donation_thanks">நன்கொடைக்கு நன்றி.</string>
     <string name="drawer_open">அலமாரி திற</string>
     <string name="perm_denied">இசைவு மறுக்கப்பட்டது.</string>
     <string name="connection_lost_reconnecting">இணைப்பு துண்டிக்கப்பட்டது – மீண்டும் இணைக்கிறது…</string>
