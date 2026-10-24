@@ -21,7 +21,6 @@ import android.Manifest
 import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Build
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
@@ -60,30 +59,7 @@ class NotificationPostingTest {
 
     private fun showMessage() = NomlaMessageNotification(context).show("alice", "hello")
 
-    /**
-     * Below API 33 ContextCompat.registerReceiver emulates RECEIVER_NOT_EXPORTED behind
-     * [DYNAMIC_RECEIVER_PERMISSION] and throws unless the app holds it. A real install grants it
-     * (androidx.core declares it at signature level); Robolectric grants no install-time
-     * permissions, so it is granted here.
-     */
-    private fun showReconnect(): NomlaReconnectNotification {
-        shadowOf(context as Application)
-            .grantPermissions(context.packageName + DYNAMIC_RECEIVER_PERMISSION)
-        return NomlaReconnectNotification(context, NoopActions).also { it.show("connection lost") }
-    }
-
-    /**
-     * The declaration comes from androidx.core's manifest. If it disappears while minSdk < 33,
-     * NomlaReconnectNotification.show() throws on Android 12.
-     */
-    @Test
-    fun `the merged manifest declares the permission ContextCompat needs below api 33`() {
-        val info = context.packageManager
-            .getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)
-
-        assertThat(info.requestedPermissions?.toList())
-            .contains(context.packageName + DYNAMIC_RECEIVER_PERMISSION)
-    }
+    private fun showReconnect() = NomlaReconnectNotification(context).show("connection lost")
 
     /** Shows each kind of notification afresh and checks whether it reached the manager. */
     private fun assertEachKindIsPosted(posted: Boolean) {
@@ -134,13 +110,4 @@ class NotificationPostingTest {
 
     private fun assumeTiramisuOrLater() =
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-
-    private companion object {
-        const val DYNAMIC_RECEIVER_PERMISSION = ".DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
-    }
-
-    private object NoopActions : NomlaReconnectNotification.OnActionListener {
-        override fun onReconnectNotificationDismissed() = Unit
-        override fun reconnect() = Unit
-    }
 }

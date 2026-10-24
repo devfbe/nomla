@@ -21,7 +21,6 @@ import android.Manifest
 import android.app.Application
 import android.app.Notification
 import android.app.NotificationManager
-import android.content.Context
 import androidx.core.app.NotificationCompat
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
@@ -30,40 +29,30 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
-import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
-import koeln.becker.nomla.testing.assertOwnImmutableBroadcast
+import koeln.becker.nomla.service.NotificationActionReceiver.Companion.ACTION_PROMPT_DISMISSED
+import koeln.becker.nomla.service.NotificationActionReceiver.Companion.ACTION_RECONNECT
+import koeln.becker.nomla.testing.assertNotificationAction
 
 /**
- * The prompt shown when a session ended with an error: what it says and what its three intents
- * reach. Posting across the POST_NOTIFICATIONS boundary is in NotificationPostingTest.
+ * The prompt shown when a session ended with an error: what it says and where its two intents
+ * go; what they then do is NotificationActionReceiverTest's. Posting across the
+ * POST_NOTIFICATIONS boundary is in NotificationPostingTest.
  */
 @RunWith(RobolectricTestRunner::class)
 class NomlaReconnectNotificationTest {
-    class RecordingActions : NomlaReconnectNotification.OnActionListener {
-        val calls = mutableListOf<String>()
-        override fun onReconnectNotificationDismissed() {
-            calls += "dismissed"
-        }
-
-        override fun reconnect() {
-            calls += "reconnect"
-        }
-    }
-
     private val context: Application get() = ApplicationProvider.getApplicationContext()
     private val notificationManager: NotificationManager
         get() = context.getSystemService(NotificationManager::class.java)
-    private val actions = RecordingActions()
 
     @Before
     fun grant() {
         shadowOf(context).grantPermissions(Manifest.permission.POST_NOTIFICATIONS)
     }
 
-    private fun show(error: String) = NomlaReconnectNotification(context, actions).also { it.show(error) }
+    private fun show(error: String) = NomlaReconnectNotification(context).also { it.show(error) }
 
-    /** A second prompt replaces the first and registers nothing twice. */
+    /** A second prompt replaces the first. */
     @Test
     fun showingAgainReplacesThePrompt() {
         val notification = show("first")
@@ -71,14 +60,10 @@ class NomlaReconnectNotificationTest {
         notification.show("second")
 
         assertThat(posted()!!.extras.getString(Notification.EXTRA_TEXT)).isEqualTo("second")
-        assertThat(ourReceivers()).hasSize(1)
+        assertThat(shadowOf(notificationManager).allNotifications).hasSize(1)
     }
 
     private fun posted(): Notification? = shadowOf(notificationManager).getNotification(NOTIFICATION_ID)
-
-    private fun ourReceivers() = shadowOf(context).registeredReceivers.filter {
-        it.intentFilter.hasAction("b_reconnect")
-    }
 
 
     @Test
@@ -115,53 +100,23 @@ class NomlaReconnectNotificationTest {
         assertThat(n.actions.map { it.title.toString() }).containsExactly(context.getString(R.string.reconnect))
         @Suppress("DEPRECATION")
         assertThat(n.actions.single().icon).isEqualTo(R.drawable.ic_action_move)
-        n.actions.single().actionIntent.send()
-        idleMainLooper()
-        assertThat(actions.calls).containsExactly("reconnect")
+        assertNotificationAction(n.actions.single().actionIntent, ACTION_RECONNECT)
     }
 
     @Test
     fun swipingItAwayIsReported() {
         show("socket reset")
 
-        posted()!!.deleteIntent.send()
-        idleMainLooper()
-
-        assertThat(actions.calls).containsExactly("dismissed")
+        assertNotificationAction(posted()!!.deleteIntent, ACTION_PROMPT_DISMISSED)
     }
 
     @Test
-    fun everyIntentIsAddressedToThisAppAndImmutable() {
-        show("socket reset")
-
-        val n = posted()!!
-        for (intent in listOf(n.deleteIntent, n.actions.single().actionIntent)) {
-            assertOwnImmutableBroadcast(intent, context.packageName)
-        }
-    }
-
-    @Test
-    fun theReceiverIsNotExported() {
-        show("socket reset")
-
-        val receiver = ourReceivers().single()
-        assertThat(receiver.flags and Context.RECEIVER_NOT_EXPORTED).isNotEqualTo(0)
-        assertThat(receiver.intentFilter.actionsIterator().asSequence().toList())
-            .containsExactly("b_dismiss", "b_reconnect")
-    }
-
-    @Test
-    fun hideCancelsTheNotificationAndStopsListening() {
+    fun hideCancelsTheNotification() {
         val notification = show("socket reset")
-        val reconnect = posted()!!.actions.single().actionIntent
 
         notification.hide()
 
         assertThat(posted()).isNull()
-        assertThat(ourReceivers()).isEmpty()
-        reconnect.send()
-        idleMainLooper()
-        assertThat(actions.calls).isEmpty()
     }
 
     @Test

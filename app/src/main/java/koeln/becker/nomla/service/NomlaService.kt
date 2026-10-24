@@ -71,11 +71,8 @@ import koeln.becker.nomla.util.collectEvents
  * reconnect prompt). It observes the [SessionManager]'s current session and stops itself once none
  * is active.
  */
-@Suppress("TooManyFunctions") // Framework and notification callbacks, each delegating.
-class NomlaService :
-    Service(),
-    NomlaConnectionNotification.OnActionListener,
-    NomlaReconnectNotification.OnActionListener {
+@Suppress("TooManyFunctions") // Framework callbacks and session rendering, each delegating.
+class NomlaService : Service() {
 
     private lateinit var sessions: SessionManager
     private lateinit var settings: Settings
@@ -138,11 +135,11 @@ class NomlaService :
         // Overlay views need the theme set manually; the <application> theme does not apply.
         setTheme(R.style.Theme_Nomla)
 
-        notification = NomlaConnectionNotification.create(this, "", this)
+        notification = NomlaConnectionNotification.create(this, "")
         chatAlerts = ChatAlerts(this, sessions, settings) { context, listener ->
             parts.newTextToSpeech(context, listener)
         }
-        reconnectPrompt = NomlaReconnectNotification(this, this)
+        reconnectPrompt = NomlaReconnectNotification(this)
         channelOverlay = parts.newOverlay(this, sessions)
         hotCorner = parts.newHotCorner(this, settings.hotCornerGravity, hotCornerListener)
         chatAlerts.applyTextToSpeechPreference()
@@ -400,16 +397,6 @@ class NomlaService :
         }
     }
 
-    override fun onMuteToggled() {
-        sessions.connected?.let(::toggleSelfMute)
-    }
-
-    override fun onDeafenToggled() {
-        sessions.connected?.let(::toggleSelfDeafen)
-    }
-
-    override fun onDisconnectRequested() = sessions.disconnect()
-
     /** Shows or hides the overlay; the app has obtained the permission to draw over other apps first. */
     private fun toggleOverlay() {
         when {
@@ -417,13 +404,6 @@ class NomlaService :
             sessions.connected != null && android.provider.Settings.canDrawOverlays(this) -> channelOverlay.show()
         }
     }
-
-    /** A press on a stale notification after the reconnect succeeded is a no-op. */
-    override fun onReconnectCancelled() = sessions.cancelReconnect()
-
-    override fun onReconnectNotificationDismissed() = sessions.markErrorShown()
-
-    override fun reconnect() = sessions.reconnect()
 
     companion object {
         private const val TAG = "NomlaService"

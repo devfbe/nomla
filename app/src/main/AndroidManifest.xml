@@ -61,6 +61,11 @@
             android:enabled="true"
             android:foregroundServiceType="microphone" />
 
+        <!-- The notifications' buttons; reached only by explicit PendingIntents. -->
+        <receiver
+            android:name=".service.NotificationActionReceiver"
+            android:exported="false" />
+
         <service
             android:name=".service.MuteTileService"
             android:exported="true"

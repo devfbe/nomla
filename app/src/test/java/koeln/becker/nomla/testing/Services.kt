@@ -20,11 +20,14 @@ package koeln.becker.nomla.testing
 import android.app.ForegroundServiceStartNotAllowedException
 import android.app.PendingIntent
 import android.app.Service
+import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
 import org.robolectric.Robolectric
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.android.controller.ServiceController
+import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.service.NomlaService
+import koeln.becker.nomla.service.NotificationActionReceiver
 
 /**
  * A created [NomlaService]. [beforeCreate] runs on the bare instance first, where the seams that
@@ -40,10 +43,22 @@ fun Service.refuseForegroundStarts() {
     )
 }
 
-/** [intent] is a broadcast only this app ([packageName]) receives, and nobody can alter it. */
-fun assertOwnImmutableBroadcast(intent: PendingIntent, packageName: String) {
+/**
+ * [intent] is a broadcast of [action] to [NotificationActionReceiver], named by class so no other
+ * app's receiver can see it, and nobody can alter it.
+ */
+fun assertNotificationAction(intent: PendingIntent, action: String) {
     val pending = shadowOf(intent)
     assertThat(pending.isBroadcast).isTrue()
     assertThat(pending.isImmutable).isTrue()
-    assertThat(pending.savedIntent.`package`).isEqualTo(packageName)
+    assertThat(pending.savedIntent.component?.className).isEqualTo(NotificationActionReceiver::class.java.name)
+    assertThat(pending.savedIntent.action).isEqualTo(action)
+}
+
+/** Delivers [intent], a notification button's, to [NotificationActionReceiver] as the platform would. */
+fun pressNotificationAction(intent: PendingIntent) {
+    val sent = shadowOf(intent).savedIntent
+    assertThat(sent.component?.className).isEqualTo(NotificationActionReceiver::class.java.name)
+    NotificationActionReceiver().onReceive(ApplicationProvider.getApplicationContext(), sent)
+    idleMainLooper()
 }

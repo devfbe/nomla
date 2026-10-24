@@ -59,6 +59,7 @@ import koeln.becker.nomla.service.ipc.TalkBroadcastReceiver
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.testing.createNomlaService
 import koeln.becker.nomla.testing.installSession
+import koeln.becker.nomla.testing.pressNotificationAction
 import koeln.becker.nomla.testing.refuseForegroundStarts
 import koeln.becker.nomla.testing.replaceParts
 import koeln.becker.nomla.testing.serverState
@@ -176,8 +177,8 @@ class NomlaServiceTest {
 
     private fun reconnectPrompt(): Notification? = shadowOf(notificationManager).getNotification(RECONNECT_ID)
 
-    private fun promptReceivers() =
-        shadowOf(app).registeredReceivers.filter { it.intentFilter.hasAction("b_reconnect") }
+    /** A press of the notification button for [action], as NotificationActionReceiver gets it. */
+    private fun press(action: String) = pressNotificationAction(NotificationActionReceiver.pendingIntent(app, action))
 
     private fun talkReceivers() = shadowOf(app).registeredReceivers.filter {
         it.intentFilter.hasAction(TalkBroadcastReceiver.BROADCAST_TALK)
@@ -243,9 +244,10 @@ class NomlaServiceTest {
     fun theDisconnectActionEndsTheSession() {
         move(SessionState.Connected)
 
-        shadowOf(notificationManager).getNotification(FOREGROUND_ID)!!.actions
-            .single { it.title.toString() == app.getString(R.string.disconnect) }.actionIntent.send()
-        idleMainLooper()
+        pressNotificationAction(
+            shadowOf(notificationManager).getNotification(FOREGROUND_ID)!!.actions
+                .single { it.title.toString() == app.getString(R.string.disconnect) }.actionIntent,
+        )
 
         verify { session.disconnect() }
     }
@@ -284,9 +286,10 @@ class NomlaServiceTest {
     fun theCancelActionGivesUpTheReconnect() {
         move(SessionState.ConnectionLost(2_000, 1, lost))
 
-        shadowOf(notificationManager).getNotification(FOREGROUND_ID)!!.actions
-            .single { it.title.toString() == app.getString(R.string.cancel_reconnect) }.actionIntent.send()
-        idleMainLooper()
+        pressNotificationAction(
+            shadowOf(notificationManager).getNotification(FOREGROUND_ID)!!.actions
+                .single { it.title.toString() == app.getString(R.string.cancel_reconnect) }.actionIntent,
+        )
 
         verify { session.cancelReconnect() }
         assertThat(sessions.errorShown.value).isTrue()
@@ -356,14 +359,15 @@ class NomlaServiceTest {
     }
 
     @Test
-    fun aRefusalPromptReplacesAnOlderPromptIncludingItsReceiver() {
+    fun aRefusalPromptReplacesAnOlderPrompt() {
         move(SessionState.Disconnected(lost))
         service.refuseForegroundStarts()
 
         move(SessionState.Connecting)
         move(SessionState.Connected)
 
-        assertThat(promptReceivers()).hasSize(1)
+        assertThat(reconnectPrompt()!!.extras.getString(Notification.EXTRA_TEXT))
+            .isEqualTo(app.getString(R.string.foreground_start_failed))
     }
 
     // Our own state
@@ -497,14 +501,13 @@ class NomlaServiceTest {
         assertThat(prompt.actions.single().title.toString()).isEqualTo(app.getString(R.string.reconnect))
     }
 
-    /** The prompt's buttons need the service, so it stays until the prompt is gone. */
+    /** The prompt goes when the service does, so the service stays until the prompt is gone. */
     @Test
     fun theServiceStaysWhileThePromptIsUpAndStopsOnceItIsDismissed() {
         move(SessionState.Disconnected(lost))
         assertThat(shadowOf(service).isStoppedBySelf).isFalse()
 
-        reconnectPrompt()!!.deleteIntent.send()
-        idleMainLooper()
+        pressNotificationAction(reconnectPrompt()!!.deleteIntent)
 
         assertThat(sessions.errorShown.value).isTrue()
         assertThat(shadowOf(service).isStoppedBySelf).isTrue()
@@ -516,8 +519,7 @@ class NomlaServiceTest {
         every { session.config } returns config
         move(SessionState.Disconnected(lost))
 
-        reconnectPrompt()!!.actions.single().actionIntent.send()
-        idleMainLooper()
+        pressNotificationAction(reconnectPrompt()!!.actions.single().actionIntent)
 
         assertThat(created.single()).isSameInstanceAs(config)
     }
@@ -593,11 +595,10 @@ class NomlaServiceTest {
     }
 
     @Test
-    fun aNewPromptReplacesTheOldOneIncludingItsReceiver() {
+    fun aNewPromptReplacesTheOldOne() {
         move(SessionState.Disconnected(lost))
         move(SessionState.Disconnected(DisconnectReason.Network("again", null)))
 
-        assertThat(promptReceivers()).hasSize(1)
         assertThat(reconnectPrompt()!!.extras.getString(Notification.EXTRA_TEXT)).isEqualTo("again")
     }
 
@@ -923,14 +924,14 @@ class NomlaServiceTest {
         assertThat(proximityLockHeld()).isFalse()
     }
 
-    // The notification actions and the talk keys
+    // The notification actions (through NotificationActionReceiver) and the talk keys
 
     @Test
     fun muteToggleFlipsMuteAndDropsDeafenWhenUnmuting() {
         self(user(SELF, muted = true, deafened = true))
         move(SessionState.Connected)
 
-        service.onMuteToggled()
+        press(NotificationActionReceiver.ACTION_MUTE)
 
         verify { session.actions.setSelfMuteDeafState(false, false) }
     }
@@ -940,7 +941,7 @@ class NomlaServiceTest {
         self(user(SELF, muted = false, deafened = true))
         move(SessionState.Connected)
 
-        service.onMuteToggled()
+        press(NotificationActionReceiver.ACTION_MUTE)
 
         verify { session.actions.setSelfMuteDeafState(true, true) }
     }
@@ -948,9 +949,9 @@ class NomlaServiceTest {
     @Test
     fun deafenToggleSetsBothFromTheDeafenState() {
         move(SessionState.Connected)
-        service.onDeafenToggled()
+        press(NotificationActionReceiver.ACTION_DEAFEN)
         self(user(SELF, muted = true, deafened = true))
-        service.onDeafenToggled()
+        press(NotificationActionReceiver.ACTION_DEAFEN)
 
         verify { session.actions.setSelfMuteDeafState(true, true) }
         verify { session.actions.setSelfMuteDeafState(false, false) }
@@ -959,12 +960,12 @@ class NomlaServiceTest {
     /** A stale notification button outside a synchronized session does nothing, and throws nothing. */
     @Test
     fun theTogglesDoNothingWithoutASynchronizedSessionOrOurUser() {
-        service.onMuteToggled()
-        service.onDeafenToggled()
+        press(NotificationActionReceiver.ACTION_MUTE)
+        press(NotificationActionReceiver.ACTION_DEAFEN)
         move(SessionState.Connected)
         self(null)
-        service.onMuteToggled()
-        service.onDeafenToggled()
+        press(NotificationActionReceiver.ACTION_MUTE)
+        press(NotificationActionReceiver.ACTION_DEAFEN)
 
         verify(exactly = 0) { session.actions.setSelfMuteDeafState(any(), any()) }
     }
@@ -1161,7 +1162,6 @@ class NomlaServiceTest {
         assertThat(talkReceivers()).isEmpty()
         assertThat(shadowOf(service).isForegroundStopped).isTrue()
         assertThat(shadowOf(notificationManager).allNotifications).isEmpty()
-        assertThat(promptReceivers()).isEmpty()
         assertThat(service.proximityLock).isNull()
         // Nothing follows the session or the preferences any more.
         emit(NomlaEvent.TextMessage(textMessage("after")))

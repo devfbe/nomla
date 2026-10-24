@@ -18,88 +18,43 @@
 
 package koeln.becker.nomla.service
 
-import android.Manifest
-import android.app.PendingIntent
-import android.app.PendingIntent.FLAG_IMMUTABLE
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.content.pm.PackageManager
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
 import koeln.becker.nomla.R
+import koeln.becker.nomla.service.NotificationActionReceiver.Companion.ACTION_PROMPT_DISMISSED
+import koeln.becker.nomla.service.NotificationActionReceiver.Companion.ACTION_RECONNECT
 
-/** A prompt to reconnect, under why the session ended. Shows on the application context. */
-class NomlaReconnectNotification(
-    private val context: Context,
-    private val listener: OnActionListener,
-) {
-    private val notificationReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            when (intent.action) {
-                BROADCAST_DISMISS -> listener.onReconnectNotificationDismissed()
-                BROADCAST_RECONNECT -> listener.reconnect()
-            }
-        }
-    }
-
-    private var listening = false
+/**
+ * A prompt to reconnect, under why the session ended. Shows on the application context; its
+ * button and its dismissal go to [NotificationActionReceiver].
+ */
+class NomlaReconnectNotification(private val context: Context) {
 
     /** Posts the prompt, or replaces the one that is up. */
     fun show(error: String) {
-        if (!listening) {
-            val filter = IntentFilter().apply {
-                addAction(BROADCAST_DISMISS)
-                addAction(BROADCAST_RECONNECT)
-            }
-            ContextCompat.registerReceiver(context, notificationReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
-            listening = true
-        }
-
-        NotificationChannels.create(context)
-
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_notify)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             // No setDefaults(VIBRATE | LIGHTS): since API 26 the channel decides both.
             .setContentTitle(context.getString(R.string.nomlaDisconnected))
             .setContentText(error)
-            .setDeleteIntent(broadcast(BROADCAST_DISMISS))
-            .addAction(R.drawable.ic_action_move, context.getString(R.string.reconnect), broadcast(BROADCAST_RECONNECT))
-
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
-            == PackageManager.PERMISSION_GRANTED
-        ) {
-            NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, builder.build())
-        }
+            .setDeleteIntent(NotificationActionReceiver.pendingIntent(context, ACTION_PROMPT_DISMISSED))
+            .addAction(
+                R.drawable.ic_action_move,
+                context.getString(R.string.reconnect),
+                NotificationActionReceiver.pendingIntent(context, ACTION_RECONNECT),
+            )
+        context.postNotification(NOTIFICATION_ID, builder.build())
     }
 
     fun hide() {
-        if (listening) {
-            context.unregisterReceiver(notificationReceiver)
-            listening = false
-        }
         NotificationManagerCompat.from(context).cancel(NOTIFICATION_ID)
-    }
-
-    /** See NomlaConnectionNotification.broadcast: the action is the identity, nothing goes stale. */
-    private fun broadcast(action: String): PendingIntent {
-        val intent = Intent(action).setPackage(context.packageName)
-        return PendingIntent.getBroadcast(context, 0, intent, FLAG_IMMUTABLE)
-    }
-
-    interface OnActionListener {
-        fun onReconnectNotificationDismissed()
-        fun reconnect()
     }
 
     companion object {
         /** Not 2: that is NomlaMessageNotification's id, whose dismissal would cancel this too. */
         private const val NOTIFICATION_ID = 3
         private const val CHANNEL_ID = NotificationChannels.RECONNECT
-        private const val BROADCAST_DISMISS = "b_dismiss"
-        private const val BROADCAST_RECONNECT = "b_reconnect"
     }
 }

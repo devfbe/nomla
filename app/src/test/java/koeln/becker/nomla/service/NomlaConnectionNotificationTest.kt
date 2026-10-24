@@ -17,17 +17,14 @@
 
 package koeln.becker.nomla.service
 
-import android.app.Application
 import android.app.ForegroundServiceStartNotAllowedException
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
-import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
 import com.google.common.truth.Truth.assertWithMessage
 import org.junit.After
@@ -39,18 +36,22 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.android.controller.ServiceController
 import org.robolectric.annotation.Config
-import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.MainScreen
 import koeln.becker.nomla.R
 import koeln.becker.nomla.app.DrawerAdapter
 import koeln.becker.nomla.app.NomlaActivity
-import koeln.becker.nomla.testing.assertOwnImmutableBroadcast
+import koeln.becker.nomla.service.NotificationActionReceiver.Companion.ACTION_CANCEL_RECONNECT
+import koeln.becker.nomla.service.NotificationActionReceiver.Companion.ACTION_DEAFEN
+import koeln.becker.nomla.service.NotificationActionReceiver.Companion.ACTION_DISCONNECT
+import koeln.becker.nomla.service.NotificationActionReceiver.Companion.ACTION_MUTE
+import koeln.becker.nomla.testing.assertNotificationAction
 import koeln.becker.nomla.testing.refuseForegroundStarts
 
 /**
  * The foreground notification: what it shows, what its buttons reach, and when it holds the
  * service in the foreground. Every assertion reads back from an object the notification does not
- * own (notification manager, foreground state, receivers, the buttons' own PendingIntents).
+ * own (notification manager, foreground state, the buttons' own PendingIntents). What the buttons
+ * then do is NotificationActionReceiverTest's.
  */
 @RunWith(RobolectricTestRunner::class)
 class NomlaConnectionNotificationTest {
@@ -59,30 +60,8 @@ class NomlaConnectionNotificationTest {
         override fun onBind(intent: Intent?): IBinder? = null
     }
 
-    /** Counts each action separately, so a button wired to the wrong callback is visible. */
-    class RecordingListener : NomlaConnectionNotification.OnActionListener {
-        val calls = mutableListOf<String>()
-        override fun onMuteToggled() {
-            calls += "mute"
-        }
-
-        override fun onDeafenToggled() {
-            calls += "deafen"
-        }
-
-        override fun onDisconnectRequested() {
-            calls += "disconnect"
-        }
-
-        override fun onReconnectCancelled() {
-            calls += "cancelReconnect"
-        }
-    }
-
     private val controller: ServiceController<HostService> = Robolectric.buildService(HostService::class.java).create()
     private val service = controller.get()
-    private val listener = RecordingListener()
-    private val app: Application get() = ApplicationProvider.getApplicationContext()
     private val notificationManager: NotificationManager
         get() = service.getSystemService(NotificationManager::class.java)
 
@@ -98,14 +77,11 @@ class NomlaConnectionNotificationTest {
 
     private fun posted(): Notification = shadowOf(notificationManager).getNotification(NOTIFICATION_ID)
 
-    private fun ourReceivers() = shadowOf(app).registeredReceivers.filter {
-        it.intentFilter.hasAction("b_mute")
-    }
-
+    private fun create(text: String) = NomlaConnectionNotification.create(service, text)
 
     @Test
     fun showPutsTheServiceInTheForegroundWithTheContentText() {
-        NomlaConnectionNotification.create(service, "Connecting", listener).show()
+        create("Connecting").show()
 
         val shadow = shadowOf(service)
         assertThat(shadow.isForegroundStopped).isFalse()
@@ -116,7 +92,7 @@ class NomlaConnectionNotificationTest {
 
     @Test
     fun theTitleIsTheServerOnceKnown() {
-        val notification = NomlaConnectionNotification.create(service, "Connecting", listener)
+        val notification = create("Connecting")
         notification.show()
         assertThat(posted().extras.getCharSequence(Notification.EXTRA_TITLE)).isNull()
 
@@ -128,7 +104,7 @@ class NomlaConnectionNotificationTest {
 
     @Test
     fun theNotificationIsAnOngoingCallWithTheAppIconAndNoTimestamp() {
-        NomlaConnectionNotification.create(service, "Connecting", listener).show()
+        create("Connecting").show()
 
         val n = shadowOf(service).lastForegroundNotification
         assertThat(n.smallIcon.resId).isEqualTo(R.drawable.ic_stat_notify)
@@ -142,7 +118,7 @@ class NomlaConnectionNotificationTest {
 
     @Test
     fun aTextChangeDoesNotAlertAgain() {
-        val notification = NomlaConnectionNotification.create(service, "Connecting", listener)
+        val notification = create("Connecting")
         notification.show()
         notification.customContentText = "Connected"
         notification.show()
@@ -153,7 +129,7 @@ class NomlaConnectionNotificationTest {
 
     @Test
     fun theChannelIsCreatedWithTheConnectedLabelAtLowImportance() {
-        NomlaConnectionNotification.create(service, "Connecting", listener).show()
+        create("Connecting").show()
 
         val channel = notificationManager.getNotificationChannel(CHANNEL_ID)
         assertThat(channel).isNotNull()
@@ -163,7 +139,7 @@ class NomlaConnectionNotificationTest {
 
     @Test
     fun tappingTheNotificationOpensTheServerDrawerOfTheMainActivity() {
-        NomlaConnectionNotification.create(service, "Connecting", listener).show()
+        create("Connecting").show()
 
         val content = shadowOf(shadowOf(service).lastForegroundNotification.contentIntent)
         assertThat(content.isActivity).isTrue()
@@ -179,7 +155,7 @@ class NomlaConnectionNotificationTest {
      */
     @Test
     fun theContentIntentReplacesAnyEarlierOneSoItsExtraIsTheOneSent() {
-        NomlaConnectionNotification.create(service, "Connecting", listener).show()
+        create("Connecting").show()
 
         val content = shadowOf(shadowOf(service).lastForegroundNotification.contentIntent)
         assertThat(content.flags and android.app.PendingIntent.FLAG_CANCEL_CURRENT).isNotEqualTo(0)
@@ -187,14 +163,14 @@ class NomlaConnectionNotificationTest {
 
     @Test
     fun noActionsAreShownUntilAskedFor() {
-        NomlaConnectionNotification.create(service, "Connecting", listener).show()
+        create("Connecting").show()
 
         assertThat(shadowOf(service).lastForegroundNotification.actions).isNull()
     }
 
     @Test
     fun theThreeActionsAreMuteDeafenAndDisconnectInThatOrder() {
-        val notification = NomlaConnectionNotification.create(service, "Connecting", listener)
+        val notification = create("Connecting")
         notification.configure("Connected", actions = true)
         notification.show()
 
@@ -209,13 +185,11 @@ class NomlaConnectionNotificationTest {
             R.drawable.ic_action_audio,
             R.drawable.ic_close,
         ).inOrder()
-        // Addressed to this app only, so no other app's receiver can see the button press.
-        for (action in actions) assertOwnImmutableBroadcast(action.actionIntent, service.packageName)
     }
 
     @Test
     fun whileMutedAndDeafenedTheActionsOfferToUndoBoth() {
-        val notification = NomlaConnectionNotification.create(service, "Connected", listener)
+        val notification = create("Connected")
         notification.configure("Connected", actions = true)
         notification.muted = true
         notification.deafened = true
@@ -234,7 +208,7 @@ class NomlaConnectionNotificationTest {
 
     @Test
     fun theActionLabelsFollowAStateChange() {
-        val notification = NomlaConnectionNotification.create(service, "Connected", listener)
+        val notification = create("Connected")
         notification.configure("Connected", actions = true)
         notification.show()
         notification.muted = true
@@ -246,37 +220,25 @@ class NomlaConnectionNotificationTest {
         ).inOrder()
     }
 
-    /** Fires each button's own PendingIntent, i.e. both halves of the wiring at once. */
+    /** Each button's own PendingIntent, so a button wired to the wrong action is visible. */
     @Test
-    fun eachActionReachesItsOwnCallback() {
-        val notification = NomlaConnectionNotification.create(service, "Connected", listener)
+    fun eachActionIsAnExplicitBroadcastOfItsOwnAction() {
+        val notification = create("Connected")
         notification.configure("Connected", actions = true)
         notification.show()
 
-        for ((index, expected) in listOf("mute", "deafen", "disconnect").withIndex()) {
-            listener.calls.clear()
-            shadowOf(service).lastForegroundNotification.actions[index].actionIntent.send()
-            idleMainLooper()
-            assertThat(listener.calls).containsExactly(expected)
+        val actions = shadowOf(service).lastForegroundNotification.actions
+        assertThat(actions).hasLength(3)
+        for ((action, expected) in actions.zip(listOf(ACTION_MUTE, ACTION_DEAFEN, ACTION_DISCONNECT))) {
+            assertNotificationAction(action.actionIntent, expected)
         }
-    }
-
-    @Test
-    fun theActionReceiverIsNotExported() {
-        NomlaConnectionNotification.create(service, "Connecting", listener).show()
-
-        val receivers = ourReceivers()
-        assertThat(receivers).hasSize(1)
-        assertThat(receivers.single().flags and Context.RECEIVER_NOT_EXPORTED).isNotEqualTo(0)
-        assertThat(receivers.single().intentFilter.actionsIterator().asSequence().toList())
-            .containsExactly("b_mute", "b_deafen", "b_disconnect", "b_foreground_cancel_reconnect")
     }
 
     // ---- ConnectionLost / Reconnecting: the only thing to offer is giving up ----------------
 
     @Test
     fun theCancelReconnectActionIsTheOnlyOneWhileReconnecting() {
-        val notification = NomlaConnectionNotification.create(service, "Connecting", listener)
+        val notification = create("Connecting")
         notification.show()
         notification.customContentText = "Connection lost"
         notification.cancelReconnectShown = true
@@ -285,26 +247,12 @@ class NomlaConnectionNotificationTest {
         val action = posted().actions.single()
         assertThat(action.title.toString()).isEqualTo(service.getString(R.string.cancel_reconnect))
         assertThat(action.icon).isEqualTo(R.drawable.ic_action_delete_dark)
-        assertOwnImmutableBroadcast(action.actionIntent, service.packageName)
-    }
-
-    @Test
-    fun theCancelReconnectActionReachesItsCallbackThroughTheOneReceiver() {
-        val notification = NomlaConnectionNotification.create(service, "Connecting", listener)
-        notification.show()
-        notification.cancelReconnectShown = true
-        notification.show()
-
-        posted().actions.single().actionIntent.send()
-        idleMainLooper()
-
-        assertThat(listener.calls).containsExactly("cancelReconnect")
-        assertThat(ourReceivers()).hasSize(1)
+        assertNotificationAction(action.actionIntent, ACTION_CANCEL_RECONNECT)
     }
 
     @Test
     fun noCancelReconnectActionUntilAskedFor() {
-        val notification = NomlaConnectionNotification.create(service, "Connected", listener)
+        val notification = create("Connected")
         notification.configure("Connected", actions = true)
         notification.show()
 
@@ -313,34 +261,23 @@ class NomlaConnectionNotificationTest {
     }
 
     @Test
-    fun hideLeavesTheForegroundRemovesTheNotificationAndStopsListening() {
-        val notification = NomlaConnectionNotification.create(service, "Connecting", listener)
+    fun hideLeavesTheForegroundAndRemovesTheNotification() {
+        val notification = create("Connecting")
         notification.configure("Connected", actions = true)
         notification.show()
-        val mute = shadowOf(service).lastForegroundNotification.actions[0].actionIntent
 
         notification.hide()
 
         assertThat(shadowOf(service).isForegroundStopped).isTrue()
         assertThat(shadowOf(service).notificationShouldRemoved).isTrue()
-        assertThat(ourReceivers()).isEmpty()
-        mute.send()
-        idleMainLooper()
-        assertThat(listener.calls).isEmpty()
-    }
-
-    @Test
-    fun hideWithoutShowTouchesNothing() {
-        NomlaConnectionNotification.create(service, "Connecting", listener).hide()
-
-        assertThat(ourReceivers()).isEmpty()
+        assertThat(notification.isForeground).isFalse()
     }
 
     // ---- the foreground start is made once, and a refusal is survivable ---------------------
 
     @Test
     fun showReportsThatTheServiceIsInTheForeground() {
-        val notification = NomlaConnectionNotification.create(service, "Connecting", listener)
+        val notification = create("Connecting")
 
         assertThat(notification.show()).isTrue()
         assertThat(notification.isForeground).isTrue()
@@ -355,11 +292,10 @@ class NomlaConnectionNotificationTest {
         )
         for (refusal in refusals) {
             shadowOf(service).setThrowInStartForeground(refusal)
-            val notification = NomlaConnectionNotification.create(service, "Connecting", listener)
+            val notification = create("Connecting")
 
             assertWithMessage("$refusal").that(notification.show()).isFalse()
             assertWithMessage("$refusal").that(notification.isForeground).isFalse()
-            assertWithMessage("$refusal").that(ourReceivers()).isEmpty()
         }
     }
 
@@ -370,7 +306,7 @@ class NomlaConnectionNotificationTest {
     @Test
     fun anyOtherFailureOfTheForegroundStartStillPropagates() {
         shadowOf(service).setThrowInStartForeground(IllegalStateException("a defect, not a refusal"))
-        val notification = NomlaConnectionNotification.create(service, "Connecting", listener)
+        val notification = create("Connecting")
 
         assertThrows(IllegalStateException::class.java) { notification.show() }
     }
@@ -382,7 +318,7 @@ class NomlaConnectionNotificationTest {
      */
     @Test
     fun aSecondShowUpdatesTheNotificationWithoutAnotherForegroundStart() {
-        val notification = NomlaConnectionNotification.create(service, "Connecting", listener)
+        val notification = create("Connecting")
         notification.show()
         service.refuseForegroundStarts()
 
@@ -396,22 +332,8 @@ class NomlaConnectionNotificationTest {
     }
 
     @Test
-    fun aSecondShowDoesNotListenTwice() {
-        val notification = NomlaConnectionNotification.create(service, "Connected", listener)
-        notification.configure("Connected", actions = true)
-        notification.show()
-
-        notification.show()
-
-        assertThat(ourReceivers()).hasSize(1)
-        posted().actions[0].actionIntent.send()
-        idleMainLooper()
-        assertThat(listener.calls).containsExactly("mute")
-    }
-
-    @Test
     fun afterHideTheNextShowAsksThePlatformAgain() {
-        val notification = NomlaConnectionNotification.create(service, "Connecting", listener)
+        val notification = create("Connecting")
         notification.show()
         notification.hide()
         assertThat(notification.isForeground).isFalse()
@@ -422,12 +344,12 @@ class NomlaConnectionNotificationTest {
         assertThat(notification.show()).isTrue()
 
         assertThat(shadowOf(service).isForegroundStopped).isFalse()
-        assertThat(ourReceivers()).hasSize(1)
+        assertThat(notification.isForeground).isTrue()
     }
 
     @Test
     fun onAndroid14AndLaterTheForegroundIsTypedAsMicrophone() {
-        NomlaConnectionNotification.create(service, "Connecting", listener).show()
+        create("Connecting").show()
 
         assertThat(service.foregroundServiceType).isEqualTo(ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE)
     }
@@ -436,7 +358,7 @@ class NomlaConnectionNotificationTest {
     @Test
     @Config(sdk = [33])
     fun belowAndroid14TheForegroundIsTypedAsMicrophoneToo() {
-        NomlaConnectionNotification.create(service, "Connecting", listener).show()
+        create("Connecting").show()
 
         assertThat(shadowOf(service).isForegroundStopped).isFalse()
         assertThat(service.foregroundServiceType).isEqualTo(ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE)

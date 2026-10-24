@@ -20,6 +20,7 @@ package koeln.becker.nomla.app
 
 import android.app.Application
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.setApplicationLocales
 import androidx.core.content.edit
@@ -33,6 +34,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.log.AppLog
+import koeln.becker.nomla.service.NotificationChannels
 
 class NomlaApplication : Application(), AppContainer.Owner {
 
@@ -48,6 +50,7 @@ class NomlaApplication : Application(), AppContainer.Owner {
         AppLog.install()
         DebugStrictMode.install()
         current = AppContainer(this, scope)
+        NotificationChannels.create(this)
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
         applyTheme(preferences)
         scope.launch(start = CoroutineStart.UNDISPATCHED) {
@@ -61,6 +64,12 @@ class NomlaApplication : Application(), AppContainer.Owner {
                 .setPrecondition { _, _ -> Settings.getInstance(this).isDynamicColorEnabled }
                 .build(),
         )
+    }
+
+    /** The channels' names follow a change of language. */
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        NotificationChannels.create(this)
     }
 
     private fun onPreferenceChanged(preferences: SharedPreferences, key: String) {

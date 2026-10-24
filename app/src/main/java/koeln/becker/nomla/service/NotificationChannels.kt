@@ -17,15 +17,25 @@
 
 package koeln.becker.nomla.service
 
+import android.Manifest
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationChannelGroup
 import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_CANCEL_CURRENT
+import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.content.Context
+import android.content.pm.PackageManager
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
+import koeln.becker.nomla.MainScreen
 import koeln.becker.nomla.R
 
 /**
- * Nomla's notification channels, in one group. Creating them again is cheap and refreshes their
- * names and descriptions; importance, once created, is the user's.
+ * Nomla's notification channels, in one group. The application creates them on start and again
+ * when the configuration changes: creating them again is cheap and refreshes their names and
+ * descriptions in the new language; importance, once created, is the user's.
  */
 object NotificationChannels {
     const val GROUP = "server"
@@ -55,3 +65,25 @@ object NotificationChannels {
         )
     }
 }
+
+/**
+ * Posts [notification] under [id] if the user lets the app post notifications. Below API 33,
+ * where the permission does not exist, that is whether notifications are on.
+ */
+fun Context.postNotification(id: Int, notification: Notification) {
+    if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+        == PackageManager.PERMISSION_GRANTED
+    ) {
+        NotificationManagerCompat.from(this).notify(id, notification)
+    }
+}
+
+/**
+ * What a tap on a notification opens: the main screen's channel view. FLAG_CANCEL_CURRENT, so the
+ * screen extra is always the one sent: extras are not part of a PendingIntent's identity, and all
+ * notifications share this request code.
+ */
+fun Context.openChannelsIntent(): PendingIntent =
+    PendingIntent.getActivity(
+        this, 0, MainScreen.intent(this, MainScreen.CHANNELS), FLAG_CANCEL_CURRENT or FLAG_IMMUTABLE,
+    )

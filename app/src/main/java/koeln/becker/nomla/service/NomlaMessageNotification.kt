@@ -18,17 +18,13 @@
 
 package koeln.becker.nomla.service
 
-import android.Manifest
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.Person
 import androidx.core.app.RemoteInput
-import androidx.core.content.ContextCompat
-import koeln.becker.nomla.MainScreen
 import koeln.becker.nomla.R
 
 /**
@@ -39,7 +35,6 @@ import koeln.becker.nomla.R
 class NomlaMessageNotification(private val context: Context) {
     private val messages = ArrayDeque<NotificationCompat.MessagingStyle.Message>()
     private var unreadCount = 0
-    private var channelCreated = false
     private var conversation = Conversation()
 
     /** Where the conversation happens: [self] is our name, [channel] where a reply goes, on [server]. */
@@ -87,18 +82,11 @@ class NomlaMessageNotification(private val context: Context) {
             .setGroupConversation(true)
         messages.forEach(style::addMessage)
 
-        val channelListIntent = MainScreen.intent(context, MainScreen.CHANNELS)
-        // FLAG_CANCEL_CURRENT ensures that the extra always gets sent.
-        val pendingIntent = PendingIntent.getActivity(
-            context, 0, channelListIntent, PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-        )
-
-        ensureChannel()
         val notification = NotificationCompat.Builder(context, NotificationChannels.MESSAGES)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setSmallIcon(R.drawable.ic_stat_notify)
-            .setContentIntent(pendingIntent)
+            .setContentIntent(context.openChannelsIntent())
             .setAutoCancel(true)
             .setSubText(conversation.server)
             .setVibrate(VIBRATION_PATTERN)
@@ -107,12 +95,7 @@ class NomlaMessageNotification(private val context: Context) {
             .setSilent(silent)
             .addAction(replyAction())
             .build()
-
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
-            == PackageManager.PERMISSION_GRANTED
-        ) {
-            NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
-        }
+        context.postNotification(NOTIFICATION_ID, notification)
     }
 
     /**
@@ -131,12 +114,6 @@ class NomlaMessageNotification(private val context: Context) {
             .setShowsUserInterface(false)
             .setAllowGeneratedReplies(true)
             .build()
-    }
-
-    private fun ensureChannel() {
-        if (channelCreated) return
-        NotificationChannels.create(context)
-        channelCreated = true
     }
 
     companion object {
