@@ -25,7 +25,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
-import androidx.preference.PreferenceManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.slider.Slider
@@ -39,7 +38,6 @@ import koeln.becker.nomla.databinding.BottomSheetDoubleTalkTestBinding
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.ui.microphoneRequest
 import koeln.becker.nomla.util.appViewModels
-import koeln.becker.nomla.util.changes
 import koeln.becker.nomla.util.whileViewStarted
 import kotlin.math.roundToInt
 
@@ -72,14 +70,10 @@ class DoubleTalkTestSheet : BottomSheetDialogFragment() {
         ViewCompat.setAccessibilityHeading(binding.doubleTalkTitle, true)
         ViewCompat.setAccessibilityHeading(binding.doubleTalkStrengthLabel, true)
         bindControls(binding)
-        val preferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        val strengthChanges = Settings.getInstance(requireContext()).changes(Settings.RNNOISE_ATTENUATION_LIMIT_DB)
         whileViewStarted {
             launch { model.state.collect(::render) }
-            launch {
-                preferences.changes(setOf(Settings.RNNOISE_ATTENUATION_LIMIT_DB.key)).collect {
-                    if (!dragging) model.syncStrength()
-                }
-            }
+            launch { strengthChanges.collect { if (!dragging) model.syncStrength() } }
             sessions.state.collect { state ->
                 if (state !is SessionState.Disconnected) model.stop()
                 render(model.state.value)

@@ -26,7 +26,6 @@ import android.os.Looper
 import android.view.KeyEvent
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.IntentCompat
-import androidx.preference.PreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -38,7 +37,6 @@ import kotlinx.coroutines.launch
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.MediaButtonAction
 import koeln.becker.nomla.Settings
-import koeln.becker.nomla.util.changes
 
 private const val TAG = "NomlaMediaSession"
 
@@ -94,8 +92,7 @@ class NomlaMediaSession(
         stateUpdates?.cancel()
         stateUpdates = CoroutineScope(Dispatchers.Main.immediate).launch(start = CoroutineStart.UNDISPATCHED) {
             launch(start = CoroutineStart.UNDISPATCHED) {
-                PreferenceManager.getDefaultSharedPreferences(context).changes(Settings.MEDIA_BUTTON_ACTION.key)
-                    .collect { applyState() }
+                settings.changes(Settings.MEDIA_BUTTON_ACTION).collect { applyState() }
             }
             state
                 .map { it == SessionState.Connected }

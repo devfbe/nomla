@@ -18,7 +18,6 @@
 package koeln.becker.nomla.session
 
 import android.content.Context
-import androidx.preference.PreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +26,6 @@ import kotlinx.coroutines.launch
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.ui.AppMessages
-import koeln.becker.nomla.util.changes
 
 /**
  * Carries changed preferences to the current session: audio settings live, and a note when a
@@ -39,7 +37,7 @@ class SessionSettingsSync(
     private val messages: AppMessages,
 ) {
     fun start(scope: CoroutineScope): Job = scope.launch(Dispatchers.Main.immediate, CoroutineStart.UNDISPATCHED) {
-        PreferenceManager.getDefaultSharedPreferences(context).changes(OBSERVED_KEYS).collect(::onPreferenceChanged)
+        Settings.getInstance(context).changes(OBSERVED_KEYS).collect(::onPreferenceChanged)
     }
 
     internal fun onPreferenceChanged(key: String) {

@@ -33,7 +33,6 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.log.AppLog
-import koeln.becker.nomla.util.changes
 
 class NomlaApplication : Application(), AppContainer.Owner {
 
@@ -52,7 +51,7 @@ class NomlaApplication : Application(), AppContainer.Owner {
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
         applyTheme(preferences)
         scope.launch(start = CoroutineStart.UNDISPATCHED) {
-            preferences.changes(Settings.LANGUAGE.key, Settings.THEME.key)
+            current.settings.changes(Settings.LANGUAGE, Settings.THEME)
                 .collect { key -> onPreferenceChanged(preferences, key) }
         }
         // Decided per activity creation, so a changed setting applies to recreated activities.

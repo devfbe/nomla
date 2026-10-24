@@ -38,7 +38,6 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.withStarted
-import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -75,7 +74,6 @@ import koeln.becker.nomla.ui.showConfirmDialog
 import koeln.becker.nomla.ui.showAppMessages
 import koeln.becker.nomla.ui.showSnackbar
 import koeln.becker.nomla.util.Edge
-import koeln.becker.nomla.util.changes
 import koeln.becker.nomla.util.padForSystemBars
 import koeln.becker.nomla.util.whileStarted
 import java.net.MalformedURLException
@@ -123,8 +121,7 @@ class NomlaActivity :
 
         setStayAwake(settings.shouldStayAwake)
         lifecycleScope.launch {
-            PreferenceManager.getDefaultSharedPreferences(this@NomlaActivity).changes(Settings.STAY_AWAKE.key)
-                .collect { setStayAwake(settings.shouldStayAwake) }
+            settings.changes(Settings.STAY_AWAKE).collect { setStayAwake(settings.shouldStayAwake) }
         }
 
         drawer = MainDrawer(

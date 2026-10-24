@@ -24,7 +24,6 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
-import androidx.preference.PreferenceManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
 import koeln.becker.nomla.mumble.audio.MeterReading
@@ -42,7 +41,6 @@ import koeln.becker.nomla.preference.MeterScaleText
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.session.SessionSettings
 import koeln.becker.nomla.ui.microphoneRequest
-import koeln.becker.nomla.util.changes
 import koeln.becker.nomla.util.whileViewStarted
 
 /**
@@ -89,10 +87,10 @@ class AudioPanelSheet : BottomSheetDialogFragment() {
         }
         bindControls(binding)
         render()
-        val preferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        val changes = settings.changes(SessionSettings.AUDIO_KEYS)
         whileViewStarted {
             launch {
-                preferences.changes(SessionSettings.AUDIO_KEYS).collect { key ->
+                changes.collect { key ->
                     render()
                     // A running check is rebuilt from the settings, as a session reconfigures.
                     if (key != Settings.INPUT_METHOD.key && micCheck?.isRunning == true) startMicCheck()

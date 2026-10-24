@@ -39,7 +39,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.preference.PreferenceManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -55,7 +54,6 @@ import koeln.becker.nomla.session.SelfSummary
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.session.SessionViewModel
 import koeln.becker.nomla.util.activityAppViewModels
-import koeln.becker.nomla.util.changes
 import koeln.becker.nomla.util.whileViewStarted
 import java.util.Locale
 
@@ -223,8 +221,7 @@ class ChannelFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
-            PreferenceManager.getDefaultSharedPreferences(requireContext()).changes(INPUT_PREFERENCES)
-                .collect { configureInput() }
+            settings.changes(*INPUT_PREFERENCES).collect { configureInput() }
         }
 
         val binding = requireNotNull(binding)
@@ -365,12 +362,12 @@ class ChannelFragment :
         private const val TAB_CHANNEL = 0
         private const val TAB_CHAT = 1
         private const val ARG_PINNED = "pinned"
-        private val INPUT_PREFERENCES = setOf(
-            Settings.INPUT_METHOD.key,
-            Settings.PUSH_BUTTON_HIDE.key,
-            Settings.PTT_BUTTON_HEIGHT.key,
-            Settings.HOLD_TO_WHISPER.key,
-            Settings.CONTROL_BAR_POSITION.key,
+        private val INPUT_PREFERENCES = arrayOf(
+            Settings.INPUT_METHOD,
+            Settings.PUSH_BUTTON_HIDE,
+            Settings.PTT_BUTTON_HEIGHT,
+            Settings.HOLD_TO_WHISPER,
+            Settings.CONTROL_BAR_POSITION,
         )
     }
 }

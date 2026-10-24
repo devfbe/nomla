@@ -32,6 +32,8 @@ import koeln.becker.nomla.mumble.audio.capture.VadMode
 import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.audio.routing.PreferredAudioDevice
 import koeln.becker.nomla.app.AppContainer
+import koeln.becker.nomla.util.changes
+import kotlinx.coroutines.flow.Flow
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -51,6 +53,15 @@ class Settings internal constructor(context: Context) {
         override fun setValue(thisRef: Settings, property: KProperty<*>, value: T) =
             preferences.edit { write(pref, value) }
     }
+
+    /**
+     * The key of every change to one of [prefs] while collected, with no initial emission; see
+     * [SharedPreferences.changes].
+     */
+    fun changes(vararg prefs: Pref<*>): Flow<String> = preferences.changes(prefs.mapTo(HashSet()) { it.key })
+
+    /** As the other [changes], for key sets with keys that have no [Pref], such as [echoCancellationKey]s. */
+    fun changes(keys: Collection<String>): Flow<String> = preferences.changes(keys)
 
     /** Stored as its [TransmitMode.preferenceValue]; an unknown stored value reads as voice activity. */
     var transmitMode: TransmitMode

@@ -20,7 +20,6 @@ package koeln.becker.nomla.channel
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.preference.PreferenceManager
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -61,7 +60,6 @@ import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.db.NomlaRepository
 import koeln.becker.nomla.session.SessionManager
-import koeln.becker.nomla.util.changes
 
 /** The channel list's rows while the session is synchronized, and the channel we are in. */
 data class ChannelTree(val rows: List<ChannelRow>, val ownChannel: Int?)
@@ -341,16 +339,16 @@ class ChannelTreeViewModel(
         private val WHILE_SHOWN = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000L)
 
         fun create(app: Application, pinnedOnly: Boolean): ChannelTreeViewModel {
-            val preferences = PreferenceManager.getDefaultSharedPreferences(app)
-            val showUserCount = preferences.changes(Settings.SHOW_USER_COUNT.key)
-                .map { Settings.getInstance(app).shouldShowUserCount }
-                .onStart { emit(Settings.getInstance(app).shouldShowUserCount) }
+            val settings = Settings.getInstance(app)
+            val showUserCount = settings.changes(Settings.SHOW_USER_COUNT)
+                .map { settings.shouldShowUserCount }
+                .onStart { emit(settings.shouldShowUserCount) }
             return ChannelTreeViewModel(
                 SessionManager.get(app),
                 NomlaRepository.get(app),
                 pinnedOnly,
                 showUserCount,
-                Settings.getInstance(app),
+                settings,
             )
         }
     }

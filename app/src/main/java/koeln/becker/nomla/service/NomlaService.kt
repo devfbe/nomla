@@ -30,7 +30,6 @@ import android.os.PowerManager
 import android.speech.tts.TextToSpeech
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.ContextCompat
-import androidx.preference.PreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -63,7 +62,6 @@ import koeln.becker.nomla.session.SelfSummary
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.session.isConnected
 import koeln.becker.nomla.session.serverName
-import koeln.becker.nomla.util.changes
 import koeln.becker.nomla.util.collectEvents
 
 /**
@@ -154,7 +152,7 @@ class NomlaService :
         }
 
         serviceScope.launch(start = CoroutineStart.UNDISPATCHED) {
-            PreferenceManager.getDefaultSharedPreferences(this@NomlaService).changes(OBSERVED_KEYS)
+            settings.changes(Settings.INPUT_METHOD, Settings.HOT_CORNER, Settings.USE_TTS)
                 .collect(::onPreferenceChanged)
         }
         serviceScope.launch(start = CoroutineStart.UNDISPATCHED) {
@@ -434,9 +432,6 @@ class NomlaService :
         const val TTS_THRESHOLD = ChatAlerts.TTS_THRESHOLD
 
         private const val ACTION_TOGGLE_OVERLAY = "koeln.becker.nomla.action.TOGGLE_OVERLAY"
-
-        /** The preferences [onPreferenceChanged] reacts to. */
-        private val OBSERVED_KEYS = setOf(Settings.INPUT_METHOD.key, Settings.HOT_CORNER.key, Settings.USE_TTS.key)
 
         /**
          * Starts the service for a session that is under way. Called while the user is looking at

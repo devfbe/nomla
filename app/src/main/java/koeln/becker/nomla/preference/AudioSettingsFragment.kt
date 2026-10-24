@@ -47,7 +47,6 @@ import koeln.becker.nomla.audio.DoubleTalkTestSheet
 import koeln.becker.nomla.audio.MicCheck
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.session.SessionSettings
-import koeln.becker.nomla.util.changes
 
 /** The audio settings screen; the decisions live in [AudioSettingsPolicy], this is the wiring. */
 open class AudioSettingsFragment : NomlaPreferenceFragment(R.xml.settings_audio) {
@@ -160,9 +159,8 @@ open class AudioSettingsFragment : NomlaPreferenceFragment(R.xml.settings_audio)
             findPreference<InputLevelMeterPreference>(KEY_METER)?.setReading(reading)
         }
         // A running preview is rebuilt from the same settings the service reconfigures from.
-        val preferences = preferenceManager.sharedPreferences ?: return
         viewLifecycleOwner.lifecycleScope.launch {
-            preferences.changes(SessionSettings.AUDIO_KEYS).collect { key ->
+            Settings.getInstance(requireContext()).changes(SessionSettings.AUDIO_KEYS).collect { key ->
                 // The talk-over test and the reset write the strength without this row.
                 if (key == Settings.RNNOISE_ATTENUATION_LIMIT_DB.key) showRnnoiseStrength()
                 if (isTesting) restartPreview()

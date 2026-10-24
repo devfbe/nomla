@@ -231,7 +231,7 @@ class NomlaMediaSessionTest {
         val prefContext = object : ContextWrapper(context) {
             override fun getSharedPreferences(name: String?, mode: Int): SharedPreferences = prefs
         }
-        val detached = NomlaMediaSession(prefContext, target, Settings.getInstance(context))
+        val detached = NomlaMediaSession(prefContext, target, Settings(prefContext))
         val registered = slot<SharedPreferences.OnSharedPreferenceChangeListener>()
         val unregistered = slot<SharedPreferences.OnSharedPreferenceChangeListener>()
 
