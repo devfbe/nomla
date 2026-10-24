@@ -35,17 +35,17 @@ NDK 29.0.14206865 and SDK CMake 4.1.2 for the Android build, a host C/C++
 compiler with CMake and Ninja for the native host tests, `git` and Python.
 Inside it:
 
-    ./gradlew assembleFossDebug      # F-Droid flavor
-    ./gradlew assembleGoogDebug      # Google Play flavor (Play Billing)
+    ./gradlew assembleFossDebug      # the app (Google Play, F-Droid, website)
+    ./gradlew assembleBetaDebug      # the side-by-side beta (koeln.becker.nomla.beta)
     ./gradlew :libraries:core:nativeHostTests   # native tests on the host, plain and ASan/UBSan
     ./gradlew verify                 # the pre-merge check
 
-`verify` assembles the foss, goog and beta debug and the foss release builds;
+`verify` assembles the foss and beta debug and the foss release builds;
 runs the JVM unit tests (JUnit, Robolectric) of every module, the app's for foss
 debug only since the flavors share one test source set; builds the native tests
 for the host and runs them with ctest, also under ASan/UBSan; builds the device
-tests (running them needs a device); lints the foss, goog, donation and beta
-debug variants and `libraries/core`; and runs detekt against each module's
+tests (running them needs a device); lints the foss and beta debug variants
+and `libraries/core`; and runs detekt against each module's
 baseline. CI runs exactly this.
 
 If you cloned without `--recursive`, run `git submodule update --init --recursive`
@@ -65,8 +65,10 @@ If you get an error running out of Java heap space, try raising the `-Xmx` in
 
 ## Repository layout
 
-- `app/` — the Android application (`koeln.becker.nomla`), product flavors
-  `foss`, `goog`, `donation`, `beta`.
+- `app/` — the Android application, product flavors `foss` (`koeln.becker.nomla`,
+  the one release build for Google Play, F-Droid and the website; no in-app
+  purchases or donations) and `beta` (`koeln.becker.nomla.beta`, a test app
+  installed alongside it).
 - `libraries/protocol/` — the platform-free half of the Mumble library, a plain
   Kotlin/JVM module: the Mumble protocol (`src/Mumble.proto` and
   `src/MumbleUDP.proto` are compiled to Java at build time; nothing generated
