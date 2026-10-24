@@ -24,9 +24,6 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.PreferenceManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
@@ -46,6 +43,7 @@ import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.session.SessionSettings
 import koeln.becker.nomla.ui.microphoneRequest
 import koeln.becker.nomla.util.changes
+import koeln.becker.nomla.util.whileViewStarted
 
 /**
  * The quick audio panel: device, echo cancellation, transmit mode and noise suppression, and a
@@ -92,19 +90,17 @@ class AudioPanelSheet : BottomSheetDialogFragment() {
         bindControls(binding)
         render()
         val preferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    preferences.changes(SessionSettings.AUDIO_KEYS).collect { key ->
-                        render()
-                        // A running check is rebuilt from the settings, as a session reconfigures.
-                        if (key != Settings.INPUT_METHOD.key && micCheck?.isRunning == true) startMicCheck()
-                    }
-                }
-                sessions.state.collect { state ->
-                    if (state !is SessionState.Disconnected) stopMicCheck()
+        whileViewStarted {
+            launch {
+                preferences.changes(SessionSettings.AUDIO_KEYS).collect { key ->
                     render()
+                    // A running check is rebuilt from the settings, as a session reconfigures.
+                    if (key != Settings.INPUT_METHOD.key && micCheck?.isRunning == true) startMicCheck()
                 }
+            }
+            sessions.state.collect { state ->
+                if (state !is SessionState.Disconnected) stopMicCheck()
+                render()
             }
         }
     }

@@ -35,8 +35,6 @@ import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.flow.Flow
@@ -48,6 +46,7 @@ import koeln.becker.nomla.channel.comment.UserCommentFragment
 import koeln.becker.nomla.databinding.FragmentChannelListBinding
 import koeln.becker.nomla.ui.showSnackbar
 import koeln.becker.nomla.util.appViewModels
+import koeln.becker.nomla.util.whileViewStarted
 
 /**
  * The channel tree of the connected server, or with [ARG_PINNED] only the pinned channels. Rows,
@@ -83,11 +82,9 @@ class ChannelListFragment :
         val adapter = ChannelListAdapter(requireContext(), this).also { this.adapter = it }
         channelView.adapter = adapter
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { tree.talkStates.collect(adapter::setTalkStates) }
-                tree.tree.collect(::show)
-            }
+        whileViewStarted {
+            launch { tree.talkStates.collect(adapter::setTalkStates) }
+            tree.tree.collect(::show)
         }
     }
 

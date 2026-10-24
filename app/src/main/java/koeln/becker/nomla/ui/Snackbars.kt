@@ -26,16 +26,13 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.launch
 import koeln.becker.nomla.R
 import koeln.becker.nomla.app.AppContainer
+import koeln.becker.nomla.util.whileStarted
 
 /**
  * Shows [text] at the bottom of [view]'s window, above [anchor] if given; [action] labels a button
@@ -115,9 +112,5 @@ class AppMessages {
 
 /** Shows the [AppMessages] while this activity is started. */
 fun AppCompatActivity.showAppMessages() {
-    lifecycleScope.launch {
-        repeatOnLifecycle(Lifecycle.State.STARTED) {
-            AppMessages.get(this@showAppMessages).messages.collect { showSnackbar(it) }
-        }
-    }
+    whileStarted { AppMessages.get(this@showAppMessages).messages.collect { showSnackbar(it) } }
 }

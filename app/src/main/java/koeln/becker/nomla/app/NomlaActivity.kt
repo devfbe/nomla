@@ -37,7 +37,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.withStarted
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -78,6 +77,7 @@ import koeln.becker.nomla.ui.showSnackbar
 import koeln.becker.nomla.util.Edge
 import koeln.becker.nomla.util.changes
 import koeln.becker.nomla.util.padForSystemBars
+import koeln.becker.nomla.util.whileStarted
 import java.net.MalformedURLException
 
 private const val TAG = "NomlaActivity"
@@ -191,15 +191,13 @@ class NomlaActivity :
 
     /** Follows the session's events and state while started; each start begins with the current state. */
     private fun followSession() {
-        lifecycleScope.launch {
-            // Fragment transactions only while started.
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { sessions.session.collectLatest { session -> if (session != null) followEvents(session) } }
-                var previous: SessionState? = null
-                sessions.state.collect { state ->
-                    onSessionState(previous, state)
-                    previous = state
-                }
+        // Fragment transactions only while started.
+        whileStarted {
+            launch { sessions.session.collectLatest { session -> if (session != null) followEvents(session) } }
+            var previous: SessionState? = null
+            sessions.state.collect { state ->
+                onSessionState(previous, state)
+                previous = state
             }
         }
     }

@@ -26,16 +26,13 @@ import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.launch
 import koeln.becker.nomla.R
 import koeln.becker.nomla.app.AppContainer
 import koeln.becker.nomla.databinding.DialogExportPasswordBinding
+import koeln.becker.nomla.util.whileStarted
 
 /**
  * Exports a stored client certificate as a PKCS#12 file, re-encrypted under a password the user
@@ -66,9 +63,7 @@ class CertificateExportActivity : AppCompatActivity(), DialogInterface.OnClickLi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) { model.step.collect(::render) }
-        }
+        whileStarted { model.step.collect(::render) }
     }
 
     override fun onDestroy() {

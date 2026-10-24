@@ -46,7 +46,6 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -65,6 +64,8 @@ import koeln.becker.nomla.chat.shareChatImage
 import koeln.becker.nomla.databinding.FragmentChatBinding
 import koeln.becker.nomla.ui.showPermissionDeniedSnackbar
 import koeln.becker.nomla.ui.showSnackbar
+import koeln.becker.nomla.util.repeatWhile
+import koeln.becker.nomla.util.whileViewStarted
 
 /** The image preview takes at most a third of the screen height. */
 private const val PREVIEW_SCREEN_FRACTION = 3
@@ -145,18 +146,12 @@ class ChannelChatFragment : Fragment(), MenuProvider {
         // android:enabled does not apply to an ImageButton, and the watcher only fires on change.
         sendButton.isEnabled = chatTextEdit.text.isNotEmpty()
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            // While resumed, as the destination changes; catching up on resumption.
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                chat.destination.collect(::updateChatTargetText)
-            }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { chat.imageBusy.collect { imageProgress.isVisible = it } }
-                launch { chat.imageEvents.collect(::onImageEvent) }
-                chat.messages.collect { submit(adapter, it) }
-            }
+        // While resumed, as the destination changes; catching up on resumption.
+        viewLifecycleOwner.repeatWhile(Lifecycle.State.RESUMED) { chat.destination.collect(::updateChatTargetText) }
+        whileViewStarted {
+            launch { chat.imageBusy.collect { imageProgress.isVisible = it } }
+            launch { chat.imageEvents.collect(::onImageEvent) }
+            chat.messages.collect { submit(adapter, it) }
         }
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }

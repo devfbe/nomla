@@ -26,9 +26,6 @@ import androidx.core.view.AccessibilityDelegateCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.isVisible
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.slider.Slider
 import kotlinx.coroutines.flow.Flow
@@ -44,6 +41,7 @@ import koeln.becker.nomla.ui.showConfirmDialog
 import koeln.becker.nomla.ui.textInputDialog
 import koeln.becker.nomla.util.HtmlUtils
 import koeln.becker.nomla.util.UserStatus
+import koeln.becker.nomla.util.whileViewStarted
 import kotlin.math.roundToInt
 
 /** The slider's range in percent; 100 is unchanged. */
@@ -163,11 +161,9 @@ class UserActionsSheet : BottomSheetDialogFragment() {
 
     /** Renders every real state change, and asks once for the channel permissions if not known yet. */
     private fun observeState(binding: BottomSheetUserActionsBinding, channel: Int) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { actions.userMenuStates(session).distinctUntilChanged().collect { render(binding, it) } }
-                launch { requestPermissionsIfUnknown(channel) }
-            }
+        whileViewStarted {
+            launch { actions.userMenuStates(session).distinctUntilChanged().collect { render(binding, it) } }
+            launch { requestPermissionsIfUnknown(channel) }
         }
     }
 

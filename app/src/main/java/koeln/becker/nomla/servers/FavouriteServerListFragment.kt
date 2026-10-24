@@ -29,9 +29,6 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
 import koeln.becker.nomla.mumble.model.Server
@@ -39,6 +36,7 @@ import koeln.becker.nomla.R
 import koeln.becker.nomla.app.QuickStartServer
 import koeln.becker.nomla.databinding.FragmentServerListBinding
 import koeln.becker.nomla.util.appViewModels
+import koeln.becker.nomla.util.whileViewStarted
 import koeln.becker.nomla.ui.ServerRequest
 import koeln.becker.nomla.ui.ConnectRequests
 import koeln.becker.nomla.ui.showConfirmDialog
@@ -85,11 +83,9 @@ class FavouriteServerListFragment :
         })
         showEmptyState(binding, true)
         binding.serverListGrid.adapter = adapter
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { favourites.pings.replies.collect(adapter::setReplies) }
-                favourites.servers.collect { it?.let(adapter::submitList) }
-            }
+        whileViewStarted {
+            launch { favourites.pings.replies.collect(adapter::setReplies) }
+            favourites.servers.collect { it?.let(adapter::submitList) }
         }
     }
 

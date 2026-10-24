@@ -20,14 +20,10 @@ import android.os.SystemClock
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
@@ -35,6 +31,7 @@ import koeln.becker.nomla.databinding.ConnectionBannerBinding
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.util.Edge
 import koeln.becker.nomla.util.padForSystemBars
+import koeln.becker.nomla.util.whileStarted
 
 private const val SECOND_MS = 1000L
 
@@ -54,9 +51,7 @@ class ConnectionBanner(
     init {
         binding.root.padForSystemBars(Edge.START, Edge.END)
         binding.connectionBannerCancel.setOnClickListener { cancel() }
-        activity.lifecycleScope.launch {
-            activity.repeatOnLifecycle(Lifecycle.State.STARTED) { sessions.state.collectLatest(::show) }
-        }
+        activity.whileStarted { sessions.state.collectLatest(::show) }
     }
 
     private suspend fun show(state: SessionState) {

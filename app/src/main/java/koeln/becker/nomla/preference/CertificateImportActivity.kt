@@ -26,15 +26,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import kotlinx.coroutines.launch
 import koeln.becker.nomla.R
 import koeln.becker.nomla.ui.TextInputField
 import koeln.becker.nomla.ui.textInputDialog
+import koeln.becker.nomla.util.whileStarted
 
 /** Picks a PKCS#12 file and imports it as a client certificate; [CertificateImportViewModel] does the work. */
 class CertificateImportActivity : AppCompatActivity() {
@@ -52,9 +49,7 @@ class CertificateImportActivity : AppCompatActivity() {
         enableEdgeToEdge()
         // A recreated activity gets the pending pick's result without asking again.
         if (savedInstanceState == null) picker.launch("*/*")
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) { model.state.collect(::render) }
-        }
+        whileStarted { model.state.collect(::render) }
     }
 
     override fun onDestroy() {

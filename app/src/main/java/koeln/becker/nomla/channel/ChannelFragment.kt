@@ -39,7 +39,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.PreferenceManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayout
@@ -57,6 +56,7 @@ import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.session.SessionViewModel
 import koeln.becker.nomla.util.activityAppViewModels
 import koeln.becker.nomla.util.changes
+import koeln.becker.nomla.util.whileViewStarted
 import java.util.Locale
 
 /**
@@ -234,11 +234,7 @@ class ChannelFragment :
             styleTabs(tabs)
             pager.adapter = TabsAdapter()
             TabLayoutMediator(tabs, pager) { tab, position -> tab.text = tabTitle(position) }.attach()
-            viewLifecycleOwner.lifecycleScope.launch {
-                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    chat.unread.collect { showUnread(tabs, it) }
-                }
-            }
+            whileViewStarted { chat.unread.collect { showUnread(tabs, it) } }
         } else {
             childFragmentManager.beginTransaction()
                 .replace(R.id.list_fragment, newListFragment())
@@ -246,12 +242,10 @@ class ChannelFragment :
                 .commit()
         }
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { session.self.collect(::onSelf) }
-                launch { session.selfSummary.collect(::showInAppBar) }
-                session.whisperTarget.collect(::showWhisperTarget)
-            }
+        whileViewStarted {
+            launch { session.self.collect(::onSelf) }
+            launch { session.selfSummary.collect(::showInAppBar) }
+            session.whisperTarget.collect(::showWhisperTarget)
         }
     }
 

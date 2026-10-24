@@ -25,9 +25,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.PreferenceManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.color.MaterialColors
@@ -43,6 +40,7 @@ import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.ui.microphoneRequest
 import koeln.becker.nomla.util.appViewModels
 import koeln.becker.nomla.util.changes
+import koeln.becker.nomla.util.whileViewStarted
 import kotlin.math.roundToInt
 
 /**
@@ -75,18 +73,16 @@ class DoubleTalkTestSheet : BottomSheetDialogFragment() {
         ViewCompat.setAccessibilityHeading(binding.doubleTalkStrengthLabel, true)
         bindControls(binding)
         val preferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { model.state.collect(::render) }
-                launch {
-                    preferences.changes(setOf(Settings.RNNOISE_ATTENUATION_LIMIT_DB.key)).collect {
-                        if (!dragging) model.syncStrength()
-                    }
+        whileViewStarted {
+            launch { model.state.collect(::render) }
+            launch {
+                preferences.changes(setOf(Settings.RNNOISE_ATTENUATION_LIMIT_DB.key)).collect {
+                    if (!dragging) model.syncStrength()
                 }
-                sessions.state.collect { state ->
-                    if (state !is SessionState.Disconnected) model.stop()
-                    render(model.state.value)
-                }
+            }
+            sessions.state.collect { state ->
+                if (state !is SessionState.Disconnected) model.stop()
+                render(model.state.value)
             }
         }
     }

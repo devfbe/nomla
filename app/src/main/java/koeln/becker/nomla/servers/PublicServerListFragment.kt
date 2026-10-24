@@ -35,7 +35,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.google.android.material.chip.Chip
@@ -55,6 +54,7 @@ import koeln.becker.nomla.ui.ServerRequest
 import koeln.becker.nomla.ui.TextInputField
 import koeln.becker.nomla.ui.showConfirmDialog
 import koeln.becker.nomla.ui.textInputDialog
+import koeln.becker.nomla.util.whileViewStarted
 import java.util.Locale
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -91,13 +91,11 @@ class PublicServerListFragment :
         binding.serverListGrid.adapter = adapter
         setUpControls(binding)
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { publicServers.pings.replies.collect(adapter::setReplies) }
-                launch { publicServers.filter.collect { showFilter(binding, it) } }
-                launch { announceCounts(binding) }
-                publicServers.state.collect { show(binding, adapter, it) }
-            }
+        whileViewStarted {
+            launch { publicServers.pings.replies.collect(adapter::setReplies) }
+            launch { publicServers.filter.collect { showFilter(binding, it) } }
+            launch { announceCounts(binding) }
+            publicServers.state.collect { show(binding, adapter, it) }
         }
     }
 
