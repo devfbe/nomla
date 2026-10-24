@@ -221,7 +221,13 @@ class ChannelFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
-            settings.changes(*INPUT_PREFERENCES).collect { configureInput() }
+            settings.changes(
+                Settings.INPUT_METHOD,
+                Settings.PUSH_BUTTON_HIDE,
+                Settings.PTT_BUTTON_HEIGHT,
+                Settings.HOLD_TO_WHISPER,
+                Settings.CONTROL_BAR_POSITION,
+            ).collect { configureInput() }
         }
 
         val binding = requireNotNull(binding)
@@ -362,12 +368,5 @@ class ChannelFragment :
         private const val TAB_CHANNEL = 0
         private const val TAB_CHAT = 1
         private const val ARG_PINNED = "pinned"
-        private val INPUT_PREFERENCES = arrayOf(
-            Settings.INPUT_METHOD,
-            Settings.PUSH_BUTTON_HIDE,
-            Settings.PTT_BUTTON_HEIGHT,
-            Settings.HOLD_TO_WHISPER,
-            Settings.CONTROL_BAR_POSITION,
-        )
     }
 }

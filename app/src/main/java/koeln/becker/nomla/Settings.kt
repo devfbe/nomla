@@ -477,7 +477,10 @@ class Settings internal constructor(context: Context) {
 
         /** Headset / AVRCP media button behavior, one of the `mediaButtonActionValues`. */
         val MEDIA_BUTTON_ACTION = EnumPref(
-            "media_button_action", MediaButtonAction.AUTO, MediaButtonAction.entries, MediaButtonAction::preferenceValue,
+            "media_button_action",
+            MediaButtonAction.AUTO,
+            MediaButtonAction.entries,
+            MediaButtonAction::preferenceValue,
         )
 
         /** The connection settings row for the battery-optimization exemption; stores nothing. */
