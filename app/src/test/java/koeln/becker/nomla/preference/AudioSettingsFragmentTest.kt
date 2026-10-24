@@ -37,6 +37,7 @@ import koeln.becker.nomla.mumble.audio.capture.NoiseSuppressionMode
 import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.testutil.TestCaptureSource
 import koeln.becker.nomla.mumble.testutil.TestPlaybackSink
+import koeln.becker.nomla.mumble.testutil.awaitUntil
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
@@ -88,7 +89,8 @@ class AudioSettingsFragmentTest {
         idleMainLooper()
 
         assertThat(capture.request).isNotNull()
-        assertThat(source.events).contains("start")
+        // The recorder starts on the capture thread, which may not have run yet.
+        awaitUntil { "start" in source.events }
         assertThat(audioManager.mode).isEqualTo(AudioManager.MODE_IN_COMMUNICATION)
         assertThat(audio.loopbackSwitch().isEnabled).isTrue()
     }
