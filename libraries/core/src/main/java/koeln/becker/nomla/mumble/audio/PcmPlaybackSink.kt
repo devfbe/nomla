@@ -33,6 +33,17 @@ public interface PcmPlaybackSink {
     public fun flush()
     public fun stop()
     public fun release()
+
+    /**
+     * Ends playback for good: pause and flush first, so stop drops what is queued instead of
+     * playing it out, then release.
+     */
+    public fun shutdown() {
+        pause()
+        flush()
+        stop()
+        release()
+    }
 }
 
 public fun interface PcmPlaybackSinkFactory {
