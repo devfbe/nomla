@@ -22,44 +22,58 @@ import android.util.Xml
 import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import koeln.becker.nomla.mumble.util.Constants
 import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.db.PublicServer
 import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.URL
+import java.util.concurrent.TimeUnit
 
 private const val MUMBLE_PUBLIC_URL = "https://mumble.info/list2.cgi"
 
 private const val TAG = "PublicServerFetcher"
 
-/** Downloads the public Mumble server list. */
+private const val CONNECT_TIMEOUT_S = 10L
+private const val READ_TIMEOUT_S = 15L
+
+/** The whole download, redirects included; the list is a few hundred kilobytes. */
+private const val CALL_TIMEOUT_S = 30L
+
+/** The first HTTP status that counts as a failed download. */
+private const val FIRST_ERROR_STATUS = 400
+
+/**
+ * Downloads the public Mumble server list. Whether to download at all (not over Tor) is the
+ * caller's decision. The client uses the system's proxy settings and follows redirects within the
+ * same scheme only, as HttpURLConnection did.
+ */
 class PublicServerFetcher(
-    private val openConnection: () -> HttpURLConnection = {
-        URL(MUMBLE_PUBLIC_URL).openConnection() as HttpURLConnection
-    },
+    private val url: HttpUrl = MUMBLE_PUBLIC_URL.toHttpUrl(),
+    private val client: OkHttpClient = defaultClient,
 ) {
     /** Returns the parsed list, or null when it could not be fetched or parsed. */
     suspend fun fetch(): List<PublicServer>? = withContext(Dispatchers.IO) { fetchBlocking() }
 
     @VisibleForTesting
     internal fun fetchBlocking(): List<PublicServer>? = try {
-        val connection = openConnection()
-        try {
-            connection.requestMethod = "GET"
-            connection.addRequestProperty("version", Constants.PROTOCOL_STRING)
-            connection.connect()
-            connection.inputStream.use { stream ->
-                val parser = Xml.newPullParser()
-                parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
-                parser.setInput(stream, "UTF-8")
-                parser.nextTag()
-                parseServers(parser)
-            }
-        } finally {
-            connection.disconnect()
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .addHeader("version", Constants.PROTOCOL_STRING)
+            .build()
+        client.newCall(request).execute().use { response ->
+            // HttpURLConnection threw on these when the body was read; the mapping stays the same.
+            if (response.code >= FIRST_ERROR_STATUS) throw IOException("HTTP ${response.code}")
+            val parser = Xml.newPullParser()
+            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
+            parser.setInput(response.body.byteStream(), "UTF-8")
+            parser.nextTag()
+            parseServers(parser)
         }
     } catch (e: IOException) {
         NomlaLog.w(TAG, "Could not download the public server list", e)
@@ -95,5 +109,19 @@ class PublicServerFetcher(
         }
         parser.nextTag()
         return server
+    }
+
+    companion object {
+        /** One client for every fetcher, so connections and threads are shared. */
+        @VisibleForTesting
+        internal val defaultClient: OkHttpClient by lazy {
+            OkHttpClient.Builder()
+                .followSslRedirects(false)
+                .connectTimeout(CONNECT_TIMEOUT_S, TimeUnit.SECONDS)
+                .readTimeout(READ_TIMEOUT_S, TimeUnit.SECONDS)
+                .writeTimeout(READ_TIMEOUT_S, TimeUnit.SECONDS)
+                .callTimeout(CALL_TIMEOUT_S, TimeUnit.SECONDS)
+                .build()
+        }
     }
 }

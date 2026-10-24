@@ -18,73 +18,98 @@
 package koeln.becker.nomla.servers
 
 import com.google.common.truth.Truth.assertThat
+import koeln.becker.nomla.mumble.util.Constants
+import mockwebserver3.MockResponse
+import mockwebserver3.MockWebServer
+import okhttp3.OkHttpClient
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.io.ByteArrayInputStream
-import java.io.InputStream
-import java.net.HttpURLConnection
-import java.net.URL
+import java.util.concurrent.TimeUnit
 
-/** The public server list download releases both the response stream and the connection. */
+/** The public server list download: request, parsing and the failures that map to null. */
 @RunWith(RobolectricTestRunner::class)
 class PublicServerFetcherTest {
-    private class RecordingStream(text: String) : ByteArrayInputStream(text.toByteArray()) {
-        var closed = false
-        override fun close() {
-            closed = true
-            super.close()
-        }
+    private val server = MockWebServer()
+
+    @Before
+    fun startServer() {
+        server.start()
     }
 
-    private class FakeConnection(private val body: InputStream) : HttpURLConnection(URL("https://example.invalid/")) {
-        var disconnected = false
-        override fun connect() = Unit
-        override fun usingProxy() = false
-        override fun disconnect() {
-            disconnected = true
-        }
-        override fun getInputStream(): InputStream = body
+    @After
+    fun stopServer() {
+        server.close()
     }
 
-    private fun fetch(connection: HttpURLConnection) = PublicServerFetcher { connection }.fetchBlocking()
+    private fun fetch(client: OkHttpClient = PublicServerFetcher.defaultClient) =
+        PublicServerFetcher(server.url("/list2.cgi"), client).fetchBlocking()
+
+    private fun respond(body: String, code: Int = 200) =
+        server.enqueue(MockResponse.Builder().code(code).body(body).build())
 
     @Test
-    fun aListThatParsesReleasesItsStreamAndConnection() {
-        val body = RecordingStream(
+    fun aListIsRequestedWithTheProtocolVersionAndParsed() {
+        respond(
             """<servers><server name="a" ca="0" continent_code="EU" country="Sweden" country_code="SE" """ +
                 """ip="a.example" port="64738" region="x" url="https://a.example"/></servers>""",
         )
-        val connection = FakeConnection(body)
 
-        val servers = fetch(connection)
+        val servers = fetch()
 
-        assertThat(servers!!.map { it.name }).containsExactly("a")
-        assertThat(body.closed).isTrue()
-        assertThat(connection.disconnected).isTrue()
+        val entry = servers!!.single()
+        assertThat(entry.name).isEqualTo("a")
+        assertThat(entry.country).isEqualTo("Sweden")
+        assertThat(entry.server.port).isEqualTo(64738)
+        val request = server.takeRequest()
+        assertThat(request.method).isEqualTo("GET")
+        assertThat(request.headers["version"]).isEqualTo(Constants.PROTOCOL_STRING)
     }
 
     @Test
-    fun aListThatFailsToParseReleasesItsStreamAndConnection() {
-        val body = RecordingStream("not xml")
-        val connection = FakeConnection(body)
+    fun aListThatFailsToParseIsNull() {
+        respond("not xml")
 
-        val servers = fetch(connection)
+        assertThat(fetch()).isNull()
+    }
 
-        assertThat(servers).isNull()
-        assertThat(body.closed).isTrue()
-        assertThat(connection.disconnected).isTrue()
+    @Test
+    fun anErrorStatusIsNullEvenWithAParsableBody() {
+        respond("<servers></servers>", code = 503)
+
+        assertThat(fetch()).isNull()
     }
 
     @Test
     fun anEntryWithABadPortIsSkipped() {
-        val body = RecordingStream(
+        respond(
             """<servers><server name="a" ip="a.example" port="x"/>""" +
                 """<server name="b" ip="b.example" port="64738"/></servers>""",
         )
 
-        val servers = fetch(FakeConnection(body))
+        assertThat(fetch()!!.map { it.name }).containsExactly("b")
+    }
 
-        assertThat(servers!!.map { it.name }).containsExactly("b")
+    /** HttpURLConnection waited forever by default; every phase of the download is bounded now. */
+    @Test
+    fun theDownloadIsBoundedInTime() {
+        val client = PublicServerFetcher.defaultClient
+        assertThat(client.connectTimeoutMillis).isGreaterThan(0)
+        assertThat(client.readTimeoutMillis).isGreaterThan(0)
+        assertThat(client.callTimeoutMillis).isGreaterThan(0)
+    }
+
+    @Test
+    fun aServerThatStallsIsNull() {
+        server.enqueue(
+            MockResponse.Builder().body("<servers></servers>").headersDelay(2, TimeUnit.SECONDS).build(),
+        )
+        val impatient = PublicServerFetcher.defaultClient.newBuilder()
+            .readTimeout(100, TimeUnit.MILLISECONDS)
+            .build()
+
+        assertThat(fetch(impatient)).isNull()
     }
 }
