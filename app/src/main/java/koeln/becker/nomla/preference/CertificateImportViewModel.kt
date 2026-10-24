@@ -37,7 +37,6 @@ import koeln.becker.nomla.db.NomlaRepository
 import koeln.becker.nomla.ui.AppMessages
 import koeln.becker.nomla.util.displayName
 import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.security.GeneralSecurityException
@@ -153,9 +152,9 @@ internal class CertificateImportViewModel(
         null.also { NomlaLog.d(TAG, "The PKCS#12 file did not open", e) }
     }
 
-    /** [keyStore] under the empty password, as certificates are stored; null if that fails. */
+    /** [keyStore] in the unprotected layout certificates are stored in; null if that fails. */
     private fun reencode(keyStore: KeyStore): ByteArray? = try {
-        ByteArrayOutputStream().also { keyStore.store(it, CharArray(0)) }.toByteArray()
+        Pkcs12Certificates.storeWithoutPassword(keyStore)
     } catch (e: IOException) {
         null.also { NomlaLog.w(TAG, "Could not re-encode the certificate", e) }
     } catch (e: GeneralSecurityException) {

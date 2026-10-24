@@ -186,6 +186,57 @@ class Pkcs12CertificatesTest {
         assertIsUnencryptedKeyBagShape(out.toByteArray())
     }
 
+    /**
+     * The life of a certificate: generated and stored, exported with a password, imported again
+     * (opened with that password and stored), and exported without one. Every step keeps the
+     * identity, and every stored or unprotected copy is in Mumble's layout with the cheap MAC.
+     */
+    @Test
+    fun `generate, export, import and export again keep the identity`() {
+        val out = ByteArrayOutputStream()
+        val generated = NomlaCertificateGenerator.generateCertificate(out)
+        val stored = out.toByteArray()
+        val key = Pkcs12Certificates.load(stored, null).getKey("Nomla Key", CharArray(0)).encoded
+
+        val exported = Pkcs12Certificates.exportWithPassword(stored, "hunter2".toCharArray())
+        val imported = Pkcs12Certificates.storeWithoutPassword(Pkcs12Certificates.load(exported, "hunter2"))
+        val reexported = Pkcs12Certificates.exportWithoutPassword(imported)
+
+        for (bytes in listOf(stored, imported, reexported)) {
+            assertIsUnencryptedKeyBagShape(bytes)
+            assertThat(Pfx.getInstance(bytes).macData.iterationCount.toInt()).isEqualTo(2048)
+            val store = Pkcs12Certificates.load(bytes, null)
+            assertThat(store.aliases().toList()).containsExactly("Nomla Key")
+            assertThat(store.getCertificate("Nomla Key").encoded).isEqualTo(generated.encoded)
+            assertThat(store.getKey("Nomla Key", CharArray(0)).encoded).isEqualTo(key)
+        }
+    }
+
+    /**
+     * A file from another tool, password-protected with BouncyCastle's expensive defaults, is
+     * stored in Mumble's layout with the cheap MAC, keeping its key and whole chain.
+     */
+    @Test
+    fun `an imported store is kept in the mumble layout with its chain`() {
+        val identity = TestCertificates.leaf(cn = "Imported")
+        val file = ByteArrayOutputStream().also { out ->
+            KeyStore.getInstance("PKCS12", BouncyCastleProvider()).apply {
+                load(null, null)
+                setKeyEntry("imported", identity.keyPair.private, "pw".toCharArray(), identity.chain)
+                store(out, "pw".toCharArray())
+            }
+        }.toByteArray()
+
+        val stored = Pkcs12Certificates.storeWithoutPassword(Pkcs12Certificates.load(file, "pw"))
+
+        assertIsUnencryptedKeyBagShape(stored)
+        assertThat(Pfx.getInstance(stored).macData.iterationCount.toInt()).isEqualTo(2048)
+        val store = Pkcs12Certificates.load(stored, null)
+        assertThat(store.getKey("imported", CharArray(0)).encoded).isEqualTo(identity.keyPair.private.encoded)
+        assertThat(store.getCertificateChain("imported").map { it.encoded.toList() })
+            .containsExactlyElementsIn(identity.chain.map { it.encoded.toList() }).inOrder()
+    }
+
     @Test
     fun `a null password is treated as the empty password`() {
         val bytes = mumbleStylePkcs12(mumbleIdentity())
