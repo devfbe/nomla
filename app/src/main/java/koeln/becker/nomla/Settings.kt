@@ -54,6 +54,14 @@ class Settings internal constructor(context: Context) {
             preferences.edit { write(pref, value) }
     }
 
+    /** Reads and writes [pref]'s entry through to disk; see [EnumPref.decode] for unknown values. */
+    private fun <E : Enum<E>> entry(pref: EnumPref<E>) = object : ReadWriteProperty<Settings, E> {
+        override fun getValue(thisRef: Settings, property: KProperty<*>): E =
+            pref.decode(preferences.getString(pref.key, null))
+        override fun setValue(thisRef: Settings, property: KProperty<*>, value: E) =
+            preferences.edit { write(pref, pref.encode(value)) }
+    }
+
     /**
      * The key of every change to one of [prefs] while collected, with no initial emission; see
      * [SharedPreferences.changes].
@@ -63,10 +71,7 @@ class Settings internal constructor(context: Context) {
     /** As the other [changes], for key sets with keys that have no [Pref], such as [echoCancellationKey]s. */
     fun changes(keys: Collection<String>): Flow<String> = preferences.changes(keys)
 
-    /** Stored as its [TransmitMode.preferenceValue]; an unknown stored value reads as voice activity. */
-    var transmitMode: TransmitMode
-        get() = TransmitMode.fromPreferenceValue(preferences.read(INPUT_METHOD))
-        set(value) = preferences.edit { write(INPUT_METHOD, value.preferenceValue) }
+    var transmitMode: TransmitMode by entry(INPUT_METHOD)
 
     val inputSampleRate: Int get() = preferences.read(INPUT_RATE).toInt()
 
@@ -180,13 +185,8 @@ class Settings internal constructor(context: Context) {
 
     val isPttSoundEnabled: Boolean by pref(PTT_SOUND)
 
-    /**
-     * Stored as its [NoiseSuppressionMode.preferenceValue], one of the `noiseSuppressionValues`; the
-     * quick menu writes it as well as the settings screen.
-     */
-    var noiseSuppressionMode: NoiseSuppressionMode
-        get() = NoiseSuppressionMode.fromPreferenceValue(preferences.read(NOISE_SUPPRESSION_METHOD))
-        set(value) = preferences.edit { write(NOISE_SUPPRESSION_METHOD, value.preferenceValue) }
+    /** The quick menu writes it as well as the settings screen. */
+    var noiseSuppressionMode: NoiseSuppressionMode by entry(NOISE_SUPPRESSION_METHOD)
 
     /** Anything outside [PipelineSettings.SPEEX_NOISE_SUPPRESS_DB] is the default. */
     val speexNoiseSuppressDb: Int
@@ -214,7 +214,7 @@ class Settings internal constructor(context: Context) {
         rnnoiseStrength = RNNOISE_ATTENUATION_LIMIT_DB.default
     }
 
-    val vadMode: VadMode get() = VadMode.fromPreferenceValue(preferences.read(VAD_MODE))
+    val vadMode: VadMode by entry(VAD_MODE)
 
     /**
      * The whole voice-gate configuration as one value. Every read is clamped here because
@@ -303,10 +303,7 @@ class Settings internal constructor(context: Context) {
 
     var isBluetoothScoEnabled: Boolean by pref(BLUETOOTH_SCO)
 
-    val mediaButtonAction: MediaButtonAction
-        get() = MediaButtonAction.fromPrefValue(
-            preferences.read(MEDIA_BUTTON_ACTION),
-        )
+    val mediaButtonAction: MediaButtonAction by entry(MEDIA_BUTTON_ACTION)
 
     var isBatteryOptimizationAsked: Boolean by pref(BATTERY_OPTIMIZATION_ASKED)
 
@@ -315,8 +312,9 @@ class Settings internal constructor(context: Context) {
     var isNotificationPermissionAsked: Boolean by pref(NOTIFICATION_PERMISSION_ASKED)
 
     companion object {
-        /** One of [TransmitMode.preferenceValue]. */
-        val INPUT_METHOD = Pref("audioInputMethod", TransmitMode.VOICE_ACTIVITY.preferenceValue)
+        val INPUT_METHOD = EnumPref(
+            "audioInputMethod", TransmitMode.VOICE_ACTIVITY, TransmitMode.entries, TransmitMode::preferenceValue,
+        )
 
         val THRESHOLD = Pref("vadThreshold", 50)
 
@@ -388,15 +386,20 @@ class Settings internal constructor(context: Context) {
 
         val PTT_SOUND = Pref("ptt_sound", false)
 
-        val NOISE_SUPPRESSION_METHOD = Pref("noise_suppression_method", "rnnoise")
+        /** One of the `noiseSuppressionValues`. */
+        val NOISE_SUPPRESSION_METHOD = EnumPref(
+            "noise_suppression_method",
+            NoiseSuppressionMode.RNNOISE,
+            NoiseSuppressionMode.entries,
+            NoiseSuppressionMode::preferenceValue,
+        )
 
         /** Stored as a string because it is a ListPreference; -15/-25/-35. */
         val SPEEX_NOISE_SUPPRESS_DB = Pref("speex_noise_suppress_db", -25)
 
         /**
          * RNNoise's attenuation limit ("noise reduction strength"), dB, as an int slider stores it;
-         * [RNNOISE_LIMIT_UNLIMITED] means no limit. Installs from before the setting have no value
-         * and read the default, so they move from no limit to 18 dB with no migration.
+         * [RNNOISE_LIMIT_UNLIMITED] means no limit.
          */
         val RNNOISE_ATTENUATION_LIMIT_DB = Pref(
             "rnnoise_attenuation_limit_db",
@@ -417,11 +420,8 @@ class Settings internal constructor(context: Context) {
             if (strength >= RNNOISE_LIMIT_UNLIMITED) Float.POSITIVE_INFINITY
             else strength.coerceIn(RNNOISE_LIMIT_MIN_DB, RNNOISE_LIMIT_MAX_DB).toFloat()
 
-        /**
-         * One of [VadMode.preferenceValue]. Switching modes keeps `vadThreshold` on disk, so going
-         * back to amplitude restores the old calibration.
-         */
-        val VAD_MODE = Pref("vad_mode", "adaptive")
+        /** Switching modes keeps `vadThreshold` on disk, so going back to amplitude restores the old calibration. */
+        val VAD_MODE = EnumPref("vad_mode", VadMode.ADAPTIVE, VadMode.entries, VadMode::preferenceValue)
 
         /** Percent; the fraction of the measured speech-to-floor gap a frame has to clear. */
         val VAD_SENSITIVITY = Pref("vad_sensitivity", 65)
@@ -475,8 +475,10 @@ class Settings internal constructor(context: Context) {
         /** Use a connected Bluetooth headset automatically while connected. */
         val BLUETOOTH_SCO = Pref("pref_bluetooth_sco", true)
 
-        /** Headset / AVRCP media button behavior, one of [MediaButtonAction.prefValue]. */
-        val MEDIA_BUTTON_ACTION = Pref("media_button_action", "auto")
+        /** Headset / AVRCP media button behavior, one of the `mediaButtonActionValues`. */
+        val MEDIA_BUTTON_ACTION = EnumPref(
+            "media_button_action", MediaButtonAction.AUTO, MediaButtonAction.entries, MediaButtonAction::preferenceValue,
+        )
 
         /** The connection settings row for the battery-optimization exemption; stores nothing. */
         const val PREF_BATTERY_OPTIMIZATION = "battery_optimization"

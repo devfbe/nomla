@@ -19,24 +19,16 @@ package koeln.becker.nomla.mumble.audio.capture
 
 import koeln.becker.nomla.mumble.util.NANOS_PER_MILLI
 
-/**
- * Preference values are stable on-disk identifiers. Unknown values fall back to [AMPLITUDE], what
- * older installs ran, so their `detection_threshold` slider keeps working.
- */
+/** Preference values are stable on-disk identifiers (see app Settings.kt). */
 public enum class VadMode(public val preferenceValue: String) {
-    /** Legacy dBFS level detector; kept for devices where the models fail. */
+    /** Fixed dBFS level detector, for devices where the models fail. */
     AMPLITUDE("amplitude"),
 
     /** Uses the preprocessor chain's voice probability. */
     PROBABILITY("probability"),
 
     /** Level detector with a threshold between tracked noise floor and speech peak ([AdaptiveVadTracker]). */
-    ADAPTIVE("adaptive");
-
-    public companion object {
-        public fun fromPreferenceValue(value: String?): VadMode =
-            entries.firstOrNull { it.preferenceValue == value } ?: AMPLITUDE
-    }
+    ADAPTIVE("adaptive"),
 }
 
 /**

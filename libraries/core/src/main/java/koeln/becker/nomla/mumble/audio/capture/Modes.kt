@@ -17,19 +17,11 @@
 
 package koeln.becker.nomla.mumble.audio.capture
 
-/**
- * Preference values are stable on-disk identifiers (see app Settings.kt). Unknown or missing values
- * fall back to [SPEEX], the suppressor older installs were already running.
- */
+/** Preference values are stable on-disk identifiers (see app Settings.kt). */
 public enum class NoiseSuppressionMode(public val preferenceValue: String) {
     NONE("none"),
     SPEEX("speex"),
-    RNNOISE("rnnoise");
-
-    public companion object {
-        public fun fromPreferenceValue(value: String?): NoiseSuppressionMode =
-            entries.firstOrNull { it.preferenceValue == value } ?: SPEEX
-    }
+    RNNOISE("rnnoise"),
 }
 
 /**

@@ -21,26 +21,7 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
 class ModesTest {
-    @Test
-    fun `noise suppression values map and default to speex`() {
-        assertThat(NoiseSuppressionMode.fromPreferenceValue("rnnoise")).isEqualTo(NoiseSuppressionMode.RNNOISE)
-        assertThat(NoiseSuppressionMode.fromPreferenceValue("none")).isEqualTo(NoiseSuppressionMode.NONE)
-        assertThat(NoiseSuppressionMode.fromPreferenceValue(null)).isEqualTo(NoiseSuppressionMode.SPEEX)
-    }
-
-    /** A constant added without a mapping fails here instead of reading back as the default. */
-    @Test
-    fun `every mode round-trips through its preference value`() {
-        for (mode in NoiseSuppressionMode.entries) {
-            assertThat(NoiseSuppressionMode.fromPreferenceValue(mode.preferenceValue)).isEqualTo(mode)
-        }
-    }
-
-    /**
-     * Pins the stored spelling directly: a misspelt value would still pass the round trip, because
-     * unknown values fall back to the same default. A wrong value would leave the settings list
-     * with nothing selected.
-     */
+    /** Pins the stored spelling: a wrong value would leave the settings list with nothing selected. */
     @Test
     fun `every constant keeps its on-disk value`() {
         assertThat(NoiseSuppressionMode.entries.associate { it.name to it.preferenceValue })

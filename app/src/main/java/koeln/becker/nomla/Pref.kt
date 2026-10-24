@@ -22,7 +22,25 @@ import android.content.SharedPreferences
  * A preference: its key, as in the `settings_*.xml` screens, and the value it reads as while unset,
  * which must match the screen's `android:defaultValue` (`SettingsDefaultsTest` checks both).
  */
-class Pref<T>(val key: String, val default: T)
+open class Pref<T>(val key: String, val default: T)
+
+/**
+ * A list preference whose entries are [entries], each stored as its [storedAs] string. It reads as
+ * [defaultEntry] while unset and for any stored string no entry has, so [default] and the fallback
+ * can never disagree.
+ */
+class EnumPref<E : Enum<E>>(
+    key: String,
+    val defaultEntry: E,
+    private val entries: List<E>,
+    private val storedAs: (E) -> String,
+) : Pref<String>(key, storedAs(defaultEntry)) {
+
+    /** The entry [stored] names, or [defaultEntry]. */
+    fun decode(stored: String?): E = entries.firstOrNull { storedAs(it) == stored } ?: defaultEntry
+
+    fun encode(entry: E): String = storedAs(entry)
+}
 
 /** The stored value of [pref], or its default. Supports Boolean, Int, Long, Float and String. */
 @Suppress("UNCHECKED_CAST")

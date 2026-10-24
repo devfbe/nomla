@@ -105,7 +105,7 @@ class SliderPreference(context: Context, attrs: AttributeSet?) : Preference(cont
         slider.valueFrom = min.toFloat()
         slider.valueTo = max.toFloat()
         slider.stepSize = step.toFloat()
-        // What older versions stored may lie off the steps or outside the range; the slider would
+        // A hand-edited stored value may lie off the steps or outside the range; the slider would
         // throw on it, so it shows the nearest position and the stored value stays until moved.
         slider.value = onStep(value).toFloat()
         slider.contentDescription = title

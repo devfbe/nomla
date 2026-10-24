@@ -57,7 +57,7 @@ open class AudioSettingsFragment : NomlaPreferenceFragment(R.xml.settings_audio)
 
         val inputPreference = requireNotNull(findPreference<ListPreference>(Settings.INPUT_METHOD.key))
         inputPreference.setOnPreferenceChangeListener { _, newValue ->
-            updateAudioDependents(preferenceScreen, TransmitMode.fromPreferenceValue(newValue as String))
+            updateAudioDependents(preferenceScreen, Settings.INPUT_METHOD.decode(newValue as String))
             true
         }
 
@@ -71,15 +71,15 @@ open class AudioSettingsFragment : NomlaPreferenceFragment(R.xml.settings_audio)
 
         val noisePref = requireNotNull(findPreference<ListPreference>(Settings.NOISE_SUPPRESSION_METHOD.key))
         noisePref.setOnPreferenceChangeListener { _, newValue ->
-            applyNoiseDependents(NoiseSuppressionMode.fromPreferenceValue(newValue as String))
+            applyNoiseDependents(Settings.NOISE_SUPPRESSION_METHOD.decode(newValue as String))
             true
         }
-        applyNoiseDependents(NoiseSuppressionMode.fromPreferenceValue(noisePref.value))
+        applyNoiseDependents(Settings.NOISE_SUPPRESSION_METHOD.decode(noisePref.value))
         bindRnnoiseStrength()
 
         val vadModePref = requireNotNull(findPreference<ListPreference>(Settings.VAD_MODE.key))
         vadModePref.setOnPreferenceChangeListener { _, newValue ->
-            applyVadDependents(VadMode.fromPreferenceValue(newValue as String))
+            applyVadDependents(Settings.VAD_MODE.decode(newValue as String))
             true
         }
         findPreference<SwitchPreferenceCompat>(Settings.VAD_ADAPTIVE_FLOOR.key)
@@ -106,7 +106,7 @@ open class AudioSettingsFragment : NomlaPreferenceFragment(R.xml.settings_audio)
         }
         refreshAudioDevices()
 
-        updateAudioDependents(preferenceScreen, TransmitMode.fromPreferenceValue(inputPreference.value))
+        updateAudioDependents(preferenceScreen, Settings.INPUT_METHOD.decode(inputPreference.value))
     }
 
     private var audioDeviceChoices: AudioDeviceChoices? = null
@@ -226,7 +226,7 @@ open class AudioSettingsFragment : NomlaPreferenceFragment(R.xml.settings_audio)
 
     /** The mode as stored, which is what [Settings] will read. */
     protected fun currentVadMode(): VadMode =
-        VadMode.fromPreferenceValue(findPreference<ListPreference>(Settings.VAD_MODE.key)?.value)
+        Settings.VAD_MODE.decode(findPreference<ListPreference>(Settings.VAD_MODE.key)?.value)
 
     private fun markAvailability(pref: SwitchPreferenceCompat, available: Boolean) {
         if (available) return

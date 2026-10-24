@@ -77,7 +77,7 @@ class NomlaApplication : Application(), AppContainer.Owner {
     }
 
     private companion object {
-        /** Unknown (older) values fall back to the system theme, which is written back. */
+        /** An unknown value falls back to the system theme, which is written back. */
         fun applyTheme(preferences: SharedPreferences) {
             when (preferences.getString(Settings.THEME.key, "system")) {
                 "forceLight" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)

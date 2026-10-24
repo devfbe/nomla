@@ -39,10 +39,7 @@ import koeln.becker.nomla.testing.SETTINGS_SCREENS
 import koeln.becker.nomla.testing.openScreen
 import koeln.becker.nomla.testing.rowOf
 
-/**
- * The inline sliders store the same ints the slider dialogs stored before them, under the same
- * keys and in the same units, so values saved by an older version read back unchanged.
- */
+/** The inline sliders store ints under the keys and in the units [Settings] reads them in. */
 @RunWith(RobolectricTestRunner::class)
 class SliderPreferenceTest {
     private val app = ApplicationProvider.getApplicationContext<Application>()

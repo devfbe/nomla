@@ -28,18 +28,9 @@ import koeln.becker.nomla.mumble.audio.routing.PreferredAudioDevice
 class AudioSettingsTest {
     /** Pins the stored spelling: the preference XML lists these values, and installs hold them. */
     @Test
-    fun transmitModesKeepTheirOnDiskValuesAndRoundTrip() {
+    fun transmitModesKeepTheirOnDiskValues() {
         assertThat(TransmitMode.entries.associate { it.name to it.preferenceValue })
             .containsExactly("VOICE_ACTIVITY", "voiceActivity", "PUSH_TO_TALK", "ptt", "CONTINUOUS", "continuous")
-        for (mode in TransmitMode.entries) {
-            assertThat(TransmitMode.fromPreferenceValue(mode.preferenceValue)).isEqualTo(mode)
-        }
-    }
-
-    @Test
-    fun anUnknownOrMissingTransmitModeIsVoiceActivity() {
-        assertThat(TransmitMode.fromPreferenceValue("handset")).isEqualTo(TransmitMode.VOICE_ACTIVITY)
-        assertThat(TransmitMode.fromPreferenceValue(null)).isEqualTo(TransmitMode.VOICE_ACTIVITY)
     }
 
     private fun halfDuplex(requested: Boolean, mode: TransmitMode) =

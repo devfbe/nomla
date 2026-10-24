@@ -19,9 +19,9 @@ package koeln.becker.nomla
 
 /**
  * What a headset / Bluetooth media button (play-pause, headset hook) does while connected.
- * The [prefValue] strings are the entry values of `@array/mediaButtonActionValues`.
+ * The [preferenceValue] strings are the entry values of `@array/mediaButtonActionValues`.
  */
-enum class MediaButtonAction(val prefValue: String) {
+enum class MediaButtonAction(val preferenceValue: String) {
     /** Media buttons are ignored. */
     NONE("none"),
 
@@ -29,10 +29,5 @@ enum class MediaButtonAction(val prefValue: String) {
     AUTO("auto"),
 
     /** Always toggle self-mute. */
-    MUTE("mute");
-
-    companion object {
-        fun fromPrefValue(value: String?): MediaButtonAction =
-            entries.firstOrNull { it.prefValue == value } ?: AUTO
-    }
+    MUTE("mute"),
 }

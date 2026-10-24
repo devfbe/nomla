@@ -74,7 +74,7 @@ class MediaButtonActionResourcesTest {
         // Spelled out so the assertion cannot mirror the enum ...
         assertThat(values).containsExactly("none", "auto", "mute").inOrder()
         // ... and compared against the whole enum, so a new constant fails here.
-        assertThat(values).isEqualTo(MediaButtonAction.entries.map { it.prefValue })
+        assertThat(values).isEqualTo(MediaButtonAction.entries.map { it.preferenceValue })
     }
 
     @Test
@@ -103,11 +103,11 @@ class MediaButtonActionResourcesTest {
 
         // Two sources of one default: `android:defaultValue` in the XML and
         // Settings.MEDIA_BUTTON_ACTION.default, which is what every reader outside this screen
-        // gets. A mismatch is invisible at runtime because fromPrefValue() falls back to AUTO.
+        // gets. A mismatch is invisible at runtime because an unknown value reads as the default.
         assertThat(preference.value).isEqualTo(Settings.MEDIA_BUTTON_ACTION.default)
         assertThat(stringArrayByName("mediaButtonActionValues")).contains(preference.value)
         assertThat(Settings.getInstance(context).mediaButtonAction)
-            .isEqualTo(MediaButtonAction.fromPrefValue(preference.value))
+            .isEqualTo(Settings.MEDIA_BUTTON_ACTION.decode(preference.value))
     }
 
     @Test
@@ -138,7 +138,7 @@ class MediaButtonActionResourcesTest {
         // every other app and nobody would blame Nomla. "Nothing" alone does not say that.
         val names = stringArrayByName("mediaButtonActionNames")
         val values = stringArrayByName("mediaButtonActionValues")
-        val offName = names[values.indexOf(MediaButtonAction.NONE.prefValue)].lowercase()
+        val offName = names[values.indexOf(MediaButtonAction.NONE.preferenceValue)].lowercase()
 
         assertWithMessage("the 'none' entry must say the keys stay with other apps: %s", offName)
             .that(offName).contains("app")

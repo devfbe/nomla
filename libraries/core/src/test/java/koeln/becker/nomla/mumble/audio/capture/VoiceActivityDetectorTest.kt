@@ -246,30 +246,12 @@ class VoiceActivityDetectorTest {
         assertThat(d.isVoice(constant(0), 480, 0.8f)).isTrue()
     }
 
-    /**
-     * Existing users have no stored value and drive the detector through the level slider, which
-     * is a no-op in probability mode; defaulting to AMPLITUDE keeps that slider working.
-     */
-    @Test
-    fun `vad mode preference parsing defaults to the amplitude detector users have today`() {
-        assertThat(VadMode.fromPreferenceValue("amplitude")).isEqualTo(VadMode.AMPLITUDE)
-        assertThat(VadMode.fromPreferenceValue("probability")).isEqualTo(VadMode.PROBABILITY)
-        assertThat(VadMode.fromPreferenceValue("nonsense")).isEqualTo(VadMode.AMPLITUDE)
-        assertThat(VadMode.fromPreferenceValue(null)).isEqualTo(VadMode.AMPLITUDE)
-    }
-
-    /**
-     * Pins the stored spelling directly: a misspelt value would still round-trip, because unknown
-     * values fall back to the same default.
-     */
+    /** Pins the stored spelling: the preference XML lists these values. */
     @Test
     fun `every vad mode keeps its on-disk value`() {
         assertThat(VadMode.entries.associate { it.name to it.preferenceValue })
             .containsExactly("AMPLITUDE", "amplitude", "PROBABILITY", "probability", "ADAPTIVE", "adaptive")
         assertThat(VadMode.entries.map { it.preferenceValue }).containsNoDuplicates()
-        for (mode in VadMode.entries) {
-            assertThat(VadMode.fromPreferenceValue(mode.preferenceValue)).isEqualTo(mode)
-        }
     }
 
     /**

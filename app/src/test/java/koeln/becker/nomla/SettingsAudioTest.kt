@@ -75,7 +75,8 @@ class SettingsAudioTest {
         assertThat(NoiseSuppressionMode.entries.map { it.preferenceValue })
             .containsExactly("none", "speex", "rnnoise")
         prefs.edit().putString(Settings.NOISE_SUPPRESSION_METHOD.key, "loud").commit()
-        assertThat(settings.noiseSuppressionMode).isEqualTo(NoiseSuppressionMode.SPEEX)
+        // An unknown value reads as the default, as an unset one does.
+        assertThat(settings.noiseSuppressionMode).isEqualTo(NoiseSuppressionMode.RNNOISE)
         prefs.edit().remove(Settings.NOISE_SUPPRESSION_METHOD.key).commit()
         assertThat(settings.noiseSuppressionMode).isEqualTo(NoiseSuppressionMode.RNNOISE)
     }
@@ -95,12 +96,9 @@ class SettingsAudioTest {
 
     // --- RNNoise's strength: a slider in dB whose last position is "no limit" --------------------
 
-    /**
-     * The migration: an install from before the setting has no value stored and reads the new
-     * default, so it moves from "no limit" to 18 dB without a rewrite of its preferences.
-     */
+    /** With other audio settings stored but no strength, the strength reads as its 18 dB default. */
     @Test
-    fun `an existing install without a stored strength reads the 18 dB default`() {
+    fun `an unset strength reads the 18 dB default`() {
         prefs.edit().putString(Settings.NOISE_SUPPRESSION_METHOD.key, "rnnoise").putInt(Settings.THRESHOLD.key, 40)
             .commit()
 
@@ -294,9 +292,13 @@ class SettingsAudioTest {
     }
 
     @Test
-    fun `an unknown stored mode falls back to the amplitude detector everyone has been running`() {
+    fun `an unknown or missing stored mode reads as the adaptive default`() {
         prefs.edit().putString(Settings.VAD_MODE.key, "telepathy").commit()
+        assertThat(settings.vadMode).isEqualTo(VadMode.ADAPTIVE)
+        prefs.edit().putString(Settings.VAD_MODE.key, VadMode.AMPLITUDE.preferenceValue).commit()
         assertThat(settings.vadMode).isEqualTo(VadMode.AMPLITUDE)
+        prefs.edit().remove(Settings.VAD_MODE.key).commit()
+        assertThat(settings.vadMode).isEqualTo(VadMode.ADAPTIVE)
     }
 
     @Test
