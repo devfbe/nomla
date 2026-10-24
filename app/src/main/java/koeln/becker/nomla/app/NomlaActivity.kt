@@ -70,6 +70,7 @@ import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.session.serverName
 import koeln.becker.nomla.ui.ConnectRequests
 import koeln.becker.nomla.ui.ServerRequest
+import koeln.becker.nomla.ui.maybeShowNewsDialog
 import koeln.becker.nomla.ui.showConfirmDialog
 import koeln.becker.nomla.ui.showAppMessages
 import koeln.becker.nomla.ui.showSnackbar
@@ -157,7 +158,7 @@ class NomlaActivity :
 
         // Only on a real start, not when the activity is recreated, e.g. on rotation.
         if (savedInstanceState == null) {
-            if (settings.isFirstRun) showFirstRunGuide() else StartupAction().execute(this)
+            if (settings.isFirstRun) showFirstRunGuide() else maybeShowNewsDialog(this)
         }
     }
 
