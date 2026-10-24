@@ -42,6 +42,7 @@ import koeln.becker.nomla.mumble.testutil.TestCaptureSource
 import koeln.becker.nomla.mumble.testutil.awaitUntil
 import java.util.Collections
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -329,6 +330,47 @@ class DoubleTalkSelfTestTest {
         s.start()
         assertThat(assertThrows(IllegalStateException::class.java) { s.start() }).hasMessageThat()
             .contains("already started")
+    }
+
+    /**
+     * A read wedged in native code past the join: the chain both threads use, the recorder and the
+     * track wait for it, and only the route is put back at once.
+     */
+    @Test
+    fun `a recorder wedged past the join keeps the chain, the recorder and the track until it ends`() {
+        devices.select(EARPIECE)
+        val hung = CountDownLatch(1)
+        val source = TestCaptureSource(emptyList(), hangAfterStop = hung)
+        val s = selfTest(emptyList(), source = source)
+        try {
+            s.start()
+            awaitUntil { source.reads.get() > 0 && sink.writes.get() > 0 }
+            s.stop()
+
+            assertThat(source.events).doesNotContain("release")
+            assertThat(sink.calls).doesNotContain("release")
+            assertThat(apm.destroyed).isEqualTo(0)
+            assertThat(rnnoise.destroyed).isEqualTo(0)
+            assertThat(audioManager.mode).isEqualTo(AudioManager.MODE_NORMAL)
+            assertThat(devices.selectedId).isEqualTo(EARPIECE)
+        } finally {
+            hung.countDown()
+        }
+        awaitUntil { apm.destroyed == 1 && rnnoise.destroyed == 1 }
+        assertThat(source.events).contains("release")
+        assertThat(sink.calls.takeLast(4)).containsExactly("pause", "flush", "stop", "release").inOrder()
+    }
+
+    @Test
+    fun `stopping twice frees everything once`() {
+        val s = selfTest(listOf(frameAt(-20f)))
+        s.start()
+        awaitUntil { sink.writes.get() > 0 }
+        s.stop()
+        s.stop()
+
+        assertThat(sink.calls.count { it == "release" }).isEqualTo(1)
+        assertThat(apm.destroyed).isEqualTo(1)
     }
 
     @Test

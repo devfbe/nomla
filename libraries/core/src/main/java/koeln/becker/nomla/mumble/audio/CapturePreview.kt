@@ -47,7 +47,8 @@ private const val THREAD_NAME = "nomla-capture-preview"
 /**
  * Half of `AudioInput`'s, because this join happens on the main thread (`onPause` and every
  * settings change). `source.stop()` has already unblocked the read; if the thread has not
- * returned by then the recorder is wedged, so log and release anyway.
+ * returned by then the recorder is wedged, so the thread is left to release what it uses as it
+ * ends (see [releaseAfter]).
  */
 private const val JOIN_TIMEOUT_MS = 500L
 
@@ -77,7 +78,7 @@ public data class MeterReading(
  * Runs the same pipeline a session runs, from the same factories and settings, so the meter shows
  * what the microphone will actually do. Reports one [MeterReading] every [readingIntervalFrames]
  * frames and, with [loopback] on, plays back the frames that would have been transmitted.
- * One bare thread, released by [stop]. Not reusable: [start] twice throws.
+ * One [AudioWorker] thread, ended by [stop]. Not reusable: [start] twice throws.
  *
  * While a call is running this takes the microphone from its session: on API 31+ the newer client
  * wins and the session's capture reports `CaptureState.Silenced` (published as the session's
@@ -134,20 +135,17 @@ public class CapturePreview internal constructor(
     private var source: PcmCaptureSource? = null
     private var sink: PcmPlaybackSink? = null
     private var pipeline: CapturePipeline? = null
-    private var thread: Thread? = null
+    private val worker = AudioWorker(THREAD_NAME)
     private val detector = VoiceActivityDetector(vadConfig)
 
     /** True while this session put the device into communication mode and still owes a restore. */
     private var ownsCommunicationMode = false
 
-    @Volatile
-    private var running = false
-
     /** Forgets what the tracker has learned, which is the screen's "measure again". */
     public fun recalibrate(): Unit = detector.recalibrate()
 
     public fun start() {
-        check(thread == null) { "already started" }
+        check(!worker.isStarted) { "already started" }
         // Route capture exactly like a session will, or the preview calibrates a different setup.
         if (AudioSourcePolicy.needsCommunicationMode(effects, echoCancellation)) {
             audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
@@ -160,39 +158,42 @@ public class CapturePreview internal constructor(
             ),
         )
         var started = false
+        var pipe: CapturePipeline? = null
         try {
             val chain = preprocessorFactory.create(
                 noiseSuppression, echoCancellation, speexNoiseSuppressDb, rnnoiseAttenuationLimitDb,
             )
             val rate = AudioHandler.SAMPLE_RATE
             val resampler = if (src.sampleRate != rate) resamplerFactory(src.sampleRate, rate) else null
-            val pipe = CapturePipeline(
+            val p = CapturePipeline(
                 resampler, chain.preprocessor, ActivityInputMode(detector), 1f, AudioHandler.FRAME_SIZE,
             )
+            pipe = p
             val snk = if (loopback) sinkFactory.open(AudioManager.STREAM_MUSIC, AudioHandler.SAMPLE_RATE) else null
+            worker.start { isRunning -> loop(src, snk, p, isRunning) }
             source = src
             sink = snk
-            pipeline = pipe
-            running = true
-            thread = Thread({ loop(src, snk, pipe) }, THREAD_NAME).also { it.start() }
+            pipeline = p
             started = true
         } finally {
-            // The recorder is open and nothing else holds it, so a failure here would leak it.
+            // The recorder and the chain are open and nothing else holds them, so a failure here
+            // would leak them. No thread runs yet: the worker starts last.
             if (!started) {
+                pipe?.release()
                 src.release()
                 restoreCommunicationMode()
             }
         }
     }
 
-    private fun loop(src: PcmCaptureSource, snk: PcmPlaybackSink?, pipe: CapturePipeline) {
+    private fun loop(src: PcmCaptureSource, snk: PcmPlaybackSink?, pipe: CapturePipeline, isRunning: () -> Boolean) {
         src.start()
         snk?.play()
         val frameSize = src.sampleRate / FRAMES_PER_SECOND
         val buffer = ShortArray(frameSize)
         val silence = ShortArray(AudioHandler.FRAME_SIZE)
         var count = 0
-        while (running) {
+        while (isRunning()) {
             val read = src.read(buffer, frameSize)
             if (read < 0) break
             if (read > 0) {
@@ -204,22 +205,24 @@ public class CapturePreview internal constructor(
         src.stop()
     }
 
+    /**
+     * Ends the thread and frees the recorder, the track and the chain: here, once the thread has
+     * ended, or, after a timed-out join, on the thread itself as it ends, so nothing native is freed
+     * under a read still in flight. The audio mode is put back here either way.
+     */
     public fun stop() {
-        running = false
-        source?.stop()
-        thread?.join(JOIN_TIMEOUT_MS)
-        thread = null
-        sink?.let {
-            it.pause()
-            it.flush()
-            it.stop()
-            it.release()
-        }
-        sink = null
-        source?.release()
+        val src = source
+        val snk = sink
+        val pipe = pipeline
+        worker.stop(JOIN_TIMEOUT_MS) { src?.stop() }
         source = null
-        pipeline?.release()
+        sink = null
         pipeline = null
+        releaseAfter(listOf(worker)) {
+            snk?.shutdown()
+            src?.release()
+            pipe?.release()
+        }
         restoreCommunicationMode()
     }
 

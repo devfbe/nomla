@@ -42,6 +42,7 @@ import koeln.becker.nomla.mumble.testutil.TestCaptureSource
 import koeln.becker.nomla.mumble.testutil.TestPlaybackSink
 import koeln.becker.nomla.mumble.testutil.awaitUntil
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CountDownLatch
 
 @RunWith(RobolectricTestRunner::class)
 class CapturePreviewTest {
@@ -280,6 +281,29 @@ class CapturePreviewTest {
         val s = session(source, sink = sink, loopback = true)
         s.runUntil { "start" in source.events }
         assertThat(source.events.last()).isEqualTo("release")
+        assertThat(sink.events.takeLast(4)).containsExactly("pause", "flush", "stop", "release").inOrder()
+    }
+
+    /** A read wedged in native code past the join: freeing the recorder under it would be a use after free. */
+    @Test
+    fun `a recorder wedged past the join is released by its thread as it ends, not under it`() {
+        val hung = CountDownLatch(1)
+        val source = TestCaptureSource(emptyList(), hangAfterStop = hung)
+        val sink = TestPlaybackSink()
+        val s = session(source, sink = sink, loopback = true, effects = AndroidAudioEffects(noiseSuppressor = true))
+        try {
+            s.start()
+            awaitUntil { source.reads.get() > 0 }
+            s.stop()
+
+            assertThat(source.events).doesNotContain("release")
+            assertThat(sink.events).doesNotContain("release")
+            // The audio mode is not native state: it is put back at once.
+            assertThat(audioManager.mode).isEqualTo(AudioManager.MODE_NORMAL)
+        } finally {
+            hung.countDown()
+        }
+        awaitUntil { "release" in source.events }
         assertThat(sink.events.takeLast(4)).containsExactly("pause", "flush", "stop", "release").inOrder()
     }
 

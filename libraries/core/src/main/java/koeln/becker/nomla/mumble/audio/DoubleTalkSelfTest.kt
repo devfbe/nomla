@@ -51,6 +51,7 @@ import kotlin.math.roundToInt
 private const val TAG = "DoubleTalkSelfTest"
 private const val FRAME = AudioHandler.FRAME_SIZE
 private const val FRAMES_PER_SECOND = 100
+/** As `CapturePreview`'s: [DoubleTalkSelfTest.stop] runs on the main thread. */
 private const val JOIN_TIMEOUT_MS = 500L
 private const val DEFAULT_READING_INTERVAL_FRAMES = 5
 
@@ -119,8 +120,8 @@ public data class SelfTestReading(
  * voice alone getting through. Afterwards ([SelfTestPhase.TALK]) it counts how often the whole
  * chain transmits while the voice plays and the reference gate hears the user.
  *
- * Two bare threads, playback and capture, both released by [stop]. Not reusable. [onReading] is
- * called on the capture thread.
+ * Two [AudioWorker] threads, playback and capture, both ended by [stop]. Not reusable. [onReading]
+ * is called on the capture thread.
  */
 @Suppress("LongParameterList", "TooManyFunctions") // The settings a call captures with, and the seams.
 public class DoubleTalkSelfTest internal constructor(
@@ -195,12 +196,9 @@ public class DoubleTalkSelfTest internal constructor(
     private var source: PcmCaptureSource? = null
     private var sink: PcmPlaybackSink? = null
     private var pipeline: CapturePipeline? = null
-    private var captureThread: Thread? = null
-    private var playbackThread: Thread? = null
+    private val captureWorker = AudioWorker("nomla-selftest-capture")
+    private val playbackWorker = AudioWorker("nomla-selftest-playback", Process.THREAD_PRIORITY_URGENT_AUDIO)
     private var restore: Restore? = null
-
-    @Volatile
-    private var running = false
 
     /** The frame of [voice] the playback thread handed over last. */
     @Volatile
@@ -229,7 +227,7 @@ public class DoubleTalkSelfTest internal constructor(
     internal val rnnoiseLimitDb: Float? get() = rnnoise?.attenuationLimitDb
 
     public fun start() {
-        check(captureThread == null && restore == null) { "already started" }
+        check(!captureWorker.isStarted && restore == null) { "already started" }
         restore = route()
         var started = false
         try {
@@ -255,9 +253,8 @@ public class DoubleTalkSelfTest internal constructor(
             val farEnd = chain.farEndSink?.let { FarEndFrameChunker(chain.farEndFrameSize, it) }
             val snk = sinkFactory.open(AudioManager.STREAM_VOICE_CALL, rate)
             sink = snk
-            running = true
-            playbackThread = Thread({ play(snk, farEnd) }, "nomla-selftest-playback").also { it.start() }
-            captureThread = Thread({ capture(src, pipe) }, "nomla-selftest-capture").also { it.start() }
+            playbackWorker.start { isRunning -> play(snk, farEnd, isRunning) }
+            captureWorker.start { isRunning -> capture(src, pipe, isRunning) }
             started = true
         } finally {
             if (!started) stop()
@@ -272,27 +269,29 @@ public class DoubleTalkSelfTest internal constructor(
         restartRequested = true
     }
 
-    /** Stops both threads, releases the recorder, the track and the chain, and restores the route. */
+    /**
+     * Stops both threads, releases the recorder, the track and the chain, and restores the route.
+     * The release waits for both threads: here when both have ended, otherwise on the last of them
+     * as it ends (the canceller is on both), so nothing native is freed under a thread still in it.
+     * The route is put back here either way.
+     */
     public fun stop() {
-        running = false
-        source?.stop()
-        captureThread?.join(JOIN_TIMEOUT_MS)
-        playbackThread?.join(JOIN_TIMEOUT_MS)
-        captureThread = null
-        playbackThread = null
-        sink?.let {
-            it.pause()
-            it.flush()
-            it.stop()
-            it.release()
-        }
-        sink = null
-        source?.release()
+        val src = source
+        val snk = sink
+        val pipe = pipeline
+        // Both are told before either join, as one shared flag did.
+        playbackWorker.requestStop()
+        captureWorker.stop(JOIN_TIMEOUT_MS) { src?.stop() }
+        playbackWorker.stop(JOIN_TIMEOUT_MS)
         source = null
-        // After both threads are gone: the canceller is on both of them.
-        pipeline?.release()
+        sink = null
         pipeline = null
         rnnoise = null
+        releaseAfter(listOf(captureWorker, playbackWorker)) {
+            snk?.shutdown()
+            src?.release()
+            pipe?.release()
+        }
         restore?.let(::unroute)
         restore = null
     }
@@ -315,12 +314,11 @@ public class DoubleTalkSelfTest internal constructor(
     }
 
     /** Feeds the canceller each frame before the blocking write, as `AudioOutput` does. */
-    private fun play(snk: PcmPlaybackSink, farEnd: FarEndFrameChunker?) {
-        Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO)
+    private fun play(snk: PcmPlaybackSink, farEnd: FarEndFrameChunker?, isRunning: () -> Boolean) {
         val frame = ShortArray(FRAME)
         var index = 0
         snk.play()
-        while (running) {
+        while (isRunning()) {
             System.arraycopy(voice, index * FRAME, frame, 0, FRAME)
             farEnd?.push(frame, FRAME)
             playedFrame = index
@@ -329,12 +327,12 @@ public class DoubleTalkSelfTest internal constructor(
         }
     }
 
-    private fun capture(src: PcmCaptureSource, pipe: CapturePipeline) {
+    private fun capture(src: PcmCaptureSource, pipe: CapturePipeline, isRunning: () -> Boolean) {
         src.start()
         val frameSize = src.sampleRate / FRAMES_PER_SECOND
         val buffer = ShortArray(frameSize)
         var count = 0
-        while (running) {
+        while (isRunning()) {
             val read = src.read(buffer, frameSize)
             if (read < 0) break
             if (read > 0) {
