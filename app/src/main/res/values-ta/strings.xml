@@ -307,12 +307,6 @@
     <string name="chat_image_save_failed">படத்தைச் சேமிக்க முடியவில்லை</string>
     <string name="chat_image_view">காண்க</string>
     <string name="chat_image_actions">பட விருப்பங்களைக் காட்டு</string>
-    <string name="donate_dialog_title_goog">Nomla பிடித்திருக்கிறதா?</string>
-    <string name="donate_dialog_message_goog">Nomla-வைப் பயன்படுத்தியதற்கு நன்றி! Nomla-வைத் தொடர்ந்து வாழ வைக்க — இந்தச் செய்தியை அகற்றவும் — ஒரு சிறிய நன்கொடை அளிப்பதைக் கருத்தில் கொள்ளவும்.</string>
-    <string name="donate_dialog_positivebutton_goog">Nomla-வை ஆதரி</string>
-    <string name="donate_dialog_negativebutton_goog">பின்னர்</string>
-    <string name="donate_purchase_pending_goog">உங்கள் நன்கொடை நிலுவையில் உள்ளது, பிந்தைய மறுதொடக்கத்தில் தயாராகலாம். நன்றி!</string>
-    <string name="donate_thanks_goog">உங்கள் ஆதரவுக்கு நன்றி!</string>
     <string name="deny_reason_channel_count">தட எண்ணிக்கை வரம்பை எட்டியது.</string>
     <string name="deny_reason_channel_listener_limit">இந்தத் தடத்தில் மேலும் கேட்பவர்கள் அனுமதிக்கப்படவில்லை.</string>
     <string name="deny_reason_user_listener_limit">நீங்கள் மேலும் தடங்களைக் கேட்க முடியாது.</string>

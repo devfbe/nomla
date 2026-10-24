@@ -178,12 +178,6 @@
     </plurals>
     <string name="app_news">Nyheter</string>
     <string name="app_news_summary">Visa de senaste uppdateringarna</string>
-    <string name="donate_dialog_title_goog">Gillar du Nomla?</string>
-    <string name="donate_dialog_message_goog">Tack för att du använder Nomla! En liten donation kan hjälpa till att hålla Nomla levande — och tar bort detta meddelande.</string>
-    <string name="donate_dialog_positivebutton_goog">Stöd Nomla</string>
-    <string name="donate_dialog_negativebutton_goog">Senare</string>
-    <string name="donate_purchase_pending_goog">Din donation behandlas och kan vara klar vid en senare omstart. Tack!</string>
-    <string name="donate_thanks_goog">Tack för ditt stöd!</string>
     <string name="connection_lost_reconnecting">Anslutningen bröts – ansluter igen…</string>
     <string name="foreground_start_failed">Det gick inte att hålla Nomla igång i bakgrunden. Ljudet kan sluta fungera när skärmen stängs av.</string>
     <string name="bluetooth_perm_denied">Bluetooth-headsetet förblir påslaget. Utan behörigheten Enheter i närheten vägrar vissa enheter att skicka ljud till det.</string>

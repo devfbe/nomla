@@ -180,12 +180,6 @@
     <string name="app_news_summary">En son güncellemeleri görüntüle</string>
     <string name="app_news_footer_on_startup">Bu haberler Hakkında sayfasından tekrar görüntülenebilir.</string>
     <string name="app_news_items_nomla">• Nomla burada: Mumla\'dan taşınan ve neredeyse tamamen yeniden yazılan bir Android Mumble istemcisi.\n</string>
-    <string name="donate_dialog_title_goog">Nomla\'yı beğendiniz mi?</string>
-    <string name="donate_dialog_message_goog">Nomla\'yı kullandığınız için teşekkür ederiz! Nomla\'nın devamlılığı ve bu mesajın kaldırılması için lütfen küçük bir bağış yapmayı düşünün.</string>
-    <string name="donate_dialog_positivebutton_goog">Nomla\'yı destekleyin</string>
-    <string name="donate_dialog_negativebutton_goog">Daha sonra</string>
-    <string name="donate_purchase_pending_goog">Bağışınız beklemede ve daha sonra yeniden başlatıldığında hazır olabilir. Teşekkür ederiz!</string>
-    <string name="donate_thanks_goog">Desteğiniz için teşekkür ederiz!</string>
     <string name="connection_lost_reconnecting">Bağlantı koptu – yeniden bağlanılıyor…</string>
     <string name="foreground_start_failed">Nomla arka planda çalışır durumda tutulamadı. Ekran kapandığında ses kesilebilir.</string>
     <string name="bluetooth_perm_denied">Bluetooth kulaklık açık kalır. Yakındaki cihazlar izni olmadan bazı cihazlar sesi ona yönlendirmeyi reddeder.</string>

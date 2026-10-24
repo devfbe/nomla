@@ -328,12 +328,6 @@
     <string name="chat_image_save_failed">Δεν ήταν δυνατή η αποθήκευση της εικόνας</string>
     <string name="chat_image_view">Προβολή</string>
     <string name="chat_image_actions">Εμφάνιση επιλογών εικόνας</string>
-    <string name="donate_dialog_title_goog">Σας αρέσει το Nomla;</string>
-    <string name="donate_dialog_message_goog">Ευχαριστούμε που χρησιμοποιείτε το Nomla! Σκεφτείτε να κάνετε μια μικρή δωρεά για να συνεχίσει να ζει το Nomla — και για να εξαφανιστεί αυτό το μήνυμα.</string>
-    <string name="donate_dialog_positivebutton_goog">Υποστήριξη του Nomla</string>
-    <string name="donate_dialog_negativebutton_goog">Αργότερα</string>
-    <string name="donate_purchase_pending_goog">Η δωρεά σας εκκρεμεί και μπορεί να ολοκληρωθεί σε μια επόμενη επανεκκίνηση. Ευχαριστούμε!</string>
-    <string name="donate_thanks_goog">Ευχαριστούμε για την υποστήριξή σας!</string>
     <string name="deny_reason_channel_count">Συμπληρώθηκε το όριο αριθμού καναλιών.</string>
     <string name="deny_reason_channel_listener_limit">Δεν επιτρέπονται άλλοι ακροατές σε αυτό το κανάλι.</string>
     <string name="deny_reason_user_listener_limit">Δεν μπορείτε να ακούτε άλλα κανάλια.</string>

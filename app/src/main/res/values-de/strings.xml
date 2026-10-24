@@ -252,12 +252,6 @@
     <string name="share_log_failed">Das Protokoll konnte nicht geschrieben werden.</string>
     <string name="app_news_footer_on_startup">Die Neuigkeiten lassen sich auf der Seite „Über“ erneut ansehen.</string>
     <string name="app_news_items_nomla">• Nomla ist da: ein Mumble-Client für Android, aus Mumla portiert und fast vollständig neu geschrieben.\n</string>
-    <string name="donate_dialog_title_goog">Gefällt Ihnen Nomla?</string>
-    <string name="donate_dialog_message_goog">Danke, dass Sie Nomla nutzen! Bitte denken Sie über eine kleine Spende nach, damit Nomla weiterlebt – und diese Nachricht verschwindet.</string>
-    <string name="donate_dialog_positivebutton_goog">Nomla unterstützen</string>
-    <string name="donate_dialog_negativebutton_goog">Später</string>
-    <string name="donate_purchase_pending_goog">Ihre Spende ist noch ausstehend und wird eventuell nach einem späteren Neustart wirksam. Danke!</string>
-    <string name="donate_thanks_goog">Danke für Ihre Unterstützung!</string>
     <string name="deny_reason_channel_count">Maximale Anzahl an Kanälen erreicht.</string>
     <string name="deny_reason_channel_listener_limit">In diesem Kanal sind keine weiteren Zuhörer erlaubt.</string>
     <string name="deny_reason_user_listener_limit">Sie können keinen weiteren Kanälen zuhören.</string>

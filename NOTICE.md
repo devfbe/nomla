@@ -19,7 +19,6 @@ following third-party components. Every entry is GPLv3-compatible.
 | MiniDNS | 1.1.1 | LGPL-2.1-or-later / Apache-2.0 / WTFPL (tri-licensed) | https://github.com/MiniDNS/minidns |
 | protobuf-javalite (runtime) and protoc (build only) | 4.36.2 | BSD-3-Clause | https://github.com/protocolbuffers/protobuf |
 | Bouncy Castle (bcprov-jdk18on, bcpkix-jdk18on, and bcutil-jdk18on pulled in by bcpkix) | 1.86 | MIT (Bouncy Castle Licence) — the artifacts ship `META-INF/LICENSE.md` containing the MIT License text | https://www.bouncycastle.org/ |
-| Google Play Billing Library | 9.1.0 | Android SDK License (proprietary; `goog` flavor only, not shipped in the F-Droid `foss` build) | https://developer.android.com/google/play/billing |
 | opus | 1.6.1 | BSD-3-Clause | https://github.com/xiph/opus |
 | speexdsp (resampler, preprocessor, jitter buffer) | 1.2.1 | BSD-3-Clause | https://github.com/xiph/speexdsp |
 | RNNoise | 0.2+ (git 70f1d25, 2025-02-22) | BSD-3-Clause — the submodule's own `COPYING` is the 3-clause BSD text (Jean-Marc Valin; Amazon; Mozilla; Xiph.Org Foundation; Mark Borgerding) | https://github.com/xiph/rnnoise — the pinned model weights (`rnnoise_data-0a8755f8…`, embedded as `libraries/core/src/main/cpp/rnnoise/model/weights_blob.bin`) are the ones upstream's own `download_model.sh` fetches from media.xiph.org; they carry no separate license file and the project README describes them as RNNoise files kept out of git only for size, so the same `COPYING` covers them. |

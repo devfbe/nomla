@@ -283,12 +283,6 @@
     <string name="chat_image_save_failed">Attēlu neizdevās saglabāt</string>
     <string name="chat_image_view">Skatīt</string>
     <string name="chat_image_actions">Rādīt attēla opcijas</string>
-    <string name="donate_dialog_title_goog">Patīk Nomla?</string>
-    <string name="donate_dialog_message_goog">Paldies, ka izmantojat Nomla! Lūdzu, apsveriet nelielu ziedojumu, lai palīdzētu Nomla turpināt dzīvot — un lai noņemtu šo ziņojumu.</string>
-    <string name="donate_dialog_positivebutton_goog">Atbalstīt Nomla</string>
-    <string name="donate_dialog_negativebutton_goog">Vēlāk</string>
-    <string name="donate_purchase_pending_goog">Jūsu ziedojums gaida apstiprinājumu un var būt gatavs pēc vēlākas restartēšanas. Paldies!</string>
-    <string name="donate_thanks_goog">Paldies par atbalstu!</string>
     <string name="chat_notify_muted_deafened">Mikrofons un skaņa izslēgti.</string>
     <string name="chat_notify_muted">Mikrofons izslēgts.</string>
     <string name="chat_notify_unmuted">Mikrofons ieslēgts.</string>

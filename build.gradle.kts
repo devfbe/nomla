@@ -81,13 +81,11 @@ tasks.register("verify") {
         "builds the device tests, lints every shipped variant, runs detekt."
     dependsOn(
         ":app:assembleFossDebug",
-        ":app:assembleGoogDebug",
         ":app:assembleBetaDebug",
         ":app:assembleFossRelease",
         ":app:testFossDebugUnitTest",
         ":app:assembleFossDebugAndroidTest",
         ":app:lintFossDebug",
-        ":app:lintGoogDebug",
         ":app:lintBetaDebug",
         ":app:detekt",
         ":libraries:core:lintDebug",

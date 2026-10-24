@@ -315,12 +315,6 @@
     <string name="chat_image_save_failed">A képet nem sikerült menteni</string>
     <string name="chat_image_view">Megtekintés</string>
     <string name="chat_image_actions">Képbeállítások megjelenítése</string>
-    <string name="donate_dialog_title_goog">Tetszik a Nomla?</string>
-    <string name="donate_dialog_message_goog">Köszönjük, hogy a Nomlát használod! Kérlek, fontold meg egy kis adomány küldését, hogy a Nomla életben maradjon – és eltűnjön ez az üzenet.</string>
-    <string name="donate_dialog_positivebutton_goog">A Nomla támogatása</string>
-    <string name="donate_dialog_negativebutton_goog">Később</string>
-    <string name="donate_purchase_pending_goog">Az adományod függőben van, és egy későbbi újraindításkor válhat érvényessé. Köszönjük!</string>
-    <string name="donate_thanks_goog">Köszönjük a támogatásodat!</string>
     <string name="chat_notify_kick">%1$s kirúgta %3$s felhasználót a szerverről: %2$s.</string>
     <string name="chat_notify_user_joined_channel_by">%1$s átkerült ide innen: %2$s (áthelyezte: %3$s).</string>
     <string name="chat_notify_user_left_channel_by">%1$s átkerült ide: %2$s (áthelyezte: %3$s).</string>

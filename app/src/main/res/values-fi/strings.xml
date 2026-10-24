@@ -328,12 +328,6 @@
     <string name="chat_image_save_failed">Kuvaa ei voitu tallentaa</string>
     <string name="chat_image_view">Näytä</string>
     <string name="chat_image_actions">Näytä kuvan valinnat</string>
-    <string name="donate_dialog_title_goog">Pidätkö Nomlasta?</string>
-    <string name="donate_dialog_message_goog">Kiitos, että käytät Nomlaa! Harkitse pientä lahjoitusta, jotta Nomla pysyy hengissä – ja jotta tämä viesti katoaa.</string>
-    <string name="donate_dialog_positivebutton_goog">Tue Nomlaa</string>
-    <string name="donate_dialog_negativebutton_goog">Myöhemmin</string>
-    <string name="donate_purchase_pending_goog">Lahjoituksesi odottaa käsittelyä ja voi olla valmis myöhemmän uudelleenkäynnistyksen jälkeen. Kiitos!</string>
-    <string name="donate_thanks_goog">Kiitos tuestasi!</string>
     <string name="deny_reason_channel_count">Kanavien enimmäismäärä saavutettu.</string>
     <string name="deny_reason_channel_listener_limit">Tälle kanavalle ei sallita enempää kuuntelijoita.</string>
     <string name="deny_reason_user_listener_limit">Et voi kuunnella enempää kanavia.</string>

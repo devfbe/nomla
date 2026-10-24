@@ -310,12 +310,6 @@
     <string name="chat_image_save_failed">Imaginea nu a putut fi salvată</string>
     <string name="chat_image_view">Vezi</string>
     <string name="chat_image_actions">Arată opțiunile imaginii</string>
-    <string name="donate_dialog_title_goog">Îți place Nomla?</string>
-    <string name="donate_dialog_message_goog">Mulțumim că folosești Nomla! Te rugăm să iei în considerare o mică donație pentru a ajuta Nomla să rămână în viață — și pentru a elimina acest mesaj.</string>
-    <string name="donate_dialog_positivebutton_goog">Susține Nomla</string>
-    <string name="donate_dialog_negativebutton_goog">Mai târziu</string>
-    <string name="donate_purchase_pending_goog">Donația ta este în așteptare și poate fi gata la o repornire ulterioară. Mulțumim!</string>
-    <string name="donate_thanks_goog">Mulțumim pentru susținere!</string>
     <string name="deny_reason_channel_count">Limita numărului de canale a fost atinsă.</string>
     <string name="deny_reason_channel_listener_limit">Nu mai sunt permiși ascultători în acest canal.</string>
     <string name="deny_reason_user_listener_limit">Nu mai poți asculta alte canale.</string>

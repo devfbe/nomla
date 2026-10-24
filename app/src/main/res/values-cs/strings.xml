@@ -333,12 +333,6 @@
     <string name="chat_image_save_failed">Obrázek se nepodařilo uložit</string>
     <string name="chat_image_view">Zobrazit</string>
     <string name="chat_image_actions">Zobrazit možnosti obrázku</string>
-    <string name="donate_dialog_title_goog">Líbí se vám Nomla?</string>
-    <string name="donate_dialog_message_goog">Děkujeme, že používáte Nomlu! Zvažte prosím malý dar, který pomůže Nomlu udržet naživu – a odstraní tuto zprávu.</string>
-    <string name="donate_dialog_positivebutton_goog">Podpořit Nomlu</string>
-    <string name="donate_dialog_negativebutton_goog">Později</string>
-    <string name="donate_purchase_pending_goog">Váš dar čeká na vyřízení a může být připraven po pozdějším restartu. Děkujeme!</string>
-    <string name="donate_thanks_goog">Děkujeme za vaši podporu!</string>
     <string name="deny_reason_channel_count">Dosažen limit počtu kanálů.</string>
     <string name="deny_reason_channel_listener_limit">V tomto kanálu nejsou povoleni další posluchači.</string>
     <string name="deny_reason_user_listener_limit">Nemůžete poslouchat žádné další kanály.</string>

@@ -171,12 +171,6 @@
     <string name="app_news">Co nowego</string>
     <string name="app_news_summary">Zobacz najnowsze aktualizacje</string>
     <string name="app_news_footer_on_startup">Wiadomości te można ponownie przejrzeć na stronie „O programie”.</string>
-    <string name="donate_dialog_title_goog">Podoba Ci się Nomla?</string>
-    <string name="donate_dialog_message_goog">Dziękujemy za korzystanie z Nomli! Prosimy o rozważenie przekazania niewielkiej darowizny, która pomoże utrzymać Nomlę przy życiu i usunąć ten komunikat.</string>
-    <string name="donate_dialog_positivebutton_goog">Wesprzyj Nomlę</string>
-    <string name="donate_dialog_negativebutton_goog">Później</string>
-    <string name="donate_purchase_pending_goog">Twoja darowizna jest w trakcie realizacji i może być gotowa po ponownym uruchomieniu. Dziękujemy!</string>
-    <string name="donate_thanks_goog">Dziękujemy za wsparcie!</string>
     <string name="app_news_items_nomla">• Nomla już jest: klient Mumble dla Androida, przeniesiony z Mumli i niemal całkowicie przepisany.\n</string>
     <string name="connection_lost_reconnecting">Utracono połączenie – ponowne łączenie…</string>
     <string name="foreground_start_failed">Nie udało się utrzymać Nomli w tle. Dźwięk może ustać po wyłączeniu ekranu.</string>

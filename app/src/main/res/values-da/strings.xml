@@ -279,12 +279,6 @@
     <string name="chat_image_save_failed">Billedet kunne ikke gemmes</string>
     <string name="chat_image_view">Vis</string>
     <string name="chat_image_actions">Vis billedindstillinger</string>
-    <string name="donate_dialog_title_goog">Er du glad for Nomla?</string>
-    <string name="donate_dialog_message_goog">Tak, fordi du bruger Nomla! Overvej venligst en lille donation for at holde Nomla i live – og for at fjerne denne besked.</string>
-    <string name="donate_dialog_positivebutton_goog">Støt Nomla</string>
-    <string name="donate_dialog_negativebutton_goog">Senere</string>
-    <string name="donate_purchase_pending_goog">Din donation afventer og er måske klar efter en senere genstart. Tak!</string>
-    <string name="donate_thanks_goog">Tak for din støtte!</string>
     <string name="chat_notify_muted_deafened">Lyd slået fra og døv.</string>
     <string name="chat_notify_muted">Lyd slået fra.</string>
     <string name="chat_notify_unmuted">Lyd slået til.</string>

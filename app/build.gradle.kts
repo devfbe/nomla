@@ -55,10 +55,6 @@ android {
 
     flavorDimensions += "release"
     productFlavors {
-        create("goog") {
-            dimension = "release"
-            applicationId = "koeln.becker.nomla"
-        }
         create("foss") {
             dimension = "release"
             applicationId = "koeln.becker.nomla"
@@ -126,8 +122,6 @@ dependencies {
     implementation(libs.coil.core)
     implementation(libs.coil.network.okhttp)
     implementation(libs.okhttp)
-
-    "googImplementation"(libs.billing)
 
     testImplementation(libs.bundles.unit.test)
     testImplementation(testFixtures(project(":libraries:core")))

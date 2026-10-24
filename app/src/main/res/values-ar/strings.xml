@@ -316,12 +316,6 @@
     <string name="chat_image_save_failed">تعذّر حفظ الصورة</string>
     <string name="chat_image_view">اعرض</string>
     <string name="chat_image_actions">اعرض خيارات الصورة</string>
-    <string name="donate_dialog_title_goog">هل يعجبك Nomla؟</string>
-    <string name="donate_dialog_message_goog">شكرًا لاستخدامك Nomla! يُرجى التفكير في تبرع صغير للمساعدة في إبقاء Nomla حيًّا — ولإزالة هذه الرسالة.</string>
-    <string name="donate_dialog_positivebutton_goog">ادعم Nomla</string>
-    <string name="donate_dialog_negativebutton_goog">لاحقًا</string>
-    <string name="donate_purchase_pending_goog">تبرعك قيد الانتظار وقد يكتمل عند إعادة تشغيل لاحقة. شكرًا لك!</string>
-    <string name="donate_thanks_goog">شكرًا لدعمك!</string>
     <string name="chat_notify_now_muted_deafened">%s الآن مكتوم وأصم.</string>
     <string name="chat_notify_kick_ban_self">طردك %1$s وحظرك من الخادم: %2$s.</string>
     <string name="chat_notify_kick_self">طردك %1$s من الخادم: %2$s.</string>

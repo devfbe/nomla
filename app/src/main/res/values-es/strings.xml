@@ -320,12 +320,6 @@
     <string name="chat_image_save_failed">No se pudo guardar la imagen</string>
     <string name="chat_image_view">Ver</string>
     <string name="chat_image_actions">Mostrar opciones de la imagen</string>
-    <string name="donate_dialog_title_goog">¿Te gusta Nomla?</string>
-    <string name="donate_dialog_message_goog">¡Gracias por usar Nomla! Considera hacer una pequeña donación para mantener vivo Nomla y quitar este mensaje.</string>
-    <string name="donate_dialog_positivebutton_goog">Apoyar a Nomla</string>
-    <string name="donate_dialog_negativebutton_goog">Más tarde</string>
-    <string name="donate_purchase_pending_goog">Tu donación está pendiente y puede completarse en un próximo reinicio. ¡Gracias!</string>
-    <string name="donate_thanks_goog">¡Gracias por tu apoyo!</string>
     <string name="deny_reason_channel_count">Límite de número de canales alcanzado.</string>
     <string name="deny_reason_channel_listener_limit">No se permiten más oyentes en este canal.</string>
     <string name="deny_reason_user_listener_limit">No puedes escuchar más canales.</string>

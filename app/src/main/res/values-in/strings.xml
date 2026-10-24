@@ -154,11 +154,6 @@
     <string name="invalid_certificate">Sertifikat Keamanan tidak valid dan tidak dapat dimuat.</string>
     <string name="context_channel_unlink_all">Unlink Semua</string>
     <string name="orbot_tor_failed">Tidak dapat menyambung ke proxy Tor lokal pada port %d (SOCKS).\n\nMohon pastikan aplikasi Orbot sedang berjalan.</string>
-    <string name="donate_thanks_goog">Terima kasih atas dukungan Anda!</string>
-    <string name="donate_dialog_negativebutton_goog">Nanti</string>
-    <string name="donate_dialog_positivebutton_goog">Mendukung Nomla</string>
-    <string name="donate_dialog_message_goog">Terima kasih untuk menggunakan Nomla! Harap mempertimbangkan untuk membuat donasi kecil untuk membantu menjaga hidup Nomla - dan menghapus pesan ini.</string>
-    <string name="donate_dialog_title_goog">Apakah kamu suka Nomla?</string>
     <string name="connection_lost_reconnecting">Koneksi terputus – menyambungkan ulang…</string>
     <string name="foreground_start_failed">Nomla tidak dapat tetap berjalan di latar belakang. Suara mungkin berhenti saat layar mati.</string>
     <string name="bluetooth_perm_denied">Headset Bluetooth tetap aktif. Tanpa izin Perangkat di sekitar, beberapa perangkat akan menolak mengalihkan audio ke headset.</string>
@@ -309,7 +304,6 @@
     <string name="chat_image_save_failed">Gambar tidak dapat disimpan</string>
     <string name="chat_image_view">Lihat</string>
     <string name="chat_image_actions">Tampilkan opsi gambar</string>
-    <string name="donate_purchase_pending_goog">Donasi anda masih tertunda dan mungkin siap setelah aplikasi dimulai ulang nanti. Terima kasih!</string>
     <string name="deny_reason_channel_count">Batas jumlah channel sudah tercapai.</string>
     <string name="deny_reason_channel_listener_limit">Tidak ada lagi pendengar yang diizinkan di channel ini.</string>
     <string name="deny_reason_user_listener_limit">Anda tidak dapat mendengarkan channel lain lagi.</string>

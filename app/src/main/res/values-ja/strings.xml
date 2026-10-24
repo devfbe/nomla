@@ -312,12 +312,6 @@
     <string name="chat_image_save_failed">画像を保存できませんでした</string>
     <string name="chat_image_view">表示</string>
     <string name="chat_image_actions">画像のオプションを表示</string>
-    <string name="donate_dialog_title_goog">Nomla を気に入っていただけましたか?</string>
-    <string name="donate_dialog_message_goog">Nomla をご利用いただきありがとうございます! Nomla を存続させるため、少額の寄付をご検討ください。寄付するとこのメッセージは表示されなくなります。</string>
-    <string name="donate_dialog_positivebutton_goog">Nomla を支援</string>
-    <string name="donate_dialog_negativebutton_goog">後で</string>
-    <string name="donate_purchase_pending_goog">寄付は保留中です。後で再起動したときに完了する場合があります。ありがとうございます!</string>
-    <string name="donate_thanks_goog">ご支援ありがとうございます!</string>
     <string name="deny_reason_channel_count">チャンネル数の上限に達しました。</string>
     <string name="deny_reason_channel_listener_limit">このチャンネルにはこれ以上リスナーを追加できません。</string>
     <string name="deny_reason_user_listener_limit">これ以上のチャンネルを聴取することはできません。</string>

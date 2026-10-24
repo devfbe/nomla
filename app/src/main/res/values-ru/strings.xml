@@ -175,12 +175,6 @@
     <string name="app_news">Что нового</string>
     <string name="app_news_summary">Посмотреть последние изменения</string>
     <string name="app_news_footer_on_startup">Эти новости можно посмотреть еще раз на странице \"О программе\".</string>
-    <string name="donate_dialog_title_goog">Нравится Nomla?</string>
-    <string name="donate_dialog_message_goog">Спасибо, что используете Nomla! Пожалуйста, рассмотрите возможность сделать небольшое пожертвование, чтобы помочь Nomla продолжить свою работу и скрыть данное сообщение.</string>
-    <string name="donate_dialog_positivebutton_goog">Поддержите Nomla</string>
-    <string name="donate_dialog_negativebutton_goog">Позже</string>
-    <string name="donate_purchase_pending_goog">Ваше пожертвование обрабатывается и может вступить в силу после перезапуска приложения. Спасибо!</string>
-    <string name="donate_thanks_goog">Спасибо за вашу поддержку!</string>
     <string name="app_news_items_nomla">• Встречайте Nomla: клиент Mumble для Android, перенесённый из Mumla и почти полностью переписанный.\n</string>
     <string name="connection_lost_reconnecting">Соединение потеряно – переподключение…</string>
     <string name="foreground_start_failed">Не удалось оставить Nomla работать в фоне. Звук может пропасть при выключении экрана.</string>

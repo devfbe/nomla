@@ -330,12 +330,6 @@
     <string name="chat_image_save_failed">No s\'ha pogut desar la imatge</string>
     <string name="chat_image_view">Mostra</string>
     <string name="chat_image_actions">Mostra les opcions de la imatge</string>
-    <string name="donate_dialog_title_goog">Us agrada el Nomla?</string>
-    <string name="donate_dialog_message_goog">Gràcies per utilitzar el Nomla! Penseu a fer una petita donació per mantenir viu el Nomla, i per fer desaparèixer aquest missatge.</string>
-    <string name="donate_dialog_positivebutton_goog">Doneu suport al Nomla</string>
-    <string name="donate_dialog_negativebutton_goog">Més tard</string>
-    <string name="donate_purchase_pending_goog">La vostra donació està pendent i pot fer-se efectiva en un reinici posterior. Gràcies!</string>
-    <string name="donate_thanks_goog">Gràcies pel vostre suport!</string>
     <string name="deny_reason_channel_count">S\'ha arribat al límit de nombre de canals.</string>
     <string name="deny_reason_channel_listener_limit">No es permeten més oients en aquest canal.</string>
     <string name="deny_reason_user_listener_limit">No podeu escoltar més canals.</string>

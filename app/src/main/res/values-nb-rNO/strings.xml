@@ -328,12 +328,6 @@
     <string name="chat_image_save_failed">Kunne ikke lagre bildet</string>
     <string name="chat_image_view">Vis</string>
     <string name="chat_image_actions">Vis bildevalg</string>
-    <string name="donate_dialog_title_goog">Liker du Nomla?</string>
-    <string name="donate_dialog_message_goog">Takk for at du bruker Nomla! Vurder å gi en liten donasjon for å holde Nomla i live – og for å fjerne denne meldingen.</string>
-    <string name="donate_dialog_positivebutton_goog">Støtt Nomla</string>
-    <string name="donate_dialog_negativebutton_goog">Senere</string>
-    <string name="donate_purchase_pending_goog">Donasjonen din venter og kan bli klar ved en senere omstart. Takk!</string>
-    <string name="donate_thanks_goog">Takk for støtten!</string>
     <string name="deny_reason_channel_count">Grensen for antall kanaler er nådd.</string>
     <string name="deny_reason_channel_listener_limit">Ingen flere lyttere tillates i denne kanalen.</string>
     <string name="deny_reason_user_listener_limit">Du kan ikke lytte til flere kanaler.</string>

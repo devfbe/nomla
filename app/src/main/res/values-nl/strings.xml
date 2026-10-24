@@ -318,12 +318,6 @@
     <string name="chat_image_save_failed">Afbeelding kon niet worden opgeslagen</string>
     <string name="chat_image_view">Bekijken</string>
     <string name="chat_image_actions">Afbeeldingsopties tonen</string>
-    <string name="donate_dialog_title_goog">Bevalt Nomla je?</string>
-    <string name="donate_dialog_message_goog">Bedankt dat je Nomla gebruikt! Overweeg een kleine donatie om Nomla in leven te houden — en om dit bericht te laten verdwijnen.</string>
-    <string name="donate_dialog_positivebutton_goog">Nomla steunen</string>
-    <string name="donate_dialog_negativebutton_goog">Later</string>
-    <string name="donate_purchase_pending_goog">Je donatie is in behandeling en is mogelijk na een latere herstart verwerkt. Bedankt!</string>
-    <string name="donate_thanks_goog">Bedankt voor je steun!</string>
     <string name="deny_reason_channel_count">Limiet voor het aantal kanalen bereikt.</string>
     <string name="deny_reason_channel_listener_limit">Er zijn geen extra luisteraars toegestaan in dit kanaal.</string>
     <string name="deny_reason_user_listener_limit">Je kunt niet naar meer kanalen luisteren.</string>

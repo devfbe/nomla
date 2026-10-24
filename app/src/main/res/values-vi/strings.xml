@@ -274,12 +274,6 @@
     <string name="chat_image_save_failed">Không lưu được hình ảnh</string>
     <string name="chat_image_view">Xem</string>
     <string name="chat_image_actions">Hiện tùy chọn hình ảnh</string>
-    <string name="donate_dialog_title_goog">Bạn thích Nomla?</string>
-    <string name="donate_dialog_message_goog">Cảm ơn bạn đã dùng Nomla! Hãy cân nhắc ủng hộ một khoản nhỏ để giúp Nomla tiếp tục phát triển — và để ẩn thông báo này.</string>
-    <string name="donate_dialog_positivebutton_goog">Ủng hộ Nomla</string>
-    <string name="donate_dialog_negativebutton_goog">Để sau</string>
-    <string name="donate_purchase_pending_goog">Khoản ủng hộ của bạn đang chờ xử lý và có thể hoàn tất ở lần khởi động lại sau. Cảm ơn bạn!</string>
-    <string name="donate_thanks_goog">Cảm ơn bạn đã ủng hộ!</string>
     <string name="chat_notify_muted_deafened">Đã tắt tiếng và tắt nghe.</string>
     <string name="chat_notify_muted">Đã tắt tiếng.</string>
     <string name="chat_notify_unmuted">Đã bật tiếng.</string>

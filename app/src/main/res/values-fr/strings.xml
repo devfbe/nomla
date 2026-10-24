@@ -339,12 +339,6 @@
     <string name="chat_image_save_failed">Impossible d\'enregistrer l\'image</string>
     <string name="chat_image_view">Voir</string>
     <string name="chat_image_actions">Afficher les options de l\'image</string>
-    <string name="donate_dialog_title_goog">Vous aimez Nomla ?</string>
-    <string name="donate_dialog_message_goog">Merci d\'utiliser Nomla ! Pensez à faire un petit don pour faire vivre Nomla — et pour faire disparaître ce message.</string>
-    <string name="donate_dialog_positivebutton_goog">Soutenir Nomla</string>
-    <string name="donate_dialog_negativebutton_goog">Plus tard</string>
-    <string name="donate_purchase_pending_goog">Votre don est en attente et pourra être pris en compte lors d\'un prochain redémarrage. Merci !</string>
-    <string name="donate_thanks_goog">Merci pour votre soutien !</string>
     <string name="deny_reason_channel_count">Nombre maximal de salons atteint.</string>
     <string name="deny_reason_channel_listener_limit">Aucun auditeur supplémentaire n\'est autorisé dans ce salon.</string>
     <string name="deny_reason_user_listener_limit">Vous ne pouvez plus écouter d\'autres salons.</string>

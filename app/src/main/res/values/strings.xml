@@ -326,14 +326,6 @@
          "Double-tap and hold to …". -->
     <string name="chat_image_actions">Show image options</string>
 
-    <!-- Used only by flavor "goog" -->
-    <string name="donate_dialog_title_goog">Enjoying Nomla?</string>
-    <string name="donate_dialog_message_goog">Thank you for using Nomla! Please consider making a small donation to help keep Nomla alive — and to remove this message.</string>
-    <string name="donate_dialog_positivebutton_goog">Support Nomla</string>
-    <string name="donate_dialog_negativebutton_goog">Later</string>
-    <string name="donate_purchase_pending_goog">Your donation is pending and may be ready at a later restart. Thank you!</string>
-    <string name="donate_thanks_goog">Thank you for your support!</string>
-
     <!-- Chat image sending -->
     <string name="permission_denied_storage">Permission denied to read storage</string>
     <string name="image_decode_failed">Could not read that image</string>

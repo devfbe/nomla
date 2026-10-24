@@ -189,12 +189,6 @@
     <string name="app_news_summary">Vedi gli ultimi aggiornamenti</string>
     <string name="app_news_footer_on_startup">Queste novità possono essere visualizzate di nuovo dalla pagina \"Info su\".</string>
     <string name="app_news_items_nomla">• Nomla è qui: un client Mumble per Android, portato da Mumla e riscritto quasi completamente.\n</string>
-    <string name="donate_dialog_title_goog">Ti piace Nomla?</string>
-    <string name="donate_dialog_message_goog">Grazie per usare Nomla! Per favore considera di fare una piccola donazione per aiutare a mantenere Nomla in vita — e per rimuovere questo messaggio.</string>
-    <string name="donate_dialog_positivebutton_goog">Supporta Nomla</string>
-    <string name="donate_dialog_negativebutton_goog">Più tardi</string>
-    <string name="donate_purchase_pending_goog">La tua donazione è in sospeso e potrebbe essere pronta ad un riavvio successivo. Grazie!</string>
-    <string name="donate_thanks_goog">Grazie per il tuo supporto!</string>
     <string name="connection_lost_reconnecting">Connessione persa – riconnessione in corso…</string>
     <string name="foreground_start_failed">Impossibile mantenere Nomla attivo in background. La voce potrebbe interrompersi quando lo schermo si spegne.</string>
     <string name="bluetooth_perm_denied">Le cuffie Bluetooth restano attive. Senza il permesso Dispositivi nelle vicinanze, alcuni dispositivi rifiutano di instradarvi l\'audio.</string>

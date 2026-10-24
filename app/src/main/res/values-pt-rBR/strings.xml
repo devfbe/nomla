@@ -296,12 +296,6 @@
     <string name="chat_image_save_failed">Não foi possível salvar a imagem</string>
     <string name="chat_image_view">Ver</string>
     <string name="chat_image_actions">Mostrar opções da imagem</string>
-    <string name="donate_dialog_title_goog">Curtindo o Nomla?</string>
-    <string name="donate_dialog_message_goog">Obrigado por usar o Nomla! Considere fazer uma pequena doação para manter o Nomla vivo — e para remover esta mensagem.</string>
-    <string name="donate_dialog_positivebutton_goog">Apoiar o Nomla</string>
-    <string name="donate_dialog_negativebutton_goog">Mais tarde</string>
-    <string name="donate_purchase_pending_goog">Sua doação está pendente e pode ser confirmada em uma reinicialização futura. Obrigado!</string>
-    <string name="donate_thanks_goog">Obrigado pelo seu apoio!</string>
     <string name="chat_notify_kick_ban_self">Você foi expulso e banido do servidor por %1$s: %2$s.</string>
     <string name="chat_notify_kick_self">Você foi expulso do servidor por %1$s: %2$s.</string>
     <string name="chat_notify_kick_ban">%3$s foi expulso e banido do servidor por %1$s: %2$s.</string>

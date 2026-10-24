@@ -36,7 +36,6 @@
     <string name="channel_join">Ttekki</string>
     <string name="password">Awal n uɛeddi</string>
     <string name="default_">Amezwer</string>
-    <string name="donate_dialog_negativebutton_goog">Ticki</string>
     <string name="drawer_not_connected">Ur yeqqin ara</string>
     <string name="drawer_server">Akk ibuda</string>
     <string name="drawer_tokens">Tiddas n wadduf</string>
@@ -278,11 +277,6 @@
     <string name="chat_image_save_failed">Ulamek asekles n tugna</string>
     <string name="chat_image_view">Wali</string>
     <string name="chat_image_actions">Sken iɣewwaren n tugna</string>
-    <string name="donate_dialog_title_goog">Tḥemmleḍ Nomla?</string>
-    <string name="donate_dialog_message_goog">Tanemmirt imi tesseqdaceḍ Nomla! Ttxil-k xemmem ad d-tmuddeḍ tawsa tamecṭuḥt akken ad teɛawneḍ Nomla ad yeqqim yedder — yerna ad yekkes yizen-a.</string>
-    <string name="donate_dialog_positivebutton_goog">Ɛiwen Nomla</string>
-    <string name="donate_purchase_pending_goog">Tawsa-k tettraǧu, tezmer ad tewjed ticki mi ara yales usnas asekker. Tanemmirt!</string>
-    <string name="donate_thanks_goog">Tanemmirt ɣef tallelt-ik!</string>
     <string name="chat_notify_muted_deafened">Yettwasgugem, d aɛeẓẓug.</string>
     <string name="chat_notify_muted">Yettwasgugem.</string>
     <string name="chat_notify_unmuted">Yettwakkes usgugem.</string>

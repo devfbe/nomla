@@ -171,12 +171,6 @@
     <string name="app_news_summary">查看最新更新</string>
     <string name="app_news_footer_on_startup">您可以在关于页面再次查看这些说明。</string>
     <string name="app_news_items_nomla">• Nomla 来了：一款 Android 版 Mumble 客户端，移植自 Mumla，几乎完全重写。\n</string>
-    <string name="donate_dialog_title_goog">喜欢 Nomla？</string>
-    <string name="donate_dialog_message_goog">感谢您使用 Nomla！请考虑进行小额捐款以帮助维持 Nomla 的运营——并且移除这条消息。</string>
-    <string name="donate_dialog_positivebutton_goog">支持 Nomla</string>
-    <string name="donate_dialog_negativebutton_goog">稍后</string>
-    <string name="donate_purchase_pending_goog">您的捐赠正在处理中，可能会在重启后生效。非常感谢！</string>
-    <string name="donate_thanks_goog">感谢您的支持！</string>
     <string name="connection_lost_reconnecting">连接已断开——正在重新连接…</string>
     <string name="foreground_start_failed">无法让 Nomla 在后台保持运行。屏幕关闭后语音可能会中断。</string>
     <string name="bluetooth_perm_denied">蓝牙耳机保持开启。没有“附近的设备”权限时，部分设备会拒绝将音频切换到耳机。</string>
