@@ -27,6 +27,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import com.google.android.material.slider.Slider
 import koeln.becker.nomla.R
+import koeln.becker.nomla.ui.onValueChosen
 import kotlin.math.roundToInt
 
 private const val DEFAULT_MAX = 100
@@ -53,7 +54,6 @@ class SliderPreference(context: Context, attrs: AttributeSet?) : Preference(cont
     @StringRes
     private var maxLabel = 0
     private var divisor = 1
-    private var tracking = false
 
     /** The stored value, or the default while nothing is stored. */
     var value = 0
@@ -111,21 +111,8 @@ class SliderPreference(context: Context, attrs: AttributeSet?) : Preference(cont
         slider.contentDescription = title
         slider.setLabelFormatter { formatted(it.roundToInt()) }
         label.text = formatted(value)
-        slider.addOnChangeListener { _, position, fromUser ->
-            label.text = formatted(position.roundToInt())
-            // Keys and accessibility actions change the value without a touch to end.
-            if (fromUser && !tracking) commit(position.roundToInt())
-        }
-        slider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
-            override fun onStartTrackingTouch(slider: Slider) {
-                tracking = true
-            }
-
-            override fun onStopTrackingTouch(slider: Slider) {
-                tracking = false
-                commit(slider.value.roundToInt())
-            }
-        })
+        slider.addOnChangeListener { _, position, _ -> label.text = formatted(position.roundToInt()) }
+        slider.onValueChosen { commit(it.roundToInt()) }
     }
 
     private fun onStep(value: Int): Int {

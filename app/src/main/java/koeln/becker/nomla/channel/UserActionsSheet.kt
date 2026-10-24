@@ -27,7 +27,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.isVisible
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.slider.Slider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -37,6 +36,7 @@ import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.BottomSheetUserActionsBinding
 import koeln.becker.nomla.databinding.ItemUserActionBinding
 import koeln.becker.nomla.ui.TextInputField
+import koeln.becker.nomla.ui.onValueChosen
 import koeln.becker.nomla.ui.showConfirmDialog
 import koeln.becker.nomla.ui.textInputDialog
 import koeln.becker.nomla.util.HtmlUtils
@@ -91,12 +91,6 @@ class UserActionsSheet : BottomSheetDialogFragment() {
     private val session: Int get() = requireArguments().getInt(ARG_SESSION)
     private val actions: Actions get() = requireParentFragment() as Actions
 
-    /** Guards the moments the sheet moves the slider itself, so only a real change calls back. */
-    private var applyingModel = false
-
-    /** Whether the slider is mid-drag: a drag only previews, release keeps the value once. */
-    private var trackingTouch = false
-
     /** The rows currently bound, to rebuild them only when which actions show changed. */
     private var boundRows: List<UserMenuRow>? = null
 
@@ -118,26 +112,13 @@ class UserActionsSheet : BottomSheetDialogFragment() {
     }
 
     private fun bindVolumeSlider(binding: BottomSheetUserActionsBinding) {
-        binding.userActionsVolumeSlider.addOnChangeListener { _, value, fromUser ->
-            setVolumeLabel(binding, value.roundToInt())
-            if (applyingModel || !fromUser) return@addOnChangeListener
-            if (trackingTouch) {
-                actions.previewLocalVolume(session, value / PERCENT)
-            } else {
-                // A keyboard or accessibility move: no touch release will follow to keep it.
-                actions.setLocalVolume(session, value / PERCENT)
-            }
-        }
-        binding.userActionsVolumeSlider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
-            override fun onStartTrackingTouch(slider: Slider) {
-                trackingTouch = true
-            }
-
-            override fun onStopTrackingTouch(slider: Slider) {
-                trackingTouch = false
-                actions.setLocalVolume(session, slider.value / PERCENT)
-            }
-        })
+        val slider = binding.userActionsVolumeSlider
+        slider.addOnChangeListener { _, value, _ -> setVolumeLabel(binding, value.roundToInt()) }
+        // A drag only previews; its release, or a keyboard or accessibility move, keeps the value.
+        slider.onValueChosen(
+            preview = { actions.previewLocalVolume(session, it / PERCENT) },
+            commit = { actions.setLocalVolume(session, it / PERCENT) },
+        )
         binding.userActionsVolumeReset.setOnClickListener {
             updateVolume(binding, 1f)
             actions.setLocalVolume(session, 1f)
@@ -153,9 +134,8 @@ class UserActionsSheet : BottomSheetDialogFragment() {
         val slider = binding.userActionsVolumeSlider
         if (slider.isPressed) return
         val percent = (volume * PERCENT).roundToInt().coerceIn(0, LOCAL_VOLUME_MAX_PERCENT)
-        applyingModel = true
+        // Set in code, so it reaches neither preview nor commit.
         slider.value = percent.toFloat()
-        applyingModel = false
         setVolumeLabel(binding, percent)
     }
 

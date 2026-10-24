@@ -27,7 +27,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.color.MaterialColors
-import com.google.android.material.slider.Slider
 import kotlinx.coroutines.launch
 import koeln.becker.nomla.mumble.audio.SelfTestPhase
 import koeln.becker.nomla.mumble.audio.capture.VadConfig
@@ -36,7 +35,9 @@ import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.databinding.BottomSheetDoubleTalkTestBinding
 import koeln.becker.nomla.session.SessionManager
+import koeln.becker.nomla.ui.SliderDrag
 import koeln.becker.nomla.ui.microphoneRequest
+import koeln.becker.nomla.ui.onValueChosen
 import koeln.becker.nomla.util.appViewModels
 import koeln.becker.nomla.util.whileViewStarted
 import kotlin.math.roundToInt
@@ -55,8 +56,9 @@ class DoubleTalkTestSheet : BottomSheetDialogFragment() {
     private val sessions get() = SessionManager.get(requireContext())
     private var binding: BottomSheetDoubleTalkTestBinding? = null
 
-    /** True while the user drags the slider: the value is applied, and stored when they let go. */
-    private var dragging = false
+    /** The strength slider's drag: meanwhile the value is applied, and stored when they let go. */
+    private var strengthDrag: SliderDrag? = null
+    private val dragging get() = strengthDrag?.isDragging == true
 
     private val microphone = microphoneRequest { model.start() }
 
@@ -95,21 +97,10 @@ class DoubleTalkTestSheet : BottomSheetDialogFragment() {
         slider.stepSize = Settings.RNNOISE_LIMIT_STEP_DB.toFloat()
         slider.value = onStep(model.state.value.strength).toFloat()
         slider.setLabelFormatter { strengthLabel(it.roundToInt()) }
-        slider.addOnChangeListener { _, value, fromUser ->
-            if (!fromUser) return@addOnChangeListener
-            // Keys and accessibility actions change the value without a touch to end.
-            if (dragging) model.previewStrength(value.roundToInt()) else model.commitStrength(value.roundToInt())
-        }
-        slider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
-            override fun onStartTrackingTouch(slider: Slider) {
-                dragging = true
-            }
-
-            override fun onStopTrackingTouch(slider: Slider) {
-                dragging = false
-                model.commitStrength(slider.value.roundToInt())
-            }
-        })
+        strengthDrag = slider.onValueChosen(
+            preview = { model.previewStrength(it.roundToInt()) },
+            commit = { model.commitStrength(it.roundToInt()) },
+        )
     }
 
     override fun onPause() {
@@ -120,6 +111,7 @@ class DoubleTalkTestSheet : BottomSheetDialogFragment() {
 
     override fun onDestroyView() {
         binding = null
+        strengthDrag = null
         super.onDestroyView()
     }
 
