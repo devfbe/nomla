@@ -29,10 +29,10 @@ class PublicServerAdapter(
     onServerClick: (PublicServer) -> Unit,
 ) : ServerAdapter<PublicServer>(pings, onServerClick, PublicServer::server) {
 
-    override val rowLayout: Int get() = R.layout.public_server_list_row
+    override val detail: Detail get() = Detail.LOCATION
 
     override fun onBindServer(holder: ServerViewHolder, server: PublicServer) {
-        holder.location?.text = server.country
+        holder.location.text = server.country
     }
 
     override val popupMenuResource: Int get() = R.menu.popup_public_server

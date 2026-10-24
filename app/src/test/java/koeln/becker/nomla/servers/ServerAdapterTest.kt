@@ -66,9 +66,10 @@ class ServerAdapterTest {
 
     private val clicked = mutableListOf<Server>()
 
-    private inner class TestAdapter(pings: ServerPings) : ServerAdapter<Server>(pings, { clicked += it }, { it }) {
-        override val rowLayout: Int get() = R.layout.server_list_row
-
+    private inner class TestAdapter(
+        pings: ServerPings,
+        override val detail: Detail = Detail.USERNAME,
+    ) : ServerAdapter<Server>(pings, { clicked += it }, { it }) {
         override val popupMenuResource: Int get() = R.menu.popup_favourite_server
         override fun onPopupItemClick(server: Server, menuItem: MenuItem) = false
     }
@@ -83,6 +84,22 @@ class ServerAdapterTest {
         val holder = onCreateViewHolder(parent, 0)
         onBindViewHolder(holder, 0)
         return holder.itemView
+    }
+
+    /** One card layout: a favourite shows its username, a public server its country instead. */
+    @Test
+    fun eachKindOfCardShowsItsOwnDetailLineBesidesTheAddress() {
+        val favourite = adapter().bindFirst()
+        assertThat(favourite.findViewById<View>(R.id.server_row_user_line).visibility).isEqualTo(View.VISIBLE)
+        assertThat(favourite.findViewById<TextView>(R.id.server_row_user).text.toString()).isEqualTo("me")
+        assertThat(favourite.findViewById<View>(R.id.server_row_location_line).visibility).isEqualTo(View.GONE)
+
+        val publicCard = TestAdapter(pings(), ServerAdapter.Detail.LOCATION)
+            .also { it.submitList(listOf(server)) }.bindFirst()
+        assertThat(publicCard.findViewById<View>(R.id.server_row_user_line).visibility).isEqualTo(View.GONE)
+        assertThat(publicCard.findViewById<View>(R.id.server_row_location_line).visibility).isEqualTo(View.VISIBLE)
+        assertThat(publicCard.findViewById<TextView>(R.id.server_row_address).text.toString())
+            .isEqualTo("127.0.0.1:64738")
     }
 
     @Test

@@ -88,7 +88,6 @@ class LayoutAccessibilityTest {
             "channel_row" to listOf(R.id.channel_row_expand, R.id.channel_row_join, R.id.channel_row_more),
             "channel_user_row" to listOf(R.id.user_row_more),
             "server_list_row" to listOf(R.id.server_row_more),
-            "public_server_list_row" to listOf(R.id.server_row_more),
             "overlay" to listOf(R.id.overlay_talk, R.id.overlay_close, R.id.overlay_drag),
             "dialog_image_viewer" to listOf(R.id.image_viewer_share, R.id.image_viewer_close),
             "token_row" to listOf(R.id.tokenItemDelete),

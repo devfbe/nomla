@@ -110,53 +110,86 @@
                     android:indeterminate="true" />
             </RelativeLayout>
 
+            <!--
+              ~ The detail lines: a favourite shows its username and address, a public server its
+              ~ address and country (ServerAdapter.detail). The gap goes only between shown lines.
+              -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="start|center_vertical"
-                android:paddingBottom="4dp" >
+                android:divider="@drawable/server_row_detail_gap"
+                android:orientation="vertical"
+                android:showDividers="middle">
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="5dp"
-                    android:importantForAccessibility="no"
-                    app:srcCompat="@drawable/ic_action_user_dark"
-                    app:tint="?android:attr/textColorPrimary" />
-
-                <TextView
-                    android:id="@+id/server_row_user"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/server_row_user_line"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="?android:textColorSecondary"
-                    android:text="@string/server_username"/>
-            </LinearLayout>
+                    android:gravity="start|center_vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="start|center_vertical" >
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="5dp"
+                        android:importantForAccessibility="no"
+                        app:srcCompat="@drawable/ic_action_user_dark"
+                        app:tint="?android:attr/textColorPrimary" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="5dp"
-                    android:importantForAccessibility="no"
-                    app:srcCompat="@drawable/ic_server_light"
-                    app:tint="?android:attr/textColorPrimary" />
+                    <TextView
+                        android:id="@+id/server_row_user"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="?android:textColorSecondary"
+                        android:text="@string/server_username"/>
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/server_row_address"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="?android:textColorSecondary"
-                    android:text="@string/server_host"/>
+                    android:gravity="start|center_vertical">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="5dp"
+                        android:importantForAccessibility="no"
+                        app:srcCompat="@drawable/ic_server_light"
+                        app:tint="?android:attr/textColorPrimary" />
+
+                    <TextView
+                        android:id="@+id/server_row_address"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="?android:textColorSecondary"
+                        android:text="@string/server_host"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/server_row_location_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start|center_vertical">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="5dp"
+                        android:importantForAccessibility="no"
+                        app:srcCompat="@drawable/ic_server_location"
+                        app:tint="?android:attr/textColorPrimary"/>
+
+                    <TextView
+                        android:id="@+id/server_row_location"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="Somewhere"
+                        android:textColor="?android:textColorSecondary"/>
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
-    <!-- We can't have a focusable element in a GridView item -->
-
+    <!-- The card's options, over its top end corner: a touch and accessibility target of its own. -->
     <ImageView
         android:id="@+id/server_row_more"
         android:layout_width="48dp"

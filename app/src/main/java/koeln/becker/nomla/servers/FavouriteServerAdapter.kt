@@ -29,7 +29,7 @@ class FavouriteServerAdapter(
     onServerClick: (Server) -> Unit,
 ) : ServerAdapter<Server>(pings, onServerClick, { it }) {
 
-    override val rowLayout: Int get() = R.layout.server_list_row
+    override val detail: Detail get() = Detail.USERNAME
 
     override val popupMenuResource: Int get() = R.menu.popup_favourite_server
 

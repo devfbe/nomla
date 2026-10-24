@@ -26,8 +26,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.annotation.LayoutRes
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -58,12 +58,24 @@ abstract class ServerAdapter<E : Any>(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ServerViewHolder =
-        ServerViewHolder(LayoutInflater.from(parent.context).inflate(rowLayout, parent, false))
+    /** What the cards show besides the address. */
+    enum class Detail {
+        /** The username, above the address: the favourites'. */
+        USERNAME,
 
-    /** The card layout, with the `server_row_*` views [ServerViewHolder] looks up. */
-    @get:LayoutRes
-    protected abstract val rowLayout: Int
+        /** The country, below the address: the public servers'. */
+        LOCATION,
+    }
+
+    protected abstract val detail: Detail
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ServerViewHolder {
+        val row = LayoutInflater.from(parent.context).inflate(R.layout.server_list_row, parent, false)
+        val holder = ServerViewHolder(row)
+        holder.userLine.isVisible = detail == Detail.USERNAME
+        holder.locationLine.isVisible = detail == Detail.LOCATION
+        return holder
+    }
 
     override fun onBindViewHolder(holder: ServerViewHolder, position: Int) {
         val item = getItem(position)
@@ -72,8 +84,8 @@ abstract class ServerAdapter<E : Any>(
         val response = replies[server.address]
         holder.itemView.setOnClickListener { onServerClick(item) }
         holder.name.text = server.name
-        holder.user?.text = server.username
-        holder.address?.text = server.host + if (server.port == 0) "" else ":${server.port}"
+        if (detail == Detail.USERNAME) holder.user.text = server.username
+        holder.address.text = server.host + if (server.port == 0) "" else ":${server.port}"
         holder.more.setOnClickListener { onServerOptionsClick(item, it) }
 
         val pinging = response == null && pings.allowed()
@@ -111,7 +123,7 @@ abstract class ServerAdapter<E : Any>(
 
     abstract fun onPopupItemClick(server: E, menuItem: MenuItem): Boolean
 
-    /** The views of a server card; those only some cards have are null. */
+    /** The views of a server card. */
     class ServerViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val name: TextView = view.findViewById(R.id.server_row_name)
         val version: TextView = view.findViewById(R.id.server_row_version_status)
@@ -119,9 +131,11 @@ abstract class ServerAdapter<E : Any>(
         val latency: TextView = view.findViewById(R.id.server_row_latency)
         val progress: ProgressBar = view.findViewById(R.id.server_row_ping_progress)
         val more: ImageView = view.findViewById(R.id.server_row_more)
-        val user: TextView? = view.findViewById(R.id.server_row_user)
-        val address: TextView? = view.findViewById(R.id.server_row_address)
-        val location: TextView? = view.findViewById(R.id.server_row_location)
+        val userLine: View = view.findViewById(R.id.server_row_user_line)
+        val user: TextView = view.findViewById(R.id.server_row_user)
+        val address: TextView = view.findViewById(R.id.server_row_address)
+        val locationLine: View = view.findViewById(R.id.server_row_location_line)
+        val location: TextView = view.findViewById(R.id.server_row_location)
 
         fun showStatus(status: String) {
             version.text = status
