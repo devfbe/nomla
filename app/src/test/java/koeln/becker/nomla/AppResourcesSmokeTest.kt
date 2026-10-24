@@ -20,6 +20,7 @@ package koeln.becker.nomla
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
+import koeln.becker.nomla.channel.ChannelSearchProvider
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -38,5 +39,15 @@ class AppResourcesSmokeTest {
         // applicationId and app_name vary per flavor.
         assertThat(context.packageName).isEqualTo(BuildConfig.APPLICATION_ID)
         assertThat(context.getString(R.string.app_name)).startsWith("Nomla")
+    }
+
+    @Test
+    fun `the search suggestion authority names the variant's channel search provider`() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        // searchable.xml reads the generated string; the manifest entry uses ${applicationId}.
+        val authority = context.getString(R.string.channel_search_authority)
+        assertThat(authority).isEqualTo("${BuildConfig.APPLICATION_ID}.channel.ChannelSearchProvider")
+        val provider = context.packageManager.resolveContentProvider(authority, 0)
+        assertThat(provider?.name).isEqualTo(ChannelSearchProvider::class.java.name)
     }
 }

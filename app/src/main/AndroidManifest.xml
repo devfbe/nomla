@@ -91,6 +91,13 @@
                 android:resource="@xml/file_provider_paths" />
         </provider>
 
+        <!-- Channel and user suggestions for the search box; the authority must match
+             @string/channel_search_authority, generated per variant in app/build.gradle.kts. -->
+        <provider
+            android:name=".channel.ChannelSearchProvider"
+            android:authorities="${applicationId}.channel.ChannelSearchProvider"
+            android:exported="false" />
+
         <activity
             android:name=".app.NomlaActivity"
             android:windowSoftInputMode="adjustResize"

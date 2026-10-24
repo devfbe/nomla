@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import com.android.build.api.variant.ResValue
+
 plugins {
     id("nomla.android.application")
 }
@@ -51,6 +53,8 @@ android {
 
     buildFeatures {
         viewBinding = true
+        // For the per-variant channel_search_authority string (androidComponents below).
+        resValues = true
     }
 
     flavorDimensions += "release"
@@ -97,8 +101,15 @@ android {
     }
 }
 
-// betas may be released every minute
 androidComponents {
+    // The search suggestion authority follows the applicationId, as the provider's manifest entry does.
+    onVariants { variant ->
+        variant.resValues.put(
+            variant.makeResValueKey("string", "channel_search_authority"),
+            ResValue("${variant.applicationId.get()}.channel.ChannelSearchProvider"),
+        )
+    }
+    // betas may be released every minute
     onVariants(selector().withFlavor("release" to "beta")) { variant ->
         variant.outputs.forEach { output ->
             output.versionCode.set((System.currentTimeMillis() / 60000L).toInt())
