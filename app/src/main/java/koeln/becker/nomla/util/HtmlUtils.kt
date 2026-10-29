@@ -21,6 +21,7 @@ package koeln.becker.nomla.util
 import android.text.SpannableStringBuilder
 import android.text.style.URLSpan
 import androidx.core.text.HtmlCompat
+import androidx.core.text.htmlEncode
 import java.io.ByteArrayOutputStream
 import java.net.URI
 
@@ -40,7 +41,6 @@ object HtmlUtils {
         }
     }
 
-    private val LINK_PATTERN = Regex("(https?://\\S+)")
     private val WHITESPACE = Regex("\\s+")
 
     /**
@@ -48,6 +48,7 @@ object HtmlUtils {
      * `<>"`. A match still carries sentence punctuation; [trimUrl] takes that off.
      */
     const val BARE_URL_PATTERN = "https?://[^\\s<>\"]+"
+    private val BARE_URL = Regex(BARE_URL_PATTERN)
     private const val TRAILING_PUNCTUATION = ".,;:!?'"
 
     /** Drops sentence punctuation and an unbalanced closing parenthesis from a bare URL's end. */
@@ -120,10 +121,24 @@ object HtmlUtils {
         return out.toString()
     }
 
-    /** Adds HTML markup to an outgoing message: links become anchors, newlines become `<br>`. */
-    fun markupOutgoingMessage(message: String): String =
-        LINK_PATTERN.replace(message) { "<a href=\"${it.value}\">${it.value}</a>" }
-            .replace("\n", "<br>")
+    /**
+     * The HTML for a plain outgoing message: every character is escaped, bare URLs become anchors
+     * (bounded like Markdown's, see [BARE_URL_PATTERN] and [trimUrl]), newlines become `<br>`.
+     */
+    fun markupOutgoingMessage(message: String): String {
+        val out = StringBuilder()
+        var last = 0
+        for (match in BARE_URL.findAll(message)) {
+            val url = trimUrl(match.value)
+            out.append(message.substring(last, match.range.first).htmlEncode())
+            val encoded = url.htmlEncode()
+            out.append("<a href=\"").append(encoded).append("\">").append(encoded).append("</a>")
+            // What the URL gave back is ordinary text again.
+            last = match.range.first + url.length
+        }
+        out.append(message.substring(last).htmlEncode())
+        return out.toString().replace("\n", "<br>")
+    }
 
     private fun hexByte(hi: Char, lo: Char): Int? {
         val h = Character.digit(hi, HEX_RADIX)

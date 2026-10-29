@@ -19,7 +19,11 @@ package koeln.becker.nomla.util
 
 import com.google.common.truth.Truth.assertWithMessage
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+/** Robolectric for the escaping, which is the platform's TextUtils.htmlEncode. */
+@RunWith(RobolectricTestRunner::class)
 class HtmlUtilsTest {
     @Test
     fun theHostnameOfALinkAndNoneOfAnythingElse() {
@@ -49,8 +53,45 @@ class HtmlUtilsTest {
         mapOf(
             "see https://a.org/x\nnow" to "see <a href=\"https://a.org/x\">https://a.org/x</a><br>now",
             "hello" to "hello",
+            "" to "",
+            "one\ntwo\nthree" to "one<br>two<br>three",
         ).forEach { (text, html) ->
             assertWithMessage(text).that(HtmlUtils.markupOutgoingMessage(text)).isEqualTo(html)
         }
+    }
+
+    @Test
+    fun outgoingMarkupEscapesText() {
+        mapOf(
+            "<b>a</b> & \"q\"" to "&lt;b&gt;a&lt;/b&gt; &amp; &quot;q&quot;",
+            "a<https://a.org/\"x>" to "a&lt;<a href=\"https://a.org/\">https://a.org/</a>&quot;x&gt;",
+        ).forEach { (text, html) ->
+            assertWithMessage(text).that(HtmlUtils.markupOutgoingMessage(text)).isEqualTo(html)
+        }
+    }
+
+    @Test
+    fun outgoingMarkupKeepsPunctuationAndUnbalancedParenthesesOutOfLinks() {
+        val a = "<a href=\"https://a.org/x\">https://a.org/x</a>"
+        val wiki = "https://de.wikipedia.org/wiki/Foo_(Bar)"
+        val wikiLink = "<a href=\"$wiki\">$wiki</a>"
+        mapOf(
+            "see https://a.org/x." to "see $a.",
+            "https://a.org/x, then" to "$a, then",
+            "look https://a.org/x!" to "look $a!",
+            "(https://a.org/x)" to "($a)",
+            wiki to wikiLink,
+            "($wiki)." to "($wikiLink).",
+        ).forEach { (text, html) ->
+            assertWithMessage(text).that(HtmlUtils.markupOutgoingMessage(text)).isEqualTo(html)
+        }
+    }
+
+    @Test
+    fun outgoingMarkupEscapesAmpersandsInLinks() {
+        val encoded = "https://a.org/s?a=1&amp;b=2"
+        assertWithMessage("query")
+            .that(HtmlUtils.markupOutgoingMessage("https://a.org/s?a=1&b=2 ok"))
+            .isEqualTo("<a href=\"$encoded\">$encoded</a> ok")
     }
 }
