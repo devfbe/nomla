@@ -2,43 +2,20 @@
 set -eu
 
 # Regenerates app/src/main/res/xml/local_config.xml and the languageValues array from the
-# values-* directories; run after adding or removing a locale.
+# values-* directories; run after adding or removing a locale. Every locale is translated in full,
+# so every values-* directory is listed.
 cd "${0%/*}/.."
 
 langdirs=(app/src/main/res/values-?? app/src/main/res/values-??-r?? app/src/main/res/values-???)
 readarray -td '' langdirs < <(printf '%s\0' "${langdirs[@]}" | sort -z)
 
-count_strings() {
-  code=$1
-  [[ -n "$code" ]] && code="-$code"
-  files=()
-  for f in "app/src/main/res/values$code/"{strings,preference}.xml "libraries/core/src/main/res/values$code/strings.xml"; do
-    if [[ -e "$f" ]]; then
-      files+=("$f")
-    fi
-  done
-  grep -h -c "</string>" "${files[@]}" | awk '{s+=$1} END {print s}'
-}
-
-en=$(count_strings "")
-
 declare -a langs
-declare -a excluded
 for lang in "${langdirs[@]}"; do
   lang=${lang##*/}
-  lang=${lang#values-}
-  percent=$(( $(count_strings "$lang") * 100 / en ))
-  if (( percent < 40 )); then
-    excluded+=("$lang($percent%)")
-  elif (( percent < 99 )); then
-    langs+=("$lang($percent%)")
-  else
-    langs+=("$lang")
-  fi
+  langs+=("${lang#values-}")
 done
 langs+=("en-US")
-printf "Included languages: %s\n" "${langs[*]}"
-printf "Excluded languages: %s\n" "${excluded[*]}"
+printf "Languages: %s\n" "${langs[*]}"
 
 IFS=$'\n' langssorted=($(sort <<<"${langs[*]}")); unset IFS
 
@@ -48,7 +25,6 @@ cat >"$localf" <<-EOF
 <locale-config xmlns:android="http://schemas.android.com/apk/res/android">
 EOF
 for lang in "${langssorted[@]}"; do
-  lang="${lang%%(*}"
   # Must not have an "r" there for the locales we support
   lang="${lang//-r/-}"
   printf >>"$localf" '    <locale android:name="%s" />\n' "$lang"
@@ -60,10 +36,9 @@ langf=app/src/main/res/values/language_notranslate.xml
 cat >"$langf" <<-EOF
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="languageValues">
+    <string-array name="languageValues" translatable="false">
 EOF
 for lang in "${langssorted[@]}"; do
-  lang="${lang%%(*}"
   # Must not have an "r" there for the preference display
   lang="${lang//-r/-}"
   if [[ "$lang" = "en-US" ]]; then
