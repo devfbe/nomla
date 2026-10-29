@@ -34,6 +34,7 @@ import org.bouncycastle.pkcs.jcajce.JcaPKCS12SafeBagBuilder
 import org.bouncycastle.pkcs.jcajce.JcePKCS12MacCalculatorBuilder
 import org.bouncycastle.pkcs.jcajce.JcePKCSPBEOutputEncryptorBuilder
 import java.io.ByteArrayInputStream
+import java.io.IOException
 import java.io.InputStream
 import java.security.KeyStore
 import java.security.KeyStoreException
@@ -71,8 +72,15 @@ public object Pkcs12Certificates {
     public fun isPkcs12(bytes: ByteArray): Boolean = try {
         Pfx.getInstance(ASN1Primitive.fromByteArray(bytes))
         true
-    } catch (_: Exception) {
-        // The ASN.1 parser throws checked and unchecked exceptions alike for malformed input.
+    } catch (_: IOException) {
+        // Not DER at all, or trailing bytes after it.
+        false
+    } catch (_: RuntimeException) {
+        // Deliberately broad: BouncyCastle's ASN.1 constructors cast and index without checks, so a
+        // well-formed structure of the wrong shape surfaces as whatever that triggers - an empty
+        // sequence as ArrayIndexOutOfBoundsException (Pfx), a wrong element type as
+        // ClassCastException or IllegalArgumentException (getInstance), a short ContentInfo as
+        // NoSuchElementException, a broken lazy encoding as ASN1ParsingException.
         false
     }
 

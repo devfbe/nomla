@@ -84,6 +84,19 @@ class Pkcs12CertificatesTest {
         assertThat(Pkcs12Certificates.isPkcs12(byteArrayOf(1, 2, 3))).isFalse()
     }
 
+    /** Valid DER of the wrong shape trips BouncyCastle's unchecked casts and indexes, not an IOException. */
+    @Test
+    fun `isPkcs12 rejects well formed DER that is no pfx`() {
+        val emptySequence = byteArrayOf(0x30, 0x00)
+        val integerThree = byteArrayOf(0x02, 0x01, 0x03)
+        val versionWithoutContent = byteArrayOf(0x30, 0x03, 0x02, 0x01, 0x03)
+        val versionAndEmptyContentInfo = byteArrayOf(0x30, 0x05, 0x02, 0x01, 0x03, 0x30, 0x00)
+
+        for (bytes in listOf(emptySequence, integerThree, versionWithoutContent, versionAndEmptyContentInfo)) {
+            assertThat(Pkcs12Certificates.isPkcs12(bytes)).isFalse()
+        }
+    }
+
     @Test
     fun `an export without password opens with the empty password and keeps key and certificate`() {
         val out = ByteArrayOutputStream()
