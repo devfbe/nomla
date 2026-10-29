@@ -43,6 +43,24 @@ object HtmlUtils {
     private val LINK_PATTERN = Regex("(https?://\\S+)")
     private val WHITESPACE = Regex("\\s+")
 
+    /**
+     * A bare web URL (http or https) as it appears in typed text: it ends at whitespace or at one of
+     * `<>"`. A match still carries sentence punctuation; [trimUrl] takes that off.
+     */
+    const val BARE_URL_PATTERN = "https?://[^\\s<>\"]+"
+    private const val TRAILING_PUNCTUATION = ".,;:!?'"
+
+    /** Drops sentence punctuation and an unbalanced closing parenthesis from a bare URL's end. */
+    fun trimUrl(url: String): String {
+        var end = url.length
+        while (end > 0) {
+            val c = url[end - 1]
+            val unbalanced = c == ')' && url.take(end).count { it == ')' } > url.take(end).count { it == '(' }
+            if (c in TRAILING_PUNCTUATION || unbalanced) end-- else break
+        }
+        return url.substring(0, end)
+    }
+
     /** The text of an HTML fragment, with images dropped and all whitespace collapsed to single spaces. */
     fun toPlainText(html: String): String = collapse(fromHtml(html))
 

@@ -31,11 +31,10 @@ object Markdown {
     private val INLINE = Regex(
         "`(?<code>[^`\\n]+)`" +
             "|\\[(?<text>[^\\]\\n]+)]\\((?<href>https?://[^\\s)]+)\\)" +
-            "|(?<url>https?://[^\\s<>\"]+)" +
+            "|(?<url>${HtmlUtils.BARE_URL_PATTERN})" +
             "|\\*\\*(?=\\S)(?<bold>.+?\\*?)(?<=\\S)\\*\\*(?!\\*)" +
             "|\\*(?=\\S)(?<italic>[^*\\n]+?)(?<=\\S)\\*"
     )
-    private const val TRAILING_PUNCTUATION = ".,;:!?'"
 
     fun toHtml(markdown: String): String {
         val out = StringBuilder()
@@ -71,7 +70,7 @@ object Markdown {
                 groups["code"] != null -> out.append("<code>").append(escape(groups["code"]!!.value)).append("</code>")
                 groups["href"] != null -> link(groups["href"]!!.value, escape(groups["text"]!!.value), out)
                 groups["url"] != null -> {
-                    val url = trimUrl(groups["url"]!!.value)
+                    val url = HtmlUtils.trimUrl(groups["url"]!!.value)
                     link(url, escape(url), out)
                     // What the URL gave back is ordinary text again.
                     last = match.range.first + url.length
@@ -93,17 +92,6 @@ object Markdown {
 
     private fun link(href: String, html: String, out: StringBuilder) {
         out.append("<a href=\"").append(escape(href)).append("\">").append(html).append("</a>")
-    }
-
-    /** Drops sentence punctuation and an unbalanced closing parenthesis from a bare URL's end. */
-    private fun trimUrl(url: String): String {
-        var end = url.length
-        while (end > 0) {
-            val c = url[end - 1]
-            val unbalanced = c == ')' && url.take(end).count { it == ')' } > url.take(end).count { it == '(' }
-            if (c in TRAILING_PUNCTUATION || unbalanced) end-- else break
-        }
-        return url.substring(0, end)
     }
 
     private fun literal(text: String, out: StringBuilder) {
