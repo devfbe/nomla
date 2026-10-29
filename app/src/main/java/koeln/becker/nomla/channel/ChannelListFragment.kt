@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import koeln.becker.nomla.mumble.model.ChannelState
 import koeln.becker.nomla.R
+import koeln.becker.nomla.app.AppContainer
 import koeln.becker.nomla.channel.comment.ChannelDescriptionFragment
 import koeln.becker.nomla.channel.comment.UserCommentFragment
 import koeln.becker.nomla.databinding.FragmentChannelListBinding
@@ -79,7 +80,8 @@ class ChannelListFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val adapter = ChannelListAdapter(requireContext(), this).also { this.adapter = it }
+        val imageLoader = AppContainer.of(requireContext()).chatImageLoader.imageLoader
+        val adapter = ChannelListAdapter(requireContext(), this, imageLoader).also { this.adapter = it }
         channelView.adapter = adapter
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         whileViewStarted {

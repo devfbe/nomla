@@ -19,8 +19,6 @@
 package koeln.becker.nomla.channel
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.util.LruCache
@@ -36,27 +34,35 @@ import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil3.ImageLoader
+import coil3.asImage
+import coil3.request.ImageRequest
+import coil3.request.target
+import coil3.request.transformations
+import coil3.transform.CircleCropTransformation
+import coil3.util.CoilUtils
 import koeln.becker.nomla.mumble.model.Bytes
 import koeln.becker.nomla.mumble.model.TalkState
 import koeln.becker.nomla.R
 import koeln.becker.nomla.databinding.ChannelListenerRowBinding
 import koeln.becker.nomla.databinding.ChannelRowBinding
 import koeln.becker.nomla.databinding.ChannelUserRowBinding
-import koeln.becker.nomla.drawable.CircleDrawable
 import koeln.becker.nomla.util.dp
 import koeln.becker.nomla.util.stateIconRes
 import koeln.becker.nomla.util.talkStateDescription
+import java.security.MessageDigest
 
 /**
  * The channel list's rows, diffed by [DiffUtil] off the main thread; a user row whose only change
  * is its icon gets the icon repainted rather than the row rebound. Talk states come separately
  * through [setTalkStates], which repaints the icons of the users whose state changed in place: no
- * rebind, no layout pass. Main thread.
+ * rebind, no layout pass. Avatars are decoded by [imageLoader], off the main thread. Main thread.
  */
 @Suppress("TooManyFunctions") // RecyclerView.Adapter callbacks and the view holders' binding.
 class ChannelListAdapter(
     private val context: Context,
     private val listener: Listener,
+    private val imageLoader: ImageLoader,
     differConfig: AsyncDifferConfig<ChannelRow> = AsyncDifferConfig.Builder(DIFF).build(),
 ) : ListAdapter<ChannelRow, RecyclerView.ViewHolder>(differConfig) {
 
@@ -75,8 +81,10 @@ class ChannelListAdapter(
 
     private var list: RecyclerView? = null
 
-    /** Decoded avatars; a snapshot keeps the same [Bytes] until the picture changes. */
-    private val avatars = LruCache<Bytes, Bitmap>(AVATAR_CACHE_SIZE)
+    /** The avatars' memory-cache keys; a snapshot keeps the same [Bytes] until the picture changes. */
+    private val avatarKeys = LruCache<Bytes, String>(AVATAR_CACHE_SIZE)
+
+    private val avatarSizePx = context.resources.dp(AVATAR_SIZE_DP).toInt()
 
     init {
         setHasStableIds(true)
@@ -258,8 +266,33 @@ class ChannelListAdapter(
             val talkState = talkStates[row.session] ?: TalkState.PASSIVE
             shownRow = row
             shownTalkState = talkState
-            talkHighlight.setImageDrawable(stateIcon(row, talkState))
+            paintIcon(row, talkState)
             ViewCompat.setStateDescription(itemView, talkStateDescription(context, row.status, talkState))
+        }
+
+        /**
+         * The state icon, or for a silent user with an avatar the avatar. Either way the view's
+         * previous request is replaced or cancelled, so a recycled row never shows a stale avatar.
+         */
+        private fun paintIcon(row: ChannelRow.User, talkState: TalkState) {
+            val id = stateIconRes(row.status, talkState)
+            val avatar = row.avatar
+            if (id != R.drawable.outline_circle_talking_off || avatar == null) {
+                CoilUtils.dispose(talkHighlight)
+                talkHighlight.setImageDrawable(icon(id))
+                return
+            }
+            // Until the avatar is decoded, and if it does not decode, the silent icon stays.
+            val request = ImageRequest.Builder(context)
+                .data(avatar.asReadOnlyBuffer())
+                .memoryCacheKey(avatarKey(avatar))
+                .size(avatarSizePx)
+                .transformations(CircleCropTransformation())
+                .placeholder { icon(id).asImage() }
+                .error { icon(id).asImage() }
+                .target(talkHighlight)
+                .build()
+            imageLoader.enqueue(request)
         }
 
         /** Repaints the icon if the talk state moved on since it was painted. */
@@ -286,26 +319,25 @@ class ChannelListAdapter(
         }
     }
 
-    private fun stateIcon(row: ChannelRow.User, talkState: TalkState): Drawable {
-        val resources = context.resources
-        val id = stateIconRes(row.status, talkState)
-        if (id == R.drawable.outline_circle_talking_off) {
-            // Without an avatar, or one that does not decode, the silent icon stays.
-            avatar(row.avatar)?.let { return CircleDrawable(resources, it) }
-        }
-        return checkNotNull(ResourcesCompat.getDrawable(resources, id, null))
-    }
+    private fun icon(id: Int): Drawable = checkNotNull(ResourcesCompat.getDrawable(context.resources, id, null))
 
-    private fun avatar(bytes: Bytes?): Bitmap? = bytes?.let { avatars.get(it) ?: decode(it) }
-
-    private fun decode(bytes: Bytes): Bitmap? {
-        val data = bytes.toByteArray()
-        return BitmapFactory.decodeByteArray(data, 0, data.size)?.also { avatars.put(bytes, it) }
-    }
+    /**
+     * The SHA-1 of [avatar]: Coil cannot key raw bytes itself, and a content hash keeps one cached
+     * bitmap per picture across rows and snapshots. Remembered per [Bytes], so it is hashed once.
+     */
+    private fun avatarKey(avatar: Bytes): String = avatarKeys.get(avatar)
+        ?: MessageDigest.getInstance("SHA-1").run {
+            update(avatar.asReadOnlyBuffer())
+            AVATAR_KEY_PREFIX + digest().toHexString()
+        }.also { avatarKeys.put(avatar, it) }
 
     companion object {
         private const val INDENT_DP = 25f
         private const val AVATAR_CACHE_SIZE = 64
+
+        /** The user row's icon frame. */
+        private const val AVATAR_SIZE_DP = 32f
+        private const val AVATAR_KEY_PREFIX = "avatar:"
 
         /** The payload of a user row change that only its icon shows. */
         private val ICON = Any()

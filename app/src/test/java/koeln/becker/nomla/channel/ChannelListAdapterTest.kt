@@ -19,7 +19,9 @@ package koeln.becker.nomla.channel
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import android.view.View
@@ -40,7 +42,6 @@ import koeln.becker.nomla.mumble.model.Bytes
 import koeln.becker.nomla.mumble.model.TalkState
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
-import koeln.becker.nomla.drawable.CircleDrawable
 import koeln.becker.nomla.testing.ThemedActivity
 import koeln.becker.nomla.testing.channelListAdapter
 import koeln.becker.nomla.testing.channelRow
@@ -72,12 +73,15 @@ class ChannelListAdapterTest {
 
     @Before
     fun setUp() {
-        context = Robolectric.buildActivity(ThemedActivity::class.java).setup().get()
+        val activity = Robolectric.buildActivity(ThemedActivity::class.java).setup().get()
+        context = activity
         adapter = channelListAdapter(context, listener)
         list = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
             adapter = this@ChannelListAdapterTest.adapter
         }
+        // In a window: Coil starts a view's request only once the view is attached.
+        activity.setContentView(list)
     }
 
     private fun show(vararg rows: ChannelRow) {
@@ -243,15 +247,44 @@ class ChannelListAdapterTest {
         ).inOrder()
     }
 
-    @Test
-    fun aDecodableAvatarIsShownAndAnythingElseIsTheRestingDot() {
-        val png = ByteArrayOutputStream().also {
-            Bitmap.createBitmap(4, 4, Bitmap.Config.ARGB_8888).compress(Bitmap.CompressFormat.PNG, 100, it)
-        }.toByteArray()
-        show(userRow(1, avatar = Bytes.of(png)), userRow(2, avatar = Bytes.of(byteArrayOf(1, 2, 3))))
+    /** A red square, encoded as a PNG. */
+    private fun redPng(): Bytes = Bytes.of(
+        ByteArrayOutputStream().also {
+            Bitmap.createBitmap(8, 8, Bitmap.Config.ARGB_8888).apply { eraseColor(Color.RED) }
+                .compress(Bitmap.CompressFormat.PNG, 100, it)
+        }.toByteArray(),
+    )
 
-        assertThat(iconOf(1)).isInstanceOf(CircleDrawable::class.java)
+    @Test
+    fun aDecodableAvatarIsShownCroppedToACircleAndAnythingElseIsTheRestingDot() {
+        show(userRow(1, avatar = redPng()), userRow(2, avatar = Bytes.of(byteArrayOf(1, 2, 3))))
+
+        val avatar = (iconOf(1) as BitmapDrawable).bitmap
+        assertThat(Color.alpha(avatar.getPixel(0, 0))).isEqualTo(0)
+        assertThat(avatar.getPixel(avatar.width / 2, avatar.height / 2)).isEqualTo(Color.RED)
         assertThat(resourceOf(iconOf(2))).isEqualTo(R.drawable.outline_circle_talking_off)
+    }
+
+    @Test
+    fun aTalkingUserShowsTheTalkStateOverTheAvatarAndTheAvatarAgainOnceSilent() {
+        show(userRow(1, avatar = redPng()))
+
+        adapter.setTalkStates(mapOf(1 to TalkState.TALKING))
+        assertThat(resourceOf(iconOf(1))).isEqualTo(R.drawable.outline_circle_talking_on)
+
+        adapter.setTalkStates(emptyMap())
+        assertThat(iconOf(1)).isInstanceOf(BitmapDrawable::class.java)
+    }
+
+    /** A row whose avatar goes away drops it rather than keep showing the old picture. */
+    @Test
+    fun aRowWhoseAvatarIsRemovedShowsTheRestingDot() {
+        show(userRow(1, avatar = redPng()))
+        assertThat(iconOf(1)).isInstanceOf(BitmapDrawable::class.java)
+
+        show(userRow(1, avatar = null))
+
+        assertThat(resourceOf(iconOf(1))).isEqualTo(R.drawable.outline_circle_talking_off)
     }
 
     @Test

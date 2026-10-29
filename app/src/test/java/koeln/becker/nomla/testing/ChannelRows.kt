@@ -19,19 +19,25 @@ package koeln.becker.nomla.testing
 
 import android.content.Context
 import androidx.recyclerview.widget.AsyncDifferConfig
+import coil3.ImageLoader
 import io.mockk.mockk
+import kotlinx.coroutines.Dispatchers
 import koeln.becker.nomla.mumble.model.Bytes
 import koeln.becker.nomla.channel.ChannelListAdapter
 import koeln.becker.nomla.channel.ChannelRow
 import koeln.becker.nomla.util.UserStatus
 
-/** An adapter that diffs on the calling thread, so a submit is done once the main looper is idle. */
+/**
+ * An adapter that diffs and decodes avatars on the calling thread, so a submit is done, avatars
+ * included, once the main looper is idle.
+ */
 fun channelListAdapter(
     context: Context,
     listener: ChannelListAdapter.Listener = mockk(relaxed = true),
 ): ChannelListAdapter = ChannelListAdapter(
     context,
     listener,
+    ImageLoader.Builder(context).coroutineContext(Dispatchers.Unconfined).build(),
     AsyncDifferConfig.Builder(ChannelListAdapter.DIFF).setBackgroundThreadExecutor { it.run() }.build(),
 )
 

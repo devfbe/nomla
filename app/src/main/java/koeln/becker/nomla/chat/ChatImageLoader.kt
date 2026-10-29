@@ -68,7 +68,7 @@ sealed class ImageResult {
 
 /**
  * Loads chat images off the main thread: Coil decodes and caches the bitmaps (memory only, never on
- * disk), [http] fetches remote ones.
+ * disk), [http] fetches remote ones. The channel list loads its avatars through the same [imageLoader].
  *
  * Remote sources are only fetched while [externalImagesAllowed]; [http] must enforce the same gate
  * and the destination rules on its own (see [chatImageHttpClient]). Failures are remembered per
@@ -78,7 +78,7 @@ sealed class ImageResult {
  */
 class ChatImageLoader(
     private val context: Context,
-    private val imageLoader: ImageLoader,
+    val imageLoader: ImageLoader,
     private val http: Call.Factory,
     private val externalImagesAllowed: () -> Boolean,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,

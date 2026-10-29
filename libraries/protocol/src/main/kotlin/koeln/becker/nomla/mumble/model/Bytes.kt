@@ -16,10 +16,15 @@
  */
 package koeln.becker.nomla.mumble.model
 
+import java.nio.ByteBuffer
+
 /** Immutable bytes compared by content, so they can sit in a snapshot's data classes. */
 public class Bytes private constructor(private val data: ByteArray) {
     /** A copy the caller may keep and change. */
     public fun toByteArray(): ByteArray = data.copyOf()
+
+    /** A read-only view, without a copy. */
+    public fun asReadOnlyBuffer(): ByteBuffer = ByteBuffer.wrap(data).asReadOnlyBuffer()
 
     override fun equals(other: Any?): Boolean = this === other || (other is Bytes && data.contentEquals(other.data))
 
