@@ -18,11 +18,11 @@
 
 package koeln.becker.nomla.servers
 
-import kotlinx.coroutines.CancellationException
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.net.ServerResolver
 import koeln.becker.nomla.mumble.util.NANOS_PER_MILLI
 import koeln.becker.nomla.mumble.util.NomlaLog
+import java.io.IOException
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
@@ -40,7 +40,10 @@ class ServerPinger(
     private val createSocket: () -> DatagramSocket = { DatagramSocket() },
 ) {
 
-    /** Returns [server]'s ping reply, or a dummy response when there is none; a cancellation is rethrown. */
+    /**
+     * Returns [server]'s ping reply, or a dummy response when there is none. A cancellation is not
+     * caught: the caller is gone, so neither the ping nor a dummy reply may go on.
+     */
     suspend fun ping(server: Server): ServerInfoResponse = try {
         val endpoint = resolver.resolve(server)
         val request = ByteBuffer.allocate(REQUEST_SIZE).putInt(0).putLong(server.id).array()
@@ -57,11 +60,14 @@ class ServerPinger(
                 NomlaLog.d(TAG, "Server version: ${it.versionString} Users: ${it.currentUsers}/${it.maximumUsers}")
             }
         }
-    } catch (e: CancellationException) {
-        // Not "no reply": the caller is gone, so neither the ping nor a dummy reply may go on.
-        throw e
-    } catch (_: Exception) {
-        // Whatever failed - resolution, socket, timeout, a short reply - the server did not answer.
+    } catch (_: IOException) {
+        // Unknown host, no socket, unreachable, or no reply within the timeout (SocketTimeoutException).
+        ServerInfoResponse()
+    } catch (_: IllegalArgumentException) {
+        // A stored port outside 0..65535, rejected by DatagramPacket.
+        ServerInfoResponse()
+    } catch (_: SecurityException) {
+        // The platform denied the lookup or the socket.
         ServerInfoResponse()
     }
 }
