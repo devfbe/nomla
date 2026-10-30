@@ -24,6 +24,7 @@ import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import koeln.becker.nomla.mumble.NomlaSession
 import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.audio.AndroidAudioTrackSink
@@ -39,6 +40,7 @@ import koeln.becker.nomla.chat.NoticeFormatter
 import koeln.becker.nomla.chat.SessionChat
 import koeln.becker.nomla.db.NomlaRepository
 import koeln.becker.nomla.db.NomlaSQLiteDatabase
+import koeln.becker.nomla.diagnostics.DiagnosticShare
 import koeln.becker.nomla.servers.PublicServerFetcher
 import koeln.becker.nomla.servers.ServerPinger
 import koeln.becker.nomla.service.NomlaHotCorner
@@ -139,6 +141,8 @@ class AppContainer(
 
     init {
         SessionSettingsSync(app, settings, sessionManager, appMessages).start(scope)
+        // A shared diagnostics ZIP lives until the next export, discard or process start (B13).
+        scope.launch(parts.ioDispatcher) { DiagnosticShare.clear(app) }
     }
 
     /** A microphone test for a screen on [context]; see [MicCheck]. */

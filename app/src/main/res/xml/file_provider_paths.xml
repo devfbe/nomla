@@ -6,4 +6,5 @@
 <paths>
     <cache-path name="shared_images" path="shared_images/" />
     <cache-path name="shared_logs" path="shared_logs/" />
+    <cache-path name="shared_diagnostics" path="shared_diagnostics/" />
 </paths>

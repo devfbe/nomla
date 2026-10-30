@@ -21,6 +21,9 @@ import android.content.Context
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import koeln.becker.nomla.mumble.audio.routing.CommunicationDevice
+import koeln.becker.nomla.mumble.diagnostics.export.TelemetryCsv
+import koeln.becker.nomla.mumble.diagnostics.export.WavWriter
+import java.io.OutputStream
 
 /**
  * One telemetry table of a finished recording, such as `frames.csv`: [rows] rows of
@@ -304,7 +307,25 @@ public class DiagnosticCapture(
     public val speakersWithoutTrack: Int,
     public val droppedFrames: Int,
     public val route: RouteInfo?,
-)
+) {
+    /** Writes [track] as a mono 16-bit WAV at its own rate to [out], which stays open. */
+    public fun writeTrack(track: CapturedTrack, out: OutputStream) {
+        WavWriter.write(out, track.samples, track.sampleRate)
+    }
+
+    /**
+     * Writes [table] as CSV to [out]: a header `t_ms,<columns>`, then one line per row; times in ms
+     * to 1 decimal, values to at most 2, an empty cell for no value, `.` as the decimal point.
+     */
+    public fun writeTable(table: TelemetryTable, out: Appendable) {
+        TelemetryCsv.write(table, out)
+    }
+
+    /** Writes [events] as `events.csv` to [out]: `t_ms,name,value`, times as in [writeTable]. */
+    public fun writeEvents(out: Appendable) {
+        TelemetryCsv.writeEvents(events, out)
+    }
+}
 
 /**
  * The audio route at one moment: the `AudioDeviceInfo` [deviceType] voice is routed to (null while

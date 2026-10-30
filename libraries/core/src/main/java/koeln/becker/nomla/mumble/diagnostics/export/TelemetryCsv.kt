@@ -18,6 +18,7 @@
 package koeln.becker.nomla.mumble.diagnostics.export
 
 import kotlin.math.abs
+import koeln.becker.nomla.mumble.diagnostics.DiagnosticEvent
 import koeln.becker.nomla.mumble.diagnostics.TelemetryTable
 
 /**
@@ -32,6 +33,9 @@ internal object TelemetryCsv {
     private const val TENTH = 10L
     private const val HUNDRED = 100L
 
+    /** The header of `events.csv`. */
+    const val EVENTS_HEADER = "t_ms,name,value"
+
     fun write(table: TelemetryTable, out: Appendable) {
         out.append("t_ms")
         for (column in table.columns) out.append(',').append(column)
@@ -45,6 +49,30 @@ internal object TelemetryCsv {
             }
             out.append('\n')
         }
+    }
+
+    /**
+     * Writes [events] as `events.csv`: a header `t_ms,name,value`, then one line per event, `t_ms`
+     * as in a table. A name or value holding a comma, quote or line break is quoted (RFC 4180).
+     */
+    fun writeEvents(events: List<DiagnosticEvent>, out: Appendable) {
+        out.append(EVENTS_HEADER).append('\n')
+        for (event in events) {
+            appendTime(out, event.timeMs)
+            out.append(',')
+            appendText(out, event.name)
+            out.append(',')
+            appendText(out, event.value)
+            out.append('\n')
+        }
+    }
+
+    private fun appendText(out: Appendable, text: String) {
+        if (text.none { it == ',' || it == '"' || it == '\n' || it == '\r' }) {
+            out.append(text)
+            return
+        }
+        out.append('"').append(text.replace("\"", "\"\"")).append('"')
     }
 
     /** One decimal, always written: `0.0`, `12.4`, `-3.0`. */
