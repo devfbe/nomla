@@ -23,6 +23,10 @@ import koeln.becker.nomla.mumble.audio.AudioHost
 import koeln.becker.nomla.mumble.audio.AudioSessionParams
 import koeln.becker.nomla.mumble.audio.ManagedAudio
 import koeln.becker.nomla.mumble.audio.capture.CaptureState
+import koeln.becker.nomla.mumble.audio.describePipelineSettings
+import koeln.becker.nomla.mumble.audio.withEncoder
+import koeln.becker.nomla.mumble.diagnostics.CaptureDescription
+import koeln.becker.nomla.mumble.diagnostics.PipelineDescription
 import koeln.becker.nomla.mumble.net.TcpMessageHandler
 import koeln.becker.nomla.mumble.net.VoicePacketHandler
 import java.util.concurrent.CopyOnWriteArrayList
@@ -66,6 +70,11 @@ internal class FakeAudio(private val onCaptureState: (CaptureState) -> Unit = {}
     }
 }
 
+/**
+ * Builds a [FakeAudio] per pipeline. Like the real pipeline it reports itself to the session's
+ * diagnostics, with the settings described by the real code path ([describePipelineSettings]) and
+ * no send stages, since it captures nothing.
+ */
 internal class FakeAudioFactory : AudioHandlerFactory {
     val created = CopyOnWriteArrayList<FakeAudio>()
     val configs = CopyOnWriteArrayList<AudioConfig>()
@@ -85,6 +94,13 @@ internal class FakeAudioFactory : AudioHandlerFactory {
         sessionParams += params
         hosts += host
         failWith?.let { throw it }
+        host.diagnostics?.onPipelineBuilt(
+            PipelineDescription(
+                CaptureDescription(sampleRate = config.settings.inputSampleRate),
+                describePipelineSettings(config, params.inputMode),
+                stagesPresent = emptySet(),
+            ).withEncoder(config.settings.bitrate, config.settings.framesPerPacket),
+        )
         return FakeAudio(onCaptureState).also { created += it }
     }
 }

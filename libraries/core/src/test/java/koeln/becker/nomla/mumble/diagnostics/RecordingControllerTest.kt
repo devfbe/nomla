@@ -24,6 +24,8 @@ import koeln.becker.nomla.mumble.diagnostics.export.SentTrackDecoder
 import koeln.becker.nomla.mumble.model.ServerSettings
 import koeln.becker.nomla.mumble.protobuf.Mumble
 import koeln.becker.nomla.mumble.protocol.ServerCommands
+import koeln.becker.nomla.mumble.util.NomlaLog
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -58,7 +60,10 @@ class RecordingControllerTest {
         var cancelled = false
     }
 
-    private fun controller(hub: DiagnosticsHub = this.hub) = RecordingController(
+    private fun controller(
+        hub: DiagnosticsHub = this.hub,
+        opus: OpusDecoderApi = ThrowingOpus(IllegalStateException("no packet expected")),
+    ) = RecordingController(
         hub = hub,
         commands = { commands.takeIf { synchronized } },
         serverSettings = { settings },
@@ -71,19 +76,29 @@ class RecordingControllerTest {
         },
         elapsed = { nowMs },
         epochMs = { EPOCH_MS },
-        decoder = SentTrackDecoder(UnusedOpus),
+        decoder = SentTrackDecoder(opus),
         scope = scope,
         exportDispatcher = dispatcher,
     )
 
-    /** Runs every timer that is due by now and not cancelled, then the export. */
-    private fun finishTimers() {
+    /** Runs every timer that is not cancelled; the export it starts is still pending. */
+    private fun fireTimers() {
         for (timer in timers.toList()) {
             if (timer.cancelled) continue
             timer.cancelled = true
             timer.block()
         }
+    }
+
+    /** Runs every timer that is not cancelled, then the export. */
+    private fun finishTimers() {
+        fireTimers()
         dispatcher.scheduler.advanceUntilIdle()
+    }
+
+    /** One sent packet in the running recording, so the export decodes. */
+    private fun sendOnePacket() {
+        checkNotNull(hub.armed).sent.write(byteArrayOf(1), 0, 1, 0L, false, nowMs * NANOS_PER_MS)
     }
 
     @After
@@ -117,11 +132,27 @@ class RecordingControllerTest {
 
     @Test
     fun `a server without the field counts as allowed`() {
-        settings = null
+        settings = ServerSettings.from(Mumble.ServerConfig.getDefaultInstance())
         val recordings = controller()
 
         assertThat(recordings.startRecording(DEFAULT_SECONDS)).isEqualTo(RecordingStart.Started)
         assertThat(flags).containsExactly(true)
+    }
+
+    /** Orchestrator ruling: before the ServerConfig arrived, "allowed" is not known, so nothing starts. */
+    @Test
+    fun `refuses before the server config arrived and never sends the flag`() {
+        settings = null
+        val recordings = controller()
+
+        assertThat(recordings.startRecording(DEFAULT_SECONDS))
+            .isEqualTo(RecordingStart.Refused(RecordingRefusal.NOT_READY))
+        assertThat(userStates).isEmpty()
+        assertThat(hub.armed).isNull()
+        assertThat(timers).isEmpty()
+
+        settings = settings(recordingAllowed = true)
+        assertThat(recordings.startRecording(DEFAULT_SECONDS)).isEqualTo(RecordingStart.Started)
     }
 
     @Test
@@ -277,9 +308,100 @@ class RecordingControllerTest {
         assertThat((recordings.recording.value as RecordingState.Finished).capture.route).isEqualTo(ROUTE_A)
     }
 
-    /** No packet is sent in these tests, so the decoder is never opened. */
-    private object UnusedOpus : OpusDecoderApi {
-        override fun create(sampleRate: Int, channels: Int, error: IntArray): Long = error("unused")
+    @Test
+    fun `a recording that is no longer armed at its end fails and ends the flag`() {
+        val recordings = controller()
+        recordings.startRecording(DEFAULT_SECONDS)
+        hub.disarm()
+
+        finishTimers()
+
+        assertThat(recordings.recording.value).isEqualTo(RecordingState.Idle(AbortReason.FAILED))
+        assertThat(flags).containsExactly(true, false).inOrder()
+    }
+
+    @Test
+    fun `an export error ends the recording as failed, logs it and ends the flag once`() {
+        val logged = mutableListOf<Throwable?>()
+        val sink = NomlaLog.Sink { _, _, _, error -> logged += error }
+        NomlaLog.addSink(sink)
+        try {
+            val recordings = controller(opus = ThrowingOpus(IllegalStateException("decoder broke")))
+            recordings.startRecording(DEFAULT_SECONDS)
+            sendOnePacket()
+
+            finishTimers()
+            recordings.cancelRecording()
+
+            assertThat(recordings.recording.value).isEqualTo(RecordingState.Idle(AbortReason.FAILED))
+            assertThat(flags).containsExactly(true, false).inOrder()
+            assertThat(logged.map { it?.message }).contains("decoder broke")
+            assertThat(hub.armed).isNull()
+        } finally {
+            NomlaLog.removeSink(sink)
+        }
+    }
+
+    @Test
+    fun `a cancellation of the export is not reported as a failure`() {
+        val recordings = controller(opus = ThrowingOpus(CancellationException("scope ends")))
+        recordings.startRecording(DEFAULT_SECONDS)
+        sendOnePacket()
+
+        finishTimers()
+
+        assertThat(recordings.recording.value).isInstanceOf(RecordingState.Recording::class.java)
+        assertThat(flags).containsExactly(true, false).inOrder()
+    }
+
+    @Test
+    fun `a cancel while the export runs drops it and sends false once`() {
+        val recordings = controller()
+        recordings.startRecording(DEFAULT_SECONDS)
+        fireTimers()
+        assertThat(recordings.recording.value).isInstanceOf(RecordingState.Recording::class.java)
+
+        recordings.cancelRecording()
+        dispatcher.scheduler.advanceUntilIdle()
+
+        assertThat(recordings.recording.value).isEqualTo(RecordingState.Idle(AbortReason.CANCELLED))
+        assertThat(flags).containsExactly(true, false).inOrder()
+    }
+
+    @Test
+    fun `a disconnect while the export runs drops it and sends nothing more`() {
+        val recordings = controller()
+        recordings.startRecording(DEFAULT_SECONDS)
+        fireTimers()
+
+        recordings.onDisconnected()
+        dispatcher.scheduler.advanceUntilIdle()
+
+        assertThat(recordings.recording.value).isEqualTo(RecordingState.Idle(AbortReason.DISCONNECTED))
+        assertThat(flags).containsExactly(true, false).inOrder()
+    }
+
+    @Test
+    fun `a stale timer of a cancelled recording does not end the next one`() {
+        val recordings = controller()
+        recordings.startRecording(DEFAULT_SECONDS)
+        recordings.cancelRecording()
+        recordings.startRecording(SHORT_SECONDS)
+        val stale = timers.first()
+        assertThat(stale.cancelled).isTrue()
+
+        // A platform that runs a removed callback anyway.
+        stale.block()
+        dispatcher.scheduler.advanceUntilIdle()
+
+        assertThat(recordings.recording.value).isEqualTo(RecordingState.Recording(START_ELAPSED_MS, SHORT_SECONDS))
+        assertThat(flags).containsExactly(true, false, true).inOrder()
+        assertThat(hub.armed).isNotNull()
+    }
+
+    /** Fails at the first decode with [failure]; the tests without packets never reach it. */
+    private class ThrowingOpus(private val failure: Throwable) : OpusDecoderApi {
+        override fun create(sampleRate: Int, channels: Int, error: IntArray): Long = throw failure
 
         @Suppress("LongParameterList") // The JNI signature.
         override fun decodeFloat(

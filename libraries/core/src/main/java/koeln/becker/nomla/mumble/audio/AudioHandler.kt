@@ -37,6 +37,7 @@ import koeln.becker.nomla.mumble.audio.inputmode.ToggleInputMode
 import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.diagnostics.CaptureTaps
 import koeln.becker.nomla.mumble.diagnostics.DiagnosticsHub
+import koeln.becker.nomla.mumble.audio.capture.InputMode
 import koeln.becker.nomla.mumble.diagnostics.PipelineDescription
 import koeln.becker.nomla.mumble.diagnostics.PlaybackTaps
 import koeln.becker.nomla.mumble.exception.AudioException
@@ -157,7 +158,11 @@ internal class AudioHandler(
         )
         capturePipeline = wiring.pipeline
         description = diagnostics?.let {
-            PipelineDescription(captureSource.describe(), describeSettings(config), wiring.stagesPresent)
+            PipelineDescription(
+                captureSource.describe(),
+                describePipelineSettings(config, inputMode),
+                wiring.stagesPresent,
+            )
         }
         val halfDuplex = config.halfDuplex
         transmitter = VoiceTransmitter(capturePipeline, encodeListener, taps) { talking ->
@@ -218,36 +223,6 @@ internal class AudioHandler(
             NomlaLog.w(TAG, "Unsupported codec, input disabled.")
             null
         }
-    }
-
-    /**
-     * The settings this pipeline is built from, as plain setting keys and values: never a server,
-     * user or channel. The encoder's values follow in [withEncoder].
-     */
-    private fun describeSettings(config: AudioConfig): Map<String, String> {
-        val settings = config.settings
-        val mode = params.inputMode
-        return linkedMapOf(
-            "input_mode" to when (mode) {
-                is ActivityInputMode -> "voice_activity"
-                is ToggleInputMode -> "push_to_talk"
-                else -> "continuous"
-            },
-            "input_sample_rate" to settings.inputSampleRate.toString(),
-            "noise_suppression" to settings.noiseSuppression.preferenceValue,
-            "rnnoise_attenuation_limit_db" to settings.rnnoiseAttenuationLimitDb.toString(),
-            "speex_noise_suppress_db" to settings.speexNoiseSuppressDb.toString(),
-            "echo_cancellation" to config.echoCancellation.preferenceValue,
-            "vad" to ((mode as? ActivityInputMode)?.vadConfig?.toString() ?: "none"),
-            "amplitude_boost" to settings.amplitudeBoost.toString(),
-            "half_duplex" to config.halfDuplex.toString(),
-            "android_noise_suppressor" to settings.androidEffects.noiseSuppressor.toString(),
-            "android_automatic_gain_control" to settings.androidEffects.automaticGainControl.toString(),
-            "echo_cancellation_voice_call_source" to settings.echoCancellationVoiceCallSource.toString(),
-            "opus_fec" to "1",
-            "opus_loss_percent" to OpusEncoder.EXPECTED_PACKET_LOSS_PERCENT.toString(),
-            "opus_dtx" to "0",
-        )
     }
 
     /** Fits the bitrate and frames per packet to the server's maximum bandwidth in bps; -1 means no limit. */
@@ -338,9 +313,38 @@ internal class AudioHandler(
 }
 
 /** This description with the encoder's values the session settled on. */
-private fun PipelineDescription.withEncoder(bitrate: Int, framesPerPacket: Int) = copy(
+internal fun PipelineDescription.withEncoder(bitrate: Int, framesPerPacket: Int) = copy(
     settings = settings + mapOf("bitrate" to bitrate.toString(), "frames_per_packet" to framesPerPacket.toString()),
 )
+
+/**
+ * The settings a pipeline for [config] and [mode] is built from, as plain setting keys and
+ * values: never a server, user or channel. The encoder's values follow in [withEncoder].
+ */
+internal fun describePipelineSettings(config: AudioConfig, mode: InputMode): Map<String, String> {
+    val settings = config.settings
+    return linkedMapOf(
+        "input_mode" to when (mode) {
+            is ActivityInputMode -> "voice_activity"
+            is ToggleInputMode -> "push_to_talk"
+            else -> "continuous"
+        },
+        "input_sample_rate" to settings.inputSampleRate.toString(),
+        "noise_suppression" to settings.noiseSuppression.preferenceValue,
+        "rnnoise_attenuation_limit_db" to settings.rnnoiseAttenuationLimitDb.toString(),
+        "speex_noise_suppress_db" to settings.speexNoiseSuppressDb.toString(),
+        "echo_cancellation" to config.echoCancellation.preferenceValue,
+        "vad" to ((mode as? ActivityInputMode)?.vadConfig?.toString() ?: "none"),
+        "amplitude_boost" to settings.amplitudeBoost.toString(),
+        "half_duplex" to config.halfDuplex.toString(),
+        "android_noise_suppressor" to settings.androidEffects.noiseSuppressor.toString(),
+        "android_automatic_gain_control" to settings.androidEffects.automaticGainControl.toString(),
+        "echo_cancellation_voice_call_source" to settings.echoCancellationVoiceCallSource.toString(),
+        "opus_fec" to "1",
+        "opus_loss_percent" to OpusEncoder.EXPECTED_PACKET_LOSS_PERCENT.toString(),
+        "opus_dtx" to "0",
+    )
+}
 
 /**
  * The bitrate and frames per packet that fit [maxBandwidth] bps, as desktop Mumble's

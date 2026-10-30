@@ -245,6 +245,9 @@ public class NomlaSession internal constructor(
     /** Whether the `AudioManager` mode listener is registered; only while the diagnostics are active. */
     private var watchingAudioMode = false
 
+    /** Whether the session user talks in any way (talking, shouting, whispering); for talk events. */
+    private var selfTalking = false
+
     override val state: StateFlow<SessionState> get() = lifecycle.state
 
     override val targetServer: Server? get() = config.connection.server
@@ -266,10 +269,16 @@ public class NomlaSession internal constructor(
 
     private fun onAudioModeChanged(mode: Int) = diagnosticsHub.event(EVENT_AUDIO_MODE, mode.toString())
 
-    /** The session user's own talk state, as diagnostics events; any other user's is not logged. */
+    /**
+     * The session user's own talk state, as diagnostics events on the step between silent and any
+     * talking state only (talking to shouting is no new start); any other user's is not logged.
+     */
     private fun onTalkStateChanged(session: Int, state: TalkState) {
         if (session != serverModel.value?.selfSession) return
-        diagnosticsHub.event(if (state == TalkState.PASSIVE) EVENT_TALK_END else EVENT_TALK_START)
+        val talking = state != TalkState.PASSIVE
+        if (talking == selfTalking) return
+        selfTalking = talking
+        diagnosticsHub.event(if (talking) EVENT_TALK_START else EVENT_TALK_END)
     }
 
     override fun connect() {
@@ -422,6 +431,7 @@ public class NomlaSession internal constructor(
         val next = lifecycle.lost(autoReconnect, reason)
         serverModel.detach()
         mutableTalkStates.clear()
+        selfTalking = false
         voiceTargets.clear()
         if (next is SessionState.Disconnected) {
             // A late, reason-free report after cancelReconnect keeps the cancelled session's reason

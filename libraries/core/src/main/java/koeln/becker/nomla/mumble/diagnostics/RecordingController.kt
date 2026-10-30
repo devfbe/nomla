@@ -21,6 +21,8 @@ import koeln.becker.nomla.mumble.diagnostics.export.SentTrackDecoder
 import koeln.becker.nomla.mumble.diagnostics.export.TrackAssembler
 import koeln.becker.nomla.mumble.model.ServerSettings
 import koeln.becker.nomla.mumble.protocol.ServerCommands
+import koeln.becker.nomla.mumble.util.NomlaLog
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,21 +35,24 @@ import kotlinx.coroutines.withContext
 /**
  * The lifecycle of a session's recordings and the Mumble recording flag that goes with them.
  *
- * A recording starts only on a synchronized connection ([commands] non-null) to a server that does
- * not forbid recording (a missing `recording_allowed` allows it); otherwise `recording = true` is
- * never sent, since murmur kicks a client that records against its will. Once the rings are
+ * A recording starts only on a synchronized connection ([commands] non-null) whose server has sent
+ * its `ServerConfig` and does not forbid recording there (a `ServerConfig` without
+ * `recording_allowed` allows it); otherwise `recording = true` is never sent, since murmur kicks a
+ * client that records against its will. Before the `ServerConfig` has arrived nothing is known, so
+ * a start is refused as [RecordingRefusal.NOT_READY]. Once the rings are
  * allocated the flag goes out, and every end of the recording (its timer, [cancelRecording])
  * sends `recording = false` exactly once while the connection is synchronized. A disconnect
  * ([onDisconnected]) sends nothing: the server forgets the flag with the user.
  *
  * At the end the hub is disarmed and the recording frozen and decoded on [exportDispatcher]; the
  * capture is published as [RecordingState.Finished] back in [scope]. A cancelled or aborted
- * recording is dropped whole (B12).
+ * recording is dropped whole (B12), an export still in flight included; one whose export fails
+ * ends as [AbortReason.FAILED].
  *
  * Main thread: every call, the timer and [scope].
  *
  * @param commands the requests of the synchronized connection, null outside of one.
- * @param serverSettings the server's `ServerConfig`, null while it sent none.
+ * @param serverSettings the server's `ServerConfig`, null while it sent none (a start is refused).
  * @param selfRecording whether the server shows this user as recording, null without a model.
  * @param route the audio route now; read once at a successful start (P15).
  * @param postDelayed runs a block after a delay in ms on the main thread; returns its cancel.
@@ -72,7 +77,7 @@ internal class RecordingController(
 
     val recording: StateFlow<RecordingState> = state.asStateFlow()
 
-    /** The running recording, null while none runs (an export may still be in flight). */
+    /** The running recording, null while none runs (an export may still be in flight then). */
     private var running: Running? = null
 
     /** Whether `recording = true` went out and no end has sent `false` yet. */
@@ -116,22 +121,27 @@ internal class RecordingController(
     }
 
     /**
-     * The connection is gone: a running recording is dropped and nothing is sent. An export in
-     * flight finishes, since its recording ended in time.
+     * The connection is gone: a running recording, or one whose export is still in flight, is
+     * dropped and nothing is sent.
      */
     fun onDisconnected() {
         flagOn = false
-        if (running == null) return
+        if (state.value !is RecordingState.Recording) return
         abort()
         state.value = RecordingState.Idle(AbortReason.DISCONNECTED)
     }
 
-    private fun refusalFor(seconds: Int): RecordingRefusal? = when {
-        seconds !in DiagnosticsLimits.DURATIONS_SECONDS -> RecordingRefusal.INVALID_DURATION
-        state.value is RecordingState.Recording -> RecordingRefusal.ALREADY_RECORDING
-        commands() == null -> RecordingRefusal.NOT_CONNECTED
-        serverSettings()?.recordingAllowed == false -> RecordingRefusal.SERVER_FORBIDS
-        else -> null
+    private fun refusalFor(seconds: Int): RecordingRefusal? {
+        val settings = serverSettings()
+        return when {
+            seconds !in DiagnosticsLimits.DURATIONS_SECONDS -> RecordingRefusal.INVALID_DURATION
+            state.value is RecordingState.Recording -> RecordingRefusal.ALREADY_RECORDING
+            commands() == null -> RecordingRefusal.NOT_CONNECTED
+            // Never "allowed" by default: murmur kicks a client whose flag the server forbids.
+            settings == null -> RecordingRefusal.NOT_READY
+            !settings.recordingAllowed -> RecordingRefusal.SERVER_FORBIDS
+            else -> null
+        }
     }
 
     /** Allocates and arms the rings; nothing is armed or sent when they do not fit. */
@@ -158,24 +168,41 @@ internal class RecordingController(
         commands()?.setSelfRecording(false)
     }
 
-    /** The timer ran out: keeps the recording. */
-    @Suppress("SwallowedException") // A capture too large to copy is lost like an aborted one.
+    /** The timer ran out: keeps the recording, or ends it as failed if nothing is armed any more. */
     private fun finish() {
         val run = running ?: return
         running = null
-        val armed = hub.disarm() ?: return
+        val armed = hub.disarm()
         val shown = selfRecording() == true
         endFlag()
+        if (armed == null) {
+            generation++
+            state.value = RecordingState.Idle(AbortReason.FAILED)
+            return
+        }
         val recording = generation
         scope.launch {
-            val capture = try {
-                withContext(exportDispatcher) { freeze(armed, run, shown) }
-            } catch (e: OutOfMemoryError) {
-                null
-            }
+            val capture = export(armed, run, shown)
             if (generation != recording) return@launch
-            state.value = capture?.let(RecordingState::Finished) ?: RecordingState.Idle()
+            state.value = capture?.let(RecordingState::Finished) ?: RecordingState.Idle(AbortReason.FAILED)
         }
+    }
+
+    /**
+     * The capture of [armed], or null if freezing or decoding it failed; the failure is logged and
+     * never crashes the app. Cancellation of [scope] still propagates.
+     */
+    @Suppress("TooGenericExceptionCaught") // Any failure of the export ends the recording, not the app.
+    private suspend fun export(armed: ArmedRecording, run: Running, shown: Boolean): DiagnosticCapture? = try {
+        withContext(exportDispatcher) { freeze(armed, run, shown) }
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        NomlaLog.e(TAG, "The recording could not be exported", e)
+        null
+    } catch (e: OutOfMemoryError) {
+        NomlaLog.e(TAG, "The recording does not fit into memory for its export", e)
+        null
     }
 
     private fun freeze(armed: ArmedRecording, run: Running, serverShowedRecording: Boolean): DiagnosticCapture {
@@ -219,6 +246,7 @@ internal class RecordingController(
     }
 
     private companion object {
+        const val TAG = "RecordingController"
         const val MS_PER_SECOND = 1_000L
     }
 }

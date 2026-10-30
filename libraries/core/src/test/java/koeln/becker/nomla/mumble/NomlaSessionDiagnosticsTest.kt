@@ -25,8 +25,10 @@ import koeln.becker.nomla.mumble.diagnostics.AbortReason
 import koeln.becker.nomla.mumble.diagnostics.ArmedRecording
 import koeln.becker.nomla.mumble.diagnostics.DiagnosticEvent
 import koeln.becker.nomla.mumble.diagnostics.RecordingStart
+import koeln.becker.nomla.mumble.diagnostics.RecordingRefusal
 import koeln.becker.nomla.mumble.diagnostics.RecordingState
 import koeln.becker.nomla.mumble.model.Server
+import koeln.becker.nomla.mumble.model.TalkState
 import koeln.becker.nomla.mumble.net.ConnectionWarning
 import koeln.becker.nomla.mumble.net.FakeTcpTransport
 import koeln.becker.nomla.mumble.net.NomlaTcpMessageType
@@ -53,10 +55,18 @@ class NomlaSessionDiagnosticsTest {
     @get:Rule
     internal val harnesses = Harnesses()
 
-    private fun NomlaSessionHarness.connectAsSelf(): FakeTcpTransport {
+    /** Connects and synchronizes as [SELF]; with [serverConfig], the ServerConfig that follows a sync. */
+    private fun NomlaSessionHarness.connectAsSelf(serverConfig: Boolean = true): FakeTcpTransport {
         session.connect()
         val tcp = openSocket(0)
         synchronize(tcp, SELF)
+        if (serverConfig) {
+            tcp.simulateMessage(
+                NomlaTcpMessageType.ServerConfig,
+                Mumble.ServerConfig.newBuilder().setAllowHtml(true).build().toByteArray(),
+            )
+            drainUntil("server config read") { session.model.value?.serverSettings != null }
+        }
         return tcp
     }
 
@@ -101,6 +111,17 @@ class NomlaSessionDiagnosticsTest {
         for (host in harness.audioFactory.hosts) {
             assertThat(host.diagnostics).isSameInstanceAs(harness.session.diagnosticsHub)
         }
+    }
+
+    @Test
+    fun `a recording waits for the server config`() {
+        val harness = harnesses.start()
+        val tcp = harness.connectAsSelf(serverConfig = false)
+
+        assertThat(harness.session.diagnostics.startRecording(SECONDS))
+            .isEqualTo(RecordingStart.Refused(RecordingRefusal.NOT_READY))
+        assertThat(tcp.sentMessages.filterIsInstance<Mumble.UserState>().none { it.hasRecording() }).isTrue()
+        assertThat(harness.session.diagnosticsHub.armed).isNull()
     }
 
     @Test
@@ -161,6 +182,9 @@ class NomlaSessionDiagnosticsTest {
             "settings_changed", "route_changed", "talk_start", "talk_end", "connection_warning", "audio_mode",
             "disconnected",
         )
+        // Every pipeline the recording ran on, described by the real code path (FakeAudioFactory).
+        assertThat(armed.pipelines).isNotEmpty()
+        assertThat(armed.pipelines.flatMap { it.settings.keys }).containsAtLeast("input_mode", "vad", "bitrate")
         val texts = events.flatMap { listOf(it.name, it.value) } +
             armed.pipelines.flatMap { it.settings.keys + it.settings.values }
         val secrets = listOf(
@@ -188,6 +212,31 @@ class NomlaSessionDiagnosticsTest {
         assertThat(armed.loggedEvents().map { it.name }.filter { it in lifecycle })
             .containsExactly("connected", "talk_start", "talk_end", "disconnected").inOrder()
         assertThat(armed.loggedEvents().filter { it.name in lifecycle }.map { it.value }.toSet()).containsExactly("")
+        hub.disarm()
+    }
+
+    @Test
+    fun `shouting or whispering while talking is no new talk start`() {
+        val harness = harnesses.start()
+        val hub = harness.session.diagnosticsHub
+        hub.arm(SECONDS)
+        val armed = checkNotNull(hub.armed)
+        harness.connectAsSelf()
+        val host = harness.audioFactory.hosts.last()
+
+        host.encodeListener.onTalkingStateChanged(true)
+        harness.mainLooper.idle()
+        host.outputListener.onTalkStateUpdated(SELF, TalkState.SHOUTING)
+        harness.mainLooper.idle()
+        host.outputListener.onTalkStateUpdated(SELF, TalkState.WHISPERING)
+        harness.mainLooper.idle()
+        host.encodeListener.onTalkingStateChanged(false)
+        harness.mainLooper.idle()
+        host.outputListener.onTalkStateUpdated(SELF, TalkState.WHISPERING)
+        harness.mainLooper.idle()
+
+        val talk = armed.loggedEvents().map { it.name }.filter { it.startsWith("talk_") }
+        assertThat(talk).containsExactly("talk_start", "talk_end", "talk_start").inOrder()
         hub.disarm()
     }
 

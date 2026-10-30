@@ -245,8 +245,14 @@ public sealed interface RecordingState {
     public class Finished(public val capture: DiagnosticCapture) : RecordingState
 }
 
-/** Why a recording was dropped before its end. */
-public enum class AbortReason { CANCELLED, DISCONNECTED }
+/** Why a recording was dropped before its capture was kept. */
+public enum class AbortReason {
+    CANCELLED,
+    DISCONNECTED,
+
+    /** Its capture could not be built (too large, or an export error, which is logged). */
+    FAILED,
+}
 
 /** What [SessionDiagnostics.startRecording] answers. */
 public sealed interface RecordingStart {
@@ -259,6 +265,12 @@ public sealed interface RecordingStart {
 public enum class RecordingRefusal {
     /** No synchronized connection. */
     NOT_CONNECTED,
+
+    /**
+     * Connected, but the server has not sent its `ServerConfig` yet, so whether it allows
+     * recording is unknown.
+     */
+    NOT_READY,
 
     /** The server does not allow clients to record. */
     SERVER_FORBIDS,
