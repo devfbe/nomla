@@ -281,6 +281,13 @@ class WebRtcApmPreprocessorTest {
     }
 
     @Test
+    fun `copying the statistics into a short array throws`() {
+        val stage = WebRtcApmPreprocessor(api, ONE)
+
+        assertThrows(IllegalArgumentException::class.java) { stage.copyStatistics(FloatArray(5)) }
+    }
+
+    @Test
     fun `polling leaves the frame and probability unchanged`() {
         fun run(every: Int): Pair<List<List<Short>>, List<Float?>> {
             var tick = 0

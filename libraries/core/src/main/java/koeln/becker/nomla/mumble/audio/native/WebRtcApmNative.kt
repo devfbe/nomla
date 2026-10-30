@@ -65,7 +65,14 @@ internal interface WebRtcApmApi {
     /**
      * Copies the APM's statistics into the first [STATISTICS_COUNT] floats of [out], in this order:
      * ERL dB, ERLE dB, divergent filter fraction, delay median ms, delay standard deviation ms,
-     * instantaneous delay ms. A value webrtc does not report (yet) is NaN. Allocates nothing.
+     * delay ms. Allocates nothing.
+     *
+     * All six are NaN before the first capture frame. ERL, ERLE and delay are point-in-time AEC3
+     * snapshots, not aggregates: ERL starts at -30 dB, delay is the render buffer delay in 4 ms
+     * blocks (16 ms at start). Divergent fraction, delay median and delay std are never written by
+     * the vendored webrtc and are always NaN; their slots stay for a stable layout. webrtc's
+     * one-slot stats queue makes each read return the snapshot of the first capture frame after
+     * the previous read (see `nomla_apm.h`).
      *
      * @return [STATISTICS_COUNT], -8 for an [out] shorter than that (left untouched), -5 for a
      *   released handle.

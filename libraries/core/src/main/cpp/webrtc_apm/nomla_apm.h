@@ -177,20 +177,32 @@ int nomla_apm_set_stream_delay_ms(nomla_apm *h, int delay_ms) NOMLA_APM_NOEXCEPT
  * silence and for a NULL handle. */
 float nomla_apm_last_capture_level_dbfs(const nomla_apm *h) NOMLA_APM_NOEXCEPT;
 
-/* webrtc::AudioProcessingStats, flattened to floats. A field webrtc leaves empty is NAN (AEC3 off,
- * not enough far-end signal yet). ERL, ERLE and the divergent fraction are aggregated over
- * webrtc's own 1 s window; the delay median and standard deviation too, after the first call. */
+/* webrtc::AudioProcessingStats, flattened to floats. A field webrtc leaves empty is NAN: all six
+ * before the first capture frame and with AEC3 off.
+ *
+ * ERL, ERLE and delay_ms are point-in-time snapshots of AEC3's state, not aggregates. ERL starts
+ * at -30 dB (AEC3's kMaxErl) and only moves after a 2 s startup phase with a converged filter.
+ * divergent_filter_fraction, delay_median_ms and delay_std_ms are never written by the vendored
+ * webrtc version (nothing in AudioProcessingImpl fills them), so they are always NAN. They keep
+ * their slots so the layout stays stable across a webrtc update.
+ *
+ * Staleness: webrtc passes stats through a one-slot queue. The first capture frame after a read
+ * fills it and later frames are dropped until the next read, so a read returns the snapshot of the
+ * first capture frame after the previous read (on a handle never read before, frame 1). Polled
+ * every N frames, the values are about N - 1 frames old. */
 typedef struct {
-    float erl_db;                    /* echo return loss, 10 log10(P_far / P_echo) */
+    float erl_db;                    /* echo return loss, 10 log10(P_far / P_echo); -30 at start */
     float erle_db;                   /* echo return loss enhancement, 10 log10(P_echo / P_out) */
-    float divergent_filter_fraction; /* 0..1 */
-    float delay_median_ms;
-    float delay_std_ms;
-    float delay_ms;                  /* AEC3's instantaneous delay estimate */
+    float divergent_filter_fraction; /* always NAN in this webrtc version */
+    float delay_median_ms;           /* always NAN in this webrtc version */
+    float delay_std_ms;              /* always NAN in this webrtc version */
+    float delay_ms;                  /* render buffer delay in 4 ms blocks; starts at 16 ms */
 } nomla_apm_stats;
 
-/* Fills *out with the APM's current statistics. Returns 0, -5 (kNullPointerError) for a NULL
- * handle or out, or -1 (kUnspecifiedError) if webrtc threw. Allocates nothing on our side. */
+/* Fills *out with the APM's statistics (see the staleness note above). Returns 0, -5
+ * (kNullPointerError) for a NULL handle or out, or -1 (kUnspecifiedError) if webrtc threw.
+ * Allocates nothing on our side; takes webrtc's stats mutex, which the capture thread also takes
+ * once per frame. */
 int nomla_apm_get_statistics(nomla_apm *h, nomla_apm_stats *out) NOMLA_APM_NOEXCEPT;
 
 /* Releases the instance. A NULL handle is accepted and ignored. */

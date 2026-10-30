@@ -302,7 +302,10 @@ static void test_apm_wiring(Env& env) {
           "it is processRender feeding the real far-end frame that buys the cancellation");
 }
 
-/* getStatistics writes six floats in nomla_apm_stats order; a shorter array is refused untouched. */
+/* getStatistics writes six floats in nomla_apm_stats order; a shorter array is refused untouched.
+ * The order is pinned with the deterministic values test_apm.c sees: before any frame everything is
+ * NaN; the read after a few frames returns frame 1's snapshot (webrtc's one-slot stats queue), with
+ * ERL at AEC3's -30 dB start, ERLE 0.1755 dB, three never-written NaN slots and a 16 ms delay. */
 static void test_apm_statistics_bridge(Env& env) {
     JNIEnv* e = env.get();
     jlong h = APM_CREATE(e, nullptr, kRate, JNI_TRUE, JNI_FALSE, 0, JNI_FALSE, JNI_TRUE, nullptr);
@@ -321,8 +324,31 @@ static void test_apm_statistics_bridge(Env& env) {
     }
     {
         Array<jfloat> out(6);
+        for (jsize i = 0; i < out.length(); i++) out[i] = 7.0f;
         CHECK(APM_STATISTICS(e, nullptr, h, out.as<jfloatArray>()) == 6,
               "apm getStatistics on a live handle writes 6 values");
+        bool all_nan = true;
+        for (jsize i = 0; i < out.length(); i++)
+            if (!std::isnan(out[i])) all_nan = false;
+        CHECK(all_nan, "apm getStatistics before any frame overwrites every slot with NaN");
+    }
+    {
+        Array<jshort> render(kFrame), capture(kFrame);
+        rng = 12345u;
+        for (int n = 0; n < 5; n++) {
+            for (int i = 0; i < kFrame; i++) render[i] = noise();
+            APM_RENDER(e, nullptr, h, render.as<jshortArray>());
+            APM_CAPTURE(e, nullptr, h, capture.as<jshortArray>());
+        }
+        Array<jfloat> out(6);
+        for (jsize i = 0; i < out.length(); i++) out[i] = 7.0f;
+        CHECK(APM_STATISTICS(e, nullptr, h, out.as<jfloatArray>()) == 6,
+              "apm getStatistics after a few frames writes 6 values");
+        CHECK(out[0] == -30.0f, "slot 0 is ERL, at AEC3's -30 dB start");
+        CHECK(std::fabs(out[1] - 0.1755f) < 0.01f, "slot 1 is ERLE, at AEC3's initial 0.18 dB");
+        CHECK(std::isnan(out[2]) && std::isnan(out[3]) && std::isnan(out[4]),
+              "slots 2-4 (divergent fraction, delay median, delay std) are NaN in this webrtc");
+        CHECK(out[5] == 16.0f, "slot 5 is the render buffer delay, 4 blocks (16 ms) at start");
     }
 
     APM_DESTROY(e, nullptr, h);

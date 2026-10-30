@@ -107,6 +107,10 @@ internal class WebRtcApmPreprocessor private constructor(
     /**
      * Poll the APM statistics every this many capture frames; 0 (the default) never polls. Set by
      * the diagnostics while they are active; read once per frame on the capture thread.
+     *
+     * Real-time: a poll is a JNI call that copies six floats into a preallocated array, with no
+     * allocation. It takes webrtc's stats mutex on the capture thread once per poll. That mutex is
+     * uncontended: the only other taker is this same thread, once per processed frame.
      */
     @Volatile
     var statisticsEveryFrames: Int = 0
@@ -117,8 +121,10 @@ internal class WebRtcApmPreprocessor private constructor(
     /**
      * The last polled statistics, in [WebRtcApmApi.getStatistics] order. Written by the native call
      * on the capture thread and read by [copyStatistics] on another thread without a lock: a reader
-     * may see a mix of two consecutive polls. That tearing is accepted; each value is a 1 s
-     * aggregate that changes slowly, and the readers only display or log it.
+     * may see a mix of two consecutive polls. That tearing is accepted: the values are AEC3
+     * snapshots that change slowly once converged, and the readers only display or log them. Each
+     * poll returns the snapshot of the first frame after the previous poll, so it is up to
+     * [statisticsEveryFrames] - 1 frames old (webrtc's one-slot stats queue, see `nomla_apm.h`).
      */
     private val statistics = FloatArray(WebRtcApmApi.STATISTICS_COUNT)
 

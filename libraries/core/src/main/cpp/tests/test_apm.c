@@ -173,41 +173,105 @@ static void test_statistics_null(void) {
 
 static int finite_or_nan(float x) { return isnan(x) || isfinite(x); }
 
-/* The run_aec(kOrdered) scenario: far end before near end, -6 dB echo path delayed by 30 ms, here
- * for 4 s. Afterwards AEC3 has something to report. */
+static void print_stats(const char *when, const nomla_apm_stats *s) {
+    printf("APM statistics %s: ERL %.2f dB, ERLE %.2f dB, divergent %.2f, delay median %.1f ms, "
+           "std %.1f ms, delay %.1f ms\n",
+           when, s->erl_db, s->erle_db, s->divergent_filter_fraction, s->delay_median_ms,
+           s->delay_std_ms, s->delay_ms);
+}
+
+/* The run_aec(kOrdered) scenario, resumable: far end before near end, -6 dB echo path delayed by
+ * 30 ms. */
+enum { kStatsEchoDelay = 3 };
+typedef struct {
+    uint32_t far;
+    int n;
+    int16_t echo[kStatsEchoDelay][kFrame];
+} echo_state;
+
+static void echo_init(echo_state *e) {
+    memset(e, 0, sizeof *e);
+    e->far = 12345u;
+}
+
+/* Feeds `frames` more 10 ms ticks. Returns the OR of every call's result. */
+static int feed_echo(nomla_apm *h, echo_state *e, int frames) {
+    int err = 0;
+    for (int k = 0; k < frames; k++, e->n++) {
+        int16_t *slot = e->echo[e->n % kStatsEchoDelay];
+        int16_t render[kFrame], capture[kFrame];
+        for (int i = 0; i < kFrame; i++) render[i] = noise_from(&e->far);
+        for (int i = 0; i < kFrame; i++) capture[i] = (int16_t)(slot[i] / 2);
+        memcpy(slot, render, sizeof render);
+        err |= nomla_apm_process_render(h, render);
+        err |= nomla_apm_process_capture(h, capture);
+    }
+    return err;
+}
+
+/* What AEC3 reports before it has learned anything. webrtc hands statistics over through a
+ * one-slot queue: the first capture frame after a read fills it and later frames are dropped
+ * until the next read, so a read returns the stats of the first frame after the previous read.
+ * Here that is frame 1. test_jni_bridges.cpp pins the same values through JNI to fix the field
+ * order. */
+static void test_statistics_fresh(void) {
+    nomla_apm_config cfg = {1, 0, 0, 0, 1};
+    nomla_apm *h = nomla_apm_create(kRate, &cfg);
+    CHECK(h != NULL, "create with AEC3 succeeds for the statistics test");
+    if (!h) return;
+    nomla_apm_stats s;
+    CHECK(nomla_apm_get_statistics(h, &s) == 0, "get_statistics succeeds before any frame");
+    print_stats("before any frame", &s);
+    CHECK(isnan(s.erl_db) && isnan(s.erle_db) && isnan(s.divergent_filter_fraction) &&
+              isnan(s.delay_median_ms) && isnan(s.delay_std_ms) && isnan(s.delay_ms),
+          "before any capture frame every statistic is NAN");
+
+    echo_state e;
+    echo_init(&e);
+    CHECK(feed_echo(h, &e, 5) == 0, "five echo ticks run without errors");
+    CHECK(nomla_apm_get_statistics(h, &s) == 0, "get_statistics succeeds after five frames");
+    printf("APM statistics of frame 1, exact: ERL %.6f dB, ERLE %.6f dB, delay %.6f ms\n",
+           s.erl_db, s.erle_db, s.delay_ms);
+    CHECK(s.erl_db == -30.0f, "ERL starts at AEC3's kMaxErl (1000, i.e. -30 dB)");
+    CHECK(fabsf(s.erle_db - 0.18f) < 0.01f, "ERLE starts at AEC3's initial 0.18 dB");
+    CHECK(isnan(s.divergent_filter_fraction) && isnan(s.delay_median_ms) && isnan(s.delay_std_ms),
+          "this webrtc never writes divergent fraction, delay median or delay std");
+    CHECK(s.delay_ms == 16.0f, "the render buffer starts with a delay of 4 blocks (16 ms)");
+    nomla_apm_destroy(h);
+}
+
+/* 10 s of echo: long enough for AEC3's 2 s ERL startup phase and a converged refined filter. */
 static void test_statistics_values(void) {
     nomla_apm_config cfg = {1, 0, 0, 0, 1};
     nomla_apm *h = nomla_apm_create(kRate, &cfg);
     CHECK(h != NULL, "create with AEC3 succeeds for the statistics test");
     if (!h) return;
-    uint32_t far = 12345u;
-    enum { kEchoDelay = 3 };
-    int16_t echo[kEchoDelay][kFrame];
-    memset(echo, 0, sizeof echo);
-    int err = 0;
-    for (int n = 0; n < 400; n++) {
-        int16_t render[kFrame], capture[kFrame];
-        for (int i = 0; i < kFrame; i++) render[i] = noise_from(&far);
-        for (int i = 0; i < kFrame; i++) capture[i] = (int16_t)(echo[n % kEchoDelay][i] / 2);
-        memcpy(echo[n % kEchoDelay], render, sizeof render);
-        err |= nomla_apm_process_render(h, render);
-        err |= nomla_apm_process_capture(h, capture);
-    }
-    CHECK(err == 0, "the statistics scenario runs without errors");
+    echo_state e;
+    echo_init(&e);
+    CHECK(feed_echo(h, &e, 1000) == 0, "the statistics scenario runs without errors");
 
     nomla_apm_stats s;
+    /* Never read before, so this is still frame 1's snapshot (see test_statistics_fresh). */
     CHECK(nomla_apm_get_statistics(h, &s) == 0, "get_statistics succeeds on a live handle");
-    printf("APM statistics after 4 s of echo: ERL %.1f dB, ERLE %.1f dB, divergent %.2f, "
-           "delay median %.1f ms, std %.1f ms, delay %.1f ms\n",
-           s.erl_db, s.erle_db, s.divergent_filter_fraction, s.delay_median_ms, s.delay_std_ms,
-           s.delay_ms);
+    CHECK(s.erl_db == -30.0f, "the first read returns the stats of the first frame after creation");
+
+    /* The read emptied the queue; the next frame refills it with current values. */
+    CHECK(feed_echo(h, &e, 1) == 0, "one more echo tick runs without errors");
+    CHECK(nomla_apm_get_statistics(h, &s) == 0, "get_statistics succeeds on a live handle");
+    print_stats("after 10 s of echo", &s);
     CHECK(finite_or_nan(s.erl_db), "erl_db is a number or NAN");
     CHECK(finite_or_nan(s.erle_db), "erle_db is a number or NAN");
     CHECK(finite_or_nan(s.divergent_filter_fraction), "divergent_filter_fraction is a number or NAN");
     CHECK(finite_or_nan(s.delay_median_ms), "delay_median_ms is a number or NAN");
     CHECK(finite_or_nan(s.delay_std_ms), "delay_std_ms is a number or NAN");
     CHECK(finite_or_nan(s.delay_ms), "delay_ms is a number or NAN");
-    CHECK(isfinite(s.erle_db) || isfinite(s.erl_db), "AEC3 reports ERL or ERLE after 3 s of echo");
+    CHECK(s.erl_db > -29.0f, "ERL has left its starting value of -30 dB");
+    /* AEC3's ERL is a minimum-tracking estimate, so it lands above the path's 6 dB (about 10 dB
+     * here); the bounds only say "a plausible attenuation", not a calibrated value. */
+    CHECK(s.erl_db >= 0.0f && s.erl_db <= 20.0f, "ERL of a -6 dB echo path is in [0, 20] dB");
+    CHECK(s.erle_db > 3.0f, "AEC3 reports an ERLE above 3 dB after 10 s of echo");
+    CHECK(s.delay_ms >= 0.0f && s.delay_ms <= 40.0f, "delay_ms is in [0, 40] ms");
+    CHECK(fmodf(s.delay_ms, 4.0f) == 0.0f, "delay_ms is a whole number of 4 ms blocks");
     nomla_apm_destroy(h);
 }
 
@@ -371,6 +435,7 @@ int main(void) {
 
     /* ---- 6. Statistics. ---- */
     test_statistics_null();
+    test_statistics_fresh();
     test_statistics_values();
 
     printf("%s\n", failures ? "FAILED" : "OK");
