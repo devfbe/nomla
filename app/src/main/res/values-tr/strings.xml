@@ -444,7 +444,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">Tanılama</string>
     <string name="debug_features">Hata ayıklama özelliklerini etkinleştir</string>
-    <string name="debug_features_sum">Kanal görünümüne ses zincirinin canlı görünümünü ve tanılama kayıtlarını ekler.</string>
+    <string name="debug_features_sum">Ses zincirinin canlı görünümü ve tanılama kayıtları.</string>
     <string name="debug_tab_live">Canlı</string>
     <string name="debug_tab_record">Kayıt</string>
     <string name="debug_empty">Ses zincirini görmek için bir sunucuya bağlanın.</string>

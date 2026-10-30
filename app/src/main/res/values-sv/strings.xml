@@ -444,7 +444,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">Diagnostik</string>
     <string name="debug_features">Aktivera felsökningsfunktioner</string>
-    <string name="debug_features_sum">Lägger till en livevy av ljudkedjan och diagnostikinspelningar i kanalvyn.</string>
+    <string name="debug_features_sum">Livevy av ljudkedjan och diagnostikinspelningar.</string>
     <string name="debug_tab_live">Live</string>
     <string name="debug_tab_record">Inspelning</string>
     <string name="debug_empty">Anslut till en server för att se ljudkedjan.</string>

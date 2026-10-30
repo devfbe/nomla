@@ -449,7 +449,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">Diagnostika</string>
     <string name="debug_features">Zapnout ladicí funkce</string>
-    <string name="debug_features_sum">Přidá do zobrazení kanálu živý pohled na zvukový řetězec a diagnostické nahrávky.</string>
+    <string name="debug_features_sum">Živý pohled na zvukový řetězec a diagnostické nahrávky.</string>
     <string name="debug_tab_live">Živě</string>
     <string name="debug_tab_record">Nahrávání</string>
     <string name="debug_empty">Připojte se k serveru, abyste viděli zvukový řetězec.</string>

@@ -428,7 +428,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">การวินิจฉัย</string>
     <string name="debug_features">เปิดใช้คุณสมบัติดีบัก</string>
-    <string name="debug_features_sum">เพิ่มมุมมองสดของสายสัญญาณเสียงและการบันทึกเพื่อวินิจฉัยลงในมุมมองช่อง</string>
+    <string name="debug_features_sum">มุมมองสดของสายสัญญาณเสียงและการบันทึกเพื่อวินิจฉัย</string>
     <string name="debug_tab_live">สด</string>
     <string name="debug_tab_record">การบันทึก</string>
     <string name="debug_empty">เชื่อมต่อกับเซิร์ฟเวอร์เพื่อดูสายสัญญาณเสียง</string>

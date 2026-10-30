@@ -444,7 +444,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">Διάγνωση</string>
     <string name="debug_features">Ενεργοποίηση λειτουργιών αποσφαλμάτωσης</string>
-    <string name="debug_features_sum">Προσθέτει στην προβολή καναλιού ζωντανή προβολή της αλυσίδας ήχου και διαγνωστικές ηχογραφήσεις.</string>
+    <string name="debug_features_sum">Ζωντανή προβολή αλυσίδας ήχου και διαγνωστικές ηχογραφήσεις.</string>
     <string name="debug_tab_live">Ζωντανά</string>
     <string name="debug_tab_record">Ηχογράφηση</string>
     <string name="debug_empty">Συνδεθείτε σε έναν διακομιστή για να δείτε την αλυσίδα ήχου.</string>

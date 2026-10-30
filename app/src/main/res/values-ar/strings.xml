@@ -454,7 +454,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">التشخيص</string>
     <string name="debug_features">تفعيل ميزات التصحيح</string>
-    <string name="debug_features_sum">يضيف إلى عرض القناة عرضًا مباشرًا لسلسلة الصوت وتسجيلات تشخيصية.</string>
+    <string name="debug_features_sum">عرض مباشر لسلسلة الصوت وتسجيلات تشخيصية.</string>
     <string name="debug_tab_live">مباشر</string>
     <string name="debug_tab_record">تسجيل</string>
     <string name="debug_empty">اتصل بخادم لرؤية سلسلة الصوت.</string>

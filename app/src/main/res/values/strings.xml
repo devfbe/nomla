@@ -477,7 +477,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">Diagnostics</string>
     <string name="debug_features">Enable debug features</string>
-    <string name="debug_features_sum">Adds a live view of the audio chain and diagnostic recordings to the channel view.</string>
+    <string name="debug_features_sum">Adds a live audio chain view and diagnostic recordings.</string>
     <string name="debug_tab_live">Live</string>
     <string name="debug_tab_record">Recording</string>
     <string name="debug_empty">Connect to a server to see the audio chain.</string>

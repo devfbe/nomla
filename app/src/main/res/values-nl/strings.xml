@@ -434,7 +434,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">Diagnose</string>
     <string name="debug_features">Debugfuncties inschakelen</string>
-    <string name="debug_features_sum">Voegt aan de kanaalweergave een live weergave van de audioketen en diagnose-opnamen toe.</string>
+    <string name="debug_features_sum">Live weergave van de audioketen en diagnose-opnamen.</string>
     <string name="debug_tab_live">Live</string>
     <string name="debug_tab_record">Opname</string>
     <string name="debug_empty">Maak verbinding met een server om de audioketen te zien.</string>

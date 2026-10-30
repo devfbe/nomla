@@ -431,7 +431,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">Diagnose</string>
     <string name="debug_features">Debug-Funktionen aktivieren</string>
-    <string name="debug_features_sum">Zeigt in der Kanalansicht die Audiokette live und ermöglicht Diagnose-Aufnahmen.</string>
+    <string name="debug_features_sum">Zeigt die Audiokette live und ermöglicht Diagnose-Aufnahmen.</string>
     <string name="debug_tab_live">Live</string>
     <string name="debug_tab_record">Aufnahme</string>
     <string name="debug_empty">Verbinden Sie sich mit einem Server, um die Audiokette zu sehen.</string>

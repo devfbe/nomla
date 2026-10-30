@@ -423,7 +423,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">Asesten</string>
     <string name="debug_features">Rmed timahilin n useɣti</string>
-    <string name="debug_features_sum">Ad yernu ɣer teskant n ubadu taskant srid n tezrirt n imesli d yisekla n usesten.</string>
+    <string name="debug_features_sum">Taskant srid n tezrirt n imesli d yisekla n usesten.</string>
     <string name="debug_tab_live">Srid</string>
     <string name="debug_tab_record">Asekles</string>
     <string name="debug_empty">Qqen ɣer uqeddac akken ad twaliḍ tazrirt n imesli.</string>

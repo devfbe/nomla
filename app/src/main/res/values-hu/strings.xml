@@ -444,7 +444,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">Diagnosztika</string>
     <string name="debug_features">Hibakeresési funkciók bekapcsolása</string>
-    <string name="debug_features_sum">A csatornanézethez hozzáadja a hanglánc élő nézetét és diagnosztikai felvételeket.</string>
+    <string name="debug_features_sum">A hanglánc élő nézete és diagnosztikai felvételek.</string>
     <string name="debug_tab_live">Élő</string>
     <string name="debug_tab_record">Felvétel</string>
     <string name="debug_empty">Csatlakozz egy szerverhez a hanglánc megtekintéséhez.</string>

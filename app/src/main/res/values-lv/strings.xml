@@ -426,7 +426,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">Diagnostika</string>
     <string name="debug_features">Ieslēgt atkļūdošanas funkcijas</string>
-    <string name="debug_features_sum">Pievieno kanāla skatam audio ķēdes tiešraides skatu un diagnostikas ierakstus.</string>
+    <string name="debug_features_sum">Audio ķēdes tiešraides skats un diagnostikas ieraksti.</string>
     <string name="debug_tab_live">Tiešraide</string>
     <string name="debug_tab_record">Ieraksts</string>
     <string name="debug_empty">Pievienojieties serverim, lai redzētu audio ķēdi.</string>

@@ -444,7 +444,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">Diagnostiikka</string>
     <string name="debug_features">Ota vianetsintätoiminnot käyttöön</string>
-    <string name="debug_features_sum">Lisää kanavanäkymään äänireitin live-näkymän ja diagnostiikkatallenteet.</string>
+    <string name="debug_features_sum">Äänireitin live-näkymä ja diagnostiikkatallenteet.</string>
     <string name="debug_tab_live">Live</string>
     <string name="debug_tab_record">Tallennus</string>
     <string name="debug_empty">Yhdistä palvelimeen nähdäksesi äänireitin.</string>

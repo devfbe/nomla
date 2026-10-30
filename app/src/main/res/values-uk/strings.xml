@@ -450,7 +450,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">Діагностика</string>
     <string name="debug_features">Увімкнути функції налагодження</string>
-    <string name="debug_features_sum">Додає до вікна каналу перегляд аудіотракту в реальному часі та діагностичні записи.</string>
+    <string name="debug_features_sum">Аудіотракт у реальному часі та діагностичні записи.</string>
     <string name="debug_tab_live">Наживо</string>
     <string name="debug_tab_record">Запис</string>
     <string name="debug_empty">Підключіться до сервера, щоб побачити аудіотракт.</string>

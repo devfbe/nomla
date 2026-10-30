@@ -420,7 +420,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">Diagnostik</string>
     <string name="debug_features">Aktifkan fitur debug</string>
-    <string name="debug_features_sum">Menambahkan tampilan langsung rantai audio dan rekaman diagnostik ke tampilan kanal.</string>
+    <string name="debug_features_sum">Tampilan langsung rantai audio dan rekaman diagnostik.</string>
     <string name="debug_tab_live">Langsung</string>
     <string name="debug_tab_record">Rekaman</string>
     <string name="debug_empty">Hubungkan ke server untuk melihat rantai audio.</string>

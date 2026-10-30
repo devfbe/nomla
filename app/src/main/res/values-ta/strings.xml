@@ -423,7 +423,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">கண்டறிதல்</string>
     <string name="debug_features">பிழைத்திருத்த அம்சங்களை இயக்கு</string>
-    <string name="debug_features_sum">சேனல் காட்சியில் ஆடியோ சங்கிலியின் நேரடிக் காட்சியையும் கண்டறிதல் பதிவுகளையும் சேர்க்கிறது.</string>
+    <string name="debug_features_sum">ஆடியோ சங்கிலியின் நேரடிக் காட்சியும் கண்டறிதல் பதிவுகளும்.</string>
     <string name="debug_tab_live">நேரலை</string>
     <string name="debug_tab_record">பதிவு</string>
     <string name="debug_empty">ஆடியோ சங்கிலியைப் பார்க்க ஒரு சேவையகத்துடன் இணைக்கவும்.</string>

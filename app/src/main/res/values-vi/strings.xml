@@ -420,7 +420,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">Chẩn đoán</string>
     <string name="debug_features">Bật tính năng gỡ lỗi</string>
-    <string name="debug_features_sum">Thêm vào màn hình kênh chế độ xem trực tiếp chuỗi âm thanh và bản ghi chẩn đoán.</string>
+    <string name="debug_features_sum">Xem trực tiếp chuỗi âm thanh và bản ghi chẩn đoán.</string>
     <string name="debug_tab_live">Trực tiếp</string>
     <string name="debug_tab_record">Ghi âm</string>
     <string name="debug_empty">Kết nối với máy chủ để xem chuỗi âm thanh.</string>

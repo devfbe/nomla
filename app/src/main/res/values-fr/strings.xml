@@ -455,7 +455,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">Diagnostic</string>
     <string name="debug_features">Activer les fonctions de débogage</string>
-    <string name="debug_features_sum">Ajoute à la vue du canal une vue en direct de la chaîne audio et des enregistrements de diagnostic.</string>
+    <string name="debug_features_sum">Chaîne audio en direct et enregistrements de diagnostic.</string>
     <string name="debug_tab_live">Direct</string>
     <string name="debug_tab_record">Enregistrement</string>
     <string name="debug_empty">Connectez-vous à un serveur pour voir la chaîne audio.</string>

@@ -444,7 +444,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">Diagnostikk</string>
     <string name="debug_features">Slå på feilsøkingsfunksjoner</string>
-    <string name="debug_features_sum">Legger til en direktevisning av lydkjeden og diagnoseopptak i kanalvisningen.</string>
+    <string name="debug_features_sum">Direktevisning av lydkjeden og diagnoseopptak.</string>
     <string name="debug_tab_live">Direkte</string>
     <string name="debug_tab_record">Opptak</string>
     <string name="debug_empty">Koble til en tjener for å se lydkjeden.</string>

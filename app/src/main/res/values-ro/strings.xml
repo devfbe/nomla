@@ -426,7 +426,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">Diagnosticare</string>
     <string name="debug_features">Activează funcțiile de depanare</string>
-    <string name="debug_features_sum">Adaugă în vizualizarea canalului o vizualizare live a lanțului audio și înregistrări de diagnosticare.</string>
+    <string name="debug_features_sum">Lanțul audio în direct și înregistrări de diagnosticare.</string>
     <string name="debug_tab_live">Live</string>
     <string name="debug_tab_record">Înregistrare</string>
     <string name="debug_empty">Conectează-te la un server pentru a vedea lanțul audio.</string>

@@ -440,7 +440,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">Diagnostyka</string>
     <string name="debug_features">Włącz funkcje debugowania</string>
-    <string name="debug_features_sum">Dodaje do widoku kanału podgląd na żywo toru audio i nagrania diagnostyczne.</string>
+    <string name="debug_features_sum">Podgląd toru audio na żywo i nagrania diagnostyczne.</string>
     <string name="debug_tab_live">Na żywo</string>
     <string name="debug_tab_record">Nagrywanie</string>
     <string name="debug_empty">Połącz się z serwerem, aby zobaczyć tor audio.</string>

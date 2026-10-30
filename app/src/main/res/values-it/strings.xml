@@ -455,7 +455,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">Diagnostica</string>
     <string name="debug_features">Attiva le funzioni di debug</string>
-    <string name="debug_features_sum">Aggiunge alla vista del canale una vista dal vivo della catena audio e registrazioni diagnostiche.</string>
+    <string name="debug_features_sum">Catena audio dal vivo e registrazioni diagnostiche.</string>
     <string name="debug_tab_live">Dal vivo</string>
     <string name="debug_tab_record">Registrazione</string>
     <string name="debug_empty">Connettiti a un server per vedere la catena audio.</string>

@@ -423,7 +423,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">Diagnose</string>
     <string name="debug_features">Aktivér fejlfindingsfunktioner</string>
-    <string name="debug_features_sum">Tilføjer en livevisning af lydkæden og diagnoseoptagelser til kanalvisningen.</string>
+    <string name="debug_features_sum">Livevisning af lydkæden og diagnoseoptagelser.</string>
     <string name="debug_tab_live">Live</string>
     <string name="debug_tab_record">Optagelse</string>
     <string name="debug_empty">Opret forbindelse til en server for at se lydkæden.</string>

@@ -433,7 +433,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">Diagnóstico</string>
     <string name="debug_features">Ativar recursos de depuração</string>
-    <string name="debug_features_sum">Adiciona à visualização do canal uma visão ao vivo da cadeia de áudio e gravações de diagnóstico.</string>
+    <string name="debug_features_sum">Cadeia de áudio ao vivo e gravações de diagnóstico.</string>
     <string name="debug_tab_live">Ao vivo</string>
     <string name="debug_tab_record">Gravação</string>
     <string name="debug_empty">Conecte-se a um servidor para ver a cadeia de áudio.</string>

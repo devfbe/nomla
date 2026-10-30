@@ -444,7 +444,7 @@
     <!-- Debug diagnostics -->
     <string name="debug_category">Диагностика</string>
     <string name="debug_features">Включить функции отладки</string>
-    <string name="debug_features_sum">Добавляет в окно канала просмотр аудиотракта в реальном времени и диагностические записи.</string>
+    <string name="debug_features_sum">Аудиотракт в реальном времени и диагностические записи.</string>
     <string name="debug_tab_live">В реальном времени</string>
     <string name="debug_tab_record">Запись</string>
     <string name="debug_empty">Подключитесь к серверу, чтобы увидеть аудиотракт.</string>
