@@ -467,7 +467,7 @@
     <string name="debug_record_share">Teilen</string>
     <string name="debug_record_discard">Verwerfen</string>
     <string name="debug_record_share_subject">Nomla-Diagnoseaufnahme</string>
-    <string name="debug_record_playback_hint">Über den Lautsprecher können die anderen die Wiedergabe über Ihr Mikrofon hören.</string>
+    <string name="debug_record_playback_hint">Während eine Spur abgespielt wird, pausiert das Senden, damit die anderen sie nicht über Ihr Mikrofon hören.</string>
     <string name="debug_rating_good">Gut</string>
     <string name="debug_rating_medium">Mittel</string>
     <string name="debug_rating_bad">Schlecht</string>

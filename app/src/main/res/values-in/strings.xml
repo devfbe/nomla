@@ -456,7 +456,7 @@
     <string name="debug_record_share">Bagikan</string>
     <string name="debug_record_discard">Buang</string>
     <string name="debug_record_share_subject">Rekaman diagnostik Nomla</string>
-    <string name="debug_record_playback_hint">Lewat pengeras suara, orang lain mungkin mendengar pemutaran melalui mikrofon Anda.</string>
+    <string name="debug_record_playback_hint">Pengiriman dijeda selama trek diputar, agar orang lain tidak mendengarnya melalui mikrofon Anda.</string>
     <string name="debug_rating_good">Baik</string>
     <string name="debug_rating_medium">Lumayan</string>
     <string name="debug_rating_bad">Buruk</string>

@@ -476,7 +476,7 @@
     <string name="debug_record_share">Udostępnij</string>
     <string name="debug_record_discard">Odrzuć</string>
     <string name="debug_record_share_subject">Nagranie diagnostyczne Nomla</string>
-    <string name="debug_record_playback_hint">Przez głośnik inni mogą usłyszeć odtwarzanie przez Twój mikrofon.</string>
+    <string name="debug_record_playback_hint">Podczas odtwarzania ścieżki nadawanie jest wstrzymane, więc inni nie usłyszą jej przez Twój mikrofon.</string>
     <string name="debug_rating_good">Dobrze</string>
     <string name="debug_rating_medium">Średnio</string>
     <string name="debug_rating_bad">Źle</string>

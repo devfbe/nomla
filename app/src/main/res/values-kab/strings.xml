@@ -459,7 +459,7 @@
     <string name="debug_record_share">Bḍu</string>
     <string name="debug_record_discard">Kkes</string>
     <string name="debug_record_share_subject">Asekles n usesten n Nomla</string>
-    <string name="debug_record_playback_hint">S umeslaw, wiyaḍ zemren ad slen i tɣuri s usawaḍ-ik.</string>
+    <string name="debug_record_playback_hint">Tuzna tettḥebbes mi ara yettwaɣer ubrid, akken wiyaḍ ur t-slen ara s usawaḍ-ik.</string>
     <string name="debug_rating_good">Igerrez</string>
     <string name="debug_rating_medium">Akka kan</string>
     <string name="debug_rating_bad">Diri</string>

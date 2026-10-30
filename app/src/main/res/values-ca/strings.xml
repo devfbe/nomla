@@ -482,7 +482,7 @@
     <string name="debug_record_share">Comparteix</string>
     <string name="debug_record_discard">Descarta</string>
     <string name="debug_record_share_subject">Enregistrament de diagnòstic de Nomla</string>
-    <string name="debug_record_playback_hint">Amb l\'altaveu, els altres poden sentir la reproducció a través del vostre micròfon.</string>
+    <string name="debug_record_playback_hint">La transmissió es posa en pausa mentre es reprodueix una pista, perquè els altres no la sentin a través del vostre micròfon.</string>
     <string name="debug_rating_good">Bé</string>
     <string name="debug_rating_medium">Regular</string>
     <string name="debug_rating_bad">Malament</string>

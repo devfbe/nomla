@@ -480,7 +480,7 @@
     <string name="debug_record_share">Jaa</string>
     <string name="debug_record_discard">Hylkää</string>
     <string name="debug_record_share_subject">Nomlan diagnostiikkatallenne</string>
-    <string name="debug_record_playback_hint">Kaiuttimen kautta muut saattavat kuulla toiston mikrofonisi kautta.</string>
+    <string name="debug_record_playback_hint">Lähetys keskeytyy raidan toiston ajaksi, jotta muut eivät kuule sitä mikrofonisi kautta.</string>
     <string name="debug_rating_good">Hyvä</string>
     <string name="debug_rating_medium">Kohtalainen</string>
     <string name="debug_rating_bad">Huono</string>

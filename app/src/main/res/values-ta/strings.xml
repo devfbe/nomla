@@ -459,7 +459,7 @@
     <string name="debug_record_share">பகிர்</string>
     <string name="debug_record_discard">நிராகரி</string>
     <string name="debug_record_share_subject">Nomla கண்டறிதல் பதிவு</string>
-    <string name="debug_record_playback_hint">ஒலிபெருக்கியில் இயக்கினால், உங்கள் ஒலிவாங்கி வழியாக மற்றவர்களுக்கு அது கேட்கலாம்.</string>
+    <string name="debug_record_playback_hint">ஒரு தடம் இயங்கும்போது அனுப்புதல் இடைநிறுத்தப்படும், அதனால் உங்கள் ஒலிவாங்கி வழியாக மற்றவர்களுக்கு அது கேட்காது.</string>
     <string name="debug_rating_good">நன்று</string>
     <string name="debug_rating_medium">பரவாயில்லை</string>
     <string name="debug_rating_bad">மோசம்</string>

@@ -480,7 +480,7 @@
     <string name="debug_record_share">Κοινοποίηση</string>
     <string name="debug_record_discard">Απόρριψη</string>
     <string name="debug_record_share_subject">Διαγνωστική ηχογράφηση Nomla</string>
-    <string name="debug_record_playback_hint">Από το μεγάφωνο, οι άλλοι μπορεί να ακούσουν την αναπαραγωγή μέσα από το μικρόφωνό σας.</string>
+    <string name="debug_record_playback_hint">Η μετάδοση σταματά προσωρινά όσο αναπαράγεται ένα κομμάτι, ώστε οι άλλοι να μην το ακούν μέσα από το μικρόφωνό σας.</string>
     <string name="debug_rating_good">Καλή</string>
     <string name="debug_rating_medium">Μέτρια</string>
     <string name="debug_rating_bad">Κακή</string>

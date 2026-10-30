@@ -480,7 +480,7 @@
     <string name="debug_record_share">Поделиться</string>
     <string name="debug_record_discard">Удалить</string>
     <string name="debug_record_share_subject">Диагностическая запись Nomla</string>
-    <string name="debug_record_playback_hint">При воспроизведении через громкоговоритель другие могут услышать его через ваш микрофон.</string>
+    <string name="debug_record_playback_hint">Во время воспроизведения дорожки передача приостанавливается, чтобы другие не услышали её через ваш микрофон.</string>
     <string name="debug_rating_good">Хорошо</string>
     <string name="debug_rating_medium">Так себе</string>
     <string name="debug_rating_bad">Плохо</string>

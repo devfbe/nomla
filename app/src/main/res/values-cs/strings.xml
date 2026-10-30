@@ -485,7 +485,7 @@
     <string name="debug_record_share">Sdílet</string>
     <string name="debug_record_discard">Zahodit</string>
     <string name="debug_record_share_subject">Diagnostická nahrávka Nomla</string>
-    <string name="debug_record_playback_hint">Při přehrávání z reproduktoru mohou ostatní slyšet přehrávání přes váš mikrofon.</string>
+    <string name="debug_record_playback_hint">Během přehrávání stopy se vysílání pozastaví, aby ji ostatní neslyšeli přes váš mikrofon.</string>
     <string name="debug_rating_good">Dobré</string>
     <string name="debug_rating_medium">Ujde to</string>
     <string name="debug_rating_bad">Špatné</string>

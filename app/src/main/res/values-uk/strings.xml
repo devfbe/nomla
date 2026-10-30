@@ -486,7 +486,7 @@
     <string name="debug_record_share">Поділитися</string>
     <string name="debug_record_discard">Видалити</string>
     <string name="debug_record_share_subject">Діагностичний запис Nomla</string>
-    <string name="debug_record_playback_hint">Під час відтворення через гучномовець інші можуть почути його через ваш мікрофон.</string>
+    <string name="debug_record_playback_hint">Під час відтворення доріжки передавання призупиняється, щоб інші не почули її через ваш мікрофон.</string>
     <string name="debug_rating_good">Добре</string>
     <string name="debug_rating_medium">Так собі</string>
     <string name="debug_rating_bad">Погано</string>

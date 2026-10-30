@@ -456,7 +456,7 @@
     <string name="debug_record_share">分享</string>
     <string name="debug_record_discard">捨棄</string>
     <string name="debug_record_share_subject">Nomla 診斷錄音</string>
-    <string name="debug_record_playback_hint">透過揚聲器播放時，其他人可能會經由你的麥克風聽到播放內容。</string>
+    <string name="debug_record_playback_hint">播放音軌時會暫停傳送，其他人不會經由你的麥克風聽到播放內容。</string>
     <string name="debug_rating_good">好</string>
     <string name="debug_rating_medium">普通</string>
     <string name="debug_rating_bad">差</string>

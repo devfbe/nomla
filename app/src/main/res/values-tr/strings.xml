@@ -480,7 +480,7 @@
     <string name="debug_record_share">Paylaş</string>
     <string name="debug_record_discard">At</string>
     <string name="debug_record_share_subject">Nomla tanılama kaydı</string>
-    <string name="debug_record_playback_hint">Hoparlörden çalarken diğerleri oynatmayı mikrofonunuz üzerinden duyabilir.</string>
+    <string name="debug_record_playback_hint">Bir parça çalarken gönderim duraklatılır, böylece diğerleri onu mikrofonunuz üzerinden duymaz.</string>
     <string name="debug_rating_good">İyi</string>
     <string name="debug_rating_medium">Orta</string>
     <string name="debug_rating_bad">Kötü</string>

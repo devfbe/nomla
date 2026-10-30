@@ -480,7 +480,7 @@
     <string name="debug_record_share">Megosztás</string>
     <string name="debug_record_discard">Elvetés</string>
     <string name="debug_record_share_subject">Nomla diagnosztikai felvétel</string>
-    <string name="debug_record_playback_hint">Hangszórón át a többiek a mikrofonodon keresztül hallhatják a lejátszást.</string>
+    <string name="debug_record_playback_hint">Egy sáv lejátszása közben a küldés szünetel, így a többiek nem hallják a mikrofonodon keresztül.</string>
     <string name="debug_rating_good">Jó</string>
     <string name="debug_rating_medium">Közepes</string>
     <string name="debug_rating_bad">Rossz</string>

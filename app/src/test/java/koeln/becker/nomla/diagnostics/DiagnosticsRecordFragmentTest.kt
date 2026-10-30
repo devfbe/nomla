@@ -444,6 +444,62 @@ class DiagnosticsRecordFragmentTest {
         assertThat(speaker.openedWith).isEqualTo(AudioManager.STREAM_MUSIC to RATE)
     }
 
+    /** While a track plays the session sends nothing; the hold ends with the track. */
+    @Test
+    fun `a playing track holds transmission until it ends`() {
+        diagnostics.recording.value = RecordingState.Finished(capture())
+        start()
+
+        row(1).findViewById<View>(R.id.track_play).performClick()
+        assertThat(diagnostics.transmitHolders).isEqualTo(1)
+        drainMainUntil { diagnostics.transmitHolders == 0 }
+
+        assertThat(diagnostics.holdCalls).isEqualTo(1)
+        assertThat(diagnostics.cancelCalls).isEqualTo(0)
+        assertThat(session.disconnectCalls).isEqualTo(0)
+    }
+
+    /**
+     * Switching tracks keeps exactly one hold, with no gap: the end of the first playback, however
+     * late it arrives, does not end the second one's hold. Stopping and leaving the page end it.
+     */
+    @Test
+    fun `switching tracks keeps one hold, and stopping or leaving ends it`() {
+        diagnostics.recording.value = RecordingState.Finished(capture())
+        start()
+
+        row(0).findViewById<View>(R.id.track_play).performClick()
+        row(1).findViewById<View>(R.id.track_play).performClick()
+        assertThat(diagnostics.holdCalls).isEqualTo(2)
+        assertThat(diagnostics.transmitHolders).isEqualTo(1)
+        drainMainUntil { diagnostics.transmitHolders == 0 }
+
+        row(1).findViewById<View>(R.id.track_play).performClick()
+        assertThat(diagnostics.transmitHolders).isEqualTo(1)
+        row(1).findViewById<View>(R.id.track_play).performClick()
+        assertThat(diagnostics.transmitHolders).isEqualTo(0)
+
+        row(1).findViewById<View>(R.id.track_play).performClick()
+        assertThat(diagnostics.transmitHolders).isEqualTo(1)
+        controller.pause().stop()
+        assertThat(diagnostics.transmitHolders).isEqualTo(0)
+    }
+
+    /** A new recording would pick the track up off the speaker: Record stops it and its hold first. */
+    @Test
+    fun `record stops a playing track and its hold`() {
+        settings.isRecordingNoticeHidden = true
+        diagnostics.recording.value = RecordingState.Finished(capture())
+        start()
+        row(1).findViewById<View>(R.id.track_play).performClick()
+        assertThat(diagnostics.transmitHolders).isEqualTo(1)
+
+        view<View>(R.id.record_start).performClick()
+
+        assertThat(diagnostics.transmitHolders).isEqualTo(0)
+        assertThat(diagnostics.startCalls).containsExactly(10)
+    }
+
     @Test
     fun `TalkBack gets one play target per track and a summary per lane`() {
         diagnostics.recording.value = RecordingState.Finished(capture())

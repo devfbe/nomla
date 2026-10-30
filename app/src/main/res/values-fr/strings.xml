@@ -491,7 +491,7 @@
     <string name="debug_record_share">Partager</string>
     <string name="debug_record_discard">Supprimer</string>
     <string name="debug_record_share_subject">Enregistrement de diagnostic Nomla</string>
-    <string name="debug_record_playback_hint">Sur le haut-parleur, les autres peuvent entendre la lecture à travers votre microphone.</string>
+    <string name="debug_record_playback_hint">La transmission est suspendue pendant la lecture d\'une piste, pour que les autres ne l\'entendent pas à travers votre microphone.</string>
     <string name="debug_rating_good">Bon</string>
     <string name="debug_rating_medium">Moyen</string>
     <string name="debug_rating_bad">Mauvais</string>

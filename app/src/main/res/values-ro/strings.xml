@@ -462,7 +462,7 @@
     <string name="debug_record_share">Distribuie</string>
     <string name="debug_record_discard">Renunță</string>
     <string name="debug_record_share_subject">Înregistrare de diagnosticare Nomla</string>
-    <string name="debug_record_playback_hint">Pe difuzor, ceilalți pot auzi redarea prin microfonul tău.</string>
+    <string name="debug_record_playback_hint">Transmisia se întrerupe cât timp se redă o pistă, ca ceilalți să n-o audă prin microfonul tău.</string>
     <string name="debug_rating_good">Bună</string>
     <string name="debug_rating_medium">Așa și așa</string>
     <string name="debug_rating_bad">Proastă</string>

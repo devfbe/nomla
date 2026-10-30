@@ -480,7 +480,7 @@
     <string name="debug_record_share">Del</string>
     <string name="debug_record_discard">Forkast</string>
     <string name="debug_record_share_subject">Nomla-diagnoseopptak</string>
-    <string name="debug_record_playback_hint">Via høyttaleren kan de andre høre avspillingen gjennom mikrofonen din.</string>
+    <string name="debug_record_playback_hint">Sendingen settes på pause mens et spor spilles av, så de andre ikke hører det gjennom mikrofonen din.</string>
     <string name="debug_rating_good">Bra</string>
     <string name="debug_rating_medium">Middels</string>
     <string name="debug_rating_bad">Dårlig</string>

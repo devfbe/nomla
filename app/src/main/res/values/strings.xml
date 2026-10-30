@@ -513,7 +513,7 @@
     <string name="debug_record_share">Share</string>
     <string name="debug_record_discard">Discard</string>
     <string name="debug_record_share_subject">Nomla diagnostic recording</string>
-    <string name="debug_record_playback_hint">On the loudspeaker, the others may hear the playback through your microphone.</string>
+    <string name="debug_record_playback_hint">Transmission pauses while a track plays, so the others cannot hear it through your microphone.</string>
     <string name="debug_rating_good">Good</string>
     <string name="debug_rating_medium">So-so</string>
     <string name="debug_rating_bad">Bad</string>

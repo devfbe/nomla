@@ -490,7 +490,7 @@
     <string name="debug_record_share">مشاركة</string>
     <string name="debug_record_discard">تجاهل</string>
     <string name="debug_record_share_subject">تسجيل تشخيصي من Nomla</string>
-    <string name="debug_record_playback_hint">عبر مكبر الصوت قد يسمع الآخرون التشغيل من خلال الميكروفون.</string>
+    <string name="debug_record_playback_hint">يتوقف الإرسال مؤقتًا أثناء تشغيل مقطع، حتى لا يسمعه الآخرون عبر الميكروفون.</string>
     <string name="debug_rating_good">جيد</string>
     <string name="debug_rating_medium">متوسط</string>
     <string name="debug_rating_bad">سيئ</string>

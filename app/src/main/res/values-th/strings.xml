@@ -464,7 +464,7 @@
     <string name="debug_record_share">แชร์</string>
     <string name="debug_record_discard">ทิ้ง</string>
     <string name="debug_record_share_subject">การบันทึกเพื่อวินิจฉัยของ Nomla</string>
-    <string name="debug_record_playback_hint">หากเล่นผ่านลำโพง ผู้อื่นอาจได้ยินเสียงที่เล่นผ่านไมโครโฟนของคุณ</string>
+    <string name="debug_record_playback_hint">ระหว่างเล่นแทร็ก การส่งเสียงจะหยุดชั่วคราว เพื่อไม่ให้ผู้อื่นได้ยินผ่านไมโครโฟนของคุณ</string>
     <string name="debug_rating_good">ดี</string>
     <string name="debug_rating_medium">พอใช้</string>
     <string name="debug_rating_bad">แย่</string>

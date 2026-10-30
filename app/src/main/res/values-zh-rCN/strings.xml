@@ -469,7 +469,7 @@
     <string name="debug_record_share">分享</string>
     <string name="debug_record_discard">丢弃</string>
     <string name="debug_record_share_subject">Nomla 诊断录音</string>
-    <string name="debug_record_playback_hint">通过扬声器播放时，其他人可能会经由您的麦克风听到播放内容。</string>
+    <string name="debug_record_playback_hint">播放音轨时会暂停发送，其他人不会经由您的麦克风听到播放内容。</string>
     <string name="debug_rating_good">好</string>
     <string name="debug_rating_medium">一般</string>
     <string name="debug_rating_bad">差</string>

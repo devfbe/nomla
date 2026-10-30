@@ -470,7 +470,7 @@
     <string name="debug_record_share">Delen</string>
     <string name="debug_record_discard">Verwerpen</string>
     <string name="debug_record_share_subject">Nomla-diagnose-opname</string>
-    <string name="debug_record_playback_hint">Via de luidspreker kunnen de anderen de weergave via je microfoon horen.</string>
+    <string name="debug_record_playback_hint">Zolang een spoor speelt, wordt het verzenden gepauzeerd, zodat de anderen het niet via je microfoon horen.</string>
     <string name="debug_rating_good">Goed</string>
     <string name="debug_rating_medium">Matig</string>
     <string name="debug_rating_bad">Slecht</string>

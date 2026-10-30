@@ -456,7 +456,7 @@
     <string name="debug_record_share">Chia sẻ</string>
     <string name="debug_record_discard">Bỏ</string>
     <string name="debug_record_share_subject">Bản ghi chẩn đoán Nomla</string>
-    <string name="debug_record_playback_hint">Khi phát qua loa ngoài, người khác có thể nghe thấy qua micrô của bạn.</string>
+    <string name="debug_record_playback_hint">Việc truyền tạm dừng trong khi phát một bản ghi, để người khác không nghe thấy qua micrô của bạn.</string>
     <string name="debug_rating_good">Tốt</string>
     <string name="debug_rating_medium">Tạm được</string>
     <string name="debug_rating_bad">Kém</string>

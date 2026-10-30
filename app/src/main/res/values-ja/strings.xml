@@ -464,7 +464,7 @@
     <string name="debug_record_share">共有</string>
     <string name="debug_record_discard">破棄</string>
     <string name="debug_record_share_subject">Nomla 診断録音</string>
-    <string name="debug_record_playback_hint">スピーカーで再生すると、マイクを通して他の人に再生音が聞こえることがあります。</string>
+    <string name="debug_record_playback_hint">トラックの再生中は送信が一時停止するため、マイクを通して他の人に聞こえることはありません。</string>
     <string name="debug_rating_good">良い</string>
     <string name="debug_rating_medium">まあまあ</string>
     <string name="debug_rating_bad">悪い</string>

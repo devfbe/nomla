@@ -480,7 +480,7 @@
     <string name="debug_record_share">Dela</string>
     <string name="debug_record_discard">Kasta</string>
     <string name="debug_record_share_subject">Nomla-diagnostikinspelning</string>
-    <string name="debug_record_playback_hint">Via högtalaren kan de andra höra uppspelningen genom din mikrofon.</string>
+    <string name="debug_record_playback_hint">Sändningen pausas medan ett spår spelas upp, så att de andra inte hör det genom din mikrofon.</string>
     <string name="debug_rating_good">Bra</string>
     <string name="debug_rating_medium">Sådär</string>
     <string name="debug_rating_bad">Dålig</string>

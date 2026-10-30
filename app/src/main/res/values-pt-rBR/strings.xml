@@ -469,7 +469,7 @@
     <string name="debug_record_share">Compartilhar</string>
     <string name="debug_record_discard">Descartar</string>
     <string name="debug_record_share_subject">Gravação de diagnóstico do Nomla</string>
-    <string name="debug_record_playback_hint">No alto-falante, os outros podem ouvir a reprodução pelo seu microfone.</string>
+    <string name="debug_record_playback_hint">A transmissão é pausada enquanto uma faixa toca, para que os outros não a ouçam pelo seu microfone.</string>
     <string name="debug_rating_good">Bom</string>
     <string name="debug_rating_medium">Mais ou menos</string>
     <string name="debug_rating_bad">Ruim</string>

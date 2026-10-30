@@ -269,6 +269,8 @@ class DiagnosticsRecordFragment : Fragment() {
      */
     private fun startRecording() {
         if (!settings.isDebugFeaturesEnabled) return
+        // A track still playing would be recorded off the speaker; its hold ends with it.
+        playback?.stop()
         val seconds = DURATIONS.entries.firstOrNull { it.value == views?.duration?.checkedButtonId }?.key
             ?: DEFAULT_SECONDS
         val answer = sessions.connected?.diagnostics?.startRecording(seconds)
@@ -308,6 +310,10 @@ class DiagnosticsRecordFragment : Fragment() {
      * One track playing at a time through a [TrackPlayer] on the playback stream (B11). The player's
      * callbacks come from its thread; they are handed to the main thread, positions at most one in
      * flight, and dropped once the playback they belong to was stopped.
+     *
+     * While a track plays the session's transmission is held, so the speaker cannot carry it into the
+     * channel. Each playback holds its own handle, taken before it starts and closed when it ends,
+     * stops, fails or the page goes; a stale callback of an earlier playback never ends a newer hold.
      */
     private inner class Playback(private val adapter: TrackListAdapter) {
         private val main = Handler(Looper.getMainLooper())
@@ -315,6 +321,9 @@ class DiagnosticsRecordFragment : Fragment() {
         private var playerStream = 0
         private var playingId: String? = null
         private var durationMs = 1L
+
+        /** The current playback's hold on transmission, null while none plays. */
+        private var hold: AutoCloseable? = null
 
         /** Counts playbacks; a callback of an earlier one is stale. */
         private var generation = 0
@@ -335,6 +344,10 @@ class DiagnosticsRecordFragment : Fragment() {
             adapter.setPlaying(track.id)
             val from = fromFraction ?: 0f
             adapter.setPlayhead(from)
+            // The new hold first, so switching tracks leaves no gap in which the speaker is sent.
+            val previous = hold
+            hold = sessions.session.value?.diagnostics?.holdTransmission()
+            previous?.close()
             player.play(
                 track,
                 fromMs = (from * durationMs).toLong(),
@@ -364,6 +377,8 @@ class DiagnosticsRecordFragment : Fragment() {
         fun stop() {
             generation++
             player?.stop()
+            hold?.close()
+            hold = null
             playingId = null
             adapter.setPlaying(null)
             adapter.setPlayhead(null)

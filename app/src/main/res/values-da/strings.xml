@@ -459,7 +459,7 @@
     <string name="debug_record_share">Del</string>
     <string name="debug_record_discard">Kassér</string>
     <string name="debug_record_share_subject">Nomla-diagnoseoptagelse</string>
-    <string name="debug_record_playback_hint">Via højttaleren kan de andre høre afspilningen gennem din mikrofon.</string>
+    <string name="debug_record_playback_hint">Mens et spor afspilles, sættes sendingen på pause, så de andre ikke hører det gennem din mikrofon.</string>
     <string name="debug_rating_good">God</string>
     <string name="debug_rating_medium">Middel</string>
     <string name="debug_rating_bad">Dårlig</string>

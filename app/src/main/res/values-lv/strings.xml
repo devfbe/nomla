@@ -462,7 +462,7 @@
     <string name="debug_record_share">Kopīgot</string>
     <string name="debug_record_discard">Atmest</string>
     <string name="debug_record_share_subject">Nomla diagnostikas ieraksts</string>
-    <string name="debug_record_playback_hint">Caur skaļruni citi var dzirdēt atskaņojumu caur jūsu mikrofonu.</string>
+    <string name="debug_record_playback_hint">Kamēr tiek atskaņots celiņš, sūtīšana tiek apturēta, lai citi to nedzirdētu caur jūsu mikrofonu.</string>
     <string name="debug_rating_good">Labi</string>
     <string name="debug_rating_medium">Viduvēji</string>
     <string name="debug_rating_bad">Slikti</string>
