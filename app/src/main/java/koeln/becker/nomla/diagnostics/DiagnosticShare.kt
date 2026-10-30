@@ -47,6 +47,9 @@ object DiagnosticShare {
 
     private val lock = Any()
 
+    /** The ZIP this process exported last, if it still exists; guarded by [lock]. */
+    private var exported: File? = null
+
     private val NAME_TIME: DateTimeFormatter =
         DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss", Locale.ROOT).withZone(ZoneOffset.UTC)
 
@@ -67,21 +70,28 @@ object DiagnosticShare {
             // A half-written ZIP is never left to share.
             if (!written) file.delete()
         }
+        exported = file
         FileProvider.getUriForFile(context, context.packageName + ImageShareExporter.AUTHORITY_SUFFIX, file)
     }
 
     /** Deletes every shared ZIP and leftover, revoking the last export. Blocking I/O. */
     fun clear(context: Context) {
-        synchronized(lock) { deleteFiles(context) { true } }
+        synchronized(lock) {
+            exported = null
+            deleteFiles(context) { true }
+        }
     }
 
     /**
-     * The clear at process start: deletes what earlier processes left, that is everything last
-     * modified before [processStartMs] (`System.currentTimeMillis` when the process started), and
-     * spares any export of this process, however late it runs. Blocking I/O.
+     * The clear at process start: deletes what earlier processes left, that is every file but the
+     * one this process exported, however late it runs. It reads no clock, so a clock set back or
+     * forth cannot spare a leftover or take an export. Blocking I/O.
      */
-    fun clearAtStart(context: Context, processStartMs: Long) {
-        synchronized(lock) { deleteFiles(context) { it.lastModified() < processStartMs } }
+    fun clearAtStart(context: Context) {
+        synchronized(lock) {
+            val keep = exported
+            deleteFiles(context) { it != keep }
+        }
     }
 
     private fun deleteFiles(context: Context, which: (File) -> Boolean) {

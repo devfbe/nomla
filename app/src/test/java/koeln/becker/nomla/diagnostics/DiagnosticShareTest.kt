@@ -122,22 +122,32 @@ class DiagnosticShareTest {
 
     /**
      * The clear at process start removes what earlier processes left, never a ZIP an export of
-     * this process already returned, however late the clear runs.
+     * this process already returned, however late the clear runs. It reads no clock: a leftover
+     * that looks newer than the export (a clock set back) goes as well.
      */
     @Test
     fun `the clear at process start spares an export already made`() {
-        val processStartMs = System.currentTimeMillis()
-        dir.mkdirs()
-        val stale = File(dir, "from-an-earlier-process.zip").apply { writeText("x") }
-        assertThat(stale.setLastModified(processStartMs - EARLIER_MS)).isTrue()
         val uri = DiagnosticShare.export(context, capture(SECOND_START_MS), review)
-        // export() already cleared the stale file; put one back to see the start clear take it.
-        stale.writeText("x")
-        assertThat(stale.setLastModified(processStartMs - EARLIER_MS)).isTrue()
+        val stale = File(dir, "from-an-earlier-process.zip").apply { writeText("x") }
+        assertThat(stale.setLastModified(System.currentTimeMillis() + LATER_MS)).isTrue()
 
-        DiagnosticShare.clearAtStart(context, processStartMs)
+        DiagnosticShare.clearAtStart(context)
 
         assertThat(dir.list()!!.toList()).containsExactly(uri.lastPathSegment)
+    }
+
+    /** Without an export of this process, the clear at process start empties the directory. */
+    @Test
+    fun `the clear at process start removes every leftover`() {
+        DiagnosticShare.clear(context)
+        dir.mkdirs()
+        val future = File(dir, "nomla-diagnose-20991231-235959.zip").apply { writeText("x") }
+        assertThat(future.setLastModified(System.currentTimeMillis() + LATER_MS)).isTrue()
+        File(dir, "old.zip").writeText("y")
+
+        DiagnosticShare.clearAtStart(context)
+
+        assertThat(dir.list().orEmpty().toList()).isEmpty()
     }
 
     private fun capture(startedAtMs: Long) = DiagnosticCapture(
@@ -159,7 +169,7 @@ class DiagnosticShareTest {
         const val SAMPLES = 480
         const val ROUNDS = 20
         const val TIMEOUT_SECONDS = 30L
-        const val EARLIER_MS = 60_000L
+        const val LATER_MS = 3_600_000L
 
         // 2026-10-30T12:34:00Z and 12:34:56Z
         const val FIRST_START_MS = 1_793_363_640_000L
