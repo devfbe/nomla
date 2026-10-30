@@ -237,7 +237,9 @@ target_link_libraries(test_jni_speexdsp PRIVATE speexdsp_hosttest m)
 nomla_add_labelled_test(jni_speexdsp test_jni_speexdsp plain)
 
 if(NOMLA_HAVE_SANITIZERS)
-  nomla_add_speexdsp(speexdsp_hosttest_asan ${NOMLA_SAN_FLAGS})
+  # speexdsp's fixed-point code left-shifts negative values on purpose (math_approx.h and others);
+  # every supported compiler shifts them arithmetically. Only that check is off, only for speexdsp.
+  nomla_add_speexdsp(speexdsp_hosttest_asan ${NOMLA_SAN_FLAGS} -fno-sanitize=shift-base)
   target_link_options(speexdsp_hosttest_asan PUBLIC -fsanitize=address,undefined)
 
   add_executable(test_jni_speexdsp_asan ${NOMLA_JNI_SPEEXDSP_SOURCES})
