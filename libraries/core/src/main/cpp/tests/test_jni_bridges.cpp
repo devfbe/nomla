@@ -65,6 +65,7 @@ static int failures = 0;
 #define APM_CAPTURE APM("processCapture", jint (*)(JNIEnv*, jobject, jlong, jshortArray) noexcept)
 #define APM_RENDER APM("processRender", jint (*)(JNIEnv*, jobject, jlong, jshortArray) noexcept)
 #define APM_LEVEL APM("lastCaptureLevelDbfs", jfloat (*)(JNIEnv*, jobject, jlong) noexcept)
+#define APM_STATISTICS APM("getStatistics", jint (*)(JNIEnv*, jobject, jlong, jfloatArray) noexcept)
 #define APM_DESTROY APM("destroy", void (*)(JNIEnv*, jobject, jlong) noexcept)
 
 /* webrtc::AudioProcessing::Error values, spelled out to keep the webrtc C++ headers out. */
@@ -301,6 +302,37 @@ static void test_apm_wiring(Env& env) {
           "it is processRender feeding the real far-end frame that buys the cancellation");
 }
 
+/* getStatistics writes six floats in nomla_apm_stats order; a shorter array is refused untouched. */
+static void test_apm_statistics_bridge(Env& env) {
+    JNIEnv* e = env.get();
+    jlong h = APM_CREATE(e, nullptr, kRate, JNI_TRUE, JNI_FALSE, 0, JNI_FALSE, JNI_TRUE, nullptr);
+    CHECK(h != 0, "apm create succeeds for the statistics bridge test");
+    if (h == 0) return;
+
+    {
+        Array<jfloat> shorter(5);
+        for (jsize i = 0; i < shorter.length(); i++) shorter[i] = 7.0f;
+        CHECK(APM_STATISTICS(e, nullptr, h, shorter.as<jfloatArray>()) == kBadDataLengthError,
+              "apm getStatistics refuses an array shorter than 6");
+        bool untouched = true;
+        for (jsize i = 0; i < shorter.length(); i++)
+            if (shorter[i] != 7.0f) untouched = false;
+        CHECK(untouched, "apm getStatistics leaves a refused array untouched");
+    }
+    {
+        Array<jfloat> out(6);
+        CHECK(APM_STATISTICS(e, nullptr, h, out.as<jfloatArray>()) == 6,
+              "apm getStatistics on a live handle writes 6 values");
+    }
+
+    APM_DESTROY(e, nullptr, h);
+    {
+        Array<jfloat> out(6);
+        CHECK(APM_STATISTICS(e, nullptr, h, out.as<jfloatArray>()) == kNullPointerError,
+              "apm getStatistics on a released handle reports kNullPointerError");
+    }
+}
+
 int main() {
     Env env;
     CHECK(nomla::registerRnnoiseNatives(env.get()), "the rnnoise bridge registers");
@@ -308,6 +340,7 @@ int main() {
     test_rnnoise(env);
     test_apm_arguments(env);
     test_apm_wiring(env);
+    test_apm_statistics_bridge(env);
     std::printf("%s\n", failures ? "FAILED" : "OK");
     return failures ? 1 : 0;
 }

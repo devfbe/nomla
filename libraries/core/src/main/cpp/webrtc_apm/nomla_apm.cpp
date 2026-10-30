@@ -296,6 +296,31 @@ extern "C" float nomla_apm_last_capture_level_dbfs(const nomla_apm* h) noexcept 
     return h ? h->last_level_dbfs : -100.f;
 }
 
+namespace {
+
+template <typename T>
+float or_nan(const std::optional<T>& v) {
+    return v ? static_cast<float>(*v) : NAN;
+}
+
+}  // namespace
+
+extern "C" int nomla_apm_get_statistics(nomla_apm* h, nomla_apm_stats* out) noexcept {
+    if (!h || !out) return webrtc::AudioProcessing::kNullPointerError;
+    try {
+        const webrtc::AudioProcessingStats s = h->apm->GetStatistics();
+        out->erl_db = or_nan(s.echo_return_loss);
+        out->erle_db = or_nan(s.echo_return_loss_enhancement);
+        out->divergent_filter_fraction = or_nan(s.divergent_filter_fraction);
+        out->delay_median_ms = or_nan(s.delay_median_ms);
+        out->delay_std_ms = or_nan(s.delay_standard_deviation_ms);
+        out->delay_ms = or_nan(s.delay_ms);
+        return webrtc::AudioProcessing::kNoError;
+    } catch (...) {
+        return webrtc::AudioProcessing::kUnspecifiedError;
+    }
+}
+
 extern "C" void nomla_apm_destroy(nomla_apm* h) noexcept {
     delete h;  // releases the scoped_refptr; deleting a null pointer is a no-op
 }

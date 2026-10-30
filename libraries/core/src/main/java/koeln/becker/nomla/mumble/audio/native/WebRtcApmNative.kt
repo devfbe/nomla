@@ -63,10 +63,25 @@ internal interface WebRtcApmApi {
     fun lastCaptureLevelDbfs(handle: Long): Float
 
     /**
+     * Copies the APM's statistics into the first [STATISTICS_COUNT] floats of [out], in this order:
+     * ERL dB, ERLE dB, divergent filter fraction, delay median ms, delay standard deviation ms,
+     * instantaneous delay ms. A value webrtc does not report (yet) is NaN. Allocates nothing.
+     *
+     * @return [STATISTICS_COUNT], -8 for an [out] shorter than that (left untouched), -5 for a
+     *   released handle.
+     */
+    fun getStatistics(handle: Long, out: FloatArray): Int
+
+    /**
      * Releases [handle]; a second call is a no-op and later process calls return -5. Must not
      * race a process call on another thread: stop both streams first.
      */
     fun destroy(handle: Long)
+
+    companion object {
+        /** Floats [getStatistics] writes; the fields of `nomla_apm_stats`. */
+        const val STATISTICS_COUNT = 6
+    }
 }
 
 /**
@@ -96,6 +111,8 @@ internal object WebRtcApmNative : WebRtcApmApi {
     external override fun processRender(handle: Long, frame: ShortArray): Int
 
     external override fun lastCaptureLevelDbfs(handle: Long): Float
+
+    external override fun getStatistics(handle: Long, out: FloatArray): Int
 
     external override fun destroy(handle: Long)
 }

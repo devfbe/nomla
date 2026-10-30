@@ -48,6 +48,9 @@ class WebRtcApmPreprocessorTest {
             gainControl = false,
             highPass = false,
         )
+
+        /** ERL, ERLE, divergent fraction, delay median, delay std, delay; NaN as webrtc's "not reported". */
+        val STATISTICS = floatArrayOf(12.5f, 21f, 0.1f, 40f, 4f, Float.NaN)
     }
 
     private val api = FakeWebRtcApmApi()
@@ -248,5 +251,62 @@ class WebRtcApmPreprocessorTest {
             .that(api.renderFrames.map { it[0].toInt() })
             .containsExactlyElementsIn(List(TICKS) { it })
             .inOrder()
+    }
+
+    @Test
+    fun `statistics are not polled while off`() {
+        api.statistics = STATISTICS
+        val stage = WebRtcApmPreprocessor(api, ONE)
+
+        repeat(300) { stage.process(ShortArray(FRAME)) }
+
+        assertThat(api.statisticsCalls).isEqualTo(0)
+        assertWithMessage("nothing was polled, so there is nothing to copy")
+            .that(stage.copyStatistics(FloatArray(6))).isFalse()
+    }
+
+    @Test
+    fun `statistics are polled every N frames and copied`() {
+        api.statistics = STATISTICS
+        val stage = WebRtcApmPreprocessor(api, ONE)
+        val out = FloatArray(6)
+        assertWithMessage("before the first poll").that(stage.copyStatistics(out)).isFalse()
+
+        stage.statisticsEveryFrames = 100
+        repeat(250) { stage.process(ShortArray(FRAME)) }
+
+        assertThat(api.statisticsCalls).isEqualTo(2)
+        assertThat(stage.copyStatistics(out)).isTrue()
+        assertThat(out.toList()).containsExactlyElementsIn(STATISTICS.toList()).inOrder()
+    }
+
+    @Test
+    fun `polling leaves the frame and probability unchanged`() {
+        fun run(every: Int): Pair<List<List<Short>>, List<Float?>> {
+            var tick = 0
+            val api = FakeWebRtcApmApi(
+                onCapture = { frame -> frame.indices.forEach { frame[it] = (frame[it] / 2 + tick).toShort() } },
+            )
+            api.statistics = STATISTICS
+            val stage = WebRtcApmPreprocessor(api, ONE)
+            stage.statisticsEveryFrames = every
+            val frames = mutableListOf<List<Short>>()
+            val probabilities = mutableListOf<Float?>()
+            repeat(TICKS * 5) { n ->
+                tick = n
+                api.levelDbfs = -50f + n
+                val frame = ShortArray(FRAME) { (it * 7 + n).toShort() }
+                probabilities += stage.process(frame)
+                frames += frame.toList()
+            }
+            if (every > 0) assertThat(api.statisticsCalls).isEqualTo(TICKS * 5)
+            return frames to probabilities
+        }
+
+        val polled = run(every = 1)
+        val off = run(every = 0)
+
+        assertWithMessage("frames").that(polled.first).isEqualTo(off.first)
+        assertWithMessage("probabilities").that(polled.second).isEqualTo(off.second)
     }
 }

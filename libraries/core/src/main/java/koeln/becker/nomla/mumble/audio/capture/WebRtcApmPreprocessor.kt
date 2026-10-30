@@ -104,12 +104,62 @@ internal class WebRtcApmPreprocessor private constructor(
     var rejectedFarEndFrames: Int = 0
         private set
 
+    /**
+     * Poll the APM statistics every this many capture frames; 0 (the default) never polls. Set by
+     * the diagnostics while they are active; read once per frame on the capture thread.
+     */
+    @Volatile
+    var statisticsEveryFrames: Int = 0
+
+    /** Capture frames since the last poll; capture thread only, under the stage lock. */
+    private var framesSinceStatistics = 0
+
+    /**
+     * The last polled statistics, in [WebRtcApmApi.getStatistics] order. Written by the native call
+     * on the capture thread and read by [copyStatistics] on another thread without a lock: a reader
+     * may see a mix of two consecutive polls. That tearing is accepted; each value is a 1 s
+     * aggregate that changes slowly, and the readers only display or log it.
+     */
+    private val statistics = FloatArray(WebRtcApmApi.STATISTICS_COUNT)
+
+    /** Successful polls so far; publishes [statistics] (written after the array). */
+    @Volatile
+    private var statisticsPolls = 0
+
     override fun onCaptureFrame(handle: Long, frame: ShortArray): Float? {
-        if (api.processCapture(handle, frame) != 0) {
+        val probability = if (api.processCapture(handle, frame) != 0) {
             rejectedFrames++
-            return null
+            null
+        } else {
+            LevelToProbability.fromDbfs(api.lastCaptureLevelDbfs(handle))
         }
-        return LevelToProbability.fromDbfs(api.lastCaptureLevelDbfs(handle))
+        pollStatisticsIfDue(handle)
+        return probability
+    }
+
+    /** One volatile read per frame while off; no allocation either way. */
+    private fun pollStatisticsIfDue(handle: Long) {
+        val every = statisticsEveryFrames
+        if (every <= 0) {
+            framesSinceStatistics = 0
+            return
+        }
+        if (++framesSinceStatistics < every) return
+        framesSinceStatistics = 0
+        if (api.getStatistics(handle, statistics) == WebRtcApmApi.STATISTICS_COUNT) statisticsPolls++
+    }
+
+    /**
+     * Copies the last polled statistics into the first [WebRtcApmApi.STATISTICS_COUNT] floats of
+     * [into] (NaN where webrtc reports nothing). Any thread; may tear, see [statistics].
+     *
+     * @return false, leaving [into] untouched, if nothing has been polled yet.
+     */
+    fun copyStatistics(into: FloatArray): Boolean {
+        require(into.size >= WebRtcApmApi.STATISTICS_COUNT) { "need ${WebRtcApmApi.STATISTICS_COUNT} floats" }
+        if (statisticsPolls == 0) return false
+        statistics.copyInto(into)
+        return true
     }
 
     override fun onFarEndFrame(handle: Long, frame: ShortArray) {

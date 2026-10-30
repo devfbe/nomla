@@ -56,6 +56,12 @@ internal class FakeWebRtcApmApi(
     var levelReads = 0
         private set
 
+    /** What [getStatistics] answers; null answers -5, as the bridge does for a released handle. */
+    var statistics: FloatArray? = null
+
+    var statisticsCalls = 0
+        private set
+
     /** The length of every near-end frame the bridge accepted, in order. */
     val capturedLengths = mutableListOf<Int>()
 
@@ -108,6 +114,15 @@ internal class FakeWebRtcApmApi(
         return levelDbfs
     }
 
+    override fun getStatistics(handle: Long, out: FloatArray): Int {
+        check(handle == HANDLE) { "unknown apm handle $handle" }
+        statisticsCalls++
+        val values = statistics ?: return NULL_POINTER
+        if (out.size < WebRtcApmApi.STATISTICS_COUNT) return SHORT_FRAME
+        values.copyInto(out, endIndex = WebRtcApmApi.STATISTICS_COUNT)
+        return WebRtcApmApi.STATISTICS_COUNT
+    }
+
     override fun destroy(handle: Long) {
         check(handle == HANDLE) { "unknown apm handle $handle" }
         destroyed++
@@ -118,6 +133,9 @@ internal class FakeWebRtcApmApi(
 
         /** `webrtc::AudioProcessing::kBadDataLengthError`, what the bridge answers a short frame. */
         const val SHORT_FRAME = -8
+
+        /** `webrtc::AudioProcessing::kNullPointerError`, what the bridge answers a released handle. */
+        const val NULL_POINTER = -5
 
         /** The only rates `nomla_apm_create` accepts; anything else answers 0. */
         val SUPPORTED_RATES = setOf(8000, 16000, 32000, 48000)

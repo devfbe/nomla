@@ -159,6 +159,58 @@ static uint32_t run_tuned(const float *tuning, double *dt_energy) {
     return hash;
 }
 
+static void test_statistics_null(void) {
+    nomla_apm_stats s;
+    CHECK(nomla_apm_get_statistics(NULL, &s) == -5, "get_statistics(NULL, out) is kNullPointerError");
+    nomla_apm_config cfg = {1, 0, 0, 0, 1};
+    nomla_apm *h = nomla_apm_create(kRate, &cfg);
+    CHECK(h != NULL, "create with AEC3 succeeds for the statistics test");
+    if (h) {
+        CHECK(nomla_apm_get_statistics(h, NULL) == -5, "get_statistics(h, NULL) is kNullPointerError");
+        nomla_apm_destroy(h);
+    }
+}
+
+static int finite_or_nan(float x) { return isnan(x) || isfinite(x); }
+
+/* The run_aec(kOrdered) scenario: far end before near end, -6 dB echo path delayed by 30 ms, here
+ * for 4 s. Afterwards AEC3 has something to report. */
+static void test_statistics_values(void) {
+    nomla_apm_config cfg = {1, 0, 0, 0, 1};
+    nomla_apm *h = nomla_apm_create(kRate, &cfg);
+    CHECK(h != NULL, "create with AEC3 succeeds for the statistics test");
+    if (!h) return;
+    uint32_t far = 12345u;
+    enum { kEchoDelay = 3 };
+    int16_t echo[kEchoDelay][kFrame];
+    memset(echo, 0, sizeof echo);
+    int err = 0;
+    for (int n = 0; n < 400; n++) {
+        int16_t render[kFrame], capture[kFrame];
+        for (int i = 0; i < kFrame; i++) render[i] = noise_from(&far);
+        for (int i = 0; i < kFrame; i++) capture[i] = (int16_t)(echo[n % kEchoDelay][i] / 2);
+        memcpy(echo[n % kEchoDelay], render, sizeof render);
+        err |= nomla_apm_process_render(h, render);
+        err |= nomla_apm_process_capture(h, capture);
+    }
+    CHECK(err == 0, "the statistics scenario runs without errors");
+
+    nomla_apm_stats s;
+    CHECK(nomla_apm_get_statistics(h, &s) == 0, "get_statistics succeeds on a live handle");
+    printf("APM statistics after 4 s of echo: ERL %.1f dB, ERLE %.1f dB, divergent %.2f, "
+           "delay median %.1f ms, std %.1f ms, delay %.1f ms\n",
+           s.erl_db, s.erle_db, s.divergent_filter_fraction, s.delay_median_ms, s.delay_std_ms,
+           s.delay_ms);
+    CHECK(finite_or_nan(s.erl_db), "erl_db is a number or NAN");
+    CHECK(finite_or_nan(s.erle_db), "erle_db is a number or NAN");
+    CHECK(finite_or_nan(s.divergent_filter_fraction), "divergent_filter_fraction is a number or NAN");
+    CHECK(finite_or_nan(s.delay_median_ms), "delay_median_ms is a number or NAN");
+    CHECK(finite_or_nan(s.delay_std_ms), "delay_std_ms is a number or NAN");
+    CHECK(finite_or_nan(s.delay_ms), "delay_ms is a number or NAN");
+    CHECK(isfinite(s.erle_db) || isfinite(s.erl_db), "AEC3 reports ERL or ERLE after 3 s of echo");
+    nomla_apm_destroy(h);
+}
+
 int main(void) {
     /* ---- 1. Argument validation. ---- */
     nomla_apm_config ns_only = {0, 1, 2, 0, 1};
@@ -316,6 +368,10 @@ int main(void) {
     CHECK(ignored != NULL, "without echo cancellation the tuning is not read");
     nomla_apm_destroy(ignored);
     nomla_apm_aec3_defaults(NULL); /* must not crash */
+
+    /* ---- 6. Statistics. ---- */
+    test_statistics_null();
+    test_statistics_values();
 
     printf("%s\n", failures ? "FAILED" : "OK");
     return failures ? 1 : 0;

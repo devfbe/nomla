@@ -128,6 +128,7 @@ class CaptureThreadAllocationTest {
         override fun processRender(handle: Long, frame: ShortArray): Int = 0
         override fun lastCaptureLevelDbfs(handle: Long): Float =
             LEVELS[next++ and (LEVELS.size - 1)]
+        override fun getStatistics(handle: Long, out: FloatArray): Int = WebRtcApmApi.STATISTICS_COUNT
         override fun destroy(handle: Long) = Unit
 
         private companion object {

@@ -177,6 +177,22 @@ int nomla_apm_set_stream_delay_ms(nomla_apm *h, int delay_ms) NOMLA_APM_NOEXCEPT
  * silence and for a NULL handle. */
 float nomla_apm_last_capture_level_dbfs(const nomla_apm *h) NOMLA_APM_NOEXCEPT;
 
+/* webrtc::AudioProcessingStats, flattened to floats. A field webrtc leaves empty is NAN (AEC3 off,
+ * not enough far-end signal yet). ERL, ERLE and the divergent fraction are aggregated over
+ * webrtc's own 1 s window; the delay median and standard deviation too, after the first call. */
+typedef struct {
+    float erl_db;                    /* echo return loss, 10 log10(P_far / P_echo) */
+    float erle_db;                   /* echo return loss enhancement, 10 log10(P_echo / P_out) */
+    float divergent_filter_fraction; /* 0..1 */
+    float delay_median_ms;
+    float delay_std_ms;
+    float delay_ms;                  /* AEC3's instantaneous delay estimate */
+} nomla_apm_stats;
+
+/* Fills *out with the APM's current statistics. Returns 0, -5 (kNullPointerError) for a NULL
+ * handle or out, or -1 (kUnspecifiedError) if webrtc threw. Allocates nothing on our side. */
+int nomla_apm_get_statistics(nomla_apm *h, nomla_apm_stats *out) NOMLA_APM_NOEXCEPT;
+
 /* Releases the instance. A NULL handle is accepted and ignored. */
 void nomla_apm_destroy(nomla_apm *h) NOMLA_APM_NOEXCEPT;
 

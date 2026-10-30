@@ -103,6 +103,29 @@ jfloat lastCaptureLevelDbfs(JNIEnv*, jobject, jlong handle) noexcept {
     return nomla_apm_last_capture_level_dbfs(static_cast<nomla_apm*>(processors().get(handle)));
 }
 
+/* Floats getStatistics writes, in nomla_apm_stats field order (WebRtcApmApi.STATISTICS_COUNT). */
+constexpr jsize kStatisticsCount = 6;
+static_assert(sizeof(nomla_apm_stats) == kStatisticsCount * sizeof(float),
+              "nomla_apm_stats is exactly kStatisticsCount floats");
+
+/* Copies the APM statistics into out[0..6); a stack buffer, no allocation. Returns the number of
+ * values written (6), -8 for an array shorter than 6 (left untouched), -5 for a released handle
+ * or a null array, or the wrapper's error. */
+jint getStatistics(JNIEnv* env, jobject, jlong handle, jfloatArray out) noexcept {
+    auto* apm = static_cast<nomla_apm*>(processors().get(handle));
+    if (apm == nullptr || out == nullptr) return kNullPointerError;
+    if (env->GetArrayLength(out) < kStatisticsCount) return kBadDataLengthError;
+    nomla_apm_stats stats;
+    int err = nomla_apm_get_statistics(apm, &stats);
+    if (err != 0) return err;
+    const float values[kStatisticsCount] = {stats.erl_db,          stats.erle_db,
+                                            stats.divergent_filter_fraction,
+                                            stats.delay_median_ms, stats.delay_std_ms,
+                                            stats.delay_ms};
+    env->SetFloatArrayRegion(out, 0, kStatisticsCount, values);
+    return kStatisticsCount;
+}
+
 void destroy(JNIEnv*, jobject, jlong handle) noexcept {
     // release() hands the instance to exactly one caller, so destroying twice frees once.
     nomla_apm_destroy(static_cast<nomla_apm*>(processors().release(handle)));
@@ -111,12 +134,13 @@ void destroy(JNIEnv*, jobject, jlong handle) noexcept {
 }  // namespace
 
 bool nomla::registerWebRtcApmNatives(JNIEnv* env) {
-    const std::array<JNINativeMethod, 6> methods = {
+    const std::array<JNINativeMethod, 7> methods = {
         nomla::nativeMethod("create", create),
         nomla::nativeMethod("frameSize", frameSize),
         nomla::nativeMethod("processCapture", processCapture),
         nomla::nativeMethod("processRender", processRender),
         nomla::nativeMethod("lastCaptureLevelDbfs", lastCaptureLevelDbfs),
+        nomla::nativeMethod("getStatistics", getStatistics),
         nomla::nativeMethod("destroy", destroy),
     };
     return nomla::registerNatives(env, "koeln/becker/nomla/mumble/audio/native/WebRtcApmNative", methods);
