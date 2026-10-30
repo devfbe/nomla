@@ -24,6 +24,7 @@ import koeln.becker.nomla.mumble.model.ChannelState
 import koeln.becker.nomla.mumble.model.ServerState
 import koeln.becker.nomla.mumble.model.TalkState
 import koeln.becker.nomla.mumble.model.UserState
+import koeln.becker.nomla.mumble.testutil.FakeSession
 import java.util.WeakHashMap
 
 /** Describes a server's channels and users for [serverState]. */
@@ -56,18 +57,29 @@ fun selfServerState(self: UserState): ServerState = serverState(self = self.sess
 private val modelFlows = WeakHashMap<Session, MutableStateFlow<ServerState?>>()
 private val talkFlows = WeakHashMap<Session, MutableStateFlow<Map<Int, TalkState>>>()
 
-/** The mocked session's model, stubbed as a flow the test moves; [state] now. */
-fun Session.stubModel(state: ServerState?): MutableStateFlow<ServerState?> =
-    modelFlows.getOrPut(this) { MutableStateFlow(state).also { every { this@stubModel.model } returns it } }
-        .also { it.value = state }
+/** The mocked session's model, stubbed as a flow the test moves; [state] now. A [FakeSession]'s own. */
+fun Session.stubModel(state: ServerState?): MutableStateFlow<ServerState?> {
+    val flow = if (this is FakeSession) {
+        model
+    } else {
+        modelFlows.getOrPut(this) { MutableStateFlow(state).also { every { this@stubModel.model } returns it } }
+    }
+    return flow.also { it.value = state }
+}
 
-/** The mocked session's talk states, stubbed as a flow the test moves. */
-fun Session.stubTalkStates(states: Map<Int, TalkState> = emptyMap()): MutableStateFlow<Map<Int, TalkState>> =
-    talkFlows.getOrPut(this) { MutableStateFlow(states).also { every { talkStates } returns it } }
-        .also { it.value = states }
+/** The mocked session's talk states, stubbed as a flow the test moves. A [FakeSession]'s own. */
+fun Session.stubTalkStates(states: Map<Int, TalkState> = emptyMap()): MutableStateFlow<Map<Int, TalkState>> {
+    val flow = if (this is FakeSession) {
+        talkStates
+    } else {
+        talkFlows.getOrPut(this) { MutableStateFlow(states).also { every { talkStates } returns it } }
+    }
+    return flow.also { it.value = states }
+}
 
 /** Stubs the session's model and talk states as empty flows, unless a test stubbed them already. */
 internal fun Session.stubSnapshotsIfAbsent() {
+    if (this is FakeSession) return
     if (modelFlows[this] == null) stubModel(null)
     if (talkFlows[this] == null) stubTalkStates()
 }

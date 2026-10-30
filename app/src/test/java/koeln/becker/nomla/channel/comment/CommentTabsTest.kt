@@ -22,7 +22,6 @@ import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.tabs.TabLayout
 import com.google.common.truth.Truth.assertThat
-import io.mockk.mockk
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
@@ -30,14 +29,14 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
-import koeln.becker.nomla.mumble.Session
+import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.FakeSession
 import koeln.becker.nomla.testing.ServiceHostActivity
-import koeln.becker.nomla.testing.stubConnected
 
 /** The comment dialog shows the rendered comment and its source on two tabs. */
 @RunWith(RobolectricTestRunner::class)
 class CommentTabsTest {
-    private val session: Session = mockk<Session>(relaxed = true).stubConnected()
+    private val session = FakeSession(SessionState.Connected)
     private val activity = Robolectric.buildActivity(ServiceHostActivity::class.java).setup().get()
         .also { it.bind(session) }
 

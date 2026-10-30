@@ -19,23 +19,19 @@ package koeln.becker.nomla.channel
 import android.widget.TextView
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
-import io.mockk.mockk
-import io.mockk.verify
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.UserStats
 import koeln.becker.nomla.mumble.session.NomlaEvent
+import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.FakeSession
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.mumble.testutil.idleMainLooperFor
 import koeln.becker.nomla.R
 import koeln.becker.nomla.testing.ThemedActivity
 import koeln.becker.nomla.testing.installSession
-import koeln.becker.nomla.testing.stubActions
-import koeln.becker.nomla.testing.stubConnected
-import koeln.becker.nomla.testing.stubEvents
 import java.time.Duration
 
 @RunWith(RobolectricTestRunner::class)
@@ -78,16 +74,16 @@ class UserInfoTest {
     @Test
     fun theDialogRequestsStatsShowsThemAndRefreshesWhileOpen() {
         val context = Robolectric.buildActivity(ThemedActivity::class.java).setup().get()
-        val session = mockk<Session>(relaxed = true)
-        val actions = session.stubActions()
-        installSession(session.stubConnected())
-        val events = session.stubEvents()
+        val session = FakeSession(SessionState.Connected)
+        installSession(session)
+        val events = session.events
+        fun statsRequests() = session.actions.callsTo("requestUserStats")
         val app = ApplicationProvider.getApplicationContext<android.app.Application>()
         val tree = ChannelTreeViewModel.create(app, pinnedOnly = false)
 
         val dialog = showUserInfoDialog(context, "Ann", tree.userStats(7))
         idleMainLooper()
-        verify(exactly = 1) { actions.requestUserStats(7) }
+        assertThat(statsRequests()).containsExactly(listOf(7))
         val text = dialog.findViewById<TextView>(R.id.user_info_text)!!
         assertThat(text.text.toString()).isEqualTo("Loading…")
 
@@ -100,10 +96,10 @@ class UserInfoTest {
         assertThat(text.text.toString()).contains("Operating system: Linux Ubuntu 24.04")
 
         idleMainLooperFor(Duration.ofSeconds(5))
-        verify(exactly = 2) { actions.requestUserStats(7) }
+        assertThat(statsRequests()).containsExactly(listOf(7), listOf(7))
 
         dialog.dismiss()
         idleMainLooperFor(Duration.ofSeconds(20))
-        verify(exactly = 2) { actions.requestUserStats(7) }
+        assertThat(statsRequests()).hasSize(2)
     }
 }

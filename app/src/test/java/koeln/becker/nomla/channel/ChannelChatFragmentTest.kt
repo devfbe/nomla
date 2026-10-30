@@ -69,6 +69,7 @@ import koeln.becker.nomla.mumble.model.ServerState
 import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.FakeSession
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
@@ -101,7 +102,6 @@ import koeln.becker.nomla.testing.replaceParts
 import koeln.becker.nomla.testing.stubActions
 import koeln.becker.nomla.testing.stubConnected
 import koeln.becker.nomla.testing.stubModel
-import koeln.becker.nomla.testing.stubDisconnected
 import koeln.becker.nomla.testing.stubEvents
 import koeln.becker.nomla.testing.tapThrough
 import koeln.becker.nomla.testing.textMessage
@@ -155,7 +155,7 @@ class ChannelChatFragmentTest {
     }
 
     /** Makes a session that has ended the current one, as if there were none. */
-    private fun unbind() = installSession(mockk<Session>(relaxed = true).stubDisconnected())
+    private fun unbind() = installSession(FakeSession(SessionState.Disconnected()))
 
     /** Brings the host up, without a connected session unless [withSession], then attaches the fragment. */
     private fun launch(withSession: Boolean = true) {

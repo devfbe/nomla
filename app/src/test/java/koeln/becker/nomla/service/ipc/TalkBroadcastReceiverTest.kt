@@ -20,24 +20,20 @@ package koeln.becker.nomla.service.ipc
 import android.content.Context
 import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
-import io.mockk.mockk
-import io.mockk.verify
+import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.FakeSession
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.testing.installSession
-import koeln.becker.nomla.testing.stubAudio
-import koeln.becker.nomla.testing.stubConnected
-import koeln.becker.nomla.testing.stubState
 
 @RunWith(RobolectricTestRunner::class)
 class TalkBroadcastReceiverTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
-    private val session = mockk<Session>(relaxed = true).also { installSession(it.stubConnected()) }
-    private val audio = session.stubAudio()
+    private val session = FakeSession(SessionState.Connected).also { installSession(it) }
+    private val audio = session.audio
     private val sessions = SessionManager.get(context)
 
     private fun talk(status: String) =
@@ -47,16 +43,16 @@ class TalkBroadcastReceiverTest {
     fun broadcastsAreIgnoredWhileOtherAppsMayNotControlPushToTalk() {
         TalkBroadcastReceiver(sessions) { false }.onReceive(context, talk(TalkBroadcastReceiver.TALK_STATUS_ON))
 
-        verify(exactly = 0) { audio.setTalking(any()) }
+        assertThat(audio.talkingCalls).isEmpty()
     }
 
     @Test
     fun broadcastsAreIgnoredWithoutAConnectedSession() {
-        session.stubState(SessionState.Reconnecting(null))
+        session.state.value = SessionState.Reconnecting(null)
 
         TalkBroadcastReceiver(sessions) { true }.onReceive(context, talk(TalkBroadcastReceiver.TALK_STATUS_ON))
 
-        verify(exactly = 0) { audio.setTalking(any()) }
+        assertThat(audio.talkingCalls).isEmpty()
     }
 
     @Test
@@ -64,9 +60,8 @@ class TalkBroadcastReceiverTest {
         val receiver = TalkBroadcastReceiver(sessions) { true }
 
         receiver.onReceive(context, talk(TalkBroadcastReceiver.TALK_STATUS_ON))
-        verify { audio.setTalking(true) }
-
         receiver.onReceive(context, talk(TalkBroadcastReceiver.TALK_STATUS_OFF))
-        verify { audio.setTalking(false) }
+
+        assertThat(audio.talkingCalls).containsExactly(true, false).inOrder()
     }
 }

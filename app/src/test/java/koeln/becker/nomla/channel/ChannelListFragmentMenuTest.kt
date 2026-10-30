@@ -21,18 +21,17 @@ import android.view.Menu
 import android.view.View
 import androidx.appcompat.widget.PopupMenu
 import com.google.common.truth.Truth.assertThat
-import io.mockk.mockk
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.android.controller.ActivityController
-import koeln.becker.nomla.mumble.Session
+import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.FakeSession
 import koeln.becker.nomla.R
 import koeln.becker.nomla.testing.ServiceHostActivity
 import koeln.becker.nomla.testing.addUnderChatParent
 import koeln.becker.nomla.testing.hostWith
-import koeln.becker.nomla.testing.stubConnected
 
 /** The channel list's own menu items; the audio chooser is the activity's. */
 @RunWith(RobolectricTestRunner::class)
@@ -40,11 +39,10 @@ class ChannelListFragmentMenuTest {
 
     private lateinit var controller: ActivityController<ServiceHostActivity>
     private lateinit var fragment: ChannelListFragment
-    private val session = mockk<Session>(relaxed = true)
+    private val session = FakeSession(SessionState.Connected)
 
     @Before
     fun setUp() {
-        session.stubConnected()
         controller = hostWith(session)
         fragment = ChannelListFragment.newInstance(pinned = false)
         controller.get().addUnderChatParent(fragment, "list")

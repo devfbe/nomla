@@ -25,7 +25,6 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,34 +32,32 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.ActionCall
+import koeln.becker.nomla.mumble.testutil.FakeSession
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.chat.OutgoingImagePreparer
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.testing.installSession
 import koeln.becker.nomla.testing.serverState
-import koeln.becker.nomla.testing.stubActions
-import koeln.becker.nomla.testing.stubModel
-import koeln.becker.nomla.testing.stubState
 
 @RunWith(RobolectricTestRunner::class)
 class ChatViewModelTest {
     private val app = ApplicationProvider.getApplicationContext<Application>()
-    private val session = mockk<Session>(relaxed = true)
-    private val state = session.stubState(SessionState.Connected)
-    private val actions = session.stubActions()
+    private val session = FakeSession(
+        SessionState.Connected,
+        model = serverState(self = 7) {
+            channel(0, "Root")
+            channel(3, "Lounge")
+            user(7, "Me", channel = 3)
+        },
+    )
+    private val state = session.state
+    private val actions = session.actions
     private val preparer = mockk<OutgoingImagePreparer>()
     private val chat = ChatViewModel(app, SessionManager.get(app), preparer, Dispatchers.Unconfined)
 
     init {
-        session.stubModel(
-            serverState(self = 7) {
-                channel(0, "Root")
-                channel(3, "Lounge")
-                user(7, "Me", channel = 3)
-            },
-        )
         installSession(session)
     }
 
@@ -90,9 +87,11 @@ class ChatViewModelTest {
         chat.select(ChatTarget.Channel(9, "Other"))
         chat.send("c")
 
-        verify { actions.sendChannelTextMessage(3, "a", false) }
-        verify { actions.sendUserTextMessage(42, "b") }
-        verify { actions.sendChannelTextMessage(9, "c", false) }
+        assertThat(actions.calls).containsExactly(
+            ActionCall("sendChannelTextMessage", listOf(3, "a", false)),
+            ActionCall("sendUserTextMessage", listOf(42, "b")),
+            ActionCall("sendChannelTextMessage", listOf(9, "c", false)),
+        ).inOrder()
     }
 
     @Test
@@ -102,7 +101,7 @@ class ChatViewModelTest {
         assertThat(chat.send("a")).isFalse()
         chat.prepareImage(Uri.parse("content://x"))
 
-        verify(exactly = 0) { actions.sendChannelTextMessage(any(), any(), any()) }
+        assertThat(actions.calls).isEmpty()
         coVerify(exactly = 0) { preparer.prepare(any()) }
     }
 

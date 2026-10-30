@@ -25,21 +25,20 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
-import io.mockk.mockk
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowDialog
-import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.Server
+import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.FakeSession
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.testing.installSession
 import koeln.becker.nomla.testing.launchNomlaActivity
 import koeln.becker.nomla.testing.message
-import koeln.becker.nomla.testing.stubConnected
 import koeln.becker.nomla.ui.ConnectRequests
 import koeln.becker.nomla.ui.ServerRequest
 
@@ -70,7 +69,7 @@ class NomlaActivityPermissionTest {
     }
 
     private fun connectElsewhere() {
-        installSession(mockk<Session>(relaxed = true).stubConnected())
+        installSession(FakeSession(SessionState.Connected))
         idleMainLooper()
     }
 

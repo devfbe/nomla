@@ -19,25 +19,23 @@ package koeln.becker.nomla.channel.comment
 
 import androidx.fragment.app.DialogFragment
 import com.google.common.truth.Truth.assertThat
-import io.mockk.mockk
-import io.mockk.verify
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import koeln.becker.nomla.mumble.model.UserState
-import koeln.becker.nomla.mumble.Session
+import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.ActionCall
+import koeln.becker.nomla.mumble.testutil.FakeSession
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.testing.ServiceHostActivity
-import koeln.becker.nomla.testing.stubConnected
 import koeln.becker.nomla.testing.serverState
-import koeln.becker.nomla.testing.stubModel
 
 @RunWith(RobolectricTestRunner::class)
 class CommentObserverTest {
 
-    private val session: Session = mockk<Session>(relaxed = true).stubConnected()
-    private val model = session.stubModel(withComment(7, null))
+    private val session = FakeSession(SessionState.Connected, model = withComment(7, null))
+    private val model = session.model
     private val activity = Robolectric.buildActivity(ServiceHostActivity::class.java).setup().get()
         .also { it.bind(session) }
 
@@ -64,16 +62,16 @@ class CommentObserverTest {
 
     @Test
     fun aCommentOrDescriptionStopsWaitingWhenTheDialogClosesWithoutAReply() {
-        val requests = listOf<Pair<DialogFragment, () -> Unit>>(
+        val requests = listOf<Pair<DialogFragment, ActionCall>>(
             UserCommentFragment.newInstance(7, comment = null, editing = false) to
-                { session.actions.requestComment(7) },
+                ActionCall("requestComment", listOf(7)),
             ChannelDescriptionFragment.newInstance(3, description = null) to
-                { session.actions.requestChannelDescription(3) },
+                ActionCall("requestChannelDescription", listOf(3)),
         )
         for ((fragment, request) in requests) {
             show(fragment)
             assertThat(listeners).isEqualTo(1)
-            verify { request() }
+            assertThat(session.actions.calls).contains(request)
 
             close(fragment)
 

@@ -17,31 +17,27 @@
 package koeln.becker.nomla.chat
 
 import com.google.common.truth.Truth.assertThat
-import io.mockk.mockk
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.flow.MutableSharedFlow
 import org.junit.Assert.assertThrows
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
-import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.Message
 import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.FakeSession
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.testing.textMessage
-import koeln.becker.nomla.testing.stubEvents
-import koeln.becker.nomla.testing.stubState
 
 /** What of a session's events lands in its chat log, and how. */
 @RunWith(RobolectricTestRunner::class)
 class SessionChatTest {
     private val app = RuntimeEnvironment.getApplication()
     private val chat = SessionChat(NoticeFormatter(app), MainScope(), capacity = 3)
-    private val session = mockk<Session>(relaxed = true)
-    private val state = session.stubState(SessionState.Connected)
-    private val events: MutableSharedFlow<NomlaEvent> = session.stubEvents()
+    private val session = FakeSession(SessionState.Connected)
+    private val state = session.state
+    private val events = session.events
 
     init {
         chat.follow(session)
@@ -169,7 +165,7 @@ class SessionChatTest {
         assertThat(chat.unread.value).isEqualTo(0)
 
         emit(NomlaEvent.TextMessage(message("two")))
-        chat.follow(mockk<Session>(relaxed = true).also { it.stubState(SessionState.Connected); it.stubEvents() })
+        chat.follow(FakeSession(SessionState.Connected))
         assertThat(chat.unread.value).isEqualTo(0)
 
         chat.follow(session)

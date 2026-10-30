@@ -23,24 +23,23 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
-import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import koeln.becker.nomla.mumble.Session
+import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.FakeSession
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.testing.ServiceHostActivity
 import koeln.becker.nomla.testing.drainMainUntil
-import koeln.becker.nomla.testing.stubConnected
 
 @RunWith(RobolectricTestRunner::class)
 class AccessTokenFragmentTest {
-    private val session = mockk<Session>(relaxed = true)
+    private val session = FakeSession(SessionState.Connected)
     private val activity = Robolectric.buildActivity(ServiceHostActivity::class.java).setup().get().also {
-        it.bind(session.stubConnected())
+        it.bind(session)
     }
     private val fragment = AccessTokenFragment.newInstance(SERVER)
 
@@ -69,12 +68,13 @@ class AccessTokenFragmentTest {
         fragment.requireView().findViewById<View>(R.id.tokenAddButton).performClick()
         drainMainUntil(description = "the added token") { shownTokens().size == 3 }
         verify { activity.database.addAccessToken(SERVER, "green") }
-        verify { session.actions.sendAccessTokens(listOf("red", "blue", "green")) }
+        assertThat(session.actions.sentAccessTokens).containsExactly(listOf("red", "blue", "green"))
 
         list.getChildAt(0).findViewById<View>(R.id.tokenItemDelete).performClick()
         drainMainUntil(description = "the removed token") { shownTokens() == listOf("blue", "green") }
         verify { activity.database.removeAccessToken(SERVER, "red") }
-        verify { session.actions.sendAccessTokens(listOf("blue", "green")) }
+        assertThat(session.actions.sentAccessTokens)
+            .containsExactly(listOf("red", "blue", "green"), listOf("blue", "green")).inOrder()
     }
 
     private companion object {

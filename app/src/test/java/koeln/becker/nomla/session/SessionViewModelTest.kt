@@ -20,35 +20,29 @@ package koeln.becker.nomla.session
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import koeln.becker.nomla.mumble.Session
+import koeln.becker.nomla.mumble.model.ChannelState
 import koeln.becker.nomla.mumble.model.TalkState
 import koeln.becker.nomla.mumble.model.UserState
-import koeln.becker.nomla.mumble.model.WhisperTarget
+import koeln.becker.nomla.mumble.model.WhisperTargetChannel
 import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.ActionCall
+import koeln.becker.nomla.mumble.testutil.FakeSession
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.mumble.util.VoiceTargetMode
 import koeln.becker.nomla.testing.installSession
 import koeln.becker.nomla.testing.selfServerState
-import koeln.becker.nomla.testing.stubActions
-import koeln.becker.nomla.testing.stubEvents
-import koeln.becker.nomla.testing.stubModel
-import koeln.becker.nomla.testing.stubState
-import koeln.becker.nomla.testing.stubTalkStates
 
 @RunWith(RobolectricTestRunner::class)
 class SessionViewModelTest {
-    private val session = mockk<Session>(relaxed = true)
-    private val state = session.stubState(SessionState.Connecting)
-    private val model = session.stubModel(selfServerState(UserState(1, "me", 0)))
-    private val talkStates = session.stubTalkStates()
-    private val actions = session.stubActions()
+    private val session = FakeSession(SessionState.Connecting, model = selfServerState(UserState(1, "me", 0)))
+    private val state = session.state
+    private val model = session.model
+    private val talkStates = session.talkStates
+    private val actions = session.actions
     private val viewModel = SessionViewModel(SessionManager.get(ApplicationProvider.getApplicationContext<Context>()))
 
     @Test
@@ -94,24 +88,21 @@ class SessionViewModelTest {
 
     @Test
     fun theWhisperTargetIsNamedWhileRegisteredWhetherOrNotItIsActive() {
-        every { actions.whisperTarget } returns null
-        every { actions.isWhisperActive } returns false
         state.value = SessionState.Connected
         installSession(session)
-        val events = session.stubEvents()
+        val events = session.events
         idleMainLooper()
         assertThat(viewModel.whisperTarget.value).isNull()
         assertThat(viewModel.isWhisperActive.value).isFalse()
 
         // Armed but not active: the panel shows the target, without it receiving voice yet.
-        every { actions.whisperTarget } returns mockk<WhisperTarget> { every { name } returns "Lobby" }
-        every { actions.isWhisperActive } returns false
+        actions.whisperTo(WhisperTargetChannel(ChannelState(5, "Lobby", 0), false, false, null), activate = false)
         events.tryEmit(NomlaEvent.VoiceTargetChanged(VoiceTargetMode.NORMAL))
         idleMainLooper()
         assertThat(viewModel.whisperTarget.value).isEqualTo("Lobby")
         assertThat(viewModel.isWhisperActive.value).isFalse()
 
-        every { actions.isWhisperActive } returns true
+        actions.setWhisperActive(true)
         events.tryEmit(NomlaEvent.VoiceTargetChanged(VoiceTargetMode.WHISPER))
         idleMainLooper()
         assertThat(viewModel.whisperTarget.value).isEqualTo("Lobby")
@@ -130,7 +121,7 @@ class SessionViewModelTest {
 
         viewModel.setWhisperActive(true)
 
-        verify { actions.setWhisperActive(true) }
+        assertThat(actions.calls).containsExactly(ActionCall("setWhisperActive", listOf(true)))
     }
 
     @Test
@@ -143,8 +134,7 @@ class SessionViewModelTest {
         viewModel.toggleDeafen()
         viewModel.stopWhispering()
 
-        verify { actions.setSelfMuteDeafState(false, false) }
-        verify { actions.setSelfMuteDeafState(true, true) }
-        verify { actions.stopWhispering() }
+        assertThat(actions.selfMuteDeafStates).containsExactly(false to false, true to true).inOrder()
+        assertThat(actions.callsTo("stopWhispering")).hasSize(1)
     }
 }

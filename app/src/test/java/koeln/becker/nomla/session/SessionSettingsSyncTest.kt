@@ -23,15 +23,11 @@ import android.media.AudioDeviceInfo
 import androidx.preference.PreferenceManager
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.xmlpull.v1.XmlPullParser
-import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.audio.capture.AndroidAudioEffects
 import koeln.becker.nomla.mumble.audio.capture.NoiseSuppressionMode
 import koeln.becker.nomla.mumble.audio.capture.VadConfig
@@ -39,17 +35,17 @@ import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.audio.routing.PreferredAudioDevice
 import koeln.becker.nomla.mumble.session.SessionConfig
 import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.FakeSession
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.ui.AppMessages
 import koeln.becker.nomla.testing.nextMessage
 import koeln.becker.nomla.testing.installSession
-import koeln.becker.nomla.testing.stubState
 
 /**
  * Changed preferences reach the current session: every audio setting through one reconfigure,
  * and a note when a connection setting only applies from the next connection. The session is a
- * mock that keeps what it is configured with.
+ * fake that keeps what it is configured with.
  */
 /**
  * For every switch on the audio settings screen, reads the result back off the object the audio
@@ -59,16 +55,9 @@ import koeln.becker.nomla.testing.stubState
 class SessionSettingsSyncTest {
     private val context = ApplicationProvider.getApplicationContext<Context>()
     private val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-    private var config = SessionConfig()
-    private var configures = 0
-    private val session = mockk<Session>(relaxed = true) {
-        every { this@mockk.config } answers { this@SessionSettingsSyncTest.config }
-        every { configure(any()) } answers {
-            this@SessionSettingsSyncTest.config = firstArg()
-            configures++
-            false
-        }
-    }
+    private val session = FakeSession(SessionState.Connected)
+    private val config: SessionConfig get() = session.config
+    private val configures: Int get() = session.configured.size
 
     @Before
     fun setUp() {
@@ -146,7 +135,7 @@ class SessionSettingsSyncTest {
 
         assertThat(configures).isEqualTo(before + 1)
         assertThat(pipeline().rnnoiseAttenuationLimitDb).isEqualTo(Float.POSITIVE_INFINITY)
-        verify(exactly = 0) { session.disconnect() }
+        assertThat(session.disconnectCalls).isEqualTo(0)
     }
 
     @Test
@@ -275,17 +264,17 @@ class SessionSettingsSyncTest {
     fun `a setting that needs a reconnect says so while connected`() {
         for (key in listOf(Settings.CERT_ID.key, Settings.FORCE_TCP.key, Settings.USE_TOR.key)) {
             val messages = AppMessages()
-            session.stubState(SessionState.Connecting)
+            session.state.value = SessionState.Connecting
             SessionSettingsSync(context, Settings.getInstance(context), SessionManager.get(context), messages)
                 .onPreferenceChanged(key)
             assertThat(nextMessage(messages)).isNull()
 
-            session.stubState(SessionState.Connected)
+            session.state.value = SessionState.Connected
             SessionSettingsSync(context, Settings.getInstance(context), SessionManager.get(context), messages)
                 .onPreferenceChanged(key)
             assertThat(nextMessage(messages)).isEqualTo(context.getString(R.string.change_requires_reconnect))
         }
-        verify(exactly = 0) { session.disconnect() }
+        assertThat(session.disconnectCalls).isEqualTo(0)
     }
 
     private companion object {

@@ -21,23 +21,19 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
-import io.mockk.every
-import io.mockk.mockk
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.shadows.ShadowDialog
-import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.FakeSession
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.MainScreen
 import koeln.becker.nomla.db.PublicServer
 import koeln.becker.nomla.testing.installSession
 import koeln.becker.nomla.testing.launchNomlaActivity
-import koeln.becker.nomla.testing.stubEvents
-import koeln.becker.nomla.testing.stubState
 import koeln.becker.nomla.ui.ConnectRequests
 import koeln.becker.nomla.ui.ServerRequest
 
@@ -68,11 +64,10 @@ class NomlaActivityPromptsTest {
 
     @Test
     fun aPermissionDenialIsAcknowledgedWithOk() {
-        val session = mockk<Session>(relaxed = true) {
-            every { targetServer } returns Server(1, "Home", "example.org", 64738, "me", null)
+        val session = FakeSession(SessionState.Connected).apply {
+            targetServer = Server(1, "Home", "example.org", 64738, "me", null)
         }
-        session.stubState(SessionState.Connected)
-        val events = session.stubEvents()
+        val events = session.events
         val intent = Intent(app, NomlaActivity::class.java).putExtra(MainScreen.EXTRA_SCREEN, DrawerAdapter.ITEM_SERVER)
         launchNomlaActivity(intent)
         installSession(session)

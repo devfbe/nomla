@@ -22,13 +22,11 @@ import android.content.ComponentName
 import android.content.pm.PackageManager
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
-import io.mockk.mockk
-import io.mockk.verify
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.FakeSession
 import koeln.becker.nomla.app.AppContainer
 import koeln.becker.nomla.service.NotificationActionReceiver.Companion.ACTION_CANCEL_RECONNECT
 import koeln.becker.nomla.service.NotificationActionReceiver.Companion.ACTION_DISCONNECT
@@ -37,7 +35,6 @@ import koeln.becker.nomla.service.NotificationActionReceiver.Companion.ACTION_RE
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.testing.installSession
 import koeln.becker.nomla.testing.pressNotificationAction
-import koeln.becker.nomla.testing.stubState
 
 /**
  * Each notification button reaches the session through the receiver, whether or not the service
@@ -47,7 +44,7 @@ import koeln.becker.nomla.testing.stubState
 class NotificationActionReceiverTest {
     private val app: Application = ApplicationProvider.getApplicationContext()
     private val sessions get() = SessionManager.get(app)
-    private val session = mockk<Session>(relaxed = true)
+    private val session = FakeSession(SessionState.Connected)
 
     private fun press(action: String) = pressNotificationAction(NotificationActionReceiver.pendingIntent(app, action))
 
@@ -57,36 +54,36 @@ class NotificationActionReceiverTest {
 
         press(ACTION_DISCONNECT)
 
-        verify { session.disconnect() }
+        assertThat(session.disconnectCalls).isEqualTo(1)
     }
 
     @Test
     fun cancelReconnectGivesUpTheReconnectAndCountsTheReasonAsShown() {
-        session.stubState(SessionState.Reconnecting(null))
+        session.state.value = SessionState.Reconnecting(null)
         installSession(session)
 
         press(ACTION_CANCEL_RECONNECT)
 
-        verify { session.cancelReconnect() }
+        assertThat(session.cancelReconnectCalls).isEqualTo(1)
         assertThat(sessions.errorShown.value).isTrue()
     }
 
     @Test
     fun reconnectConnectsAgainWithTheLastConfiguration() {
-        session.stubState(SessionState.Disconnected())
+        session.state.value = SessionState.Disconnected()
         installSession(session)
-        val next = mockk<Session>(relaxed = true)
+        val next = FakeSession()
         AppContainer.of(app).replaceParts { it.copy(newSession = { _, _ -> next }) }
 
         press(ACTION_RECONNECT)
 
         assertThat(sessions.session.value).isSameInstanceAs(next)
-        verify { next.connect() }
+        assertThat(next.connectCalls).isEqualTo(1)
     }
 
     @Test
     fun dismissingThePromptCountsTheReasonAsShown() {
-        session.stubState(SessionState.Disconnected())
+        session.state.value = SessionState.Disconnected()
         installSession(session)
 
         press(ACTION_PROMPT_DISMISSED)

@@ -22,7 +22,6 @@ import android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
 import androidx.appcompat.app.AlertDialog
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
-import io.mockk.mockk
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -30,15 +29,13 @@ import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowDialog
 import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.FakeSession
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.testing.installSession
 import koeln.becker.nomla.testing.launchNomlaActivity
 import koeln.becker.nomla.testing.message
-import koeln.becker.nomla.testing.stubState
-import koeln.becker.nomla.testing.stubConnected
-import koeln.becker.nomla.testing.stubDisconnected
 
 /** NomlaActivity offers the battery optimisation exemption once, after a connection succeeds. */
 @RunWith(RobolectricTestRunner::class)
@@ -54,11 +51,11 @@ class BatteryOptimizationPromptTest {
 
     /** Makes [session] current; null stands for an ended one, as after leaving the app. */
     private fun attach(session: Session?) {
-        installSession(session ?: mockk<Session>(relaxed = true).stubDisconnected())
+        installSession(session ?: FakeSession(SessionState.Disconnected()))
         idleMainLooper()
     }
 
-    private fun connectedService() = mockk<Session>(relaxed = true).stubConnected()
+    private fun connectedService() = FakeSession(SessionState.Connected)
 
     private fun exempt(value: Boolean) {
         shadowOf(app.getSystemService(PowerManager::class.java))
@@ -86,11 +83,11 @@ class BatteryOptimizationPromptTest {
     @Test
     fun itIsOfferedWhenTheSessionBecomesSynchronized() {
         launch()
-        val session = mockk<Session>(relaxed = true).stubDisconnected()
+        val session = FakeSession(SessionState.Disconnected())
         attach(session)
         assertThat(promptShown()).isFalse()
 
-        session.stubState(SessionState.Connected)
+        session.state.value = SessionState.Connected
         idleMainLooper()
 
         assertThat(promptShown()).isTrue()
@@ -100,7 +97,7 @@ class BatteryOptimizationPromptTest {
     fun itIsNotOfferedWhileDisconnected() {
         launch()
 
-        attach(mockk<Session>(relaxed = true).stubDisconnected())
+        attach(FakeSession(SessionState.Disconnected()))
 
         assertThat(promptShown()).isFalse()
     }

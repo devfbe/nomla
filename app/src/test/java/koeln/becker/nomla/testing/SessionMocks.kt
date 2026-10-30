@@ -28,8 +28,12 @@ import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.SessionActions
 import koeln.becker.nomla.mumble.session.NomlaEvent
 import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.FakeSession
 import koeln.becker.nomla.session.SessionManager
 import java.util.WeakHashMap
+
+// The stubs take a FakeSession too and then move its own flows; the actions and audio of one are
+// FakeSession.actions and FakeSession.audio rather than mocks.
 
 private val stateFlows = WeakHashMap<Session, MutableStateFlow<SessionState>>()
 private val eventFlows = WeakHashMap<Session, MutableSharedFlow<NomlaEvent>>()
@@ -38,24 +42,38 @@ private val actionMocks = WeakHashMap<Session, SessionActions>()
 
 /** The mocked session's audio controls, as a mock of their own so their calls can be counted. */
 fun Session.stubAudio(): AudioControls =
-    audioMocks.getOrPut(this) {
+    if (this is FakeSession) audio else audioMocks.getOrPut(this) {
         mockk<AudioControls>(relaxed = true).also { every { audio } returns it }
             .also { every { it.captureSilenced } returns MutableStateFlow(false) }
     }
 
 /** The mocked session's actions, as a mock of their own so their calls can be counted. */
 fun Session.stubActions(): SessionActions =
-    actionMocks.getOrPut(this) { mockk<SessionActions>(relaxed = true).also { every { actions } returns it } }
+    if (this is FakeSession) {
+        actions
+    } else {
+        actionMocks.getOrPut(this) { mockk<SessionActions>(relaxed = true).also { every { actions } returns it } }
+    }
 
 /** The mocked session's state, stubbed as a flow the test moves; [state] now. */
-fun Session.stubState(state: SessionState): MutableStateFlow<SessionState> =
-    stateFlows.getOrPut(this) { MutableStateFlow(state).also { every { this@stubState.state } returns it } }
-        .also { it.value = state }
+fun Session.stubState(state: SessionState): MutableStateFlow<SessionState> {
+    val flow = if (this is FakeSession) {
+        this.state
+    } else {
+        stateFlows.getOrPut(this) { MutableStateFlow(state).also { every { this@stubState.state } returns it } }
+    }
+    return flow.also { it.value = state }
+}
 
 /** The mocked session's events, stubbed as a flow the test emits into; the same flow on every call. */
-fun Session.stubEvents(): MutableSharedFlow<NomlaEvent> = eventFlows.getOrPut(this) {
-    MutableSharedFlow<NomlaEvent>(extraBufferCapacity = 64).also { every { events } returns it }
-}
+fun Session.stubEvents(): MutableSharedFlow<NomlaEvent> =
+    if (this is FakeSession) {
+        events
+    } else {
+        eventFlows.getOrPut(this) {
+            MutableSharedFlow<NomlaEvent>(extraBufferCapacity = 64).also { every { events } returns it }
+        }
+    }
 
 fun <T : Session> T.stubConnected(): T = apply {
     stubEvents()
@@ -71,8 +89,10 @@ fun <T : Session> T.stubDisconnected(): T = apply {
 
 /** Makes [session] the app's current session, as a connect would. */
 fun installSession(session: Session) {
-    session.stubEvents()
-    session.stubSnapshotsIfAbsent()
-    if (stateFlows[session] == null) session.stubState(SessionState.Connected)
+    if (session !is FakeSession) {
+        session.stubEvents()
+        session.stubSnapshotsIfAbsent()
+        if (stateFlows[session] == null) session.stubState(SessionState.Connected)
+    }
     SessionManager.get(ApplicationProvider.getApplicationContext<Context>()).adopt(session)
 }

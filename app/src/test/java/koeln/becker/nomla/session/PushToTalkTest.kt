@@ -20,29 +20,21 @@ import android.content.Context
 import androidx.preference.PreferenceManager
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
-import io.mockk.every
-import io.mockk.mockk
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.FakeSession
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.testing.installSession
-import koeln.becker.nomla.testing.stubAudio
-import koeln.becker.nomla.testing.stubState
 
 /** The talk keys act only in push-to-talk, only while connected, and hold or toggle as set. */
 @RunWith(RobolectricTestRunner::class)
 class PushToTalkTest {
     private val context = ApplicationProvider.getApplicationContext<Context>()
-    private var talking = false
-    private val session = mockk<Session>(relaxed = true).also {
-        val audio = it.stubAudio()
-        every { audio.isTalking } answers { talking }
-        every { audio.setTalking(any()) } answers { talking = firstArg() }
-    }
+    private val session = FakeSession(SessionState.Connected)
+    private var talking by session.audio::talkingNow
     private val keys = PushToTalk(context)
 
     init {
@@ -96,7 +88,7 @@ class PushToTalkTest {
     @Test
     fun theKeysDoNothingWithoutASynchronizedSession() {
         pushToTalk(toggle = false)
-        session.stubState(SessionState.Connecting)
+        session.state.value = SessionState.Connecting
 
         keys.onKeyDown()
         assertThat(talking).isFalse()
@@ -108,7 +100,7 @@ class PushToTalkTest {
     @Test
     fun toggleModeWithoutAConnectionDoesNotFlip() {
         pushToTalk(toggle = true)
-        session.stubState(SessionState.Disconnected())
+        session.state.value = SessionState.Disconnected()
 
         keys.onKeyUp()
 

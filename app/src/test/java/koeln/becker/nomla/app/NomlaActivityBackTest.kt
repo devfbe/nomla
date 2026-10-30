@@ -18,31 +18,28 @@ package koeln.becker.nomla.app
 
 import androidx.appcompat.app.AlertDialog
 import com.google.common.truth.Truth.assertThat
-import io.mockk.every
-import io.mockk.mockk
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.shadows.ShadowDialog
-import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.FakeSession
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.testing.installSession
 import koeln.becker.nomla.testing.launchNomlaActivity
 import koeln.becker.nomla.testing.message
-import koeln.becker.nomla.testing.stubState
 
 /** Back asks before leaving a connected server, and only then: predictive back works otherwise. */
 @RunWith(RobolectricTestRunner::class)
 class NomlaActivityBackTest {
 
-    private val session: Session = mockk(relaxed = true) {
-        every { targetServer } returns Server(1, "Home", "example.org", 64738, "me", null)
+    private val session = FakeSession().apply {
+        targetServer = Server(1, "Home", "example.org", 64738, "me", null)
     }
-    private val state = session.stubState(SessionState.Disconnected())
+    private val state = session.state
     private lateinit var activity: NomlaActivity
 
     @Before
@@ -89,7 +86,7 @@ class NomlaActivityBackTest {
         state.value = SessionState.Connected
         idleMainLooper()
 
-        installSession(mockk<Session>(relaxed = true).also { it.stubState(SessionState.Connecting) })
+        installSession(FakeSession(SessionState.Connecting))
         idleMainLooper()
 
         assertThat(intercepted).isFalse()

@@ -23,23 +23,21 @@ import androidx.appcompat.view.menu.MenuBuilder
 import androidx.test.core.app.ApplicationProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.google.common.truth.Truth.assertThat
-import io.mockk.mockk
 import com.google.android.material.tabs.TabLayout
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.android.controller.ActivityController
-import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.session.NomlaEvent
+import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.FakeSession
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.testing.ServiceHostActivity
 import koeln.becker.nomla.testing.addNow
 import koeln.becker.nomla.testing.channelRow
 import koeln.becker.nomla.testing.hostWith
-import koeln.becker.nomla.testing.stubConnected
-import koeln.becker.nomla.testing.stubEvents
 import koeln.becker.nomla.testing.textMessage
 
 /**
@@ -51,11 +49,10 @@ class ChannelFragmentTabsTest {
     private lateinit var controller: ActivityController<ServiceHostActivity>
     private lateinit var fragment: ChannelFragment
 
-    private val session = mockk<Session>(relaxed = true)
+    private val session = FakeSession(SessionState.Connected)
 
     @Before
     fun setUp() {
-        session.stubConnected()
         controller = hostWith(session)
         fragment = controller.get().addNow(ChannelFragment(), "channel", inContent = true)
         idleMainLooper()
@@ -103,7 +100,7 @@ class ChannelFragmentTabsTest {
         fragment.requireView().findViewById<TabLayout>(R.id.channel_tabs).getTabAt(1)!!
 
     private fun receive(body: String) {
-        session.stubEvents().tryEmit(NomlaEvent.TextMessage(textMessage(body, actor = 2, actorName = "alice")))
+        session.events.tryEmit(NomlaEvent.TextMessage(textMessage(body, actor = 2, actorName = "alice")))
         idleMainLooper()
     }
 

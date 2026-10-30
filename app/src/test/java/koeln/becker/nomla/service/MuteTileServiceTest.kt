@@ -21,37 +21,29 @@ import android.app.Application
 import android.service.quicksettings.Tile
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
-import io.mockk.mockk
-import io.mockk.verify
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import koeln.becker.nomla.mumble.Session
 import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.mumble.session.SessionState
+import koeln.becker.nomla.mumble.testutil.FakeSession
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.R
 import koeln.becker.nomla.testing.installSession
 import koeln.becker.nomla.testing.selfServerState
-import koeln.becker.nomla.testing.stubState
-import koeln.becker.nomla.testing.stubConnected
-import koeln.becker.nomla.testing.stubDisconnected
-import koeln.becker.nomla.testing.stubEvents
-import koeln.becker.nomla.testing.stubModel
 
 @RunWith(RobolectricTestRunner::class)
 class MuteTileServiceTest {
     private val app: Application = ApplicationProvider.getApplicationContext()
-    private val session = mockk<Session>(relaxed = true)
-    private val model = session.stubModel(model(muted = false))
+    private val session = FakeSession(SessionState.Connected, model = model(muted = false))
+    private val model = session.model
 
     private fun model(muted: Boolean, deafened: Boolean = false) =
         selfServerState(UserState(1, "me", 0, isSelfMuted = muted, isSelfDeafened = deafened))
 
     /** The tile service, listening, with [session] as the current session if [withSession]. */
     private fun listeningTile(withSession: Boolean = true): MuteTileService {
-        session.stubEvents()
         if (withSession) installSession(session)
         val tile = Robolectric.buildService(MuteTileService::class.java).create().get()
         tile.onStartListening()
@@ -69,7 +61,6 @@ class MuteTileServiceTest {
 
     @Test
     fun theTileIsActiveWhileWeAreMutedAndFollowsOurState() {
-        session.stubConnected()
         val tile = listeningTile()
         assertThat(tile.qsTile.state).isEqualTo(Tile.STATE_INACTIVE)
 
@@ -82,10 +73,9 @@ class MuteTileServiceTest {
 
     @Test
     fun aDisconnectMakesTheTileUnavailable() {
-        session.stubConnected()
         val tile = listeningTile()
 
-        session.stubState(SessionState.Disconnected())
+        session.state.value = SessionState.Disconnected()
         idleMainLooper()
 
         assertThat(tile.qsTile.state).isEqualTo(Tile.STATE_UNAVAILABLE)
@@ -93,14 +83,9 @@ class MuteTileServiceTest {
 
     @Test
     fun aNewSessionIsFollowedToo() {
-        session.stubConnected()
         val tile = listeningTile()
-        val next = mockk<Session>(relaxed = true).also {
-            it.stubState(SessionState.Connecting)
-            it.stubModel(null)
-        }
 
-        installSession(next)
+        installSession(FakeSession(SessionState.Connecting))
         idleMainLooper()
 
         assertThat(tile.qsTile.state).isEqualTo(Tile.STATE_UNAVAILABLE)
@@ -108,22 +93,21 @@ class MuteTileServiceTest {
 
     @Test
     fun aClickTogglesOurMute() {
-        session.stubConnected()
         val tile = listeningTile()
 
         tile.onClick()
 
-        verify { session.actions.setSelfMuteDeafState(true, false) }
+        assertThat(session.actions.selfMuteDeafStates).containsExactly(true to false)
     }
 
     @Test
     fun aClickWhileDisconnectedDoesNothing() {
-        session.stubDisconnected()
+        session.state.value = SessionState.Disconnected()
         val tile = listeningTile()
 
         tile.onClick()
 
-        verify(exactly = 0) { session.actions.setSelfMuteDeafState(any(), any()) }
+        assertThat(session.actions.selfMuteDeafStates).isEmpty()
     }
 
     @Test
@@ -138,10 +122,10 @@ class MuteTileServiceTest {
     fun unmutingUndeafensAndMutingKeepsDeafness() {
         model.value = model(muted = true, deafened = true)
         toggleSelfMute(session)
-        verify { session.actions.setSelfMuteDeafState(false, false) }
+        assertThat(session.actions.selfMuteDeafStates).containsExactly(false to false)
 
         model.value = model(muted = false)
         toggleSelfMute(session)
-        verify { session.actions.setSelfMuteDeafState(true, false) }
+        assertThat(session.actions.selfMuteDeafStates).containsExactly(false to false, true to false).inOrder()
     }
 }
