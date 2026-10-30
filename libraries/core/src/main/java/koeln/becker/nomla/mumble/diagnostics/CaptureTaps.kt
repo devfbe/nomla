@@ -46,10 +46,21 @@ private const val NO_TIME = Long.MIN_VALUE
  * allocation and no lock. While it is active the taps measure every stage on the hub's meters, and
  * while a recording is armed they copy each stage into a preallocated scratch frame. [commit]
  * writes the scratch frames to the rings, or silence where sending is not allowed (muted, or
- * push-to-talk without the key), plus one `frames` row. Nothing here allocates per frame.
+ * push-to-talk without the key), plus one `frames` row. Every Opus packet that left the device is
+ * recorded, the terminator after a release or a mute included. Nothing here allocates per frame.
+ *
+ * Every frame of a recording is stamped with the time its microphone read returned: the **end** of
+ * that 10 ms frame. All stages of a frame carry the same stamp.
+ *
+ * The meters belong to the hub and outlive a pipeline: the first tap after the hub becomes active
+ * resets them, and so does the first tap of a rebuilt pipeline's taps while metering runs, so a
+ * rebuild starts the clip count and the peak hold afresh.
+ *
+ * [detach] makes the taps inert for good when their pipeline shuts down, so a capture thread that
+ * outlives its join cannot write into the hub.
  *
  * Built off the capture thread with its pipeline; every method but [onCaptureState] runs on the
- * capture thread only.
+ * capture thread only, and [detach] on the thread that shuts the pipeline down.
  *
  * @param pushToTalk whether sending needs the key, i.e. a frame the input mode refuses is not sent.
  * @param vad the detector of a voice-activity input mode, read for the gate's live state.
@@ -81,11 +92,15 @@ internal class CaptureTaps(
     private var lastStatisticsPolls = 0
     private var newStatistics = false
 
-    /** Whether the last committed frame could be sent; gates [onOpusPacket]. */
-    private var lastSendAllowed = false
-
     /** Whether the meters were reset since the hub last became active. */
     private var metersFresh = false
+
+    /**
+     * Set once by [detach]. A plain field read right after the hub's volatile [DiagnosticsHub.isActive]:
+     * [detach] publishes it with a volatile write of that same flag ([DiagnosticsHub.republish]),
+     * so the tap path keeps a single volatile read per frame.
+     */
+    private var detached = false
 
     private var frameNanos = NO_TIME
     private var rawRate = 0
@@ -101,7 +116,8 @@ internal class CaptureTaps(
         hub.live.vadPresent = vad != null
     }
 
-    val isActive: Boolean get() = hub.isActive
+    /** Whether the taps do anything: the hub is active and the pipeline still runs. */
+    val isActive: Boolean get() = hub.isActive && !detached
 
     /**
      * The pipeline's canceller, whose statistics the frames carry. It polls them every
@@ -114,6 +130,16 @@ internal class CaptureTaps(
         apmPolling = false
         apm?.statisticsEveryFrames = 0
         lastStatisticsPolls = apm?.statisticsPolls ?: 0
+    }
+
+    /**
+     * The pipeline shuts down: every tap is inert from now on, also on a capture thread whose join
+     * timed out, and the hub forgets this pipeline's canceller, which is about to be released.
+     */
+    fun detach() {
+        detached = true
+        if (hub.apm === apm) hub.apm = null
+        hub.republish()
     }
 
     /** The platform silenced the microphone or let it be heard again; on a binder thread. */
@@ -131,9 +157,10 @@ internal class CaptureTaps(
     /**
      * The microphone's frame: [read] samples came from the platform, [expected] is the padded frame
      * at [sampleRate]. [readNanos] is how long the read blocked, negative when it was not timed.
+     * The frame is stamped now, when its read has returned: the end of the frame.
      */
     fun onMicRaw(frame: ShortArray, read: Int, expected: Int, sampleRate: Int, readNanos: Long) {
-        if (!hub.isActive) return
+        if (!isActive) return
         frameNanos = hub.now()
         rawRate = sampleRate
         rawRead = read
@@ -144,7 +171,7 @@ internal class CaptureTaps(
 
     /** The first [length] samples of [frame] behind [stage]; read only. */
     fun onStage(stage: SendStage, frame: ShortArray, length: Int) {
-        if (!hub.isActive) return
+        if (!isActive) return
         tap(stage.ordinal, frame, length, length)
     }
 
@@ -165,11 +192,10 @@ internal class CaptureTaps(
      * of this frame and its `frames` row.
      */
     fun commit(frame: CaptureFrame, muted: Boolean) {
-        val active = hub.isActive
+        val active = isActive
         if (active != apmPolling) onActivityChanged(active)
         if (!active) return
         val sendAllowed = !muted && (!pushToTalk || frame.transmit)
-        lastSendAllowed = sendAllowed
         tap(SendStage.SENT.ordinal, frame.samples, frame.length, 0)
         filled[SendStage.SENT.ordinal] = false
         countClipped()
@@ -180,11 +206,14 @@ internal class CaptureTaps(
         endFrame()
     }
 
-    /** An Opus packet left; kept while recording and sending was allowed for the last frame. */
+    /**
+     * An Opus packet left the device; kept while recording. Every packet sent is kept, the
+     * terminator after a push-to-talk release or a mute included, so `6_sent` is what the peer
+     * hears.
+     */
     @Suppress("LongParameterList") // One packet's fields; a holder object would allocate per packet.
     fun onOpusPacket(data: ByteArray, offset: Int, length: Int, frameNumber: Long, terminator: Boolean) {
-        if (!hub.isActive) return
-        if (!lastSendAllowed) return
+        if (!isActive) return
         val recording = hub.armed ?: return
         recording.sent.write(data, offset, length, frameNumber, terminator, hub.now())
     }
@@ -199,7 +228,6 @@ internal class CaptureTaps(
     private fun onActivityChanged(active: Boolean) {
         apm?.statisticsEveryFrames = if (active) DiagnosticsLimits.STATS_EVERY_FRAMES else 0
         apmPolling = active
-        lastSendAllowed = false
         if (!active) {
             metersFresh = false
             // Taps that ran before the hub went inactive belong to no frame now.

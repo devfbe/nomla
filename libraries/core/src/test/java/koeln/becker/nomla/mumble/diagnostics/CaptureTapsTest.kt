@@ -19,20 +19,26 @@ package koeln.becker.nomla.mumble.diagnostics
 
 import com.google.common.truth.Truth.assertThat
 import com.google.common.truth.Truth.assertWithMessage
+import koeln.becker.nomla.mumble.audio.AudioHandler
+import koeln.becker.nomla.mumble.audio.VoiceTransmitter
 import koeln.becker.nomla.mumble.audio.capture.CaptureFrame
 import koeln.becker.nomla.mumble.audio.capture.CapturePipeline
 import koeln.becker.nomla.mumble.audio.capture.CapturePreprocessorFactory
 import koeln.becker.nomla.mumble.audio.capture.EchoCancellationMode
 import koeln.becker.nomla.mumble.audio.capture.NanoClock
 import koeln.becker.nomla.mumble.audio.capture.NoiseSuppressionMode
+import koeln.becker.nomla.mumble.audio.capture.NoopPreprocessor
 import koeln.becker.nomla.mumble.audio.capture.VadConfig
 import koeln.becker.nomla.mumble.audio.capture.VoiceActivityDetector
 import koeln.becker.nomla.mumble.audio.capture.WebRtcApmConfig
 import koeln.becker.nomla.mumble.audio.capture.WebRtcApmPreprocessor
 import koeln.becker.nomla.mumble.audio.capture.fakes.FakeSpeexPreprocessApi
 import koeln.becker.nomla.mumble.audio.capture.fakes.FakeWebRtcApmApi
+import koeln.becker.nomla.mumble.audio.encoder.Encoder
 import koeln.becker.nomla.mumble.audio.inputmode.ToggleInputMode
 import koeln.becker.nomla.mumble.diagnostics.export.TrackAssembler
+import koeln.becker.nomla.mumble.net.NomlaUdpMessageType
+import koeln.becker.nomla.mumble.net.PacketBuffer
 import koeln.becker.nomla.mumble.testutil.AllocationMeter
 import org.junit.Test
 
@@ -145,22 +151,130 @@ class CaptureTapsTest {
         assertThat(vadRecording.frames.freeze(vadRecording.t0Nanos).column("send_allowed")).isEqualTo(listOf(1f, 1f, 1f))
     }
 
+    /**
+     * Two frames per packet, as the default Opus setup sends. The terminator after the push-to-talk
+     * release carries the last held frame padded with silence; it left the device, so `6_sent` has
+     * it although the release frame itself is not allowed to be sent.
+     */
     @Test
-    fun `opus packets are recorded only while sending is allowed`() {
-        val taps = CaptureTaps(hub, pushToTalk = false, vad = null)
-        val payload = byteArrayOf(9, 9, 1, 2, 3)
+    fun `every transmitted packet is recorded, including the terminator`() {
+        val ptt = ToggleInputMode()
+        val taps = CaptureTaps(hub, pushToTalk = true, vad = null)
+        val sent = mutableListOf<ByteArray>()
+        val listener = object : AudioHandler.AudioEncodeListener {
+            override fun onAudioEncoded(data: ByteArray, length: Int) {
+                sent += data.copyOf(length)
+            }
+
+            override fun onTalkingStateChanged(talking: Boolean) = Unit
+        }
+        val transmitter = VoiceTransmitter(CapturePipeline(null, NoopPreprocessor, ptt, taps = taps), listener, taps)
+            .apply { setCodec(NomlaUdpMessageType.UDPVoiceOpus) { TwoFrameEncoder() } }
+        fun send(first: Int) {
+            transmitter.onAudioInputReceived(ShortArray(FRAME) { if (it == 0) first.toShort() else 0 }, FRAME)
+            now += DiagnosticsLimits.FRAME_NANOS
+        }
         hub.arm(5)
 
-        taps.commit(frame(1), muted = true)
-        taps.onOpusPacket(payload, 2, 3, 0L, false)
-        taps.commit(frame(1), muted = false)
-        taps.onOpusPacket(payload, 2, 3, 2L, true)
-        val packets = hub.disarm()!!.sent.freeze()
+        send(0x0909)
+        ptt.setTalkingOn(true)
+        for (first in listOf(0x0101, 0x0202, 0x0303)) send(first)
+        ptt.setTalkingOn(false)
+        send(0x0404)
+        val recording = hub.disarm()!!
+        val packets = recording.sent.freeze()
 
-        assertThat(packets.count).isEqualTo(1)
-        assertThat(packets.frameNumbers.toList()).containsExactly(2L)
-        assertThat(packets.terminators.toList()).containsExactly(true)
-        assertThat(packets.bytes.toList()).containsExactly(1.toByte(), 2.toByte(), 3.toByte()).inOrder()
+        assertThat(sent).hasSize(2)
+        assertThat(packets.count).isEqualTo(sent.size)
+        assertThat(packets.frameNumbers.toList()).containsExactly(0L, 2L).inOrder()
+        assertThat(packets.terminators.toList()).containsExactly(false, true).inOrder()
+        for (i in 0 until packets.count) {
+            val payload = packets.bytes.copyOfRange(packets.offsets[i], packets.offsets[i] + packets.lengths[i])
+            assertWithMessage("packet $i is the payload that was sent")
+                .that(sent[i].toList().takeLast(payload.size)).isEqualTo(payload.toList())
+        }
+        assertThat(packets.bytes.toList()).isEqualTo(listOf<Byte>(1, 1, 2, 2, 3, 3, 0, 0))
+        assertThat(recording.frames.freeze(recording.t0Nanos).column("send_allowed"))
+            .containsExactly(0f, 1f, 1f, 1f, 0f).inOrder()
+    }
+
+    @Test
+    fun `detached taps write nothing and the hub forgets their canceller`() {
+        val apm = WebRtcApmPreprocessor(FakeWebRtcApmApi(), WebRtcApmConfig.FOR_ECHO_CANCELLATION)
+        val taps = CaptureTaps(hub, pushToTalk = false, vad = null)
+        taps.attachApm(apm)
+        hub.meter()
+        hub.arm(5)
+        taps.feed(1000)
+        assertThat(apm.statisticsEveryFrames).isEqualTo(DiagnosticsLimits.STATS_EVERY_FRAMES)
+
+        taps.detach()
+        repeat(3) { taps.feed(2000) }
+        taps.onOpusPacket(ByteArray(4), 0, 4, 0L, false)
+        val recording = hub.disarm()!!
+
+        assertThat(hub.apm).isNull()
+        assertThat(taps.isActive).isFalse()
+        assertThat(hub.isActive).isTrue()
+        assertThat(recording.firstSamples(SendStage.MIC_RAW)).containsExactly(1000)
+        assertThat(recording.frames.freeze(recording.t0Nanos).rows).isEqualTo(1)
+        assertThat(recording.sent.freeze().count).isEqualTo(0)
+        assertWithMessage("the released canceller stops polling").that(apm.statisticsEveryFrames).isEqualTo(0)
+        apm.release()
+    }
+
+    @Test
+    fun `detaching an old pipeline leaves the new pipeline's canceller`() {
+        val old = WebRtcApmPreprocessor(FakeWebRtcApmApi(), WebRtcApmConfig.FOR_ECHO_CANCELLATION)
+        val new = WebRtcApmPreprocessor(FakeWebRtcApmApi(), WebRtcApmConfig.FOR_ECHO_CANCELLATION)
+        val oldTaps = CaptureTaps(hub, pushToTalk = false, vad = null).apply { attachApm(old) }
+        CaptureTaps(hub, pushToTalk = false, vad = null).attachApm(new)
+
+        oldTaps.detach()
+
+        assertThat(hub.apm).isSameInstanceAs(new)
+        old.release()
+        new.release()
+    }
+
+    /** Two frames per packet; each frame is encoded as its first sample, two bytes. */
+    private class TwoFrameEncoder : Encoder {
+        private val samples = ShortArray(2)
+        private var ready = false
+        private var terminated = false
+        override var bufferedFrames = 0
+            private set
+        override val isReady: Boolean get() = ready
+        override val encodedLength: Int get() = if (ready) 4 else 0
+        override val isTerminator: Boolean get() = terminated
+
+        override fun encode(input: ShortArray, inputSize: Int): Int {
+            terminated = false
+            samples[bufferedFrames++] = input[0]
+            ready = bufferedFrames == 2
+            return encodedLength
+        }
+
+        override fun getEncodedData(packetBuffer: PacketBuffer) {
+            for (sample in samples) {
+                packetBuffer.append(sample.toLong() shr 8)
+                packetBuffer.append(sample.toLong())
+            }
+            bufferedFrames = 0
+            ready = false
+            terminated = false
+        }
+
+        override fun terminate() {
+            terminated = true
+            if (bufferedFrames > 0 && !ready) {
+                samples.fill(0, bufferedFrames)
+                bufferedFrames = 2
+                ready = true
+            }
+        }
+
+        override fun close() = Unit
     }
 
     @Test

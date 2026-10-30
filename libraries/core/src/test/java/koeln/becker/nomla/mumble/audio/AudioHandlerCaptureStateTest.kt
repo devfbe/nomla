@@ -29,8 +29,11 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowAudioTrack
 import koeln.becker.nomla.mumble.audio.capture.CaptureState
+import koeln.becker.nomla.mumble.audio.capture.CapturePreprocessorFactory
 import koeln.becker.nomla.mumble.audio.capture.EchoCancellationMode
 import koeln.becker.nomla.mumble.audio.capture.NoiseSuppressionMode
+import koeln.becker.nomla.mumble.audio.capture.PcmCaptureSource
+import koeln.becker.nomla.mumble.audio.capture.fakes.FakeWebRtcApmApi
 import koeln.becker.nomla.mumble.audio.inputmode.ContinuousInputMode
 import koeln.becker.nomla.mumble.diagnostics.CaptureTaps
 import koeln.becker.nomla.mumble.diagnostics.DiagnosticsHub
@@ -41,6 +44,7 @@ import koeln.becker.nomla.mumble.testutil.NoopOutputListener
 import koeln.becker.nomla.mumble.testutil.SilentLogger
 import koeln.becker.nomla.mumble.testutil.TestCaptureSource
 import koeln.becker.nomla.mumble.testutil.awaitUntil
+import org.junit.Assert.assertThrows
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -129,6 +133,47 @@ class AudioHandlerCaptureStateTest {
             CaptureTaps.CAPTURE_SILENCED to "1",
             CaptureTaps.CAPTURE_SILENCED to "0",
         ).inOrder()
+    }
+
+    /** A pipeline with the canceller, its native API faked so the JVM can run it. */
+    private fun cancellingHandler(hub: DiagnosticsHub, source: PcmCaptureSource) = AudioHandler(
+        AudioHost(app, SilentLogger, NoopEncodeListener, NoopOutputListener, hub),
+        config.copy(echoCancellation = EchoCancellationMode.WEBRTC),
+        params,
+        onCaptureState = { states += it },
+        captureFactory = { source },
+        preprocessorFactory = CapturePreprocessorFactory(apmApi = { FakeWebRtcApmApi() }),
+    )
+
+    /** The canceller is released at shutdown; the hub must not show statistics of a freed stage. */
+    @Test
+    fun shutdownLeavesTheHubWithoutTheReleasedCanceller() {
+        val hub = DiagnosticsHub()
+        val audio = cancellingHandler(hub, TestCaptureSource()).also { handler = it }
+        audio.start()
+        assertThat(hub.apm).isNotNull()
+
+        audio.shutdown()
+        handler = null
+
+        assertThat(hub.apm).isNull()
+    }
+
+    /** Nobody shuts down a pipeline whose start failed, so the failure itself lets go of the hub. */
+    @Test
+    fun aPipelineThatFailsToStartLeavesTheHubWithoutItsCanceller() {
+        val hub = DiagnosticsHub()
+        val refusing = object : PcmCaptureSource by TestCaptureSource() {
+            override fun setSilenceListener(listener: ((Boolean) -> Unit)?) {
+                check(listener == null) { "the platform refused the recording callback" }
+            }
+        }
+        val audio = cancellingHandler(hub, refusing)
+        assertThat(hub.apm).isNotNull()
+
+        assertThrows(IllegalStateException::class.java) { audio.start() }
+
+        assertThat(hub.apm).isNull()
     }
 
     private companion object {

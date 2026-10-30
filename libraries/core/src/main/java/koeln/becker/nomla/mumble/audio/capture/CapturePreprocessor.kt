@@ -17,6 +17,8 @@
 
 package koeln.becker.nomla.mumble.audio.capture
 
+import androidx.annotation.VisibleForTesting
+
 /**
  * One stage of the capture pipeline. [process] modifies every 10 ms 48 kHz mono frame in place on
  * the capture thread and returns a voice probability in [0, 1], or null for no opinion. Must not
@@ -51,7 +53,8 @@ internal class ChainedPreprocessor(stages: List<CapturePreprocessor>) : CaptureP
     private val stages: Array<CapturePreprocessor> = stages.toTypedArray()
 
     /** The stages in order. */
-    val stageList: List<CapturePreprocessor> get() = stages.asList()
+    @VisibleForTesting
+    internal val stageList: List<CapturePreprocessor> get() = stages.asList()
 
     override fun process(frame: ShortArray): Float? {
         // No lambda: a captured var allocates a Ref.ObjectRef per frame.

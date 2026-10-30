@@ -42,6 +42,9 @@ private const val CAPTURE_RATE = 48_000
  * it changes only on the thread that opens or closes a handle, arms or disarms, never on an audio
  * thread.
  *
+ * The stage meters live here, across rebuilds, but each pipeline's taps reset them at their first
+ * frame: a rebuild while metering starts the clip counts and peak holds afresh.
+ *
  * @param clock the time base of every frame, packet and event; `System.nanoTime` in production.
  * @param allocate builds a recording's rings; may throw [OutOfMemoryError]. A seam for that test.
  */
@@ -185,6 +188,14 @@ internal class DiagnosticsHub(
         val now = meterHolders > 0 || armed != null
         activeNow = now
         activeFlow.value = now
+    }
+
+    /**
+     * Writes [isActive] again, unchanged: a volatile write that publishes whatever the calling
+     * thread wrote before it to every audio thread's next [isActive] read (see `CaptureTaps.detach`).
+     */
+    fun republish() {
+        synchronized(lock) { updateActive() }
     }
 
     companion object {

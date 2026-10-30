@@ -323,8 +323,8 @@ class VoiceTransmitterTest {
 
     /**
      * Push-to-talk: released, held, then held while muted. The taps see every frame with its own
-     * decision and mute state, and only the packets sent while sending was allowed are recorded,
-     * each as its Opus payload without the header.
+     * decision and mute state, and every packet that was sent is recorded, each as its Opus payload
+     * without the header: the mute's terminator (a frame of silence) left the device too.
      */
     @Test
     fun `commit sees the mute state and the decision of every frame`() {
@@ -348,8 +348,9 @@ class VoiceTransmitterTest {
         assertThat(column("muted")).containsExactly(0f, 0f, 0f, 0f, 1f, 1f).inOrder()
         assertThat(column("send_allowed")).containsExactly(0f, 0f, 1f, 1f, 0f, 0f).inOrder()
         val packets = recording.sent.freeze()
-        assertThat(packets.frameNumbers.toList()).containsExactly(0L, 1L).inOrder()
-        assertThat(packets.bytes.toList()).containsExactly(3.toByte(), 3.toByte(), 4.toByte(), 4.toByte()).inOrder()
+        assertThat(packets.frameNumbers.toList()).containsExactly(0L, 1L, 2L).inOrder()
+        assertThat(packets.bytes.toList())
+            .containsExactly(3.toByte(), 3.toByte(), 4.toByte(), 4.toByte(), 0.toByte(), 0.toByte()).inOrder()
     }
 
     private fun assertSendPathDoesNotAllocate(protocol: UdpProtocol) {

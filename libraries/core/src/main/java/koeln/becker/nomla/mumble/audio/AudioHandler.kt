@@ -26,6 +26,7 @@ import koeln.becker.nomla.mumble.R
 import koeln.becker.nomla.mumble.audio.capture.AndroidAudioRecordSource
 import koeln.becker.nomla.mumble.audio.capture.AudioSourcePolicy
 import koeln.becker.nomla.mumble.audio.capture.CapturePipeline
+import koeln.becker.nomla.mumble.audio.capture.CapturePreprocessorFactory
 import koeln.becker.nomla.mumble.audio.capture.CaptureRequest
 import koeln.becker.nomla.mumble.audio.capture.CaptureState
 import koeln.becker.nomla.mumble.audio.capture.PcmCaptureSourceFactory
@@ -57,14 +58,17 @@ import koeln.becker.nomla.mumble.util.NomlaLogger
  *   sending as somebody else.
  * @param onCaptureState what the capture reports: [CaptureState.Silenced] and [CaptureState.Active]
  *   on a platform binder thread, [CaptureState.Error] on the capture thread.
- * @param captureFactory opens the microphone; tests replace it.
+ * @param preprocessorFactory builds the capture chain; tests replace it, null is the native one.
+ * @param captureFactory opens the microphone; tests replace it. Last, so tests can pass a lambda.
  * @throws AudioInitializationException without the RECORD_AUDIO permission.
  */
+@Suppress("LongParameterList") // The session's inputs and the two platform seams.
 internal class AudioHandler(
     host: AudioHost,
     config: AudioConfig,
     private val params: AudioSessionParams,
     onCaptureState: (CaptureState) -> Unit = {},
+    preprocessorFactory: CapturePreprocessorFactory? = null,
     captureFactory: PcmCaptureSourceFactory = AndroidAudioRecordSource.Factory(),
 ) : TcpMessageHandler, VoicePacketHandler {
 
@@ -140,10 +144,10 @@ internal class AudioHandler(
         // far-end tap to AudioOutput's playback thread, which must feed the reference for AEC to work.
         val wiring = CaptureWiring.wire(
             input.sampleRate, params.inputMode, settings.amplitudeBoost, settings.noiseSuppression, echo,
-            settings.speexNoiseSuppressDb, settings.rnnoiseAttenuationLimitDb, logger, taps = taps,
+            settings.speexNoiseSuppressDb, settings.rnnoiseAttenuationLimitDb, logger,
+            factory = preprocessorFactory, taps = taps,
         )
         capturePipeline = wiring.pipeline
-        taps?.attachApm(wiring.apm)
         description = diagnostics?.let {
             PipelineDescription(captureSource.describe(), describeSettings(config), wiring.stagesPresent)
         }
@@ -157,6 +161,8 @@ internal class AudioHandler(
         transmitter.targetId = params.targetId
         transmitter.udpProtocol = params.udpProtocol
         output = AudioOutput(host.outputListener, wiring.farEnd)
+        // Last, so a constructor that throws never leaves the hub pointing at this canceller.
+        taps?.attachApm(wiring.apm)
     }
 
     /**
@@ -166,6 +172,17 @@ internal class AudioHandler(
     @Synchronized
     fun start() {
         if (isInitialized) return
+        try {
+            startAll()
+        } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
+            // Nobody shuts a pipeline down that failed to start: its taps go inert here, and the
+            // hub forgets its canceller.
+            taps?.detach()
+            throw e
+        }
+    }
+
+    private fun startAll() {
         val self = params.self
         setMaxBandwidth(params.maxBandwidth)
         // After the bandwidth fit, so the bitrate and frames per packet are the ones sent with.
@@ -247,6 +264,8 @@ internal class AudioHandler(
 
     @Synchronized
     fun shutdown() {
+        // First, so a capture thread that outlives the bounded join below writes nothing to the hub.
+        taps?.detach()
         synchronized(input) { input.shutdown() }
         // After the capture thread is joined, because every stage in it is single-threaded and
         // release() frees native state the loop reaches on every frame.

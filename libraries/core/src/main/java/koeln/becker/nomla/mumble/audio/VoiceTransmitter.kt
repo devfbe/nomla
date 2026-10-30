@@ -126,8 +126,10 @@ internal class VoiceTransmitter(
         // Resample, preprocess every frame, then detect, then boost. The result and its samples
         // belong to the pipeline and are valid only until the next call.
         val processed = pipeline.process(frame, frameSize)
-        val nowTalking = processed.transmit && !muteState.isMuted
-        taps?.commit(processed, muteState.isMuted)
+        // Read once, so the decision and the taps see the same mute state.
+        val muted = muteState.isMuted
+        val nowTalking = processed.transmit && !muted
+        taps?.commit(processed, muted)
 
         if (talking != nowTalking) {
             listener.onTalkingStateChanged(nowTalking)
