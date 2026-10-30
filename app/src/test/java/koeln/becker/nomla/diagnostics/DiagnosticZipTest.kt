@@ -38,6 +38,7 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.util.TimeZone
 import java.util.zip.ZipInputStream
 
 @RunWith(RobolectricTestRunner::class)
@@ -183,7 +184,7 @@ class DiagnosticZipTest {
         val name = "Felix's AirPods"
         for (type in listOf(
             AudioDeviceInfo.TYPE_BLUETOOTH_SCO, AudioDeviceInfo.TYPE_BLUETOOTH_A2DP, AudioDeviceInfo.TYPE_BLE_HEADSET,
-            AudioDeviceInfo.TYPE_BLE_SPEAKER, AudioDeviceInfo.TYPE_HEARING_AID,
+            AudioDeviceInfo.TYPE_BLE_SPEAKER, AudioDeviceInfo.TYPE_BLE_BROADCAST, AudioDeviceInfo.TYPE_HEARING_AID,
         )) {
             val entries = zip(capture(route = route(type, name)))
 
@@ -201,6 +202,35 @@ class DiagnosticZipTest {
     }
 
     // --- README.txt ------------------------------------------------------------------------------
+
+    /**
+     * A ZIP entry's DOS time is local wall-clock time; the device's time zone must not show in it.
+     * The same capture gives the same bytes in any zone, and every entry reads as the start in UTC
+     * (to the DOS format's 2 s).
+     */
+    @Test
+    fun `entry times do not reveal the time zone`() {
+        val capture = capture()
+        val original = TimeZone.getDefault()
+        try {
+            val bytes = listOf("UTC", "Asia/Kolkata", "America/Los_Angeles").map { zone ->
+                TimeZone.setDefault(TimeZone.getTimeZone(zone))
+                ByteArrayOutputStream().also { DiagnosticZip.write(capture, review, info, it) }.toByteArray()
+            }
+            assertThat(bytes[1]).isEqualTo(bytes[0])
+            assertThat(bytes[2]).isEqualTo(bytes[0])
+
+            TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
+            ZipInputStream(ByteArrayInputStream(bytes[0])).use { zip ->
+                while (true) {
+                    val entry = zip.nextEntry ?: break
+                    assertWithMessage(entry.name).that(entry.time).isEqualTo(STARTED_AT_DOS_MS)
+                }
+            }
+        } finally {
+            TimeZone.setDefault(original)
+        }
+    }
 
     @Test
     fun `README names every event`() {
@@ -346,6 +376,9 @@ class DiagnosticZipTest {
 
         // 2026-10-30T12:34:56.789Z
         const val STARTED_AT_MS = 1_793_363_696_789L
+
+        // The start as a DOS time, which keeps even seconds: 2026-10-30T12:34:56Z.
+        const val STARTED_AT_DOS_MS = 1_793_363_696_000L
 
         val ALLOWED_KEYS = setOf(
             "format_version", "app", "version_name", "version_code", "flavor",

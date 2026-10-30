@@ -30,6 +30,10 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import java.io.File
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import java.util.zip.ZipFile
 
 @RunWith(RobolectricTestRunner::class)
 class DiagnosticShareTest {
@@ -86,6 +90,56 @@ class DiagnosticShareTest {
         assertThat(dir.list().orEmpty().toList()).isEmpty()
     }
 
+    /**
+     * A double tap exports twice at once: export and clear are serialized, so exactly one whole ZIP
+     * is left, the one of the export that ran last, and its URI is one of those returned.
+     */
+    @Test
+    fun `two concurrent exports leave one whole zip`() {
+        val pool = Executors.newFixedThreadPool(2)
+        try {
+            repeat(ROUNDS) {
+                dir.deleteRecursively()
+                val go = CountDownLatch(1)
+                val exports = listOf(FIRST_START_MS, SECOND_START_MS).map { start ->
+                    pool.submit<android.net.Uri> {
+                        go.await()
+                        DiagnosticShare.export(context, capture(start), review)
+                    }
+                }
+                go.countDown()
+                val uris = exports.map { it.get(TIMEOUT_SECONDS, TimeUnit.SECONDS) }
+
+                val left = dir.listFiles()!!.toList()
+                assertThat(left).hasSize(1)
+                assertThat(uris.map { it.lastPathSegment }).contains(left.single().name)
+                ZipFile(left.single()).use { zip -> assertThat(zip.getEntry("meta.json")).isNotNull() }
+            }
+        } finally {
+            pool.shutdownNow()
+        }
+    }
+
+    /**
+     * The clear at process start removes what earlier processes left, never a ZIP an export of
+     * this process already returned, however late the clear runs.
+     */
+    @Test
+    fun `the clear at process start spares an export already made`() {
+        val processStartMs = System.currentTimeMillis()
+        dir.mkdirs()
+        val stale = File(dir, "from-an-earlier-process.zip").apply { writeText("x") }
+        assertThat(stale.setLastModified(processStartMs - EARLIER_MS)).isTrue()
+        val uri = DiagnosticShare.export(context, capture(SECOND_START_MS), review)
+        // export() already cleared the stale file; put one back to see the start clear take it.
+        stale.writeText("x")
+        assertThat(stale.setLastModified(processStartMs - EARLIER_MS)).isTrue()
+
+        DiagnosticShare.clearAtStart(context, processStartMs)
+
+        assertThat(dir.list()!!.toList()).containsExactly(uri.lastPathSegment)
+    }
+
     private fun capture(startedAtMs: Long) = DiagnosticCapture(
         startedAtEpochMs = startedAtMs,
         durationMs = DURATION_MS,
@@ -103,6 +157,9 @@ class DiagnosticShareTest {
         const val DURATION_MS = 10L
         const val RATE = 48_000
         const val SAMPLES = 480
+        const val ROUNDS = 20
+        const val TIMEOUT_SECONDS = 30L
+        const val EARLIER_MS = 60_000L
 
         // 2026-10-30T12:34:00Z and 12:34:56Z
         const val FIRST_START_MS = 1_793_363_640_000L

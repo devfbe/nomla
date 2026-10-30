@@ -142,7 +142,9 @@ class AppContainer(
     init {
         SessionSettingsSync(app, settings, sessionManager, appMessages).start(scope)
         // A shared diagnostics ZIP lives until the next export, discard or process start (B13).
-        scope.launch(parts.ioDispatcher) { DiagnosticShare.clear(app) }
+        // Only what earlier processes left: an export of this process is never cleared here.
+        val processStartMs = System.currentTimeMillis()
+        scope.launch(parts.ioDispatcher) { DiagnosticShare.clearAtStart(app, processStartMs) }
     }
 
     /** A microphone test for a screen on [context]; see [MicCheck]. */

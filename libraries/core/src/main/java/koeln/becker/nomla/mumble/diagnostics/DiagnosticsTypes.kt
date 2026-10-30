@@ -17,6 +17,7 @@
 
 package koeln.becker.nomla.mumble.diagnostics
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
@@ -341,11 +342,13 @@ public data class RouteInfo(
 ) {
     public companion object {
         /** Bluetooth devices, which are recorded by type only. */
+        @SuppressLint("InlinedApi") // Constants, inlined; a platform before API 33 never reports BLE broadcast.
         private val BLUETOOTH_TYPES = setOf(
             AudioDeviceInfo.TYPE_BLUETOOTH_SCO,
             AudioDeviceInfo.TYPE_BLUETOOTH_A2DP,
             AudioDeviceInfo.TYPE_BLE_HEADSET,
             AudioDeviceInfo.TYPE_BLE_SPEAKER,
+            AudioDeviceInfo.TYPE_BLE_BROADCAST,
             AudioDeviceInfo.TYPE_HEARING_AID,
         )
 

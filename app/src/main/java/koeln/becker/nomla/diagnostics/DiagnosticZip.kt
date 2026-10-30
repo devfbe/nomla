@@ -17,6 +17,7 @@
 
 package koeln.becker.nomla.diagnostics
 
+import android.annotation.SuppressLint
 import android.media.AudioDeviceInfo
 import koeln.becker.nomla.mumble.diagnostics.CapturedTrack
 import koeln.becker.nomla.mumble.diagnostics.DiagnosticCapture
@@ -29,6 +30,8 @@ import java.io.BufferedWriter
 import java.io.OutputStream
 import java.io.OutputStreamWriter
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -43,6 +46,9 @@ import java.util.zip.ZipOutputStream
  * `meta.json` is built key by key from an allow-list, never by serializing an object, so nothing
  * the capture does not name explicitly can leave the device. A Bluetooth route is written by its
  * type only, without a product name, whatever the capture holds (G2).
+ *
+ * Every entry is stamped with the recording's start as UTC wall-clock time, so the ZIP's DOS
+ * times, which are local, do not reveal the device's time zone.
  */
 object DiagnosticZip {
     const val FORMAT_VERSION = 1
@@ -57,11 +63,13 @@ object DiagnosticZip {
     private const val MIX_TRACK_ID = "7_mix"
 
     /** Bluetooth devices, which leave the device by type only (G2). */
+    @SuppressLint("InlinedApi") // Constants, inlined; a platform before API 33 never reports BLE broadcast.
     private val BLUETOOTH_TYPES = setOf(
         AudioDeviceInfo.TYPE_BLUETOOTH_SCO,
         AudioDeviceInfo.TYPE_BLUETOOTH_A2DP,
         AudioDeviceInfo.TYPE_BLE_HEADSET,
         AudioDeviceInfo.TYPE_BLE_SPEAKER,
+        AudioDeviceInfo.TYPE_BLE_BROADCAST,
         AudioDeviceInfo.TYPE_HEARING_AID,
     )
 
@@ -107,21 +115,30 @@ object DiagnosticZip {
     /** Writes the ZIP of [capture] with [review] and [info] to [out], which stays open. Blocking. */
     fun write(capture: DiagnosticCapture, review: CaptureReview, info: AppInfo, out: OutputStream) {
         val zip = ZipOutputStream(out).apply { setMethod(ZipOutputStream.DEFLATED) }
-        textEntry(zip, README) { it.append(DiagnosticReadme.text()) }
-        textEntry(zip, META) { it.append(meta(capture, review, info).toString(JSON_INDENT)).append('\n') }
+        val time = zoneFreeTime(capture.startedAtEpochMs)
+        textEntry(zip, README, time) { it.append(DiagnosticReadme.text()) }
+        textEntry(zip, META, time) { it.append(meta(capture, review, info).toString(JSON_INDENT)).append('\n') }
         for (track in capture.tracks) {
-            zip.putNextEntry(ZipEntry("${track.id}.wav"))
+            zip.putNextEntry(ZipEntry("${track.id}.wav").apply { this.time = time })
             capture.writeTrack(track, zip)
             zip.closeEntry()
         }
-        for (table in capture.tables) textEntry(zip, "${table.name}.csv") { capture.writeTable(table, it) }
-        textEntry(zip, "$EVENTS.csv") { capture.writeEvents(it) }
+        for (table in capture.tables) textEntry(zip, "${table.name}.csv", time) { capture.writeTable(table, it) }
+        textEntry(zip, "$EVENTS.csv", time) { capture.writeEvents(it) }
         zip.finish()
     }
 
+    /**
+     * The entry time whose local wall clock, as `ZipEntry` stores it, is [epochMs] in UTC: the
+     * same DOS time in every zone.
+     */
+    private fun zoneFreeTime(epochMs: Long): Long =
+        LocalDateTime.ofInstant(Instant.ofEpochMilli(epochMs), ZoneOffset.UTC)
+            .atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+
     /** One UTF-8 text entry; the writer is flushed, never closed, so [zip] stays open. */
-    private fun textEntry(zip: ZipOutputStream, name: String, write: (Appendable) -> Unit) {
-        zip.putNextEntry(ZipEntry(name))
+    private fun textEntry(zip: ZipOutputStream, name: String, time: Long, write: (Appendable) -> Unit) {
+        zip.putNextEntry(ZipEntry(name).apply { this.time = time })
         val writer = BufferedWriter(OutputStreamWriter(zip, Charsets.UTF_8))
         write(writer)
         writer.flush()

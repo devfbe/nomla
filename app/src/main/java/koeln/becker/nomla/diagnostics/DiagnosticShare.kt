@@ -33,21 +33,29 @@ import java.util.Locale
 /**
  * Shares a recording as one ZIP in `cacheDir/shared_diagnostics/` through the app's FileProvider
  * (B13). The directory holds at most the last export: it is cleared before every export, on
- * discard and once at process start.
+ * discard and once at process start. So each export revokes the previous ZIP: an app that was
+ * handed its URI can no longer open it.
+ *
+ * [export], [clear] and [clearAtStart] are serialized, so a double tap or the clear at process
+ * start never unlinks a ZIP while it is written, and the clear at process start never unlinks one
+ * this process already returned.
  */
 object DiagnosticShare {
     const val DIRECTORY = "shared_diagnostics"
 
     private const val MIME_TYPE = "application/zip"
 
+    private val lock = Any()
+
     private val NAME_TIME: DateTimeFormatter =
         DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss", Locale.ROOT).withZone(ZoneOffset.UTC)
 
     /**
      * Writes [capture] with [review] as `nomla-diagnose-<yyyyMMdd-HHmmss>.zip` (its start, UTC),
-     * the only file in the directory, and returns its `content://` URI. Blocking I/O.
+     * the only file in the directory, and returns its `content://` URI. Revokes the previous
+     * export. Blocking I/O.
      */
-    fun export(context: Context, capture: DiagnosticCapture, review: CaptureReview): Uri {
+    fun export(context: Context, capture: DiagnosticCapture, review: CaptureReview): Uri = synchronized(lock) {
         clear(context)
         val dir = File(context.cacheDir, DIRECTORY).apply { mkdirs() }
         val file = File(dir, fileName(capture.startedAtEpochMs))
@@ -59,12 +67,25 @@ object DiagnosticShare {
             // A half-written ZIP is never left to share.
             if (!written) file.delete()
         }
-        return FileProvider.getUriForFile(context, context.packageName + ImageShareExporter.AUTHORITY_SUFFIX, file)
+        FileProvider.getUriForFile(context, context.packageName + ImageShareExporter.AUTHORITY_SUFFIX, file)
     }
 
-    /** Deletes every shared ZIP and leftover. Blocking I/O. */
+    /** Deletes every shared ZIP and leftover, revoking the last export. Blocking I/O. */
     fun clear(context: Context) {
-        File(context.cacheDir, DIRECTORY).listFiles()?.forEach { it.deleteRecursively() }
+        synchronized(lock) { deleteFiles(context) { true } }
+    }
+
+    /**
+     * The clear at process start: deletes what earlier processes left, that is everything last
+     * modified before [processStartMs] (`System.currentTimeMillis` when the process started), and
+     * spares any export of this process, however late it runs. Blocking I/O.
+     */
+    fun clearAtStart(context: Context, processStartMs: Long) {
+        synchronized(lock) { deleteFiles(context) { it.lastModified() < processStartMs } }
+    }
+
+    private fun deleteFiles(context: Context, which: (File) -> Boolean) {
+        File(context.cacheDir, DIRECTORY).listFiles()?.filter(which)?.forEach { it.deleteRecursively() }
     }
 
     private fun fileName(startedAtEpochMs: Long): String =
