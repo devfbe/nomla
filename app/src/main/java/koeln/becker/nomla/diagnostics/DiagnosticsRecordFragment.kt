@@ -174,10 +174,11 @@ class DiagnosticsRecordFragment : Fragment() {
         }
     }
 
-    override fun onStop() {
-        // Playback is for the page in view: it ends when the page is left.
+    override fun onPause() {
+        // Playback, and with it the hold on transmission, is for the page in view: it ends when the
+        // page is left. A pager caps a page out of view at STARTED, so that is a pause, never a stop.
         playback?.stop()
-        super.onStop()
+        super.onPause()
     }
 
     override fun onDestroyView() {
@@ -288,8 +289,10 @@ class DiagnosticsRecordFragment : Fragment() {
     /** Share waits while an export runs; a written ZIP goes to the share sheet once; a failure is said. */
     private fun showExport(state: ExportState) {
         views?.share?.isEnabled = state != ExportState.Running
-        if (state is ExportState.Ready) {
-            val send = DiagnosticShare.shareIntent(state.uri, getString(R.string.debug_record_share_subject))
+        // Null for a revoked export: its ZIP is gone, and the state falls back to Idle.
+        val uri = if (state is ExportState.Ready) exports.readyUri() else null
+        if (uri != null) {
+            val send = DiagnosticShare.shareIntent(uri, getString(R.string.debug_record_share_subject))
             startActivity(Intent.createChooser(send, null))
             exports.shared()
         }
@@ -298,6 +301,7 @@ class DiagnosticsRecordFragment : Fragment() {
 
     /** Drops the capture in the session and every shared ZIP of it (B13). */
     private fun discard() {
+        DiagnosticShare.revokeAll()
         exports.reset()
         playback?.stop()
         sessions.session.value?.diagnostics?.discardRecording()

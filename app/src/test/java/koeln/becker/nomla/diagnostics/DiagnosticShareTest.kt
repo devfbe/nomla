@@ -26,6 +26,7 @@ import koeln.becker.nomla.mumble.diagnostics.DiagnosticCapture
 import koeln.becker.nomla.testing.FileProviderCache
 import org.junit.Before
 import org.junit.Test
+import org.junit.Assert.assertThrows
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
@@ -148,6 +149,24 @@ class DiagnosticShareTest {
         DiagnosticShare.clearAtStart(context)
 
         assertThat(dir.list().orEmpty().toList()).isEmpty()
+    }
+
+    /**
+     * An export begun before a revocation (debug off, discard) that has not taken the lock yet
+     * writes nothing, so the clear that follows the revocation cannot lose a race with it.
+     */
+    @Test
+    fun `an export begun before a revocation writes nothing`() {
+        val begun = DiagnosticShare.epoch()
+        DiagnosticShare.revokeAll()
+
+        assertThrows(DiagnosticShare.Revoked::class.java) {
+            DiagnosticShare.export(context, capture(SECOND_START_MS), review, begun)
+        }
+        assertThat(dir.list().orEmpty().toList()).isEmpty()
+        // An export begun after it is written as usual.
+        DiagnosticShare.export(context, capture(SECOND_START_MS), review, DiagnosticShare.epoch())
+        assertThat(dir.list()!!.toList()).hasSize(1)
     }
 
     private fun capture(startedAtMs: Long) = DiagnosticCapture(

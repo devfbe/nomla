@@ -29,6 +29,7 @@ import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import java.util.concurrent.atomic.AtomicLong
 
 /**
  * Shares a recording as one ZIP in `cacheDir/shared_diagnostics/` through the app's FileProvider
@@ -39,6 +40,10 @@ import java.util.Locale
  * [export], [clear] and [clearAtStart] are serialized, so a double tap or the clear at process
  * start never unlinks a ZIP while it is written, and the clear at process start never unlinks one
  * this process already returned.
+ *
+ * [revokeAll] (debug off, discard) ends every export begun before it: one that has not taken the
+ * lock yet writes nothing ([Revoked]), and one already written is removed by the [clear] that
+ * follows the revocation. A caller holding a finished export checks [epoch] before sharing it.
  */
 object DiagnosticShare {
     const val DIRECTORY = "shared_diagnostics"
@@ -47,18 +52,41 @@ object DiagnosticShare {
 
     private val lock = Any()
 
+    /** Counts revocations; an export carries the value from when it was begun. */
+    private val epochs = AtomicLong()
+
     /** The ZIP this process exported last, if it still exists; guarded by [lock]. */
     private var exported: File? = null
 
     private val NAME_TIME: DateTimeFormatter =
         DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss", Locale.ROOT).withZone(ZoneOffset.UTC)
 
+    /** An export begun before the last [revokeAll]; nothing was written. */
+    class Revoked : IllegalStateException("the diagnostics export was revoked")
+
+    /** The revocation count now; pass it to [export] when the export is begun. Any thread. */
+    fun epoch(): Long = epochs.get()
+
+    /** Revokes every export begun so far. No I/O, any thread; follow it with [clear]. */
+    fun revokeAll() {
+        epochs.incrementAndGet()
+    }
+
     /**
      * Writes [capture] with [review] as `nomla-diagnose-<yyyyMMdd-HHmmss>.zip` (its start, UTC),
      * the only file in the directory, and returns its `content://` URI. Revokes the previous
      * export. Blocking I/O.
+     *
+     * @param epoch [epoch] when the export was begun.
+     * @throws Revoked if [revokeAll] ran since; then nothing is written.
      */
-    fun export(context: Context, capture: DiagnosticCapture, review: CaptureReview): Uri = synchronized(lock) {
+    fun export(
+        context: Context,
+        capture: DiagnosticCapture,
+        review: CaptureReview,
+        epoch: Long = epoch(),
+    ): Uri = synchronized(lock) {
+        if (epoch != epochs.get()) throw Revoked()
         clear(context)
         val dir = File(context.cacheDir, DIRECTORY).apply { mkdirs() }
         val file = File(dir, fileName(capture.startedAtEpochMs))

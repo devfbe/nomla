@@ -141,6 +141,9 @@ class AppContainer(
 
     init {
         SessionSettingsSync(app, settings, sessionManager, appMessages) {
+            // First, synchronously: an export not yet written then writes nothing, a written one
+            // is never handed out, and the clear below removes whatever was written before.
+            DiagnosticShare.revokeAll()
             scope.launch(parts.ioDispatcher) { DiagnosticShare.clear(app) }
         }.start(scope)
         // A shared diagnostics ZIP lives until the next export, discard or process start (B13).

@@ -25,6 +25,7 @@ import android.os.SystemClock
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
@@ -369,6 +370,26 @@ class DiagnosticsRecordFragmentTest {
         assertThat(startedActivities().map { it.action }).containsExactly(Intent.ACTION_CHOOSER)
     }
 
+    /** Debug off (or a discard) while the page is away revokes the export: it never opens the share sheet. */
+    @Test
+    fun `an export revoked while the page is away is never shared`() {
+        diagnostics.recording.value = RecordingState.Finished(capture())
+        blockExports()
+        start()
+        click(R.id.record_share)
+        controller.pause().stop()
+        exportGate.countDown()
+        val exports = ViewModelProvider(page())[RecordExportViewModel::class.java]
+        drainMainUntil { exports.state.value is ExportState.Ready }
+
+        DiagnosticShare.revokeAll()
+        controller.start().resume()
+        idleMainLooper()
+
+        assertThat(startedActivities()).isEmpty()
+        assertThat(exports.state.value).isEqualTo(ExportState.Idle)
+    }
+
     @Test
     fun `the shared zip holds the ratings and the note`() {
         diagnostics.recording.value = RecordingState.Finished(capture())
@@ -483,6 +504,29 @@ class DiagnosticsRecordFragmentTest {
         assertThat(diagnostics.transmitHolders).isEqualTo(1)
         controller.pause().stop()
         assertThat(diagnostics.transmitHolders).isEqualTo(0)
+    }
+
+    /**
+     * On phones the debug pages sit in a pager, which caps a page out of view at STARTED: it is
+     * paused, never stopped. Swiping away still ends the track and its hold on transmission.
+     */
+    @Test
+    fun `a page paused by the pager stops the track and its hold`() {
+        diagnostics.recording.value = RecordingState.Finished(capture())
+        start()
+        row(1).findViewById<View>(R.id.track_play).performClick()
+        assertThat(diagnostics.transmitHolders).isEqualTo(1)
+
+        controller.get().supportFragmentManager.beginTransaction()
+            .setMaxLifecycle(page(), Lifecycle.State.STARTED)
+            .commitNow()
+
+        assertThat(page().lifecycle.currentState).isEqualTo(Lifecycle.State.STARTED)
+        assertThat(diagnostics.transmitHolders).isEqualTo(0)
+        // The track is no longer the playing one: tapping it again plays it anew instead of stopping.
+        row(1).findViewById<View>(R.id.track_play).performClick()
+        assertThat(diagnostics.holdCalls).isEqualTo(2)
+        assertThat(diagnostics.transmitHolders).isEqualTo(1)
     }
 
     /** A new recording would pick the track up off the speaker: Record stops it and its hold first. */

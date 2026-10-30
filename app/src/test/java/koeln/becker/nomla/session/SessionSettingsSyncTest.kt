@@ -296,12 +296,15 @@ class SessionSettingsSyncTest {
         File(shared, "nomla-diagnose-20261030-123456.zip").writeText("zip")
         prefs.edit().putBoolean(Settings.DEBUG_FEATURES.key, true).commit()
         session.diagnostics.recording.value = RecordingState.Finished(CAPTURE)
+        val epoch = DiagnosticShare.epoch()
 
         prefs.edit().putBoolean(Settings.DEBUG_FEATURES.key, false).commit()
 
         assertThat(session.diagnostics.cancelCalls).isEqualTo(1)
         assertThat(session.diagnostics.discardCalls).isEqualTo(1)
         assertThat(shared.list().orEmpty().toList()).isEmpty()
+        // Every export begun before is revoked: it writes nothing, and a written one is never shared.
+        assertThat(DiagnosticShare.epoch()).isGreaterThan(epoch)
     }
 
     @Test
