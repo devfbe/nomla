@@ -65,6 +65,9 @@
     <string name="share">Condividi</string>
     <string name="description">Descrizione</string>
     <string name="close">Chiudi</string>
+    <string name="database_unreadable_title">Impossibile leggere i dati salvati</string>
+    <string name="database_unreadable_message">I dati salvati di Nomla hanno la versione di database %1$d, che questa versione di Nomla non può leggere. Succede, ad esempio, quando un Nomla più vecchio viene installato sopra uno più recente.\n\nInstalla un Nomla in grado di leggerli oppure elimina i dati. L\'eliminazione rimuove i tuoi server, certificati, token di accesso e gli utenti che hai silenziato o ignorato localmente. Le impostazioni restano.</string>
+    <string name="database_unreadable_delete">Elimina dati</string>
     <string name="information">Informazioni</string>
     <string name="hint_reason">Motivo</string>
     <string name="action_settings">Impostazioni</string>

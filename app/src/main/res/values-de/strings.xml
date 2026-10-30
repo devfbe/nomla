@@ -109,6 +109,9 @@
     <string name="description">Beschreibung</string>
     <string name="shareMessage">Treten Sie diesem Server mit Nomla bei. %s</string>
     <string name="close">Schließen</string>
+    <string name="database_unreadable_title">Gespeicherte Daten nicht lesbar</string>
+    <string name="database_unreadable_message">Die gespeicherten Daten von Nomla haben die Datenbankversion %1$d, die diese Nomla-Version nicht lesen kann. Das passiert zum Beispiel, wenn eine ältere Nomla über eine neuere installiert wurde.\n\nInstallieren Sie eine Nomla, die sie lesen kann, oder löschen Sie die Daten. Dabei gehen Ihre Server, Zertifikate und Zugriffstoken sowie lokal stummgeschaltete und ignorierte Nutzer verloren. Ihre Einstellungen bleiben erhalten.</string>
+    <string name="database_unreadable_delete">Daten löschen</string>
     <string name="information">Informationen</string>
     <string name="error_fetching_servers">Server konnten nicht abgerufen werden.\nBitte prüfen Sie Ihre Internetverbindung.</string>
     <string name="overlay">Overlay</string>

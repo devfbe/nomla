@@ -85,6 +85,9 @@
     <string name="channel_add">Tilføj kanal</string>
     <string name="connectToServer">Forbind til server</string>
     <string name="close">Luk</string>
+    <string name="database_unreadable_title">Gemte data kan ikke læses</string>
+    <string name="database_unreadable_message">Nomlas gemte data har databaseversion %1$d, som denne version af Nomla ikke kan læse. Det sker f.eks., når en ældre Nomla installeres oven på en nyere.\n\nInstaller en Nomla, der kan læse dem, eller slet dataene. Sletning fjerner dine servere, certifikater, adgangstokens og de brugere, du har gjort lydløse eller ignoreret lokalt. Dine indstillinger bevares.</string>
+    <string name="database_unreadable_delete">Slet data</string>
     <string name="export_success">Certifikat eksportéret til %s.</string>
     <string name="reconnect_dialog_message">Du er allerede forbundet til en server. Forbind til denne server i stedet\?</string>
     <string name="channel_menu_view_description">Se beskrivelse</string>

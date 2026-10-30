@@ -92,6 +92,9 @@
     <string name="description">விவரம்</string>
     <string name="shareMessage">நோம்லாவுடன் இந்த முணுமுணுப்பு சேவையகத்தில் சேரவும். %s</string>
     <string name="close">மூடு</string>
+    <string name="database_unreadable_title">சேமிக்கப்பட்ட தரவைப் படிக்க முடியவில்லை</string>
+    <string name="database_unreadable_message">Nomla-வின் சேமிக்கப்பட்ட தரவின் தரவுத்தளப் பதிப்பு %1$d ஆகும்; இந்த Nomla பதிப்பால் அதைப் படிக்க முடியாது. எடுத்துக்காட்டாக, புதிய Nomla மீது பழைய Nomla நிறுவப்படும்போது இது நிகழும்.\n\nஅதைப் படிக்கக்கூடிய Nomla-வை நிறுவவும், அல்லது தரவை நீக்கவும். நீக்கினால் உங்கள் சேவையகங்கள், சான்றிதழ்கள், அணுகல் டோக்கன்கள், மற்றும் நீங்கள் உள்ளூரில் ஒலியடக்கிய அல்லது புறக்கணித்த பயனர்கள் அகற்றப்படுவர். உங்கள் அமைப்புகள் அப்படியே இருக்கும்.</string>
+    <string name="database_unreadable_delete">தரவை நீக்கு</string>
     <string name="information">தகவல்</string>
     <string name="error_fetching_servers">சேவையகங்களைப் பெற முடியவில்லை.\n நீங்கள் இணையத்துடன் இணைக்கப்பட்டுள்ளீர்களா?</string>
     <string name="overlay">மேலடுக்கு</string>

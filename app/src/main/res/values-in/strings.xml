@@ -136,6 +136,9 @@
     <string name="unknown">Tidak Diketahui</string>
     <string name="name">Nama</string>
     <string name="close">Tutup</string>
+    <string name="database_unreadable_title">Data tersimpan tidak dapat dibaca</string>
+    <string name="database_unreadable_message">Data tersimpan Nomla memiliki versi basis data %1$d, yang tidak dapat dibaca oleh versi Nomla ini. Hal ini terjadi, misalnya, saat Nomla versi lama dipasang di atas versi yang lebih baru.\n\nPasang Nomla yang dapat membacanya, atau hapus datanya. Menghapus akan menghilangkan server, sertifikat, token akses, dan pengguna yang Anda bisukan atau abaikan secara lokal. Pengaturan Anda tetap ada.</string>
+    <string name="database_unreadable_delete">Hapus data</string>
     <string name="shareMessage">Bergabunglah ke server Mumble ini dengan Nomla. %s</string>
     <string name="reconnect">Sambung Ulang</string>
     <string name="action_settings">Pengaturan</string>

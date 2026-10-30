@@ -144,6 +144,9 @@
     <string name="chat_cleared">Đã xóa chat</string>
     <string name="undo">Hoàn tác</string>
     <string name="close">Đóng</string>
+    <string name="database_unreadable_title">Không thể đọc dữ liệu đã lưu</string>
+    <string name="database_unreadable_message">Dữ liệu đã lưu của Nomla có phiên bản cơ sở dữ liệu %1$d, mà phiên bản Nomla này không đọc được. Điều này xảy ra, chẳng hạn, khi cài Nomla cũ đè lên bản mới hơn.\n\nHãy cài một bản Nomla đọc được dữ liệu, hoặc xóa dữ liệu. Việc xóa sẽ loại bỏ máy chủ, chứng chỉ, mã thông báo truy cập và những người dùng bạn đã tắt tiếng hoặc bỏ qua cục bộ. Cài đặt của bạn vẫn được giữ.</string>
+    <string name="database_unreadable_delete">Xóa dữ liệu</string>
     <string name="information">Thông tin</string>
     <string name="error_fetching_servers">Không thể tải danh sách máy chủ.\nBạn có đang kết nối Internet không?</string>
     <string name="public_server_list_tor_disabled">Danh sách máy chủ công cộng không được tải khi Tor đang bật, vì nó sẽ được tải xuống mà không qua Tor.</string>

@@ -78,6 +78,9 @@
 \nJste připojeni k internetu\?</string>
     <string name="information">Informace</string>
     <string name="close">Zavřít</string>
+    <string name="database_unreadable_title">Uložená data nelze přečíst</string>
+    <string name="database_unreadable_message">Uložená data aplikace Nomla mají verzi databáze %1$d, kterou tato verze aplikace Nomla nedokáže přečíst. Stává se to například tehdy, když se starší Nomla nainstaluje přes novější.\n\nNainstalujte Nomlu, která data přečte, nebo data smažte. Smazáním zmizí vaše servery, certifikáty, přístupové tokeny a uživatelé, které jste lokálně ztlumili nebo ignorovali. Nastavení zůstane zachováno.</string>
+    <string name="database_unreadable_delete">Smazat data</string>
     <string name="shareMessage">Připojte se k tomuto Mumble serveru pomocí Nomly. %s</string>
     <string name="description">Popis</string>
     <string name="share">Sdílet</string>

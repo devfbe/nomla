@@ -7,6 +7,9 @@
     <string name="hint_reason">Motiu</string>
     <string name="information">Informació</string>
     <string name="close">Tanca</string>
+    <string name="database_unreadable_title">No es poden llegir les dades desades</string>
+    <string name="database_unreadable_message">Les dades desades de Nomla tenen la versió de base de dades %1$d, que aquesta versió de Nomla no pot llegir. Això passa, per exemple, quan s\'instal·la un Nomla més antic sobre un de més nou.\n\nInstal·la un Nomla que les pugui llegir o suprimeix les dades. En suprimir-les s\'eliminen els teus servidors, certificats, testimonis d\'accés i els usuaris que has silenciat o ignorat localment. La configuració es conserva.</string>
+    <string name="database_unreadable_delete">Suprimeix les dades</string>
     <string name="description">Descripció</string>
     <string name="name">Nom</string>
     <string name="unknown">Desconegut</string>

@@ -174,6 +174,9 @@
     <string name="chat_cleared">Chat cleared</string>
     <string name="undo">Undo</string>
     <string name="close">Close</string>
+    <string name="database_unreadable_title">Saved data can\'t be read</string>
+    <string name="database_unreadable_message">Nomla\'s saved data has database version %1$d, which this version of Nomla cannot read. This happens, for example, when an older Nomla is installed over a newer one.\n\nInstall a Nomla that reads it, or delete the data. Deleting removes your servers, certificates, access tokens and the users you muted or ignored locally. Your settings stay.</string>
+    <string name="database_unreadable_delete">Delete data</string>
     <string name="information">Information</string>
     <string name="error_fetching_servers">Could not fetch servers.\nAre you connected to the Internet?</string>
     <string name="public_server_list_tor_disabled">The public server list is not loaded while Tor is on, because it would be downloaded without Tor.</string>

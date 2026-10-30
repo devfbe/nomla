@@ -176,6 +176,9 @@
     <string name="chat_cleared">Chat golit</string>
     <string name="undo">Anulează</string>
     <string name="close">Închide</string>
+    <string name="database_unreadable_title">Datele salvate nu pot fi citite</string>
+    <string name="database_unreadable_message">Datele salvate ale Nomla au versiunea de bază de date %1$d, pe care această versiune de Nomla nu o poate citi. Se întâmplă, de exemplu, când o versiune mai veche de Nomla este instalată peste una mai nouă.\n\nInstalați o versiune de Nomla care le poate citi sau ștergeți datele. Ștergerea elimină serverele, certificatele, jetoanele de acces și utilizatorii pe care i-ați dezactivat sau ignorat local. Setările dvs. rămân.</string>
+    <string name="database_unreadable_delete">Șterge datele</string>
     <string name="information">Informații</string>
     <string name="error_fetching_servers">Serverele nu au putut fi preluate.\nEști conectat la internet?</string>
     <string name="public_server_list_tor_disabled">Lista serverelor publice nu se încarcă cât timp Tor este activ, deoarece ar fi descărcată fără Tor.</string>

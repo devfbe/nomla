@@ -61,6 +61,9 @@
 \nเชื่อมต่ออินเตอร์เน็ตแล้วหรือยัง\?</string>
     <string name="information">ข้อมูล</string>
     <string name="close">ปิด</string>
+    <string name="database_unreadable_title">ไม่สามารถอ่านข้อมูลที่บันทึกไว้</string>
+    <string name="database_unreadable_message">ข้อมูลที่บันทึกไว้ของ Nomla เป็นฐานข้อมูลเวอร์ชัน %1$d ซึ่ง Nomla เวอร์ชันนี้ไม่สามารถอ่านได้ ตัวอย่างเช่น เกิดขึ้นเมื่อติดตั้ง Nomla รุ่นเก่าทับรุ่นใหม่\n\nโปรดติดตั้ง Nomla ที่อ่านข้อมูลนี้ได้ หรือลบข้อมูล การลบจะนำเซิร์ฟเวอร์ ใบรับรอง โทเค็นการเข้าถึง และผู้ใช้ที่คุณปิดเสียงหรือเพิกเฉยในเครื่องออก ส่วนการตั้งค่าของคุณจะยังอยู่</string>
+    <string name="database_unreadable_delete">ลบข้อมูล</string>
     <string name="shareMessage">เข้าร่วมเซิฟเวอร์ Mumble ด้วย Nomla. %s</string>
     <string name="description">รายละเอียด</string>
     <string name="share">แชร์</string>

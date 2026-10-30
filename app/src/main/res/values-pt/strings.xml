@@ -168,6 +168,9 @@
 \nVocê está conectado à internet\?</string>
     <string name="information">Informação</string>
     <string name="close">Fechar</string>
+    <string name="database_unreadable_title">Não é possível ler os dados guardados</string>
+    <string name="database_unreadable_message">Os dados guardados do Nomla têm a versão de base de dados %1$d, que esta versão do Nomla não consegue ler. Isto acontece, por exemplo, quando um Nomla mais antigo é instalado por cima de um mais recente.\n\nInstale um Nomla que os consiga ler ou elimine os dados. Eliminar remove os seus servidores, certificados, tokens de acesso e os utilizadores que silenciou ou ignorou localmente. As suas definições mantêm-se.</string>
+    <string name="database_unreadable_delete">Eliminar dados</string>
     <string name="shareMessage">Entre nesse servidor Mumble com o Nomla. %s</string>
     <string name="description">Descrição</string>
     <string name="share">Compartilhar</string>

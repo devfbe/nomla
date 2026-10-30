@@ -82,6 +82,9 @@
 \nİnternete bağlı mısınız\?</string>
     <string name="information">Bilgi</string>
     <string name="close">Kapat</string>
+    <string name="database_unreadable_title">Kayıtlı veriler okunamıyor</string>
+    <string name="database_unreadable_message">Nomla\'nın kayıtlı verileri %1$d veritabanı sürümündedir ve Nomla\'nın bu sürümü bunu okuyamaz. Bu durum, örneğin eski bir Nomla yeni bir sürümün üzerine kurulduğunda ortaya çıkar.\n\nVerileri okuyabilen bir Nomla kurun ya da verileri silin. Silme işlemi sunucularınızı, sertifikalarınızı, erişim belirteçlerinizi ve yerel olarak sessize aldığınız veya yok saydığınız kullanıcıları kaldırır. Ayarlarınız kalır.</string>
+    <string name="database_unreadable_delete">Verileri sil</string>
     <string name="shareMessage">Bu Mumble sunucusuna Nomla ile katılın. %s</string>
     <string name="description">Açıklama</string>
     <string name="share">Paylaş</string>

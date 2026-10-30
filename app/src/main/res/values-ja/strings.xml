@@ -101,6 +101,9 @@
     <string name="description">説明</string>
     <string name="shareMessage">Nomla で、この Mumble サーバーに参加してください! %s</string>
     <string name="close">閉じる</string>
+    <string name="database_unreadable_title">保存されたデータを読み込めません</string>
+    <string name="database_unreadable_message">Nomla の保存データはデータベースバージョン %1$d で、このバージョンの Nomla では読み込めません。たとえば、新しい Nomla の上に古い Nomla をインストールした場合に起こります。\n\nこのデータを読み込める Nomla をインストールするか、データを削除してください。削除すると、サーバー、証明書、アクセストークン、およびローカルでミュートまたは無視したユーザーが消去されます。設定は残ります。</string>
+    <string name="database_unreadable_delete">データを削除</string>
     <string name="information">情報</string>
     <string name="error_fetching_servers">サーバーの取得中にエラー!\nインターネット接続を確認してください。</string>
     <string name="overlay">オーバーレイ</string>

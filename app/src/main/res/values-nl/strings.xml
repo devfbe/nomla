@@ -101,6 +101,9 @@
     <string name="description">Beschrijving</string>
     <string name="shareMessage">Verbind met deze Mumble server met Nomla. %s</string>
     <string name="close">Sluit</string>
+    <string name="database_unreadable_title">Opgeslagen gegevens kunnen niet worden gelezen</string>
+    <string name="database_unreadable_message">De opgeslagen gegevens van Nomla hebben databaseversie %1$d, die deze versie van Nomla niet kan lezen. Dit gebeurt bijvoorbeeld wanneer een oudere Nomla over een nieuwere wordt geïnstalleerd.\n\nInstalleer een Nomla die ze kan lezen, of verwijder de gegevens. Verwijderen wist je servers, certificaten, toegangstokens en de gebruikers die je lokaal hebt gedempt of genegeerd. Je instellingen blijven behouden.</string>
+    <string name="database_unreadable_delete">Gegevens verwijderen</string>
     <string name="information">Informatie</string>
     <string name="error_fetching_servers">Error servers ophalen.
 \nControleer internet verbinding.</string>

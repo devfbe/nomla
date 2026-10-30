@@ -107,6 +107,9 @@
     <string name="description">Описание</string>
     <string name="shareMessage">Присоединяйся к этому Mumble-серверу с помощью Nomla. %s</string>
     <string name="close">Закрыть</string>
+    <string name="database_unreadable_title">Не удаётся прочитать сохранённые данные</string>
+    <string name="database_unreadable_message">Сохранённые данные Nomla имеют версию базы данных %1$d, которую эта версия Nomla прочитать не может. Так бывает, например, если старая версия Nomla установлена поверх более новой.\n\nУстановите версию Nomla, которая сможет их прочитать, или удалите данные. При удалении будут стёрты ваши серверы, сертификаты, токены доступа и пользователи, которых вы заглушили или игнорировали локально. Настройки сохранятся.</string>
+    <string name="database_unreadable_delete">Удалить данные</string>
     <string name="information">Информация</string>
     <string name="error_fetching_servers">Не удалось получить список.\nВы подключены к интернету?</string>
     <string name="overlay">Накладка</string>

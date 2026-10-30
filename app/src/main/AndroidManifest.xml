@@ -146,6 +146,10 @@
             android:name=".preference.ServerCertificateClearActivity"
             android:theme="@style/Theme.Nomla"
             android:exported="false" />
+        <activity
+            android:name=".app.DatabaseResetActivity"
+            android:theme="@style/Theme.Nomla"
+            android:exported="false" />
     </application>
 
 </manifest>

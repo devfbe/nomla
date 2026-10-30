@@ -148,6 +148,9 @@
     <string name="nomlaConnecting">نوملا يتصل…</string>
     <string name="nomlaDisconnected">نوملا غير متصل</string>
     <string name="close">أغلق</string>
+    <string name="database_unreadable_title">تعذّرت قراءة البيانات المحفوظة</string>
+    <string name="database_unreadable_message">البيانات المحفوظة في Nomla بإصدار قاعدة بيانات %1$d، ولا يستطيع هذا الإصدار من Nomla قراءته. يحدث هذا مثلًا عند تثبيت إصدار أقدم من Nomla فوق إصدار أحدث.\n\nثبّت إصدارًا من Nomla يستطيع قراءتها، أو احذف البيانات. يؤدي الحذف إلى إزالة خوادمك وشهاداتك ورموز الوصول والمستخدمين الذين كتمتهم أو تجاهلتهم محليًا. تبقى إعداداتك كما هي.</string>
+    <string name="database_unreadable_delete">حذف البيانات</string>
     <string name="channel_add">أضف قناة</string>
     <string name="tts_failed">تعذر بدأ TTS</string>
     <string name="user_menu_deafen">أصم</string>

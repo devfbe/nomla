@@ -106,6 +106,9 @@
     <string name="description">Description</string>
     <string name="shareMessage">Rejoindre ce serveur Mumble avec Nomla. %s</string>
     <string name="close">Fermer</string>
+    <string name="database_unreadable_title">Impossible de lire les données enregistrées</string>
+    <string name="database_unreadable_message">Les données enregistrées de Nomla ont la version de base de données %1$d, que cette version de Nomla ne peut pas lire. Cela se produit par exemple lorsqu\'un Nomla plus ancien est installé par-dessus un plus récent.\n\nInstallez un Nomla capable de les lire, ou supprimez les données. La suppression efface vos serveurs, certificats, jetons d\'accès et les utilisateurs que vous avez mis en sourdine ou ignorés localement. Vos réglages sont conservés.</string>
+    <string name="database_unreadable_delete">Supprimer les données</string>
     <string name="information">Information</string>
     <string name="error_fetching_servers">Erreur du chargement des serveurs.
 \nVérifiez votre connexion internet.</string>

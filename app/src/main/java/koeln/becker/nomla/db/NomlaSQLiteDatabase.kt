@@ -329,5 +329,8 @@ class NomlaSQLiteDatabase(
 
         /** The version the betas before the restart at 1 left behind; see [onDowngrade]. */
         const val PRE_RESTART_DB_VERSION = 10
+
+        /** Whether this build opens a stored database at [version]; see [StoredDatabase]. */
+        fun canOpen(version: Int): Boolean = version <= CURRENT_DB_VERSION || version == PRE_RESTART_DB_VERSION
     }
 }

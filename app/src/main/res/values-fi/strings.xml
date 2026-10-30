@@ -76,6 +76,9 @@
 \nOletko yhteydessä Internetiin\?</string>
     <string name="information">Tiedot</string>
     <string name="close">Sulje</string>
+    <string name="database_unreadable_title">Tallennettuja tietoja ei voi lukea</string>
+    <string name="database_unreadable_message">Nomlan tallennettujen tietojen tietokantaversio on %1$d, jota tämä Nomlan versio ei osaa lukea. Näin käy esimerkiksi, kun vanhempi Nomla asennetaan uudemman päälle.\n\nAsenna Nomla, joka osaa lukea ne, tai poista tiedot. Poistaminen poistaa palvelimesi, varmenteesi, käyttöoikeustunnisteesi sekä käyttäjät, jotka olet mykistänyt tai jättänyt huomiotta paikallisesti. Asetuksesi säilyvät.</string>
+    <string name="database_unreadable_delete">Poista tiedot</string>
     <string name="shareMessage">Liity tähän Mumble-palvelimeen Nomlan kanssa. %s</string>
     <string name="description">Kuvaus</string>
     <string name="share">Jaa</string>

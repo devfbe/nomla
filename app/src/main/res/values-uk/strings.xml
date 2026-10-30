@@ -83,6 +83,9 @@
     <string name="certificate_load_failed">Не вдалося зберегти сертифікат.</string>
     <string name="certificate_import_success">Імпортовано сертифікат %s.</string>
     <string name="close">Закрити</string>
+    <string name="database_unreadable_title">Не вдається прочитати збережені дані</string>
+    <string name="database_unreadable_message">Збережені дані Nomla мають версію бази даних %1$d, яку ця версія Nomla прочитати не може. Так буває, наприклад, коли старішу версію Nomla встановлено поверх новішої.\n\nВстановіть версію Nomla, яка зможе їх прочитати, або видаліть дані. Видалення прибере ваші сервери, сертифікати, токени доступу та користувачів, яких ви вимкнули або проігнорували локально. Налаштування збережуться.</string>
+    <string name="database_unreadable_delete">Видалити дані</string>
     <string name="information">Інформація</string>
     <string name="error_fetching_servers">Не вдалося отримати список серверів.
 \nВи підключені до Інтернету?</string>

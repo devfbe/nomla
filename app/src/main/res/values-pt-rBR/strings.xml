@@ -75,6 +75,9 @@
     <string name="hint_reason">Motivo</string>
     <string name="information">Informação</string>
     <string name="close">Fechar</string>
+    <string name="database_unreadable_title">Não foi possível ler os dados salvos</string>
+    <string name="database_unreadable_message">Os dados salvos do Nomla têm a versão de banco de dados %1$d, que esta versão do Nomla não consegue ler. Isso acontece, por exemplo, quando um Nomla mais antigo é instalado sobre um mais novo.\n\nInstale um Nomla que consiga lê-los ou exclua os dados. Excluir remove seus servidores, certificados, tokens de acesso e os usuários que você silenciou ou ignorou localmente. Suas configurações permanecem.</string>
+    <string name="database_unreadable_delete">Excluir dados</string>
     <string name="shareMessage">Junte-se a este servidor Mumble com o Nomla. %s</string>
     <string name="description">Descrição</string>
     <string name="share">Compartilhar</string>

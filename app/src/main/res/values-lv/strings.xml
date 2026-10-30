@@ -149,6 +149,9 @@
     <string name="chat_cleared">Tērzēšana notīrīta</string>
     <string name="undo">Atsaukt</string>
     <string name="close">Aizvērt</string>
+    <string name="database_unreadable_title">Saglabātos datus nevar nolasīt</string>
+    <string name="database_unreadable_message">Nomla saglabāto datu datubāzes versija ir %1$d, ko šī Nomla versija nespēj nolasīt. Tā notiek, piemēram, ja vecāka Nomla tiek instalēta pāri jaunākai.\n\nInstalējiet Nomla versiju, kas tos spēj nolasīt, vai izdzēsiet datus. Dzēšana noņem jūsu serverus, sertifikātus, piekļuves pilnvaras un lietotājus, kurus lokāli izslēdzāt vai ignorējāt. Jūsu iestatījumi paliek.</string>
+    <string name="database_unreadable_delete">Dzēst datus</string>
     <string name="information">Informācija</string>
     <string name="error_fetching_servers">Neizdevās iegūt serverus.\nVai esat savienots ar internetu?</string>
     <string name="public_server_list_tor_disabled">Publisko serveru saraksts netiek ielādēts, kamēr Tor ir ieslēgts, jo tas tiktu lejupielādēts bez Tor.</string>

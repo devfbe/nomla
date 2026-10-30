@@ -99,6 +99,9 @@
     <string name="description">Leírás</string>
     <string name="shareMessage">Csatlakozz Nomlával ehhez a Mumble szerverhez. %s</string>
     <string name="close">Bezárás</string>
+    <string name="database_unreadable_title">A mentett adatok nem olvashatók</string>
+    <string name="database_unreadable_message">A Nomla mentett adatainak adatbázis-verziója %1$d, amelyet a Nomla ezen verziója nem tud olvasni. Ez például akkor fordul elő, ha egy régebbi Nomlát telepítenek egy újabb fölé.\n\nTelepítsen olyan Nomlát, amely képes beolvasni őket, vagy törölje az adatokat. A törlés eltávolítja a kiszolgálóit, tanúsítványait, hozzáférési tokenjeit, valamint a helyben némított vagy mellőzött felhasználókat. A beállításai megmaradnak.</string>
+    <string name="database_unreadable_delete">Adatok törlése</string>
     <string name="information">Információ</string>
     <string name="overlay">Átfedés</string>
     <string name="hint_reason">Indok</string>

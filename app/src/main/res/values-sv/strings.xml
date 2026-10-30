@@ -136,6 +136,9 @@
     <string name="nomlaDisconnected">Nomla nedkopplad</string>
     <string name="shareMessage">Anslut till denna Mumble-server med Nomla. %s</string>
     <string name="close">Stäng</string>
+    <string name="database_unreadable_title">Sparade data kan inte läsas</string>
+    <string name="database_unreadable_message">Nomlas sparade data har databasversion %1$d, som den här versionen av Nomla inte kan läsa. Det händer till exempel när en äldre Nomla installeras över en nyare.\n\nInstallera en Nomla som kan läsa dem, eller ta bort data. Borttagningen raderar dina servrar, certifikat, åtkomsttoken och de användare du har tystat eller ignorerat lokalt. Dina inställningar behålls.</string>
+    <string name="database_unreadable_delete">Ta bort data</string>
     <string name="error_fetching_servers">Kan inte hämta servrar.
 \nÄr du ansluten till Internet?</string>
     <string name="overlay">Överlagring</string>

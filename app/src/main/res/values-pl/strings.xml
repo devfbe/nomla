@@ -102,6 +102,9 @@
     <string name="description">Opis</string>
     <string name="shareMessage">Dołącz do tego serwera Mumble za pomocą Nomli. %s</string>
     <string name="close">Zamknij</string>
+    <string name="database_unreadable_title">Nie można odczytać zapisanych danych</string>
+    <string name="database_unreadable_message">Zapisane dane Nomla mają wersję bazy danych %1$d, której ta wersja Nomla nie potrafi odczytać. Zdarza się tak na przykład wtedy, gdy starsza Nomla zostanie zainstalowana na nowszej.\n\nZainstaluj Nomla, która je odczyta, albo usuń dane. Usunięcie kasuje Twoje serwery, certyfikaty, tokeny dostępu oraz użytkowników wyciszonych lub zignorowanych lokalnie. Ustawienia zostaną zachowane.</string>
+    <string name="database_unreadable_delete">Usuń dane</string>
     <string name="information">Informacje</string>
     <string name="error_fetching_servers">Nie udało się pobrać serwerów.
 \nCzy masz połączenie z internetem\?</string>

@@ -26,6 +26,9 @@
     <string name="share">Bḍu</string>
     <string name="description">Aglam</string>
     <string name="close">Mdel</string>
+    <string name="database_unreadable_title">Isefka yettwaklasen ur zmiren ara ad ttwaɣraen</string>
+    <string name="database_unreadable_message">Isefka yettwaklasen n Nomla ɣur-sen lqem n taffa n isefka %1$d, ur t-yezmir ara lqem-a n Nomla ad t-iɣer. Ayen-a yettili, amedya, mi ara yettwasebded Nomla aqbur ɣef wayen amaynut.\n\nSebded Nomla i izemren ad ten-iɣer, neɣ kkes isefka. Tukksa ad tekkes iqeddacen-ik, iselkanen, ijetons n unekcum d yiseqdacen i tesgugmeḍ neɣ i tuɣalmeḍ s wudem adigan. Iɣewwaren-ik ad qimen.</string>
+    <string name="database_unreadable_delete">Kkes isefka</string>
     <string name="information">Talɣut</string>
     <string name="hint_reason">Taɣẓint</string>
     <string name="reconnect">Ales tuqqna</string>

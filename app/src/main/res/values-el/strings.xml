@@ -70,6 +70,9 @@
     <string name="share">Κοινοποίηση</string>
     <string name="description">Περιγραφή</string>
     <string name="close">Κλείσιμο</string>
+    <string name="database_unreadable_title">Δεν είναι δυνατή η ανάγνωση των αποθηκευμένων δεδομένων</string>
+    <string name="database_unreadable_message">Τα αποθηκευμένα δεδομένα του Nomla έχουν έκδοση βάσης δεδομένων %1$d, την οποία αυτή η έκδοση του Nomla δεν μπορεί να διαβάσει. Αυτό συμβαίνει, για παράδειγμα, όταν εγκαθίσταται ένα παλαιότερο Nomla πάνω από ένα νεότερο.\n\nΕγκαταστήστε ένα Nomla που μπορεί να τα διαβάσει ή διαγράψτε τα δεδομένα. Η διαγραφή αφαιρεί τους διακομιστές, τα πιστοποιητικά, τα διακριτικά πρόσβασης και τους χρήστες που έχετε σίγαση ή αγνοήσει τοπικά. Οι ρυθμίσεις σας παραμένουν.</string>
+    <string name="database_unreadable_delete">Διαγραφή δεδομένων</string>
     <string name="information">Πληροφορίες</string>
     <string name="hint_reason">Λόγος</string>
     <string name="action_settings">Ρυθμίσεις</string>

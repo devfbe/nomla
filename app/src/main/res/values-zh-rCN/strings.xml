@@ -107,6 +107,9 @@
     <string name="description">描述</string>
     <string name="shareMessage">用 Nomla 加入这个 Mumble 服务器。%s</string>
     <string name="close">关闭</string>
+    <string name="database_unreadable_title">无法读取已保存的数据</string>
+    <string name="database_unreadable_message">Nomla 已保存的数据的数据库版本为 %1$d，当前版本的 Nomla 无法读取。例如在较新的 Nomla 上覆盖安装旧版本时就会出现这种情况。\n\n请安装能够读取该数据的 Nomla，或删除数据。删除会清除您的服务器、证书、访问令牌，以及您在本地静音或忽略的用户。您的设置会保留。</string>
+    <string name="database_unreadable_delete">删除数据</string>
     <string name="information">信息</string>
     <string name="error_fetching_servers">无法获取服务器。\n您确定已连接互联网吗？</string>
     <string name="overlay">浮窗</string>

@@ -124,6 +124,9 @@
 \nEr du koblet til Internett\?</string>
     <string name="information">Info</string>
     <string name="close">Lukk</string>
+    <string name="database_unreadable_title">Lagrede data kan ikke leses</string>
+    <string name="database_unreadable_message">Nomlas lagrede data har databaseversjon %1$d, som denne versjonen av Nomla ikke kan lese. Dette skjer for eksempel når en eldre Nomla installeres over en nyere.\n\nInstaller en Nomla som kan lese dem, eller slett dataene. Sletting fjerner serverne, sertifikatene, tilgangstokenene dine og brukerne du har dempet eller ignorert lokalt. Innstillingene dine beholdes.</string>
+    <string name="database_unreadable_delete">Slett data</string>
     <string name="shareMessage">Ta del i denne Mumble-tjeneren med Nomla. %s</string>
     <string name="description">Beskrivelse</string>
     <string name="share">Deling</string>

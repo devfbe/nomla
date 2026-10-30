@@ -59,6 +59,7 @@ import koeln.becker.nomla.chat.NoticeFormatter
 import koeln.becker.nomla.databinding.ActivityMainBinding
 import koeln.becker.nomla.db.NomlaDatabase
 import koeln.becker.nomla.db.NomlaRepository
+import koeln.becker.nomla.db.StoredDatabase
 import koeln.becker.nomla.preference.SettingsActivity
 import koeln.becker.nomla.preference.generateDefaultCertificate
 import koeln.becker.nomla.servers.FavouriteServerListFragment
@@ -109,6 +110,12 @@ class NomlaActivity :
         settings = Settings.getInstance(this)
         themedWithDynamicColors = settings.isDynamicColorEnabled
         super.onCreate(savedInstanceState)
+        // A database this build cannot open would end the app on its first query.
+        StoredDatabase.unreadableVersion(this)?.let { version ->
+            startActivity(DatabaseResetActivity.intent(this, version))
+            finish()
+            return
+        }
         // The app bar is dark in both themes.
         enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT))
         val binding = ActivityMainBinding.inflate(layoutInflater)

@@ -95,6 +95,9 @@
     <string name="description">描述</string>
     <string name="shareMessage">使用 Nomla 加入這個 Mumble 伺服器。 %s</string>
     <string name="close">關閉</string>
+    <string name="database_unreadable_title">無法讀取已儲存的資料</string>
+    <string name="database_unreadable_message">Nomla 已儲存的資料其資料庫版本為 %1$d，此版本的 Nomla 無法讀取。例如在較新的 Nomla 上覆蓋安裝舊版時就會發生這種情況。\n\n請安裝能讀取該資料的 Nomla，或刪除資料。刪除會移除您的伺服器、憑證、存取權杖，以及您在本機靜音或忽略的使用者。您的設定會保留。</string>
+    <string name="database_unreadable_delete">刪除資料</string>
     <string name="information">資訊</string>
     <string name="hint_reason">原因</string>
     <string name="action_settings">設定</string>
