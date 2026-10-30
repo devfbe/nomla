@@ -113,6 +113,22 @@ class NomlaSessionDiagnosticsTest {
         }
     }
 
+    /** close() ends a running recording itself, before its scope goes: nothing is left armed. */
+    @Test
+    fun `closing the session during a recording drops it without sending anything`() {
+        val harness = harnesses.start()
+        val tcp = harness.connectAsSelf()
+        assertThat(harness.session.diagnostics.startRecording(SECONDS)).isEqualTo(RecordingStart.Started)
+
+        harness.session.close()
+
+        assertThat(harness.session.diagnostics.recording.value)
+            .isEqualTo(RecordingState.Idle(AbortReason.DISCONNECTED))
+        assertThat(harness.session.diagnosticsHub.armed).isNull()
+        val flags = tcp.sentMessages.filterIsInstance<Mumble.UserState>().filter { it.hasRecording() }
+        assertThat(flags.map { it.recording }).containsExactly(true)
+    }
+
     @Test
     fun `a recording waits for the server config`() {
         val harness = harnesses.start()

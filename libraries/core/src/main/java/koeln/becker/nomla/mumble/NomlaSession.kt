@@ -344,6 +344,8 @@ public class NomlaSession internal constructor(
         // released router, which is harmless.
         disconnect()
         lifecycle.release()
+        // The disconnect report may never run once the scope is gone: a recording ends here, unsent.
+        recordings.onDisconnected()
         sampler.stop()
         watchAudioMode(false)
         scope.cancel()
