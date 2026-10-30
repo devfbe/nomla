@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One row of the Recording page's track view: an audio track (play/stop, name, three ratings and
+     its waveform) or a telemetry lane (its label and its marks, without play and ratings). Every
+     timeline spans the row's full width, so all rows share one time axis. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/track_play"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/debug_track_play"
+            android:src="@drawable/ic_play"
+            app:tint="?android:attr/textColorPrimary" />
+
+        <TextView
+            android:id="@+id/track_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginHorizontal="8dp"
+            android:textAppearance="?attr/textAppearanceLabelLarge" />
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/track_rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:selectionRequired="false"
+            app:singleSelection="true">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/track_rating_good"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:contentDescription="@string/debug_rating_good"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:padding="0dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/track_rating_medium"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:contentDescription="@string/debug_rating_medium"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:padding="0dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/track_rating_bad"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:contentDescription="@string/debug_rating_bad"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:padding="0dp" />
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+    </LinearLayout>
+
+    <koeln.becker.nomla.diagnostics.TimelineView
+        android:id="@+id/track_timeline"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="2dp" />
+</LinearLayout>
