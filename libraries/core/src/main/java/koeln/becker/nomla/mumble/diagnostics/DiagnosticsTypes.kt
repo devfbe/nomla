@@ -17,6 +17,11 @@
 
 package koeln.becker.nomla.mumble.diagnostics
 
+import android.content.Context
+import android.media.AudioDeviceInfo
+import android.media.AudioManager
+import koeln.becker.nomla.mumble.audio.routing.CommunicationDevice
+
 /**
  * One telemetry table of a finished recording, such as `frames.csv`: [rows] rows of
  * [columns].size values each, row-major in [values]. [timesMs] is each row's time since the
@@ -225,5 +230,114 @@ public data class DiagnosticsSnapshot(
 
     private companion object {
         const val HASH_MULTIPLIER = 31
+    }
+}
+
+/** Where a recording stands. */
+public sealed interface RecordingState {
+    /** No recording; [aborted] says why the last one was dropped, null if none was. */
+    public data class Idle(val aborted: AbortReason? = null) : RecordingState
+
+    /** A recording of [seconds] runs since [startedElapsedMs] (`SystemClock.elapsedRealtime`). */
+    public data class Recording(val startedElapsedMs: Long, val seconds: Int) : RecordingState
+
+    /** The last recording, kept until it is discarded or a new one starts. */
+    public class Finished(public val capture: DiagnosticCapture) : RecordingState
+}
+
+/** Why a recording was dropped before its end. */
+public enum class AbortReason { CANCELLED, DISCONNECTED }
+
+/** What [SessionDiagnostics.startRecording] answers. */
+public sealed interface RecordingStart {
+    public data object Started : RecordingStart
+
+    public data class Refused(val reason: RecordingRefusal) : RecordingStart
+}
+
+/** Why a recording did not start. */
+public enum class RecordingRefusal {
+    /** No synchronized connection. */
+    NOT_CONNECTED,
+
+    /** The server does not allow clients to record. */
+    SERVER_FORBIDS,
+    ALREADY_RECORDING,
+
+    /** Not one of the offered lengths. */
+    INVALID_DURATION,
+
+    /** The recording's buffers do not fit into memory. */
+    OUT_OF_MEMORY,
+}
+
+/**
+ * A finished recording: every track on one time grid, the telemetry tables, the events and the
+ * pipelines it ran on. Talkers appear as `speaker_1..4` only, never by session or name.
+ *
+ * @param serverShowedRecording whether the server showed this user as recording at the end.
+ * @param speakersWithoutTrack talkers heard after all speaker tracks were taken.
+ * @param droppedFrames frames the fullest PCM track lost for lack of room.
+ * @param route the audio route, captured once at the start (P15); Bluetooth without a name (G2).
+ */
+@Suppress("LongParameterList") // The parts of one recording, as the export writes them.
+public class DiagnosticCapture(
+    public val startedAtEpochMs: Long,
+    public val durationMs: Long,
+    public val tracks: List<CapturedTrack>,
+    public val tables: List<TelemetryTable>,
+    public val events: List<DiagnosticEvent>,
+    public val pipelines: List<PipelineDescription>,
+    public val serverShowedRecording: Boolean,
+    public val speakersWithoutTrack: Int,
+    public val droppedFrames: Int,
+    public val route: RouteInfo?,
+)
+
+/**
+ * The audio route at one moment: the `AudioDeviceInfo` [deviceType] voice is routed to (null while
+ * the platform decides), its [productName] (null for every Bluetooth device, G2, and when unknown),
+ * the playback stream's volume and maximum, and the `AudioManager` mode.
+ */
+public data class RouteInfo(
+    val deviceType: Int?,
+    val productName: String?,
+    val streamVolume: Int,
+    val streamMaxVolume: Int,
+    val audioMode: Int,
+) {
+    public companion object {
+        /** Bluetooth devices, which are recorded by type only. */
+        private val BLUETOOTH_TYPES = setOf(
+            AudioDeviceInfo.TYPE_BLUETOOTH_SCO,
+            AudioDeviceInfo.TYPE_BLUETOOTH_A2DP,
+            AudioDeviceInfo.TYPE_BLE_HEADSET,
+            AudioDeviceInfo.TYPE_BLE_SPEAKER,
+            AudioDeviceInfo.TYPE_HEARING_AID,
+        )
+
+        /**
+         * The route to [device] now, with the volume of [stream]: the voice-call stream while a
+         * device is routed, music otherwise, as the playback track picks it.
+         * productName is null for every Bluetooth type (SCO, BLE headset/speaker, A2DP, hearing aid).
+         */
+        public fun current(
+            context: Context,
+            device: CommunicationDevice?,
+            stream: Int = if (device != null) AudioManager.STREAM_VOICE_CALL else AudioManager.STREAM_MUSIC,
+        ): RouteInfo {
+            val audioManager = context.getSystemService(AudioManager::class.java)
+            return RouteInfo(
+                deviceType = device?.type,
+                productName = device?.let(::productNameOf),
+                streamVolume = audioManager.getStreamVolume(stream),
+                streamMaxVolume = audioManager.getStreamMaxVolume(stream),
+                audioMode = audioManager.mode,
+            )
+        }
+
+        /** The name of a wired, USB or built-in [device]; null for Bluetooth and for none. */
+        internal fun productNameOf(device: CommunicationDevice): String? =
+            device.name.takeUnless { device.type in BLUETOOTH_TYPES || it.isEmpty() }
     }
 }

@@ -57,6 +57,7 @@ public class FakeSession(
     override var latency: Latency? = null
     override val actions: FakeSessionActions = FakeSessionActions()
     override val audio: FakeAudioControls = FakeAudioControls()
+    override val diagnostics: FakeSessionDiagnostics = FakeSessionDiagnostics()
 
     /** Defaults to the configured server, as the real session's does. */
     override var targetServer: Server? = null

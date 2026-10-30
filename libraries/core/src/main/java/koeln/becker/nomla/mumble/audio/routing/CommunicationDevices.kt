@@ -65,6 +65,12 @@ internal interface CommunicationDevices {
      * going; a new headset raises nothing on the communication-device listener until routed to.
      */
     fun setOnChangedListener(listener: (() -> Unit)?)
+
+    /**
+     * Registers (null removes) one main-thread callback for changes of the `AudioManager` mode,
+     * which it receives as the new mode; the diagnostics log them while they run (B14).
+     */
+    fun setOnModeChangedListener(listener: ((Int) -> Unit)?)
 }
 
 /**
@@ -78,6 +84,7 @@ internal class AndroidCommunicationDevices(
     private val onSecurityDenial: (SecurityException) -> Unit,
 ) : CommunicationDevices {
     private var changeListener: Registration? = null
+    private var modeListener: AudioManager.OnModeChangedListener? = null
     private var denialReported = false
 
     /** Either registration may have been refused. */
@@ -107,6 +114,19 @@ internal class AndroidCommunicationDevices(
     override fun setOnChangedListener(listener: (() -> Unit)?) {
         changeListener?.let { unregister(it) }
         changeListener = listener?.let { register(it) }
+    }
+
+    override fun setOnModeChangedListener(listener: ((Int) -> Unit)?) {
+        modeListener?.let { old ->
+            platformCall("Could not remove mode listener", Unit) { audioManager.removeOnModeChangedListener(old) }
+        }
+        modeListener = listener?.let { onMode ->
+            val platformListener = AudioManager.OnModeChangedListener { mode -> onMode(mode) }
+            platformCall("Mode listener unavailable", null) {
+                audioManager.addOnModeChangedListener(Executor { mainHandler.post(it) }, platformListener)
+                platformListener
+            }
+        }
     }
 
     private fun unregister(registration: Registration) {

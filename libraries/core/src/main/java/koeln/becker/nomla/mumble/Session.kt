@@ -22,6 +22,7 @@ package koeln.becker.nomla.mumble
 
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import koeln.becker.nomla.mumble.diagnostics.SessionDiagnostics
 import koeln.becker.nomla.mumble.model.Latency
 import koeln.becker.nomla.mumble.model.Server
 import koeln.becker.nomla.mumble.model.ServerInfo
@@ -68,6 +69,9 @@ public interface Session : AutoCloseable {
 
     /** Transmitting and routing. */
     public val audio: AudioControls
+
+    /** Live meters of the audio paths and short diagnostic recordings of them. */
+    public val diagnostics: SessionDiagnostics
 
     /** The configuration last passed to [configure]. */
     public val config: SessionConfig

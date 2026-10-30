@@ -44,7 +44,12 @@ import koeln.becker.nomla.mumble.net.MessageHandlerRegistry
  * The audio half of a session: the input modes, the router and the pipeline controller, and the
  * [AudioConfig] they resolve from [AudioSettings] and the current route. Main thread; the pipeline
  * itself is built and torn down on the controller's thread.
+ *
+ * @param onEvent a diagnostics event (name, value): `route_changed` with the routed device's type
+ *   constant only, never its name (G2), and `settings_changed` with the keys of the settings that
+ *   changed, never their values.
  */
+@Suppress("LongParameterList") // The session's collaborators, the platform seams and its event sink.
 internal class AudioSession(
     host: AudioHost,
     factory: AudioHandlerFactory,
@@ -52,6 +57,7 @@ internal class AudioSession(
     mainHandler: Handler,
     settings: AudioSettings,
     private val listener: Listener,
+    private val onEvent: (String, String) -> Unit = { _, _ -> },
 ) {
     interface Listener {
         /** The platform refused a route the router asked for. */
@@ -122,6 +128,8 @@ internal class AudioSession(
     fun apply(next: AudioSettings) {
         val previous = settings
         settings = next
+        val changed = SETTING_KEYS.filter { (_, value) -> value(previous) != value(next) }
+        if (changed.isNotEmpty()) onEvent(SETTINGS_CHANGED, changed.joinToString(",") { it.first })
         inputMode = inputModeFor(next.transmitMode)
         activityInputMode.setVadConfig(next.vad)
         val routing = next.preferredDevice to next.bluetoothAutomatic
@@ -172,6 +180,7 @@ internal class AudioSession(
     /** A new route rebuilds the pipeline for its stream (and, for SCO, its sample rate). */
     private fun setRoute(type: Int?) {
         mutableRoute.value = type
+        onEvent(ROUTE_CHANGED, type?.toString().orEmpty())
         controller.reconfigure(config, inputMode)
     }
 
@@ -179,5 +188,31 @@ internal class AudioSession(
         TransmitMode.PUSH_TO_TALK -> toggleInputMode
         TransmitMode.CONTINUOUS -> continuousInputMode
         TransmitMode.VOICE_ACTIVITY -> activityInputMode
+    }
+
+    companion object {
+        const val ROUTE_CHANGED = "route_changed"
+        const val SETTINGS_CHANGED = "settings_changed"
+
+        /** Every setting by the key a `settings_changed` event names it with. */
+        private val SETTING_KEYS: List<Pair<String, (AudioSettings) -> Any?>> = listOf(
+            "transmit_mode" to { it.transmitMode },
+            "vad" to { it.vad },
+            "half_duplex" to { it.halfDuplex },
+            "echo_cancellation_overrides" to { it.echoCancellationOverrides },
+            "preferred_device" to { it.preferredDevice },
+            "bluetooth_automatic" to { it.bluetoothAutomatic },
+            "audio_stream" to { it.pipeline.audioStream },
+            "audio_source" to { it.pipeline.audioSource },
+            "input_sample_rate" to { it.pipeline.inputSampleRate },
+            "bitrate" to { it.pipeline.bitrate },
+            "frames_per_packet" to { it.pipeline.framesPerPacket },
+            "amplitude_boost" to { it.pipeline.amplitudeBoost },
+            "noise_suppression" to { it.pipeline.noiseSuppression },
+            "speex_noise_suppress_db" to { it.pipeline.speexNoiseSuppressDb },
+            "rnnoise_attenuation_limit_db" to { it.pipeline.rnnoiseAttenuationLimitDb },
+            "android_effects" to { it.pipeline.androidEffects },
+            "echo_cancellation_voice_call_source" to { it.pipeline.echoCancellationVoiceCallSource },
+        )
     }
 }

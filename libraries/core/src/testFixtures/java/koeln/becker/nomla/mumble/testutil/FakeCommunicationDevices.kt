@@ -29,6 +29,7 @@ import koeln.becker.nomla.mumble.audio.routing.CommunicationDevices
  * the main looper, so `select` and `clear` return with the route changed and the event still
  * queued.
  */
+@Suppress("TooManyFunctions") // One per CommunicationDevices function, plus the platform's own moves.
 internal class FakeCommunicationDevices : CommunicationDevices {
     /** device id -> AudioDeviceInfo type, in the order the platform would report them. */
     val available = linkedMapOf<Int, Int>()
@@ -47,6 +48,10 @@ internal class FakeCommunicationDevices : CommunicationDevices {
     val selectCalls = mutableListOf<Int>()
     var clearCalls = 0
     var listenerRegistrations = 0
+
+    /** The registered mode listener, and every registration or removal of one. */
+    var modeListener: ((Int) -> Unit)? = null
+    var modeListenerCalls = 0
 
     /** Whether the communication mode is held, and every request, in order. */
     var inCommunicationMode = false
@@ -83,6 +88,11 @@ internal class FakeCommunicationDevices : CommunicationDevices {
     override fun setOnChangedListener(listener: (() -> Unit)?) {
         listenerRegistrations++
         this.listener = listener
+    }
+
+    override fun setOnModeChangedListener(listener: ((Int) -> Unit)?) {
+        modeListenerCalls++
+        modeListener = listener
     }
 
     /** The system switched the route on its own (headset connected, headset walked away). */

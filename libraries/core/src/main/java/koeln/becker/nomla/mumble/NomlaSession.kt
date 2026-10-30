@@ -25,8 +25,10 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
+import android.os.SystemClock
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.android.asCoroutineDispatcher
@@ -47,6 +49,13 @@ import koeln.becker.nomla.mumble.audio.TransmitMode
 import koeln.becker.nomla.mumble.audio.routing.AndroidCommunicationDevices
 import koeln.becker.nomla.mumble.audio.routing.CommunicationDevice
 import koeln.becker.nomla.mumble.audio.routing.CommunicationDevices
+import koeln.becker.nomla.mumble.diagnostics.DiagnosticsHub
+import koeln.becker.nomla.mumble.diagnostics.DiagnosticsSampler
+import koeln.becker.nomla.mumble.diagnostics.HubDiagnostics
+import koeln.becker.nomla.mumble.diagnostics.RecordingController
+import koeln.becker.nomla.mumble.diagnostics.RouteInfo
+import koeln.becker.nomla.mumble.diagnostics.SessionDiagnostics
+import koeln.becker.nomla.mumble.diagnostics.export.SentTrackDecoder
 import koeln.becker.nomla.mumble.exception.NomlaException
 import koeln.becker.nomla.mumble.model.Latency
 import koeln.becker.nomla.mumble.model.LocalUserSettings
@@ -152,7 +161,10 @@ public class NomlaSession internal constructor(
 
     override val model: StateFlow<ServerState?> get() = serverModel.state
 
-    private val mutableTalkStates = TalkStates(mainHandler.looper)
+    /** The session's diagnostics across its connections and pipelines; inert until metered or armed. */
+    internal val diagnosticsHub = DiagnosticsHub()
+
+    private val mutableTalkStates = TalkStates(mainHandler.looper, ::onTalkStateChanged)
 
     override val talkStates: StateFlow<Map<Int, TalkState>> get() = mutableTalkStates.states
 
@@ -182,15 +194,17 @@ public class NomlaSession internal constructor(
         override fun onTalkStateUpdated(session: Int, state: TalkState) = mutableTalkStates.report(session, state)
     }
 
+    // One instance per session, so a platform refusal is reported once rather than on every route
+    // decision.
+    private val devices: CommunicationDevices = communicationDevices ?: AndroidCommunicationDevices(
+        context.getSystemService(AudioManager::class.java),
+        mainHandler,
+    ) { notices.warnOnce(context.getString(R.string.bluetooth_sco_denied)) }
+
     internal val audioSession = AudioSession(
-        AudioHost(context, logger, audioInputListener, audioOutputListener),
+        AudioHost(context, logger, audioInputListener, audioOutputListener, diagnosticsHub),
         audioFactory,
-        // One instance per session, so a platform refusal is reported once rather than on every
-        // route decision.
-        communicationDevices ?: AndroidCommunicationDevices(
-            context.getSystemService(AudioManager::class.java),
-            mainHandler,
-        ) { notices.warnOnce(context.getString(R.string.bluetooth_sco_denied)) },
+        devices,
         mainHandler,
         config.audio,
         object : AudioSession.Listener {
@@ -198,9 +212,38 @@ public class NomlaSession internal constructor(
 
             override fun onAudioFailed(message: String) = notices.warn(message)
         },
+        diagnosticsHub::event,
     )
 
     private val voiceTargets = VoiceTargets(audioSession::setVoiceTargetId, notices::emit)
+
+    /** The recordings and the Mumble recording flag; the flag only goes out while synchronized. */
+    internal val recordings = RecordingController(
+        hub = diagnosticsHub,
+        commands = { commands.takeIf { connection?.isSynchronized == true } },
+        serverSettings = { serverModel.value?.serverSettings },
+        selfRecording = { serverModel.value?.self?.isRecording },
+        route = { RouteInfo.current(context, audioSession.activeDevice, audioSession.config.playbackStream) },
+        postDelayed = { delayMs, block ->
+            val runnable = Runnable(block)
+            mainHandler.postDelayed(runnable, delayMs)
+            val cancel: () -> Unit = { mainHandler.removeCallbacks(runnable) }
+            cancel
+        },
+        elapsed = SystemClock::elapsedRealtime,
+        epochMs = System::currentTimeMillis,
+        decoder = SentTrackDecoder(),
+        scope = scope,
+        exportDispatcher = Dispatchers.Default,
+    )
+
+    override val diagnostics: SessionDiagnostics = HubDiagnostics(diagnosticsHub, recordings)
+
+    /** Samples the transport while the diagnostics are active (P9). */
+    private val sampler = DiagnosticsSampler(diagnosticsHub, scope, transport = { connection?.transportStats() })
+
+    /** Whether the `AudioManager` mode listener is registered; only while the diagnostics are active. */
+    private var watchingAudioMode = false
 
     override val state: StateFlow<SessionState> get() = lifecycle.state
 
@@ -209,6 +252,24 @@ public class NomlaSession internal constructor(
     init {
         // minidns keeps one process-wide list of lookup mechanisms, which every setup appends to.
         if (dnsLookupInstalled.compareAndSet(false, true)) AndroidUsingLinkProperties.setup(context.applicationContext)
+        sampler.start()
+        scope.launch { diagnosticsHub.active.collect(::watchAudioMode) }
+    }
+
+    /** Listens to `AudioManager` mode changes exactly while the diagnostics are [active] (B14, P9). */
+    private fun watchAudioMode(active: Boolean) {
+        if (active == watchingAudioMode) return
+        watchingAudioMode = active
+        val listener: ((Int) -> Unit)? = if (active) ::onAudioModeChanged else null
+        devices.setOnModeChangedListener(listener)
+    }
+
+    private fun onAudioModeChanged(mode: Int) = diagnosticsHub.event(EVENT_AUDIO_MODE, mode.toString())
+
+    /** The session user's own talk state, as diagnostics events; any other user's is not logged. */
+    private fun onTalkStateChanged(session: Int, state: TalkState) {
+        if (session != serverModel.value?.selfSession) return
+        diagnosticsHub.event(if (state == TalkState.PASSIVE) EVENT_TALK_END else EVENT_TALK_START)
     }
 
     override fun connect() {
@@ -274,6 +335,8 @@ public class NomlaSession internal constructor(
         // released router, which is harmless.
         disconnect()
         lifecycle.release()
+        sampler.stop()
+        watchAudioMode(false)
         scope.cancel()
         audioSession.release()
     }
@@ -304,6 +367,7 @@ public class NomlaSession internal constructor(
         val connection = connection?.takeIf { it.isConnected }
         if (connection == null || modelHandler == null || !lifecycle.synchronized()) return
         NomlaLog.v(TAG, "Connected")
+        diagnosticsHub.event(EVENT_CONNECTED)
         // The connection reports ServerSync before the model has read it; its snapshot follows.
         audioStart = scope.launch(start = CoroutineStart.UNDISPATCHED) {
             val synced = serverModel.state.first { it?.selfSession != null }
@@ -348,10 +412,13 @@ public class NomlaSession internal constructor(
 
     /** The attempt ended with [reason]: tears the connection's share down and moves the lifecycle on. */
     private fun lost(reason: DisconnectReason?) {
-        // First: push-to-talk must be off before anything could reconnect.
         audioStart?.cancel()
-        audioSession.stop()
         val autoReconnect = config.autoReconnect && reason is DisconnectReason.Network
+        // A recording ends with its connection, before the pipeline stops; nothing is sent.
+        diagnosticsHub.event(if (autoReconnect) EVENT_RECONNECTING else EVENT_DISCONNECTED)
+        recordings.onDisconnected()
+        // Push-to-talk must be off before anything could reconnect.
+        audioSession.stop()
         val next = lifecycle.lost(autoReconnect, reason)
         serverModel.detach()
         mutableTalkStates.clear()
@@ -364,7 +431,10 @@ public class NomlaSession internal constructor(
         }
     }
 
-    internal fun onConnectionWarning(warning: ConnectionWarning) = notices.warn(context.getString(warning.messageRes))
+    internal fun onConnectionWarning(warning: ConnectionWarning) {
+        diagnosticsHub.event(EVENT_CONNECTION_WARNING, warning.name.lowercase())
+        notices.warn(context.getString(warning.messageRes))
+    }
 
     /** Publishes [event]; info notices only once synchronized. Any thread. */
     internal fun emit(event: NomlaEvent) = notices.emit(event)
@@ -453,5 +523,14 @@ public class NomlaSession internal constructor(
     private companion object {
         private const val TAG = "NomlaSession"
         private val dnsLookupInstalled = AtomicBoolean()
+
+        // Diagnostics events of the session (G1, B14); none carries a name, server or session id.
+        const val EVENT_CONNECTED = "connected"
+        const val EVENT_RECONNECTING = "reconnecting"
+        const val EVENT_DISCONNECTED = "disconnected"
+        const val EVENT_CONNECTION_WARNING = "connection_warning"
+        const val EVENT_TALK_START = "talk_start"
+        const val EVENT_TALK_END = "talk_end"
+        const val EVENT_AUDIO_MODE = "audio_mode"
     }
 }
