@@ -58,6 +58,7 @@ import koeln.becker.nomla.mumble.testutil.idleMainLooperFor
 import koeln.becker.nomla.testing.FileProviderCache
 import koeln.becker.nomla.testing.ServiceHostActivity
 import koeln.becker.nomla.testing.addNow
+import koeln.becker.nomla.testing.close
 import koeln.becker.nomla.testing.drainMainUntil
 import koeln.becker.nomla.testing.hostWith
 import koeln.becker.nomla.testing.replaceParts
@@ -100,6 +101,7 @@ class DiagnosticsRecordFragmentTest {
 
     @After
     fun tearDown() {
+        if (::controller.isInitialized) controller.close()
         exportGate.countDown()
         exportThread.shutdownNow()
     }

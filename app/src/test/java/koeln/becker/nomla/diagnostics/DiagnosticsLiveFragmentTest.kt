@@ -26,6 +26,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
+import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -42,6 +43,7 @@ import koeln.becker.nomla.mumble.testutil.idleMainLooper
 import koeln.becker.nomla.mumble.testutil.idleMainLooperFor
 import koeln.becker.nomla.testing.ServiceHostActivity
 import koeln.becker.nomla.testing.addNow
+import koeln.becker.nomla.testing.close
 import koeln.becker.nomla.testing.hostWith
 import java.time.Duration
 
@@ -54,6 +56,11 @@ class DiagnosticsLiveFragmentTest {
     private val context = ApplicationProvider.getApplicationContext<Context>()
     private val session = FakeSession(SessionState.Connected)
     private lateinit var controller: ActivityController<ServiceHostActivity>
+
+    @After
+    fun tearDown() {
+        if (::controller.isInitialized) controller.close()
+    }
 
     private fun reading(stage: SendStage, active: Boolean, rms: Float) = StageReading(
         stage = stage,

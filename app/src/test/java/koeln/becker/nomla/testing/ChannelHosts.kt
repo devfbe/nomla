@@ -19,6 +19,7 @@ package koeln.becker.nomla.testing
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
 import org.robolectric.Robolectric
 import org.robolectric.android.controller.ActivityController
 import koeln.becker.nomla.mumble.Session
@@ -26,6 +27,21 @@ import koeln.becker.nomla.mumble.Session
 /** A resumed [ServiceHostActivity] with [session] as the current session. */
 fun hostWith(session: Session): ActivityController<ServiceHostActivity> =
     Robolectric.buildActivity(ServiceHostActivity::class.java).setup().also { it.get().bind(session) }
+
+/**
+ * Takes the activity down to destroyed from whatever state a test left it in; nothing if it is
+ * destroyed already. Call it after every test that set one up: Robolectric never destroys a test's
+ * activities, and a RecyclerView still in a window stays registered in RecyclerView's per-thread
+ * `GapWorker`, which keeps the activity, its application, resources and native themes reachable
+ * for the rest of the test run (several MB per test, until the suite's heap runs out).
+ */
+fun ActivityController<out FragmentActivity>.close() {
+    val state = get().lifecycle.currentState
+    if (state == Lifecycle.State.DESTROYED) return
+    if (state.isAtLeast(Lifecycle.State.RESUMED)) pause()
+    if (state.isAtLeast(Lifecycle.State.STARTED)) stop()
+    destroy()
+}
 
 /** Adds [fragment] under [tag], into the content view if [inContent], else without a view slot. */
 fun <F : Fragment> FragmentActivity.addNow(fragment: F, tag: String, inContent: Boolean = false): F {

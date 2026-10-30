@@ -26,6 +26,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.common.truth.Truth.assertThat
+import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -39,6 +40,7 @@ import koeln.becker.nomla.Settings
 import koeln.becker.nomla.diagnostics.DiagnosticsLiveFragment
 import koeln.becker.nomla.testing.ServiceHostActivity
 import koeln.becker.nomla.testing.addNow
+import koeln.becker.nomla.testing.close
 import koeln.becker.nomla.testing.hostWith
 import java.util.Locale
 
@@ -51,6 +53,11 @@ class ChannelFragmentDebugPagesTest {
     private val context = ApplicationProvider.getApplicationContext<Context>()
     private lateinit var controller: ActivityController<ServiceHostActivity>
     private lateinit var fragment: ChannelFragment
+
+    @After
+    fun tearDown() {
+        if (::controller.isInitialized) controller.close()
+    }
 
     private fun setDebug(on: Boolean) {
         PreferenceManager.getDefaultSharedPreferences(context).edit()
