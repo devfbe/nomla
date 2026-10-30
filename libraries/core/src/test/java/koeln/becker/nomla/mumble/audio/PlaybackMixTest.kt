@@ -19,6 +19,8 @@ package koeln.becker.nomla.mumble.audio
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
+import koeln.becker.nomla.mumble.diagnostics.DiagnosticsHub
+import koeln.becker.nomla.mumble.diagnostics.PlaybackTaps
 import koeln.becker.nomla.mumble.model.TalkState
 import koeln.becker.nomla.mumble.testutil.FakeOpusDecoder
 
@@ -70,5 +72,36 @@ class PlaybackMixTest {
 
         // Concealment decodes 0.25 per talker; the first frame fades in from 0.
         assertThat(out.last()).isEqualTo((0.5f * Short.MAX_VALUE).toInt().toShort())
+    }
+
+    /** Every mix of two talkers until their streams end, through [taps] as AudioOutput runs them. */
+    private fun mixes(taps: PlaybackTaps?): List<Short> {
+        taps?.onPacketReceived(1, 0L, 40, false)
+        val mix = PlaybackMix(taps = taps)
+        repeat(2) { mix.add(silentTalker()) }
+        val out = ShortArray(AudioHandler.FRAME_SIZE)
+        val all = ArrayList<Short>()
+        repeat(20) {
+            out.fill(0)
+            val played = mix.mixInto(out, 0, out.size) {}
+            taps?.onMix(out, out.size, played, 0, 0)
+            all += out.toList()
+        }
+        return all
+    }
+
+    @Test
+    fun `mix output is identical with inert and armed taps`() {
+        val plain = mixes(null)
+        val inert = mixes(PlaybackTaps(DiagnosticsHub()))
+        val armedHub = DiagnosticsHub().apply { arm(5) }
+        val armed = mixes(PlaybackTaps(armedHub))
+
+        assertThat(plain.any { it.toInt() != 0 }).isTrue()
+        assertThat(inert).isEqualTo(plain)
+        assertThat(armed).isEqualTo(plain)
+        val recording = armedHub.disarm()!!
+        assertThat(recording.freezeSpeakers().keys).containsExactly("speaker_1")
+        assertThat(recording.playback.freeze(recording.t0Nanos).rows).isEqualTo(20)
     }
 }

@@ -38,6 +38,7 @@ import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.diagnostics.CaptureTaps
 import koeln.becker.nomla.mumble.diagnostics.DiagnosticsHub
 import koeln.becker.nomla.mumble.diagnostics.PipelineDescription
+import koeln.becker.nomla.mumble.diagnostics.PlaybackTaps
 import koeln.becker.nomla.mumble.exception.AudioException
 import koeln.becker.nomla.mumble.exception.AudioInitializationException
 import koeln.becker.nomla.mumble.exception.NativeAudioException
@@ -97,6 +98,9 @@ internal class AudioHandler(
 
     /** This pipeline's taps; null without [diagnostics]. */
     private val taps: CaptureTaps?
+
+    /** This pipeline's playback and receive taps; null without [diagnostics]. */
+    private val playbackTaps: PlaybackTaps? = diagnostics?.let(::PlaybackTaps)
 
     /** This pipeline as the diagnostics record it, but for what [start] still decides. */
     private val description: PipelineDescription?
@@ -160,7 +164,7 @@ internal class AudioHandler(
         }
         transmitter.targetId = params.targetId
         transmitter.udpProtocol = params.udpProtocol
-        output = AudioOutput(host.outputListener, wiring.farEnd)
+        output = AudioOutput(host.outputListener, wiring.farEnd, taps = playbackTaps)
         // Last, so a constructor that throws never leaves the hub pointing at this canceller.
         taps?.attachApm(wiring.apm)
     }
@@ -178,6 +182,7 @@ internal class AudioHandler(
             // Nobody shuts a pipeline down that failed to start: its taps go inert here, and the
             // hub forgets its canceller.
             taps?.detach()
+            playbackTaps?.detach()
             throw e
         }
     }
@@ -266,6 +271,8 @@ internal class AudioHandler(
     fun shutdown() {
         // First, so a capture thread that outlives the bounded join below writes nothing to the hub.
         taps?.detach()
+        // Likewise for a playback thread that outlives its join, and packets still on their way.
+        playbackTaps?.detach()
         synchronized(input) { input.shutdown() }
         // After the capture thread is joined, because every stage in it is single-threaded and
         // release() frees native state the loop reaches on every frame.
@@ -300,6 +307,8 @@ internal class AudioHandler(
     }
 
     override fun onVoicePacket(packet: VoicePacket) {
+        // On the protocol thread: the only one that assigns a talker's recording slot (P6).
+        playbackTaps?.onPacketReceived(packet.session, packet.frameNumber, packet.opusLength, packet.isTerminator)
         synchronized(output) { output.queueVoiceData(packet) }
     }
 

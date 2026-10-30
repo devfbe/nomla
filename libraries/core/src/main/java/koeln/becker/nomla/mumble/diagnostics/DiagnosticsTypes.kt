@@ -133,14 +133,66 @@ public data class EchoReading(
     val levelChangeDb: Float?,
 )
 
-/** The playback side of a snapshot; filled in by the playback taps. */
-public class PlaybackReading
+/**
+ * The playback side of a snapshot, as of the last mix written to the track: whether anybody was
+ * [played] in it, its levels in dBFS and its clipped samples since metering started, the track's
+ * underruns since it was built and its buffer in frames, the estimated [outputLatencyMs] from a
+ * write to the speaker (null until the first estimate), and how many talkers were mixed.
+ */
+public data class PlaybackReading(
+    val played: Boolean,
+    val mixRmsDbfs: Float,
+    val mixPeakDbfs: Float,
+    val mixPeakHoldDbfs: Float,
+    val mixClippedSamples: Long,
+    val underruns: Int,
+    val trackBufferFrames: Int,
+    val outputLatencyMs: Float?,
+    val activeSpeakers: Int,
+)
 
-/** One talker of a snapshot; filled in by the playback taps. */
-public class SpeakerReading
+/**
+ * One talker heard within the last second. [session] is the server's session id, for the live page
+ * to show a name; it never leaves the device (a recording names talkers `speaker_1..4` only).
+ * [track] is the talker's recording track (1 to 4) while a recording runs and they have one, else
+ * null. The counters are those of the talker's current stream; levels of their last frame in dBFS.
+ */
+public data class SpeakerReading(
+    val session: Int,
+    val track: Int?,
+    val availablePackets: Int,
+    val concealedFrames: Int,
+    val decodeErrors: Int,
+    val lostPackets: Int,
+    val latePackets: Int,
+    val rmsDbfs: Float,
+    val peakDbfs: Float,
+)
 
-/** The transport of a snapshot; filled in by the network sampler. */
-public class NetworkReading
+/**
+ * The transport at the network sampler's last tick: where voice goes, the ping round trips (mean
+ * in ms and variance in ms², NaN before the first ping), the crypt counters of this side and the
+ * server's, the UDP socket's buffers in bytes (null without a socket), and [extra] values the
+ * session adds.
+ */
+public data class NetworkReading(
+    val usingUdp: Boolean,
+    val tcpPingMs: Float,
+    val tcpPingVarMs: Float,
+    val udpPingMs: Float,
+    val udpPingVarMs: Float,
+    val good: Int,
+    val late: Int,
+    val lost: Int,
+    val resync: Int,
+    val remoteGood: Int,
+    val remoteLate: Int,
+    val remoteLost: Int,
+    val remoteResync: Int,
+    val sendBufferBytes: Int?,
+    val receiveBufferBytes: Int?,
+    val extra: Map<String, Float> = emptyMap(),
+)
 
 /**
  * Everything the live page shows, read at one moment. [gateHistory] holds whether the gate was

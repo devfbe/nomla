@@ -229,6 +229,34 @@ internal class ProtocolSession(
         link.sendTcp(Mumble.CryptSetup.newBuilder().build(), NomlaTcpMessageType.CryptSetup)
     }
 
+    /**
+     * The transport now, with the UDP transport's [socket] buffers. Any thread: the ping
+     * statistics and the protocol-context crypt counters are read without a lock, so a reading may
+     * mix values of two neighbouring pings (racy reads are accepted for diagnostics).
+     */
+    fun transportStats(socket: SocketBuffers?): TransportStats {
+        val crypt = link.cryptState
+        return TransportStats(
+            usingUdp = usingUdp,
+            tcpPingMs = tcpPingStats.averageOrNaN,
+            tcpPingVarMs = tcpPingStats.varianceOrNaN,
+            udpPingMs = udpPingStats.averageOrNaN,
+            udpPingVarMs = udpPingStats.varianceOrNaN,
+            good = crypt.good,
+            late = crypt.late,
+            lost = crypt.lost,
+            resync = crypt.resync,
+            remoteGood = crypt.remoteGood,
+            remoteLate = crypt.remoteLate,
+            remoteLost = crypt.remoteLost,
+            remoteResync = crypt.remoteResync,
+            socket = socket,
+        )
+    }
+
+    private val PingStats.averageOrNaN: Float get() = if (count > 0) average else Float.NaN
+    private val PingStats.varianceOrNaN: Float get() = if (count > 0) variance else Float.NaN
+
     private fun onPing(message: Mumble.Ping) {
         val crypt = link.cryptState
         crypt.remoteGood = message.good

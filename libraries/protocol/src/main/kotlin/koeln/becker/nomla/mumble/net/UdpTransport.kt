@@ -27,6 +27,9 @@ package koeln.becker.nomla.mumble.net
 internal interface UdpTransport {
     /** True once the socket is open and [sendMessage] can be used. */
     val isRunning: Boolean
+
+    /** The socket's buffer sizes, null while there is no open socket or the kernel does not say. */
+    val socketBuffers: SocketBuffers? get() = null
     fun connect(host: String, port: Int)
     fun sendMessage(data: ByteArray, length: Int)
     fun disconnect()

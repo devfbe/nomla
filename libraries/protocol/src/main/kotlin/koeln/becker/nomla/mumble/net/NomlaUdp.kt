@@ -31,6 +31,7 @@ import java.io.IOException
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
+import java.net.SocketException
 import java.security.GeneralSecurityException
 
 /** The encryption header alone is four bytes; anything this short carries no voice. */
@@ -61,11 +62,19 @@ internal class NomlaUdp(
     @Volatile private var socket: DatagramSocket? = null
     @Volatile private var connected = false
     @Volatile private var stopRequested = false
+    @Volatile private var buffers: SocketBuffers? = null
     private var job: Job? = null
 
     private val sendQueue = Channel<DatagramPacket>(Channel.UNLIMITED)
 
     override val isRunning: Boolean get() = connected
+
+    /**
+     * Read once when the socket connects: `DatagramSocket`'s getters synchronize on the socket,
+     * which a blocked `receive` holds, so reading them later could stall the caller until a
+     * datagram arrives. Null once the socket is closed.
+     */
+    override val socketBuffers: SocketBuffers? get() = buffers.takeIf { connected }
 
     /** True once every coroutine of this transport has finished. */
     internal val isFinished: Boolean get() = job?.isCompleted ?: true
@@ -87,6 +96,7 @@ internal class NomlaUdp(
             socket = udpSocket
             udpSocket.connect(address, port)
             NomlaLog.d(TAG, "Created socket")
+            buffers = readBuffers(udpSocket)
 
             // Undispatched, so it is started, and closes the socket, even if the scope is cancelled now.
             sender = launch(start = CoroutineStart.UNDISPATCHED) { sendLoop(udpSocket) }
@@ -198,5 +208,12 @@ internal class NomlaUdp(
     companion object {
         private val TAG = NomlaUdp::class.java.name
         private const val BUFFER_SIZE = 2048
+
+        /** `SO_SNDBUF` and `SO_RCVBUF` of [socket], or null if it cannot tell (closed, unsupported). */
+        internal fun readBuffers(socket: DatagramSocket): SocketBuffers? = try {
+            SocketBuffers(socket.sendBufferSize, socket.receiveBufferSize)
+        } catch (_: SocketException) {
+            null
+        }
     }
 }

@@ -21,10 +21,12 @@ package koeln.becker.nomla.mumble.audio
 import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioManager
+import android.media.AudioTimestamp
 import android.media.AudioTrack
 import android.os.Process
 import androidx.annotation.VisibleForTesting
 import koeln.becker.nomla.mumble.audio.capture.FarEndFrameChunker
+import koeln.becker.nomla.mumble.diagnostics.PlaybackTaps
 import koeln.becker.nomla.mumble.exception.AudioInitializationException
 import koeln.becker.nomla.mumble.exception.NativeAudioException
 import koeln.becker.nomla.mumble.model.TalkState
@@ -38,6 +40,9 @@ import kotlin.concurrent.withLock
 
 private const val MS_PER_SECOND = 1000L
 
+/** Mixes between two output latency estimates while the diagnostics are active (0.5 s). */
+private const val LATENCY_EVERY_MIXES = 50
+
 /**
  * Decodes and mixes all users' voice streams on one playback thread, inline and without allocating
  * per mix. Plays each user as [AudioOutputListener.playbackParams] says.
@@ -45,6 +50,7 @@ private const val MS_PER_SECOND = 1000L
  * @param farEnd receives every mixed buffer as the AEC3 far-end reference, or null when the
  *               WebRTC canceller is not in the capture chain. Used only by the playback thread.
  * @param joinTimeoutMs how long [stopPlaying] waits for the playback thread to end.
+ * @param taps sees every talker's frame and every mix written to the track; reads them only.
  */
 internal class AudioOutput(
     private val listener: AudioOutputListener,
@@ -54,6 +60,7 @@ internal class AudioOutput(
         AudioOutputSpeech(session, samples, listener, averageAvailable = averageAvailable)
     },
     private val joinTimeoutMs: Long = AudioInput.DEFAULT_JOIN_TIMEOUT_MS,
+    private val taps: PlaybackTaps? = null,
 ) {
 
     fun interface SpeechFactory {
@@ -77,7 +84,7 @@ internal class AudioOutput(
     @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN") // wait()/notify()
     private val inactiveLock = Object()
     /** The same talkers as [audioOutputs], in the order they are decoded and mixed. */
-    private val mix = PlaybackMix()
+    private val mix = PlaybackMix(taps = taps)
 
     /**
      * Guards [audioOutputs] and [mix] between the network thread, the playback thread and [stopPlaying].
@@ -187,9 +194,14 @@ internal class AudioOutput(
         val drainMixes = (track.bufferSizeInFrames + bufferSize - 1) / bufferSize
         // Zero at the start, so the first silent mixes fill the new track.
         var silentMixes = 0
+        // Only with taps: frames written so far and a reused timestamp, for the latency estimate.
+        val stamp = if (taps != null) AudioTimestamp() else null
+        var writtenFrames = 0L
+        var mixesSinceStamp = 0
 
         while (running) {
-            if (fetchAudio(pcm, bufferSize)) {
+            val played = fetchAudio(pcm, bufferSize)
+            if (played) {
                 silentMixes = 0
             } else if (silentMixes < drainMixes) {
                 // Silence behind the last mix plays it out rather than flushing it, and leaves
@@ -234,7 +246,20 @@ internal class AudioOutput(
             // Feed the canceller before write(), which blocks: a late reference misaligns the
             // echo estimate. The chunker copies, so the APM cannot modify this buffer.
             farEnd?.push(pcm, bufferSize)
-            track.write(pcm, 0, bufferSize)
+            val written = track.write(pcm, 0, bufferSize)
+            if (taps != null) {
+                if (written > 0) writtenFrames += written
+                // One volatile read while the diagnostics are inactive; the track is asked only while active.
+                if (taps.isActive) {
+                    taps.onMix(pcm, bufferSize, played, track.underrunCount, track.bufferSizeInFrames)
+                    if (++mixesSinceStamp >= LATENCY_EVERY_MIXES && stamp != null) {
+                        mixesSinceStamp = 0
+                        if (track.getTimestamp(stamp)) {
+                            taps.onOutputTimestamp(writtenFrames, stamp.framePosition, stamp.nanoTime)
+                        }
+                    }
+                }
+            }
         }
 
         track.flush()

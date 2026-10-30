@@ -112,6 +112,36 @@ internal class AudioOutputSpeech(
     private var ucFlags = 0
     private var reportedState: TalkState? = null
 
+    /** Frames the decoder concealed because no packet was there; playback thread only. */
+    var concealedFrames: Int = 0
+        private set
+
+    /** Frames that failed to decode and played as silence; playback thread only. */
+    var decodeErrors: Int = 0
+        private set
+
+    /** The jitter buffer's packet count at the last decoded frame; playback thread only. */
+    var lastAvailablePackets: Int = 0
+        private set
+
+    /**
+     * Packets missing from the stream as they arrived: gaps in the frame numbers, counted in
+     * packets of the size that arrived. Written under [jitterLock]; others read it without the
+     * lock, as a statistic.
+     */
+    var lostPackets: Int = 0
+        private set
+
+    /** Packets that arrived behind a later one; like [lostPackets]. */
+    var latePackets: Int = 0
+        private set
+
+    /**
+     * The frame number the next packet should carry; [NO_FRAME] before the first and after a
+     * terminator. Under [jitterLock].
+     */
+    private var expectedFrame = NO_FRAME
+
     override val samples: FloatArray get() = buffer
     override var numSamples: Int = 0
         private set
@@ -146,6 +176,7 @@ internal class AudioOutputSpeech(
             val frameCount = opusApi.packetGetNbFrames(ingestBytes, length)
             if (frameCount <= 0) return
             val samples = frameCount * opusApi.packetGetSamplesPerFrame(ingestBytes, AudioHandler.SAMPLE_RATE)
+            countArrival(packet.frameNumber, samples, packet.isTerminator)
             val volumeBits = packet.volumeAdjustment.toRawBits()
             for (i in 0 until Int.SIZE_BYTES) {
                 ingestBytes[length + i] = (volumeBits ushr (Byte.SIZE_BITS * (Int.SIZE_BYTES - 1 - i))).toByte()
@@ -154,6 +185,25 @@ internal class AudioOutputSpeech(
             val timestamp = AudioHandler.FRAME_SIZE * packet.frameNumber.toInt()
             jitterBuffer.put(ingestBytes, length + TRAILER_BYTES, timestamp, samples, 0, packet.context)
         }
+    }
+
+    /**
+     * Counts [lostPackets] and [latePackets] from the frame numbers (B14, T4): a packet past the
+     * expected frame means the packets in between were lost, in steps of this packet's frames; one
+     * before it arrived late and leaves the expectation where it is. A terminator ends the talk
+     * spurt, so the next packet starts a new expectation. Under [jitterLock].
+     */
+    private fun countArrival(frameNumber: Long, samples: Int, terminator: Boolean) {
+        val packetFrames = maxOf(1, samples / AudioHandler.FRAME_SIZE)
+        val expected = expectedFrame
+        if (expected != NO_FRAME && frameNumber < expected) {
+            latePackets++
+            return
+        }
+        if (expected != NO_FRAME && frameNumber > expected) {
+            lostPackets += ((frameNumber - expected) / packetFrames).toInt()
+        }
+        expectedFrame = if (terminator) NO_FRAME else frameNumber + packetFrames
     }
 
     /**
@@ -206,6 +256,7 @@ internal class AudioOutputSpeech(
             availPackets =
                 jitterBuffer.control(SpeexJitterNative.JITTER_BUFFER_GET_AVAILABLE_COUNT, 0).toFloat()
         }
+        lastAvailablePackets = availPackets.toInt()
 
         // Make sure that we have enough packets in the jitter buffer before we even begin
         // decoding, based on the average # of packets available. Prevents a metallic 'twang' when
@@ -229,9 +280,10 @@ internal class AudioOutputSpeech(
                 if (hasTerminator) nextAlive = false
                 decoded
             } else {
-                decoder.decodeFloat(null, 0, 0, out, AudioHandler.FRAME_SIZE)
+                decoder.decodeFloat(null, 0, 0, out, AudioHandler.FRAME_SIZE).also { concealedFrames++ }
             }
         } catch (e: NativeAudioException) {
+            decodeErrors++
             NomlaLog.w(TAG, "Could not decode a frame of session $session; playing silence", e)
             AudioHandler.FRAME_SIZE
         }
@@ -310,5 +362,10 @@ internal class AudioOutputSpeech(
     override fun close() {
         decoder.close()
         jitterBuffer.close()
+    }
+
+    private companion object {
+        /** No frame expected: before the first packet and after a terminator. */
+        const val NO_FRAME = Long.MIN_VALUE
     }
 }

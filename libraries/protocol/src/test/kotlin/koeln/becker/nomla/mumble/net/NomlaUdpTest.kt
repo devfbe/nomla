@@ -98,6 +98,20 @@ class NomlaUdpTest {
     }
 
     @Test
+    fun theSocketBuffersAreKnownWhileConnectedAndGoneAfterDisconnect() {
+        val client = startClient()
+        awaitUntil(description = "the transport is connected") { client.isRunning }
+
+        val buffers = client.socketBuffers
+        assertThat(buffers).isNotNull()
+        assertThat(buffers!!.sendBytes).isGreaterThan(0)
+        assertThat(buffers.receiveBytes).isGreaterThan(0)
+
+        client.disconnect()
+        assertThat(client.socketBuffers).isNull()
+    }
+
+    @Test
     fun sentPacketArrivesOcbEncryptedAndTheServerCanDecryptIt() {
         val client = startClient()
         val payload = byteArrayOf(0x20, 1, 2, 3, 4)

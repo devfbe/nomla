@@ -236,6 +236,13 @@ internal class NomlaConnection(
     /** Whether [sendUDPMessage] would use UDP for an unforced packet. */
     val isUsingUdp: Boolean get() = protocol.usingUdp
 
+    /**
+     * The transport statistics for the debug diagnostics; null outside of a synchronized
+     * connection. Any thread, never blocks; see [ProtocolSession.transportStats].
+     */
+    fun transportStats(): TransportStats? =
+        if (isSynchronized) protocol.transportStats(udp?.socketBuffers) else null
+
     /** If the connection ended with an error, that error. */
     val error: NomlaException? get() = (state.get() as? ConnectionState.Closed)?.error
 

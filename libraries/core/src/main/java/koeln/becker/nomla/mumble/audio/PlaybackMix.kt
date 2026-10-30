@@ -17,6 +17,7 @@
 
 package koeln.becker.nomla.mumble.audio
 
+import koeln.becker.nomla.mumble.diagnostics.PlaybackTaps
 import koeln.becker.nomla.mumble.util.NomlaLog
 
 private const val TAG = "PlaybackMix"
@@ -24,8 +25,13 @@ private const val TAG = "PlaybackMix"
 /**
  * The talkers being played and one mix of them, decoded inline on the playback thread. Reuses its
  * lists, so a mix allocates nothing. Not thread-safe: `AudioOutput` guards it with its packet lock.
+ *
+ * @param taps sees every live talker's decoded frame before it is mixed; reads it only.
  */
-internal class PlaybackMix(private val mixer: AudioMixer<FloatArray, ShortArray> = BasicClippingShortMixer()) {
+internal class PlaybackMix(
+    private val mixer: AudioMixer<FloatArray, ShortArray> = BasicClippingShortMixer(),
+    private val taps: PlaybackTaps? = null,
+) {
     private val speeches = ArrayList<AudioOutputSpeech>()
     private val sources = ArrayList<AudioMixerSource<FloatArray>>()
 
@@ -60,6 +66,7 @@ internal class PlaybackMix(private val mixer: AudioMixer<FloatArray, ShortArray>
             }
             if (alive) {
                 sources.add(speech)
+                taps?.onSpeaker(speech)
             } else {
                 speeches.removeAt(i)
                 onEnded(speech)

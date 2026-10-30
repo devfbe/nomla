@@ -180,4 +180,62 @@ class AudioOutputSpeechTest {
         assertThat(opus.destroys).isEqualTo(1)
         assertThat(jitter.destroys).isEqualTo(1)
     }
+
+    /** A talker of [framesPerPacket] 10 ms frames per packet whose packets arrive with [frameNumbers]. */
+    private fun arrivals(framesPerPacket: Int, vararg frameNumbers: Long): AudioOutputSpeech {
+        val speech = AudioOutputSpeech(
+            42, AudioHandler.FRAME_SIZE, { _, _ -> }, FakeOpusDecoder(framesPerPacket = framesPerPacket), FakeJitter(),
+        )
+        for (frameNumber in frameNumbers) {
+            speech.addFrameToBuffer(voicePacket(byteArrayOf(0x41), frameNumber).apply { isTerminator = false })
+        }
+        return speech
+    }
+
+    @Test
+    fun `a gap in frame numbers counts lost packets, an older frame counts late`() {
+        val speech = arrivals(2, 0L, 4L, 6L, 2L)
+
+        assertThat(speech.lostPackets).isEqualTo(1)
+        assertThat(speech.latePackets).isEqualTo(1)
+    }
+
+    @Test
+    fun `the same with 10 ms packets`() {
+        val speech = arrivals(1, 0L, 2L, 3L, 1L)
+
+        assertThat(speech.lostPackets).isEqualTo(1)
+        assertThat(speech.latePackets).isEqualTo(1)
+    }
+
+    @Test
+    fun `consecutive 60 ms packets count nothing`() {
+        val speech = arrivals(6, 0L, 6L, 12L, 18L)
+
+        assertThat(speech.lostPackets).isEqualTo(0)
+        assertThat(speech.latePackets).isEqualTo(0)
+    }
+
+    @Test
+    fun `a talk spurt after a terminator counts no gap`() {
+        val speech = AudioOutputSpeech(42, AudioHandler.FRAME_SIZE, { _, _ -> }, FakeOpusDecoder(), FakeJitter())
+        speech.addFrameToBuffer(voicePacket(byteArrayOf(0x41), 0L).apply { isTerminator = false })
+        speech.addFrameToBuffer(voicePacket(byteArrayOf(0x41), 1L))
+        speech.addFrameToBuffer(voicePacket(byteArrayOf(0x41), 500L).apply { isTerminator = false })
+
+        assertThat(speech.lostPackets).isEqualTo(0)
+        assertThat(speech.latePackets).isEqualTo(0)
+    }
+
+    @Test
+    fun `concealed frames are counted`() {
+        // The jitter buffer never delivers: every frame until the stream times out is concealed.
+        val speech = AudioOutputSpeech(42, AudioHandler.FRAME_SIZE, { _, _ -> }, FakeOpusDecoder(), FakeJitter())
+
+        repeat(5) { speech.decode() }
+
+        assertThat(speech.concealedFrames).isEqualTo(5)
+        assertThat(speech.decodeErrors).isEqualTo(0)
+        assertThat(speech.lastAvailablePackets).isEqualTo(0)
+    }
 }
