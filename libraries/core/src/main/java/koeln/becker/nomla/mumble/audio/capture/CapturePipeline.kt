@@ -17,6 +17,8 @@
 
 package koeln.becker.nomla.mumble.audio.capture
 
+import koeln.becker.nomla.mumble.diagnostics.CaptureTaps
+import koeln.becker.nomla.mumble.diagnostics.SendStage
 
 /**
  * Result of one pipeline pass. Owned and reused by the pipeline (as is [samples]), so every field is
@@ -45,7 +47,10 @@ internal class CaptureFrame internal constructor(val samples: ShortArray) {
  * The frame buffer is reused: short frames are zero-padded so the encoder never resends a stale
  * tail, and the detector gets the resampler's actual count (0 is legal and yields
  * [VoiceActivityDetector.NO_SIGNAL]).
+ *
+ * [taps] (debug diagnostics) see the resampled frame and the gate's output; they only read.
  */
+@Suppress("LongParameterList") // The stages, their settings, and the log and taps seams.
 internal class CapturePipeline(
     resampler: Resampler?,
     private val preprocessor: CapturePreprocessor,
@@ -53,9 +58,13 @@ internal class CapturePipeline(
     @Volatile var amplitudeBoost: Float = 1f,
     frameSize: Int = 480,
     private val log: (String) -> Unit = {},
+    private val taps: CaptureTaps? = null,
 ) {
     private val frame = ShortArray(frameSize)
     private val result = CaptureFrame(frame)
+
+    /** What the gate tap sees while the gate is closed; only with [taps]. */
+    private val closedGate: ShortArray? = if (taps != null) ShortArray(frameSize) else null
 
     /** Written by [setResampler] from another thread. */
     @Volatile
@@ -79,9 +88,11 @@ internal class CapturePipeline(
                 log("capture produced only $produced of ${frame.size} samples; padding with silence")
             }
         }
+        if (r != null) taps?.onStage(SendStage.RESAMPLED, frame, frame.size)
 
         val probability = preprocessor.process(frame)
         val transmit = inputMode.shouldTransmit(frame, produced, probability)
+        if (taps != null) taps.onStage(SendStage.GATED, if (transmit) frame else closedGate ?: frame, frame.size)
         if (transmit && amplitudeBoost != 1f) boost(frame, amplitudeBoost)
         result.length = frame.size
         result.transmit = transmit

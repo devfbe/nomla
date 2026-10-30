@@ -47,4 +47,13 @@ internal object DiagnosticsLimits {
 
     /** What digital silence reads, and the lowest level any meter reports. */
     const val SILENCE_DBFS = -100f
+
+    /** Capture frames of gate state the live page draws (3 s). */
+    const val GATE_HISTORY_FRAMES = 300
+
+    /**
+     * Opus payload bytes a recording keeps per 10 ms of capture (about 200 kbps, far above any
+     * bitrate Nomla sends); a packet beyond that budget is dropped and counted.
+     */
+    const val MAX_PACKET_BYTES_PER_FRAME = 256
 }

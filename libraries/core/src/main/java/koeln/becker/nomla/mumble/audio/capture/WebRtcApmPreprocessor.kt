@@ -138,9 +138,10 @@ internal class WebRtcApmPreprocessor private constructor(
     /** Target of the discarding read one frame before a poll; never published. */
     private val discardedStatistics = FloatArray(WebRtcApmApi.STATISTICS_COUNT)
 
-    /** Successful polls so far; publishes [statistics] (written after the array). */
+    /** Successful polls so far; publishes [statistics] (written after the array). Any thread. */
     @Volatile
-    private var statisticsPolls = 0
+    var statisticsPolls: Int = 0
+        private set
 
     override fun onCaptureFrame(handle: Long, frame: ShortArray): Float? {
         val probability = if (api.processCapture(handle, frame) != 0) {

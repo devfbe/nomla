@@ -21,6 +21,7 @@ package koeln.becker.nomla.mumble.audio
 import android.os.Process
 import koeln.becker.nomla.mumble.audio.capture.CaptureState
 import koeln.becker.nomla.mumble.audio.capture.PcmCaptureSource
+import koeln.becker.nomla.mumble.diagnostics.CaptureTaps
 import koeln.becker.nomla.mumble.util.NomlaLog
 
 /**
@@ -29,12 +30,15 @@ import koeln.becker.nomla.mumble.util.NomlaLog
  * [startRecording], [stopRecording] and [shutdown] are `synchronized` on this instance and are the
  * only writers of [thread]. The capture thread never takes this monitor and [listener] is called
  * outside it, so the bounded join in [stopRecording] cannot deadlock against the loop.
+ *
+ * [taps] (debug diagnostics) see every frame as read; the read is timed only while they are active.
  */
 internal class AudioInput(
     private val listener: AudioInputListener,
     private val source: PcmCaptureSource,
     private val stateListener: ((CaptureState) -> Unit)? = null,
     private val joinTimeoutMs: Long = DEFAULT_JOIN_TIMEOUT_MS,
+    private val taps: CaptureTaps? = null,
 ) {
     fun interface AudioInputListener {
         /**
@@ -119,7 +123,10 @@ internal class AudioInput(
         NomlaLog.i(TAG, "capturing at $sampleRate Hz in frames of $frameSize")
         val buffer = ShortArray(frameSize)
         while (recording) {
+            val timed = taps != null && taps.isActive
+            val readStart = if (timed) System.nanoTime() else 0L
             val read = source.read(buffer, frameSize)
+            val readNanos = if (timed) System.nanoTime() - readStart else -1L
             if (read < 0) {
                 // A read racing our own shutdown fails too; don't report that to the user.
                 if (recording) {
@@ -132,6 +139,7 @@ internal class AudioInput(
             if (read == 0) continue
             // The buffer is reused: clear the stale tail after a short read.
             buffer.fill(0, read, frameSize)
+            taps?.onMicRaw(buffer, read, frameSize, sampleRate, readNanos)
             listener.onAudioInputReceived(buffer, frameSize)
         }
         source.stop()

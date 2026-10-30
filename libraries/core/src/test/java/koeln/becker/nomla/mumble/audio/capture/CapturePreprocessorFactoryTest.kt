@@ -25,6 +25,10 @@ import koeln.becker.nomla.mumble.audio.capture.fakes.FakeRnnoiseApi
 import koeln.becker.nomla.mumble.audio.capture.fakes.FakeSpeexPreprocessApi
 import koeln.becker.nomla.mumble.audio.capture.fakes.FakeWebRtcApmApi
 import koeln.becker.nomla.mumble.audio.capture.fakes.SpeexPreprocessorRequests as R
+import koeln.becker.nomla.mumble.diagnostics.CaptureTaps
+import koeln.becker.nomla.mumble.diagnostics.DiagnosticsHub
+import koeln.becker.nomla.mumble.diagnostics.SendStage
+import koeln.becker.nomla.mumble.diagnostics.TapStage
 
 /**
  * Composition rule: `[WebRTC APM] -> [Speex | RNNoise]`, and the probability is the last non-null
@@ -389,5 +393,45 @@ class CapturePreprocessorFactoryTest {
             }
         }
         assertThat(logs).isEmpty()
+    }
+
+    /** The chain's stages in order, by name; tap stages by their send stage. */
+    private fun stagesOf(chain: CaptureChain): List<String> {
+        val p = chain.preprocessor
+        val stages = if (p is ChainedPreprocessor) p.stageList else listOf(p)
+        return stages.map {
+            when (it) {
+                is TapStage -> "tap ${it.stage}"
+                is WebRtcApmPreprocessor -> "apm"
+                is SpeexPreprocessor -> "speex"
+                is RnnoisePreprocessor -> "rnnoise"
+                NoopPreprocessor -> "noop"
+                else -> it.javaClass.simpleName
+            }
+        }
+    }
+
+    @Test
+    fun `tap stages follow APM and denoiser only when taps are given`() {
+        val taps = CaptureTaps(DiagnosticsHub(), pushToTalk = false, vad = null)
+
+        val tapped = factory.create(NoiseSuppressionMode.RNNOISE, EchoCancellationMode.WEBRTC, taps = taps)
+        assertThat(stagesOf(tapped))
+            .containsExactly("apm", "tap ${SendStage.APM}", "rnnoise", "tap ${SendStage.DENOISED}").inOrder()
+        assertThat(tapped.apm).isSameInstanceAs(tapped.farEndSink)
+        assertThat(tapped.denoiser).isSameInstanceAs(tapped.rnnoise)
+
+        assertThat(stagesOf(factory.create(NoiseSuppressionMode.SPEEX, EchoCancellationMode.NONE, taps = taps)))
+            .containsExactly("speex", "tap ${SendStage.DENOISED}").inOrder()
+        assertThat(stagesOf(factory.create(NoiseSuppressionMode.NONE, EchoCancellationMode.WEBRTC, taps = taps)))
+            .containsExactly("apm", "tap ${SendStage.APM}").inOrder()
+        assertThat(stagesOf(factory.create(NoiseSuppressionMode.NONE, EchoCancellationMode.NONE, taps = taps)))
+            .containsExactly("noop")
+
+        val untapped = factory.create(NoiseSuppressionMode.RNNOISE, EchoCancellationMode.WEBRTC)
+        assertThat(stagesOf(untapped)).containsExactly("apm", "rnnoise").inOrder()
+        assertThat(untapped.apm).isNotNull()
+        assertThat(untapped.denoiser).isSameInstanceAs(untapped.rnnoise)
+        assertThat(factory.create(NoiseSuppressionMode.NONE, EchoCancellationMode.NONE).denoiser).isNull()
     }
 }

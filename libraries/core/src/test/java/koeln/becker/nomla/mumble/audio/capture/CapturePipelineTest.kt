@@ -23,10 +23,16 @@ import org.junit.Test
 import koeln.becker.nomla.mumble.audio.capture.fakes.FailingResampler
 import koeln.becker.nomla.mumble.audio.capture.fakes.FakePreprocessor
 import koeln.becker.nomla.mumble.audio.capture.fakes.FakeResampler
+import koeln.becker.nomla.mumble.audio.capture.fakes.FakeRnnoiseApi
+import koeln.becker.nomla.mumble.audio.capture.fakes.FakeSpeexPreprocessApi
+import koeln.becker.nomla.mumble.audio.capture.fakes.FakeWebRtcApmApi
 import koeln.becker.nomla.mumble.audio.constant
 import koeln.becker.nomla.mumble.audio.inputmode.ActivityInputMode
 import koeln.becker.nomla.mumble.audio.inputmode.ContinuousInputMode
 import koeln.becker.nomla.mumble.audio.inputmode.ToggleInputMode
+import koeln.becker.nomla.mumble.diagnostics.CaptureTaps
+import koeln.becker.nomla.mumble.diagnostics.DiagnosticsHub
+import kotlin.random.Random
 
 class CapturePipelineTest {
     /** Regression for voice activation being triggered by background noise. */
@@ -379,5 +385,113 @@ class CapturePipelineTest {
             scores += VoiceActivityDetector.amplitudeScore(pcm, length)
             return true
         }
+    }
+
+    /**
+     * Debug off means zero behaviour change (B5): taps that are never metered nor armed, inside the
+     * chain the factory builds, leave every output of every mode and chain as it is without them.
+     */
+    @Test
+    fun `inert taps leave every output identical`() {
+        assertTapsLeaveOutputsIdentical { DiagnosticsHub() }
+    }
+
+    /** Metering and recording only copy from the frame; they never write to it. */
+    @Test
+    fun `armed taps leave every output identical`() {
+        assertTapsLeaveOutputsIdentical {
+            DiagnosticsHub().apply {
+                meter()
+                arm(10)
+            }
+        }
+    }
+
+    private class Outputs(val samples: List<ShortArray>, val transmit: List<Boolean>, val probability: List<Float?>)
+
+    private class Chain(val name: String, val noise: NoiseSuppressionMode, val echo: EchoCancellationMode)
+
+    private val chains = listOf(
+        Chain("apm", NoiseSuppressionMode.NONE, EchoCancellationMode.WEBRTC),
+        Chain("apm + speex", NoiseSuppressionMode.SPEEX, EchoCancellationMode.WEBRTC),
+        Chain("apm + rnnoise", NoiseSuppressionMode.RNNOISE, EchoCancellationMode.WEBRTC),
+        Chain("speex", NoiseSuppressionMode.SPEEX, EchoCancellationMode.NONE),
+        Chain("rnnoise", NoiseSuppressionMode.RNNOISE, EchoCancellationMode.NONE),
+    )
+
+    /** A clock that moves 10 ms per read, the same in both runs, so the detector's hold is reproducible. */
+    private fun steppingClock(): NanoClock {
+        var now = 0L
+        return NanoClock { now += 10_000_000L; now }
+    }
+
+    private val modes: List<Pair<String, () -> InputMode>> = listOf(
+        "continuous" to { ContinuousInputMode() },
+        "push-to-talk held" to { ToggleInputMode().apply { setTalkingOn(true) } },
+        "push-to-talk released" to { ToggleInputMode() },
+        "probability" to { ActivityInputMode(VoiceActivityDetector(VadConfig.probability(), clock = steppingClock())) },
+        "adaptive" to { ActivityInputMode(VoiceActivityDetector(VadConfig.adaptive(), clock = steppingClock())) },
+        "amplitude" to { ActivityInputMode(VoiceActivityDetector(VadConfig.amplitude(0.6f), clock = steppingClock())) },
+    )
+
+    /** Fresh fakes per run; each transforms the frame, so a stage that is skipped or doubled shows. */
+    private fun factory() = CapturePreprocessorFactory(
+        speexApi = {
+            FakeSpeexPreprocessApi(probability = 40, onRun = { f -> for (i in f.indices) f[i] = (f[i] / 2).toShort() })
+        },
+        rnnoiseApi = {
+            FakeRnnoiseApi(probability = 0.8f, onProcess = { f -> for (i in f.indices) f[i] = (f[i] * 3 / 4).toShort() })
+        },
+        apmApi = {
+            FakeWebRtcApmApi(levelDbfs = -30f, onCapture = { f -> for (i in f.indices) f[i] = (f[i] - f[i] / 8).toShort() })
+        },
+        clock = { 0L },
+    )
+
+    private fun run(chain: Chain, mode: () -> InputMode, resampled: Boolean, hub: DiagnosticsHub?): Outputs {
+        val inputMode = mode()
+        val taps = hub?.let {
+            CaptureTaps(it, pushToTalk = inputMode is ToggleInputMode, vad = (inputMode as? ActivityInputMode)?.detector)
+        }
+        val built = factory().create(chain.noise, chain.echo, taps = taps)
+        taps?.attachApm(built.apm)
+        val pipeline = CapturePipeline(
+            if (resampled) FakeResampler(3) else null, built.preprocessor, inputMode, amplitudeBoost = 1.5f, taps = taps,
+        )
+        val random = Random(SEED)
+        val inputLength = if (resampled) 160 else 480
+        val samples = ArrayList<ShortArray>()
+        val transmit = ArrayList<Boolean>()
+        val probability = ArrayList<Float?>()
+        repeat(FRAMES) {
+            val amplitude = random.nextInt(1, 20_000)
+            val input = ShortArray(inputLength) { random.nextInt(-amplitude, amplitude).toShort() }
+            taps?.onMicRaw(input, inputLength, inputLength, if (resampled) 16_000 else 48_000, 1L)
+            val out = pipeline.process(input, inputLength)
+            taps?.commit(out, muted = false)
+            samples += out.samples.copyOf(out.length)
+            transmit += out.transmit
+            probability += out.probability
+        }
+        pipeline.release()
+        return Outputs(samples, transmit, probability)
+    }
+
+    private fun assertTapsLeaveOutputsIdentical(newHub: () -> DiagnosticsHub) {
+        for (chain in chains) for ((modeName, mode) in modes) for (resampled in listOf(false, true)) {
+            val case = "${chain.name}, $modeName, ${if (resampled) "resampled" else "48 kHz"}"
+            val without = run(chain, mode, resampled, hub = null)
+            val with = run(chain, mode, resampled, newHub())
+
+            assertWithMessage("$case transmit").that(with.transmit).isEqualTo(without.transmit)
+            assertWithMessage("$case probability").that(with.probability).isEqualTo(without.probability)
+            val firstDifference = without.samples.indices.firstOrNull { !with.samples[it].contentEquals(without.samples[it]) }
+            assertWithMessage("$case: first frame whose samples differ").that(firstDifference).isNull()
+        }
+    }
+
+    private companion object {
+        const val SEED = 42
+        const val FRAMES = 500
     }
 }

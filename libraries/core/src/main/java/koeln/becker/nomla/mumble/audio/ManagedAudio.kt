@@ -20,6 +20,7 @@ package koeln.becker.nomla.mumble.audio
 import android.content.Context
 import koeln.becker.nomla.mumble.audio.capture.CaptureState
 import koeln.becker.nomla.mumble.audio.capture.InputMode
+import koeln.becker.nomla.mumble.diagnostics.DiagnosticsHub
 import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.mumble.net.NomlaUdpMessageType
 import koeln.becker.nomla.mumble.net.TcpMessageHandler
@@ -52,12 +53,17 @@ internal data class AudioSessionParams(
     val udpProtocol: UdpProtocol = UdpProtocol.LEGACY,
 )
 
-/** What every pipeline of a session is built with, across its rebuilds. */
+/**
+ * What every pipeline of a session is built with, across its rebuilds.
+ *
+ * @param diagnostics the session's debug diagnostics; null leaves every tap out of the pipeline.
+ */
 internal class AudioHost(
     val context: Context,
     val logger: NomlaLogger,
     val encodeListener: AudioHandler.AudioEncodeListener,
     val outputListener: AudioOutput.AudioOutputListener,
+    val diagnostics: DiagnosticsHub? = null,
 )
 
 internal interface AudioHandlerFactory {

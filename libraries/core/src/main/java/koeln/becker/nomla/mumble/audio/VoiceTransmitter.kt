@@ -20,6 +20,7 @@ package koeln.becker.nomla.mumble.audio
 
 import koeln.becker.nomla.mumble.audio.capture.CapturePipeline
 import koeln.becker.nomla.mumble.audio.encoder.Encoder
+import koeln.becker.nomla.mumble.diagnostics.CaptureTaps
 import koeln.becker.nomla.mumble.exception.NativeAudioException
 import koeln.becker.nomla.mumble.net.NomlaUdpMessageType
 import koeln.becker.nomla.mumble.net.PacketBuffer
@@ -43,10 +44,13 @@ private const val PACKET_SIZE = 1024
  *
  * [onAudioInputReceived] runs on the capture thread and allocates nothing per frame; [setCodec],
  * [releaseEncoder], [muteState] and [targetId] may be used from other threads.
+ *
+ * [taps] (debug diagnostics) see every decided frame with the mute state, and every packet sent.
  */
 internal class VoiceTransmitter(
     private val pipeline: CapturePipeline,
     private val listener: AudioHandler.AudioEncodeListener,
+    private val taps: CaptureTaps? = null,
     /** Called on the capture thread when the talking state flips, after [listener] heard of it. */
     private val onTalkingChanged: (Boolean) -> Unit = {},
 ) : AudioInput.AudioInputListener {
@@ -123,6 +127,7 @@ internal class VoiceTransmitter(
         // belong to the pipeline and are valid only until the next call.
         val processed = pipeline.process(frame, frameSize)
         val nowTalking = processed.transmit && !muteState.isMuted
+        taps?.commit(processed, muteState.isMuted)
 
         if (talking != nowTalking) {
             listener.onTalkingStateChanged(nowTalking)
@@ -187,15 +192,18 @@ internal class VoiceTransmitter(
         val protocol = udpProtocol
         val terminator = encoder.isTerminator
         val frameNumber = packetFrameNumber
+        val encodedLength = encoder.encodedLength
         // A packet the encoder padded with silence spans more frames than were captured; the next
         // packet is numbered after all of them.
         frameCounter = maxOf(frameCounter, frameNumber + encoder.bufferedFrames)
 
         packet.reset(PACKET_SIZE)
         UdpAudioEncoder.writeHeader(
-            protocol, packet, target.toInt(), frameNumber.toLong(), encoder.encodedLength, terminator,
+            protocol, packet, target.toInt(), frameNumber.toLong(), encodedLength, terminator,
         )
+        val opusOffset = packet.size()
         encoder.getEncodedData(packet)
+        taps?.onOpusPacket(packetBytes, opusOffset, encodedLength, frameNumber.toLong(), terminator)
         UdpAudioEncoder.writeTrailer(protocol, packet, terminator)
         listener.onAudioEncoded(packetBytes, packet.size())
     }

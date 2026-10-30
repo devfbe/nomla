@@ -23,7 +23,7 @@ import koeln.becker.nomla.mumble.audio.capture.VadConfig
 import koeln.becker.nomla.mumble.audio.capture.VoiceActivityDetector
 
 /** Voice-activity input mode: delegates to a [VoiceActivityDetector]. */
-internal class ActivityInputMode(private val detector: VoiceActivityDetector) : InputMode {
+internal class ActivityInputMode(internal val detector: VoiceActivityDetector) : InputMode {
     val vadConfig: VadConfig get() = detector.config
 
     fun setVadConfig(config: VadConfig) {

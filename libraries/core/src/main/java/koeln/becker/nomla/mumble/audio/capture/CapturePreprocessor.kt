@@ -50,6 +50,9 @@ internal class ChainedPreprocessor(stages: List<CapturePreprocessor>) : CaptureP
     // Array + index loop: for-in over a List allocates an Iterator per frame.
     private val stages: Array<CapturePreprocessor> = stages.toTypedArray()
 
+    /** The stages in order. */
+    val stageList: List<CapturePreprocessor> get() = stages.asList()
+
     override fun process(frame: ShortArray): Float? {
         // No lambda: a captured var allocates a Ref.ObjectRef per frame.
         var probability: Float? = null

@@ -27,6 +27,7 @@ import android.media.audiofx.AudioEffect
 import android.media.audiofx.AutomaticGainControl
 import android.media.audiofx.NoiseSuppressor
 import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
+import koeln.becker.nomla.mumble.diagnostics.CaptureDescription
 import koeln.becker.nomla.mumble.exception.AudioInitializationException
 import koeln.becker.nomla.mumble.util.NomlaLog
 import java.util.concurrent.Executor
@@ -61,6 +62,9 @@ public interface PcmCaptureSource {
      *   thread.
      */
     public fun setSilenceListener(listener: ((Boolean) -> Unit)?)
+
+    /** How the source was opened, for the diagnostics; at least its rate. */
+    public fun describe(): CaptureDescription = CaptureDescription(sampleRate)
 }
 
 /** Everything needed to open a recorder. [AudioSourcePolicy] may override [audioSource]. */
@@ -137,6 +141,17 @@ public class AndroidAudioRecordSource internal constructor(
         record.registerAudioRecordingCallback(Executor { it.run() }, callback)
         recordingCallback = callback
     }
+
+    override fun describe(): CaptureDescription = CaptureDescription(
+        sampleRate = sampleRate,
+        audioSource = record.audioSource,
+        channels = record.channelCount,
+        bufferFrames = record.bufferSizeInFrames,
+        platformEffects = effects.filter { effect ->
+            // A released effect throws; it is not enabled then.
+            runCatching { effect.enabled }.getOrDefault(false)
+        }.map { it.javaClass.simpleName },
+    )
 
     public class Factory : PcmCaptureSourceFactory {
         // RECORD_AUDIO is requested by the app; AudioHandler's constructor checks it before this.

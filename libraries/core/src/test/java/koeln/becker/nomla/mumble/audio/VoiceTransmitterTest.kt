@@ -26,6 +26,8 @@ import koeln.becker.nomla.mumble.audio.capture.NoopPreprocessor
 import koeln.becker.nomla.mumble.audio.encoder.Encoder
 import koeln.becker.nomla.mumble.audio.inputmode.ContinuousInputMode
 import koeln.becker.nomla.mumble.audio.inputmode.ToggleInputMode
+import koeln.becker.nomla.mumble.diagnostics.CaptureTaps
+import koeln.becker.nomla.mumble.diagnostics.DiagnosticsHub
 import koeln.becker.nomla.mumble.net.NomlaUdpMessageType
 import koeln.becker.nomla.mumble.net.PacketBuffer
 import koeln.becker.nomla.mumble.net.UdpProtocol
@@ -317,6 +319,37 @@ class VoiceTransmitterTest {
     @Test
     fun `encoding and sending a frame allocates under half an object`() {
         for (protocol in UdpProtocol.entries) assertSendPathDoesNotAllocate(protocol)
+    }
+
+    /**
+     * Push-to-talk: released, held, then held while muted. The taps see every frame with its own
+     * decision and mute state, and only the packets sent while sending was allowed are recorded,
+     * each as its Opus payload without the header.
+     */
+    @Test
+    fun `commit sees the mute state and the decision of every frame`() {
+        val hub = DiagnosticsHub()
+        val ptt = ToggleInputMode()
+        val taps = CaptureTaps(hub, pushToTalk = true, vad = null)
+        val transmitter = VoiceTransmitter(CapturePipeline(null, NoopPreprocessor, ptt, taps = taps), RecordingListener(), taps)
+            .apply { setCodec(NomlaUdpMessageType.UDPVoiceOpus) { FirstSampleEncoder() } }
+        hub.arm(5)
+
+        for (first in listOf(0x0101, 0x0202)) transmitter.onAudioInputReceived(frame(first), FRAME)
+        ptt.setTalkingOn(true)
+        for (first in listOf(0x0303, 0x0404)) transmitter.onAudioInputReceived(frame(first), FRAME)
+        transmitter.muteState = SelfMuteState(serverMuted = false, selfMuted = true, suppressed = false)
+        for (first in listOf(0x0505, 0x0606)) transmitter.onAudioInputReceived(frame(first), FRAME)
+        val recording = hub.disarm()!!
+
+        val frames = recording.frames.freeze(recording.t0Nanos)
+        fun column(name: String) = frames.columns.indexOf(name).let { c -> List(frames.rows) { frames.values[it * frames.columns.size + c] } }
+        assertThat(column("transmit")).containsExactly(0f, 0f, 1f, 1f, 1f, 1f).inOrder()
+        assertThat(column("muted")).containsExactly(0f, 0f, 0f, 0f, 1f, 1f).inOrder()
+        assertThat(column("send_allowed")).containsExactly(0f, 0f, 1f, 1f, 0f, 0f).inOrder()
+        val packets = recording.sent.freeze()
+        assertThat(packets.frameNumbers.toList()).containsExactly(0L, 1L).inOrder()
+        assertThat(packets.bytes.toList()).containsExactly(3.toByte(), 3.toByte(), 4.toByte(), 4.toByte()).inOrder()
     }
 
     private fun assertSendPathDoesNotAllocate(protocol: UdpProtocol) {

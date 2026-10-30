@@ -44,3 +44,134 @@ public class CapturedTrack(
     public val samples: ShortArray,
     public val sendSide: Boolean,
 )
+
+/** The taps of the send path, in signal order, each with the id of its track. */
+public enum class SendStage(public val trackId: String) {
+    /** The microphone as the platform delivers it, at its own rate. */
+    MIC_RAW("1_mic_raw"),
+
+    /** Resampled to 48 kHz; only when the microphone runs at another rate. */
+    RESAMPLED("2_resampled"),
+
+    /** Behind the WebRTC APM (echo cancellation, gain control, high-pass). */
+    APM("3_apm"),
+
+    /** Behind the denoiser (Speex or RNNoise). */
+    DENOISED("4_denoised"),
+
+    /** Behind the input mode's gate: the frame while it is open, silence while it is closed. */
+    GATED("5_gate"),
+
+    /** What leaves the device: the boosted frame live, the decoded Opus packets in a recording. */
+    SENT("6_sent"),
+}
+
+/**
+ * How the microphone was opened: [sampleRate] in Hz, the `MediaRecorder.AudioSource` constant,
+ * the channel count, the recorder's buffer in frames and the class names of the platform effects
+ * (`NoiseSuppressor`, `AutomaticGainControl`) that are enabled on it.
+ */
+public data class CaptureDescription(
+    val sampleRate: Int,
+    val audioSource: Int? = null,
+    val channels: Int = 1,
+    val bufferFrames: Int? = null,
+    val platformEffects: List<String> = emptyList(),
+)
+
+/**
+ * One built send pipeline: the microphone, the audio settings it was built from (setting keys and
+ * plain values, never a server, user or channel), and the send stages it contains.
+ */
+public data class PipelineDescription(
+    val capture: CaptureDescription,
+    val settings: Map<String, String>,
+    val stagesPresent: Set<SendStage>,
+)
+
+/**
+ * The live level of one send stage. [active] is false for a stage the current pipeline does not
+ * have; its levels are then stale. [changeDb] is this stage's RMS minus the previous active
+ * stage's, null for the first active stage and for inactive ones. Levels in dBFS.
+ */
+public data class StageReading(
+    val stage: SendStage,
+    val active: Boolean,
+    val rmsDbfs: Float,
+    val peakDbfs: Float,
+    val peakHoldDbfs: Float,
+    val clippedSamples: Long,
+    val changeDb: Float?,
+)
+
+/**
+ * The voice-activity gate as `MeterReading` shows it, plus the chain's voice [probability] (null
+ * when no stage gives one). Levels in dBFS; null where the detector's mode has no such level.
+ */
+public data class GateReading(
+    val levelDbfs: Float,
+    val floorDbfs: Float?,
+    val speechDbfs: Float?,
+    val thresholdDbfs: Float?,
+    val voice: Boolean,
+    val holding: Boolean,
+    val tooClose: Boolean,
+    val probability: Float?,
+)
+
+/**
+ * The WebRTC echo canceller's statistics of its last poll (NaN where webrtc reports nothing), and
+ * [levelChangeDb], the APM's output RMS minus its input RMS (null while unknown).
+ */
+public data class EchoReading(
+    val erlDb: Float,
+    val erleDb: Float,
+    val divergentFraction: Float,
+    val delayMedianMs: Float,
+    val delayStdMs: Float,
+    val delayMs: Float,
+    val levelChangeDb: Float?,
+)
+
+/** The playback side of a snapshot; filled in by the playback taps. */
+public class PlaybackReading
+
+/** One talker of a snapshot; filled in by the playback taps. */
+public class SpeakerReading
+
+/** The transport of a snapshot; filled in by the network sampler. */
+public class NetworkReading
+
+/**
+ * Everything the live page shows, read at one moment. [gateHistory] holds whether the gate was
+ * open for each of the last [DiagnosticsLimits.GATE_HISTORY_FRAMES] capture frames, oldest first.
+ */
+public data class DiagnosticsSnapshot(
+    val stages: List<StageReading>,
+    val gateHistory: BooleanArray,
+    val gate: GateReading?,
+    val echo: EchoReading?,
+    val playback: PlaybackReading? = null,
+    val speakers: List<SpeakerReading> = emptyList(),
+    val network: NetworkReading? = null,
+    val capture: CaptureDescription? = null,
+) {
+    // By content: a data class compares arrays by identity.
+    override fun equals(other: Any?): Boolean =
+        this === other || other is DiagnosticsSnapshot &&
+            stages == other.stages && gateHistory.contentEquals(other.gateHistory) && gate == other.gate &&
+            echo == other.echo && playback == other.playback && speakers == other.speakers &&
+            network == other.network && capture == other.capture
+
+    override fun hashCode(): Int {
+        var result = stages.hashCode()
+        for (part in listOf(gateHistory.contentHashCode(), gate, echo, playback, speakers, network, capture)) {
+            result = HASH_MULTIPLIER * result + part.hashCode()
+        }
+        return result
+    }
+
+    private companion object {
+        const val HASH_MULTIPLIER = 31
+    }
+}

@@ -32,6 +32,9 @@ import koeln.becker.nomla.mumble.audio.capture.CaptureState
 import koeln.becker.nomla.mumble.audio.capture.EchoCancellationMode
 import koeln.becker.nomla.mumble.audio.capture.NoiseSuppressionMode
 import koeln.becker.nomla.mumble.audio.inputmode.ContinuousInputMode
+import koeln.becker.nomla.mumble.diagnostics.CaptureTaps
+import koeln.becker.nomla.mumble.diagnostics.DiagnosticsHub
+import koeln.becker.nomla.mumble.diagnostics.SendStage
 import koeln.becker.nomla.mumble.model.UserState
 import koeln.becker.nomla.mumble.testutil.NoopEncodeListener
 import koeln.becker.nomla.mumble.testutil.NoopOutputListener
@@ -68,9 +71,9 @@ class AudioHandlerCaptureStateTest {
         handler?.shutdown()
     }
 
-    private fun startedHandler(source: TestCaptureSource): AudioHandler =
+    private fun startedHandler(source: TestCaptureSource, diagnostics: DiagnosticsHub? = null): AudioHandler =
         AudioHandler(
-            AudioHost(app, SilentLogger, NoopEncodeListener, NoopOutputListener),
+            AudioHost(app, SilentLogger, NoopEncodeListener, NoopOutputListener, diagnostics),
             config,
             params,
             onCaptureState = { states += it },
@@ -98,6 +101,34 @@ class AudioHandlerCaptureStateTest {
 
         awaitUntil(description = "the capture error") { states.isNotEmpty() }
         assertThat(states.single()).isInstanceOf(CaptureState.Error::class.java)
+    }
+
+    /** With diagnostics the owner still hears every state, and the recording gets the pipeline and the silencing. */
+    @Test
+    fun aPipelineWithDiagnosticsDescribesItselfAndLogsTheSilencing() {
+        val hub = DiagnosticsHub()
+        hub.arm(5)
+        val source = TestCaptureSource()
+        startedHandler(source, hub)
+        val platform = checkNotNull(source.silenceListener) { "capture registered no silence listener" }
+
+        platform(true)
+        platform(false)
+        val recording = checkNotNull(hub.disarm())
+
+        assertThat(states).containsExactly(CaptureState.Silenced, CaptureState.Active).inOrder()
+        val pipeline = recording.pipelines.single()
+        assertThat(pipeline.stagesPresent).containsExactly(SendStage.MIC_RAW, SendStage.GATED, SendStage.SENT)
+        assertThat(pipeline.capture.sampleRate).isEqualTo(source.sampleRate)
+        assertThat(pipeline.settings).containsEntry("opus_fec", "1")
+        assertThat(pipeline.settings).containsEntry("frames_per_packet", "2")
+        assertThat(pipeline.settings).containsEntry("noise_suppression", "none")
+        val events = recording.events.freeze(recording.t0Nanos).map { it.name to it.value }
+        assertThat(events).containsExactly(
+            "pipeline_rebuilt" to "",
+            CaptureTaps.CAPTURE_SILENCED to "1",
+            CaptureTaps.CAPTURE_SILENCED to "0",
+        ).inOrder()
     }
 
     private companion object {

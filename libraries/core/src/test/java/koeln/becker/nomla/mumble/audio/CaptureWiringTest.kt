@@ -29,6 +29,9 @@ import koeln.becker.nomla.mumble.audio.capture.fakes.FakeResampler
 import koeln.becker.nomla.mumble.audio.capture.fakes.FakeRnnoiseApi
 import koeln.becker.nomla.mumble.audio.capture.fakes.FakeWebRtcApmApi
 import koeln.becker.nomla.mumble.audio.inputmode.ContinuousInputMode
+import koeln.becker.nomla.mumble.diagnostics.CaptureTaps
+import koeln.becker.nomla.mumble.diagnostics.DiagnosticsHub
+import koeln.becker.nomla.mumble.diagnostics.SendStage
 import koeln.becker.nomla.mumble.util.NomlaLogger
 
 /**
@@ -245,5 +248,36 @@ class CaptureWiringTest {
         assertThat(built).containsExactly(16000 to 48000)
         assertThat(frame.length).isEqualTo(FRAME)
         assertThat(frame.samples.toSet()).containsExactly(5.toShort())
+    }
+
+    /**
+     * Behind the canceller the chain is never the no-op stage, with or without tap stages, so the
+     * check asks for the denoiser itself (this also reports a missing denoiser behind the APM).
+     */
+    @Test
+    fun `a missing denoiser is still reported with taps in the chain`() {
+        val taps = CaptureTaps(DiagnosticsHub(), pushToTalk = false, vad = null)
+        val factory = CapturePreprocessorFactory(
+            rnnoiseApi = { throw missingLibrary() }, apmApi = { FakeWebRtcApmApi() }, log = { warnings += it },
+        )
+
+        val wiring = CaptureWiring.wire(
+            48000, ContinuousInputMode(), 1f, NoiseSuppressionMode.RNNOISE, EchoCancellationMode.WEBRTC,
+            logger = logger, factory = factory, taps = taps,
+        )
+
+        assertThat(warnings.any { it.contains("noise suppression (rnnoise) is not running") }).isTrue()
+        assertThat(wiring.apm).isNotNull()
+        assertThat(wiring.stagesPresent)
+            .containsExactly(SendStage.MIC_RAW, SendStage.APM, SendStage.GATED, SendStage.SENT)
+    }
+
+    @Test
+    fun `the wiring names the stages it built`() {
+        val wiring = wire(
+            NoiseSuppressionMode.RNNOISE, EchoCancellationMode.WEBRTC, apmFactory(FakeWebRtcApmApi()), sampleRate = 16000,
+        ) { _, _ -> FakeResampler(3) }
+
+        assertThat(wiring.stagesPresent).containsExactlyElementsIn(SendStage.entries)
     }
 }

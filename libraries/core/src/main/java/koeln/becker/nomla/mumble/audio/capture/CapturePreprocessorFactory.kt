@@ -23,6 +23,9 @@ import koeln.becker.nomla.mumble.audio.native.SpeexPreprocessApi
 import koeln.becker.nomla.mumble.audio.native.SpeexPreprocessNative
 import koeln.becker.nomla.mumble.audio.native.WebRtcApmApi
 import koeln.becker.nomla.mumble.audio.native.WebRtcApmNative
+import koeln.becker.nomla.mumble.diagnostics.CaptureTaps
+import koeln.becker.nomla.mumble.diagnostics.SendStage
+import koeln.becker.nomla.mumble.diagnostics.TapStage
 
 private const val WEBRTC_APM = "WebRTC APM"
 private const val SPEEX = "Speex noise suppression"
@@ -37,12 +40,16 @@ private const val RNNOISE = "RNNoise noise suppression"
  * @param farEndFrameSize as reported by the APM, 0 without a sink.
  * @param rnnoise the RNNoise stage when it is in the chain, so its attenuation limit can be moved
  *   while the chain runs.
+ * @param apm the WebRTC APM stage when it is in the chain.
+ * @param denoiser the Speex or RNNoise stage when it is in the chain.
  */
 internal class CaptureChain(
     val preprocessor: CapturePreprocessor,
     val farEndSink: FarEndSink?,
     val farEndFrameSize: Int = 0,
     val rnnoise: RnnoisePreprocessor? = null,
+    val apm: WebRtcApmPreprocessor? = null,
+    val denoiser: CapturePreprocessor? = null,
 )
 
 /**
@@ -75,11 +82,18 @@ internal class CapturePreprocessorFactory(
          * releases it with the others.
          */
         beforeDenoiser: CapturePreprocessor? = null,
+        /**
+         * The diagnostics taps: a [TapStage] after the APM and one after the denoiser, each only
+         * when that stage is built. Null (debug off) leaves the chain exactly as without them.
+         */
+        taps: CaptureTaps? = null,
     ): CaptureChain {
         val stages = mutableListOf<CapturePreprocessor>()
         var farEnd: FarEndSink? = null
         var farEndFrameSize = 0
         var rnnoise: RnnoisePreprocessor? = null
+        var apmStage: WebRtcApmPreprocessor? = null
+        var denoiser: CapturePreprocessor? = null
         val farEndActivity = farEndActivityFor(noise, echo)
 
         try {
@@ -92,9 +106,11 @@ internal class CapturePreprocessorFactory(
                 }
                 if (apm != null) {
                     stages += apm
+                    if (taps != null) stages += TapStage(SendStage.APM, taps)
                     // The stage itself, so both audio threads share its lock.
                     farEnd = apm
                     farEndFrameSize = apm.farEndFrameSize
+                    apmStage = apm
                 }
             }
             beforeDenoiser?.let { stages += it }
@@ -102,7 +118,10 @@ internal class CapturePreprocessorFactory(
                 NoiseSuppressionMode.NONE -> Unit
                 NoiseSuppressionMode.SPEEX ->
                     tryStage(SPEEX) { SpeexPreprocessor(speexApi(), noiseSuppressDb = speexNoiseSuppressDb) }
-                        ?.let { stages += it }
+                        ?.let {
+                            stages += it
+                            denoiser = it
+                        }
                 NoiseSuppressionMode.RNNOISE ->
                     // No canceller, no far-end frames: the relief would never engage.
                     tryStage(RNNOISE) {
@@ -111,8 +130,10 @@ internal class CapturePreprocessorFactory(
                         ?.let {
                             stages += it
                             rnnoise = it
+                            denoiser = it
                         }
             }
+            if (taps != null && denoiser != null) stages += TapStage(SendStage.DENOISED, taps)
         } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
             // Whatever ends the build, the native stages built so far are released before it propagates.
             for (stage in stages) stage.release()
@@ -124,7 +145,7 @@ internal class CapturePreprocessorFactory(
             1 -> stages[0]
             else -> ChainedPreprocessor(stages)
         }
-        return CaptureChain(preprocessor, farEnd, farEndFrameSize, rnnoise)
+        return CaptureChain(preprocessor, farEnd, farEndFrameSize, rnnoise, apmStage, denoiser)
     }
 
     /** Only a chain that denoises with RNNoise behind the canceller has a use for the far end's activity. */
