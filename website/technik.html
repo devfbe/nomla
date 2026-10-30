@@ -219,6 +219,11 @@ fill="currentColor" stroke="none">
         <p lang="de">Bluetooth-Headsets werden auf Wunsch automatisch genutzt, Verbindungen laufen über Tor (Orbot), und Servernamen werden auch über SRV-Einträge aufgelöst.</p>
         <p lang="en">Bluetooth headsets can be used automatically, connections can run over Tor (Orbot), and server names also resolve through SRV records.</p>
       </div>
+      <div>
+        <h3><span lang="de">Diagnose für Neugierige</span><span lang="en">Diagnostics for the curious</span></h3>
+        <p lang="de">Unter <span class="ui">Einstellungen › Sprechen &amp; Audio › Diagnose</span> schaltet <span class="ui">Debug-Funktionen aktivieren</span> zwei zusätzliche Seiten frei. <span class="ui">Live</span> zeigt jede Stufe der Audio-Kette mit ihrem Pegel, dazu Echo, Empfang, Netz und Gerät, als <span class="ui">Pult</span> oder <span class="ui">Liste</span>. <span class="ui">Aufnahme</span> nimmt 5, 10, 20 oder 30 Sekunden auf: jede Stufe vom Mikrofon bis zum gesendeten Paket als eigene Spur, dazu den Wiedergabe-Mix und bis zu vier Sprecher. Vorher bittet ein Hinweis um das Einverständnis der anderen, und während der Aufnahme zeigt Mumble allen auf dem Server, dass du aufnimmst; erlaubt der Server keine Aufnahmen, startet sie nicht. Geteilt wird eine ZIP-Datei mit WAV-Spuren, Messtabellen und einer Beschreibung, nie mit Namen, Passwörtern, Zertifikaten oder Chat (siehe <a href="#datenschutz">Datenschutz</a>). Mit <code>tools/diagnostics-report/report.py</code> machen Entwickler daraus offline einen Bericht.</p>
+        <p lang="en">Under <span class="ui">Settings › Speaking &amp; audio › Diagnostics</span>, <span class="ui">Enable debug features</span> adds two more pages. <span class="ui">Live</span> shows every stage of the audio chain with its level, plus echo, receive, network and device, as <span class="ui">Console</span> or <span class="ui">List</span>. <span class="ui">Recording</span> captures 5, 10, 20 or 30 seconds: every stage from the microphone to the sent packet as a track of its own, plus the playback mix and up to four speakers. First a notice asks for the others' consent, and while recording, Mumble shows everyone on the server that you are recording; if the server does not allow recordings, none starts. What you share is a ZIP file with WAV tracks, measurement tables and a description, never with names, passwords, certificates or chat (see <a href="#datenschutz">Privacy</a>). Developers turn it into a report offline with <code>tools/diagnostics-report/report.py</code>.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -241,6 +246,24 @@ fill="currentColor" stroke="none">
         <h3><span lang="de">Server prüfen</span><span lang="en">Checking servers</span></h3>
         <p lang="de">Ein Server gilt als vertrauenswürdig, wenn Android seiner Zertifikatskette vertraut und sie den eingegebenen Namen trägt, oder wenn du sein Zertifikat ausdrücklich angenommen hast. Geprüft wird immer der Name, den du eingegeben hast, auch wenn ein SRV-Eintrag woandershin zeigt. Den Namen gleicht die bewährte Prüfung von OkHttp mit dem Zertifikat ab, nicht eigener Code.</p>
         <p lang="en">A server is trusted when Android trusts its certificate chain and it carries the name you entered, or when you accepted its certificate explicitly. The name checked is always the one you typed, even when an SRV record points elsewhere. OkHttp's well-tested verifier matches that name against the certificate, not code of our own.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="datenschutz" aria-labelledby="h-datenschutz">
+  <div class="wrap">
+    <h2 id="h-datenschutz"><span lang="de">Datenschutz</span><span lang="en">Privacy</span></h2>
+    <div class="facts">
+      <div>
+        <h3><span lang="de">Aufnahmen bleiben auf dem Gerät</span><span lang="en">Recordings stay on the device</span></h3>
+        <p lang="de">Eine Diagnose-Aufnahme liegt nur im Arbeitsspeicher und, zum Teilen, im Cache der App, bis du sie selbst über das Teilen-Menü von Android weitergibst. Nomla lädt nichts hoch, und nach einem Neustart der App ist nichts mehr davon übrig.</p>
+        <p lang="en">A diagnostic recording lives only in memory and, for sharing, in the app's cache, until you pass it on yourself through Android's share menu. Nomla uploads nothing, and after an app restart none of it is left.</p>
+      </div>
+      <div>
+        <h3><span lang="de">Was nie drinsteht</span><span lang="en">What is never included</span></h3>
+        <p lang="de">Servernamen und -adressen, Benutzer- und Kanalnamen, Passwörter, Zertifikate, Zugangsschlüssel und Chat kommen nie in die Datei. Andere Sprecher heißen dort nur <code>speaker_1</code> bis <code>speaker_4</code>, und Bluetooth-Geräte stehen nur mit ihrem Typ darin. Enthalten sind App-Version, Gerätemodell, Android-Version und die Audio-Einstellungen.</p>
+        <p lang="en">Server names and addresses, user and channel names, passwords, certificates, access tokens and chat never go into the file. Other speakers appear only as <code>speaker_1</code> to <code>speaker_4</code>, and Bluetooth devices only by their type. It does hold the app version, device model, Android version and the audio settings.</p>
       </div>
     </div>
   </div>
@@ -273,8 +296,8 @@ fill="currentColor" stroke="none">
     <div class="facts">
       <div>
         <h3><span lang="de">Getestet</span><span lang="en">Tested</span></h3>
-        <p lang="de">Rund 240 Testklassen laufen auf der JVM (JUnit, Robolectric, MockK, Truth). Der native Code hat eigene Tests, jeweils auch mit AddressSanitizer und UndefinedBehaviorSanitizer. Akustische Gerätetests spielen echte Sprache durch einen Raum und messen Echo, Latenz und Dämpfung.</p>
-        <p lang="en">About 240 test classes run on the JVM (JUnit, Robolectric, MockK, Truth). The native code has its own tests, each also under AddressSanitizer and UndefinedBehaviorSanitizer. Acoustic device tests play real speech through a room and measure echo, latency and attenuation.</p>
+        <p lang="de">Rund 280 Testklassen laufen auf der JVM (JUnit, Robolectric, MockK, Truth). Der native Code hat eigene Tests, jeweils auch mit AddressSanitizer und UndefinedBehaviorSanitizer. Akustische Gerätetests spielen echte Sprache durch einen Raum und messen Echo, Latenz und Dämpfung.</p>
+        <p lang="en">About 280 test classes run on the JVM (JUnit, Robolectric, MockK, Truth). The native code has its own tests, each also under AddressSanitizer and UndefinedBehaviorSanitizer. Acoustic device tests play real speech through a room and measure echo, latency and attenuation.</p>
       </div>
       <div>
         <h3><span lang="de">Ein Befehl prüft alles</span><span lang="en">One command checks everything</span></h3>
