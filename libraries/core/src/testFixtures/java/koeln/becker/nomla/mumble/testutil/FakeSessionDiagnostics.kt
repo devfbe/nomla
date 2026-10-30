@@ -47,6 +47,14 @@ public class FakeSessionDiagnostics : SessionDiagnostics {
     public var meterHolders: Int = 0
         private set
 
+    /** The [holdTransmission] handles open now. */
+    public var transmitHolders: Int = 0
+        private set
+
+    /** Every [holdTransmission] so far. */
+    public var holdCalls: Int = 0
+        private set
+
     /** What [snapshot] answers. */
     public var nextSnapshot: DiagnosticsSnapshot =
         DiagnosticsSnapshot(stages = emptyList(), gateHistory = BooleanArray(0), gate = null, echo = null)
@@ -81,5 +89,17 @@ public class FakeSessionDiagnostics : SessionDiagnostics {
 
     override fun discardRecording() {
         discardCalls++
+    }
+
+    override fun holdTransmission(): AutoCloseable {
+        holdCalls++
+        transmitHolders++
+        var closed = false
+        return AutoCloseable {
+            if (!closed) {
+                closed = true
+                transmitHolders--
+            }
+        }
     }
 }

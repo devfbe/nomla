@@ -165,7 +165,7 @@ internal class AudioHandler(
             )
         }
         val halfDuplex = config.halfDuplex
-        transmitter = VoiceTransmitter(capturePipeline, encodeListener, taps) { talking ->
+        transmitter = VoiceTransmitter(capturePipeline, encodeListener, taps, diagnostics?.transmitHold) { talking ->
             if (halfDuplex) {
                 val direction = if (talking) AudioManager.ADJUST_MUTE else AudioManager.ADJUST_UNMUTE
                 audioManager.adjustStreamVolume(playbackStream, direction, 0)

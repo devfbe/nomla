@@ -140,6 +140,29 @@ class NomlaSessionDiagnosticsTest {
         assertThat(harness.session.diagnosticsHub.armed).isNull()
     }
 
+    /**
+     * A track's hold on transmission reaches the hub every pipeline reads, and stays local: no
+     * UserState (mute or otherwise) goes to the server, while held or after.
+     */
+    @Test
+    fun `a transmit hold stays local and ends with its handle`() {
+        val harness = harnesses.start()
+        val tcp = harness.connectAsSelf()
+        val userStatesBefore = tcp.sentMessages.filterIsInstance<Mumble.UserState>().size
+
+        val handle = harness.session.diagnostics.holdTransmission()
+        harness.mainLooper.idle()
+        assertThat(harness.session.diagnosticsHub.transmitHold.isHeld).isTrue()
+        handle.close()
+        harness.mainLooper.idle()
+
+        assertThat(harness.session.diagnosticsHub.transmitHold.isHeld).isFalse()
+        assertThat(tcp.sentMessages.filterIsInstance<Mumble.UserState>()).hasSize(userStatesBefore)
+        for (host in harness.audioFactory.hosts) {
+            assertThat(host.diagnostics?.transmitHold).isSameInstanceAs(harness.session.diagnosticsHub.transmitHold)
+        }
+    }
+
     @Test
     fun `route events carry the type only`() {
         val harness = harnesses.start()

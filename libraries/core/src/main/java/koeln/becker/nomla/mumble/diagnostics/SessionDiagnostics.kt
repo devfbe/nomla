@@ -43,6 +43,14 @@ public interface SessionDiagnostics {
 
     /** Drops a finished capture. */
     public fun discardRecording()
+
+    /**
+     * Holds this session's transmission until the handle is closed, so a recorded track played on
+     * the speaker cannot be sent into the channel. Nothing is sent meanwhile, as while muted, but the
+     * mute state stays the user's and the server learns nothing. Each handle ends only its own hold,
+     * once: closing a stale one never ends a newer hold.
+     */
+    public fun holdTransmission(): AutoCloseable
 }
 
 /** The [SessionDiagnostics] of a session: the live part from [hub], recordings from [recordings]. */
@@ -61,4 +69,6 @@ internal class HubDiagnostics(
     override fun cancelRecording() = recordings.cancelRecording()
 
     override fun discardRecording() = recordings.discardRecording()
+
+    override fun holdTransmission(): AutoCloseable = hub.transmitHold.hold()
 }

@@ -18,6 +18,7 @@
 package koeln.becker.nomla.mumble.diagnostics
 
 import koeln.becker.nomla.mumble.audio.AudioOutputSpeech
+import koeln.becker.nomla.mumble.audio.TransmitHold
 import koeln.becker.nomla.mumble.audio.capture.NanoClock
 import koeln.becker.nomla.mumble.audio.capture.WebRtcApmPreprocessor
 import koeln.becker.nomla.mumble.audio.native.WebRtcApmApi
@@ -96,6 +97,9 @@ internal class DiagnosticsHub(
 
     /** What the playback taps publish for the live page: the mix and the talkers. */
     val playback = LivePlayback()
+
+    /** Holds this session's transmission while a recorded track plays; read by every pipeline. */
+    val transmitHold = TransmitHold()
 
     /** The transport at the network sampler's last tick; null while it does not run. */
     @Volatile

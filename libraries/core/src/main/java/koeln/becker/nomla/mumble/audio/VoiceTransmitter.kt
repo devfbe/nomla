@@ -46,11 +46,15 @@ private const val PACKET_SIZE = 1024
  * [releaseEncoder], [muteState] and [targetId] may be used from other threads.
  *
  * [taps] (debug diagnostics) see every decided frame with the mute state, and every packet sent.
+ *
+ * While [hold] is held (a diagnostics track plays, so the speaker cannot carry it into the channel)
+ * nothing is sent, as while muted, without touching [muteState].
  */
 internal class VoiceTransmitter(
     private val pipeline: CapturePipeline,
     private val listener: AudioHandler.AudioEncodeListener,
     private val taps: CaptureTaps? = null,
+    private val hold: TransmitHold? = null,
     /** Called on the capture thread when the talking state flips, after [listener] heard of it. */
     private val onTalkingChanged: (Boolean) -> Unit = {},
 ) : AudioInput.AudioInputListener {
@@ -128,7 +132,7 @@ internal class VoiceTransmitter(
         val processed = pipeline.process(frame, frameSize)
         // Read once, so the decision and the taps see the same mute state.
         val muted = muteState.isMuted
-        val nowTalking = processed.transmit && !muted
+        val nowTalking = processed.transmit && !muted && hold?.isHeld != true
         taps?.commit(processed, muted)
 
         if (talking != nowTalking) {

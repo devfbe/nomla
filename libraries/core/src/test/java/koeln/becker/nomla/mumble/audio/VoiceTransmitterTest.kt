@@ -140,6 +140,60 @@ class VoiceTransmitterTest {
 
     private fun bytes(vararg values: Int) = values.map { it.toByte() }
 
+    /** The first sample of each packet [FirstSampleEncoder] produced: its last two bytes. */
+    private fun RecordingListener.sentSamples(): List<Int> = packets.map {
+        val high = it[it.size - 2].toInt() and BYTE_MASK
+        (high shl BITS_PER_BYTE) or (it.last().toInt() and BYTE_MASK)
+    }
+
+    /**
+     * A track playing on the speaker holds transmission: the stream ends as on a mute, nothing of
+     * the held frames is sent, and the next frame after the hold is sent again. The mute state, and
+     * so what the server is told, is untouched throughout.
+     */
+    @Test
+    fun `a transmit hold sends nothing while held, resumes after and leaves the mute state alone`() {
+        val listener = RecordingListener()
+        val hold = TransmitHold()
+        val pipeline = CapturePipeline(null, NoopPreprocessor, ContinuousInputMode())
+        val transmitter = VoiceTransmitter(pipeline, listener, hold = hold).apply {
+            setCodec(NomlaUdpMessageType.UDPVoiceOpus) { FirstSampleEncoder() }
+        }
+        val muteState = transmitter.muteState
+
+        for (first in listOf(1, 2)) transmitter.onAudioInputReceived(frame(first), FRAME)
+        val handle = hold.hold()
+        for (first in listOf(3, 4)) transmitter.onAudioInputReceived(frame(first), FRAME)
+        assertThat(transmitter.muteState).isSameInstanceAs(muteState)
+        assertThat(muteState.isMuted).isFalse()
+        handle.close()
+        transmitter.onAudioInputReceived(frame(5), FRAME)
+
+        // The 0 is the silent frame that carries the end of the stream when the hold begins.
+        assertThat(listener.sentSamples()).containsExactly(1, 2, 0, 5).inOrder()
+        assertThat(listener.talking).containsExactly(true, false, true).inOrder()
+        assertThat(transmitter.muteState).isSameInstanceAs(muteState)
+    }
+
+    /** Each handle ends only its own hold, once: a stale release never ends a newer playback's hold. */
+    @Test
+    fun `a stale release does not end a newer hold`() {
+        val hold = TransmitHold()
+        val stale = hold.hold()
+        val current = hold.hold()
+
+        stale.close()
+        stale.close()
+        assertThat(hold.isHeld).isTrue()
+
+        current.close()
+        assertThat(hold.isHeld).isFalse()
+        current.close()
+        assertThat(hold.isHeld).isFalse()
+        hold.hold().use { assertThat(hold.isHeld).isTrue() }
+        assertThat(hold.isHeld).isFalse()
+    }
+
     /**
      * Releasing a whisper hold turns talking off and then resets the target; the reset can reach
      * the transmitter before the capture thread notices the release. The buffered last frame and
@@ -347,7 +401,8 @@ class VoiceTransmitterTest {
         fun column(name: String) = frames.columns.indexOf(name).let { c ->
             List(frames.rows) { frames.values[it * frames.columns.size + c] }
         }
-        assertThat(column("transmit")).containsExactly(0f, 0f, 1f, 1f, 1f, 1f).inOrder()
+        // A frame not to be sent leaves no gate decision in the recording, only send_allowed = 0.
+        assertThat(column("transmit")).containsExactly(Float.NaN, Float.NaN, 1f, 1f, Float.NaN, Float.NaN).inOrder()
         assertThat(column("muted")).containsExactly(0f, 0f, 0f, 0f, 1f, 1f).inOrder()
         assertThat(column("send_allowed")).containsExactly(0f, 0f, 1f, 1f, 0f, 0f).inOrder()
         val packets = recording.sent.freeze()
@@ -378,6 +433,8 @@ class VoiceTransmitterTest {
     private companion object {
         const val FRAME = 480
         const val HOT_CALLS = 100_000
+        const val BYTE_MASK = 0xFF
+        const val BITS_PER_BYTE = 8
         val OPUS = NomlaUdpMessageType.UDPVoiceOpus.ordinal shl 5
     }
 }
