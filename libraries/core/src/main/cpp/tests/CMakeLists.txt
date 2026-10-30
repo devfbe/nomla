@@ -148,18 +148,6 @@ if(NOMLA_HAVE_SANITIZERS)
   set_tests_properties(apm_is_instrumented PROPERTIES LABELS sanitized)
 endif()
 
-add_executable(test_handle_table test_handle_table.cpp)
-target_include_directories(test_handle_table PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
-nomla_add_labelled_test(handle_table test_handle_table plain)
-
-if(NOMLA_HAVE_SANITIZERS)
-  add_executable(test_handle_table_asan test_handle_table.cpp)
-  target_include_directories(test_handle_table_asan PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
-  target_compile_options(test_handle_table_asan PRIVATE ${NOMLA_SAN_FLAGS})
-  target_link_options(test_handle_table_asan PRIVATE -fsanitize=address,undefined)
-  nomla_add_labelled_test(handle_table_sanitized test_handle_table_asan sanitized)
-endif()
-
 # jni_rnnoise.cpp and jni_webrtc_apm.cpp run here through a stand-in JNIEnv (jni_env_stub.h):
 # a missing length check, a double free or a bridge wired to the wrong C function produces no
 # error code and is invisible from Kotlin. The Android build only proves these files compile.
@@ -183,6 +171,19 @@ set(NOMLA_JNI_BRIDGE_SOURCES
 # The bridges include headers relative to cpp/, as in the Android build.
 set(NOMLA_JNI_BRIDGE_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${NOMLA_JNI_INCLUDE_DIR} ${NOMLA_JNI_MD_INCLUDE_DIR})
+
+# jni_native_handle.h includes jni.h, so the handle table needs the JDK headers too.
+add_executable(test_handle_table test_handle_table.cpp)
+target_include_directories(test_handle_table PRIVATE ${NOMLA_JNI_BRIDGE_INCLUDES})
+nomla_add_labelled_test(handle_table test_handle_table plain)
+
+if(NOMLA_HAVE_SANITIZERS)
+  add_executable(test_handle_table_asan test_handle_table.cpp)
+  target_include_directories(test_handle_table_asan PRIVATE ${NOMLA_JNI_BRIDGE_INCLUDES})
+  target_compile_options(test_handle_table_asan PRIVATE ${NOMLA_SAN_FLAGS})
+  target_link_options(test_handle_table_asan PRIVATE -fsanitize=address,undefined)
+  nomla_add_labelled_test(handle_table_sanitized test_handle_table_asan sanitized)
+endif()
 
 add_executable(test_jni_bridges ${NOMLA_JNI_BRIDGE_SOURCES})
 target_include_directories(test_jni_bridges PRIVATE ${NOMLA_JNI_BRIDGE_INCLUDES})
