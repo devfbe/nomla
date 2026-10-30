@@ -162,6 +162,8 @@ class SettingsStructureTest {
             "battery_optimization_asked" to "the battery prompt",
             "microphone_permission_asked" to "the permission gate",
             "notification_permission_asked" to "the permission gate",
+            "debug_live_view" to "the Console | List toggle on the Live page",
+            "debug_recording_notice_hidden" to "the recording notice's \"don't show again\" box",
         )
     }
 }
