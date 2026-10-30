@@ -194,10 +194,7 @@ internal class AudioOutput(
         val drainMixes = (track.bufferSizeInFrames + bufferSize - 1) / bufferSize
         // Zero at the start, so the first silent mixes fill the new track.
         var silentMixes = 0
-        // Only with taps: frames written so far and a reused timestamp, for the latency estimate.
-        val stamp = if (taps != null) AudioTimestamp() else null
-        var writtenFrames = 0L
-        var mixesSinceStamp = 0
+        val mixTap = taps?.let(::MixTap)
 
         while (running) {
             val played = fetchAudio(pcm, bufferSize)
@@ -214,26 +211,7 @@ internal class AudioOutput(
                     track.pause()
 
                     try {
-                        if (farEnd != null) {
-                            // AEC3 needs a continuous reference to keep its delay estimate;
-                            // otherwise the first fragment of a word leaks after a silence. Feed
-                            // silence at the real-time rate. `woken` tells a real frame from the
-                            // timeout and keeps a notify() sent before this block from being lost.
-                            // `pcm` holds the silence fetchAudio left in it.
-                            val tickMs = maxOf(1L, (bufferSize * MS_PER_SECOND) / AudioHandler.SAMPLE_RATE)
-                            woken = false
-                            while (running && !woken) {
-                                inactiveLock.wait(tickMs)
-                                if (!woken) {
-                                    farEnd.push(pcm, bufferSize)
-                                }
-                            }
-                        } else {
-                            // `woken` keeps a notify() sent before this block from being lost.
-                            while (running && !woken) {
-                                inactiveLock.wait()
-                            }
-                        }
+                        waitForAudio(pcm)
                     } catch (e: InterruptedException) {
                         NomlaLog.w(TAG, "Interrupted while waiting for audio", e)
                     }
@@ -247,23 +225,38 @@ internal class AudioOutput(
             // echo estimate. The chunker copies, so the APM cannot modify this buffer.
             farEnd?.push(pcm, bufferSize)
             val written = track.write(pcm, 0, bufferSize)
-            if (taps != null) {
-                if (written > 0) writtenFrames += written
-                // One volatile read while the diagnostics are inactive; the track is asked only while active.
-                if (taps.isActive) {
-                    taps.onMix(pcm, bufferSize, played, track.underrunCount, track.bufferSizeInFrames)
-                    if (++mixesSinceStamp >= LATENCY_EVERY_MIXES && stamp != null) {
-                        mixesSinceStamp = 0
-                        if (track.getTimestamp(stamp)) {
-                            taps.onOutputTimestamp(writtenFrames, stamp.framePosition, stamp.nanoTime)
-                        }
-                    }
-                }
-            }
+            mixTap?.onWritten(track, pcm, bufferSize, played, written)
         }
 
         track.flush()
         track.stop()
+    }
+
+    /**
+     * Waits on [inactiveLock], which the caller holds, until a frame arrives or playback stops;
+     * with a canceller, feeds it the silence in [pcm] meanwhile.
+     */
+    private fun waitForAudio(pcm: ShortArray) {
+        if (farEnd != null) {
+            // AEC3 needs a continuous reference to keep its delay estimate;
+            // otherwise the first fragment of a word leaks after a silence. Feed
+            // silence at the real-time rate. `woken` tells a real frame from the
+            // timeout and keeps a notify() sent before this block from being lost.
+            // `pcm` holds the silence fetchAudio left in it.
+            val tickMs = maxOf(1L, (bufferSize * MS_PER_SECOND) / AudioHandler.SAMPLE_RATE)
+            woken = false
+            while (running && !woken) {
+                inactiveLock.wait(tickMs)
+                if (!woken) {
+                    farEnd.push(pcm, bufferSize)
+                }
+            }
+        } else {
+            // `woken` keeps a notify() sent before this block from being lost.
+            while (running && !woken) {
+                inactiveLock.wait()
+            }
+        }
     }
 
     /**
@@ -392,6 +385,33 @@ internal class AudioOutput(
             val mixSamples = AudioHandler.FRAME_SIZE
             val trackBytes = maxOf(minBufferBytes, MIN_TRACK_MIXES * mixSamples * BYTES_PER_SAMPLE)
             return PlaybackBuffer(mixSamples = mixSamples, trackBytes = trackBytes)
+        }
+    }
+}
+
+/**
+ * Hands each mix written to the track to [taps], and every [LATENCY_EVERY_MIXES] mixes the track's
+ * timestamp for the latency estimate. One per playback thread, built only with taps; playback
+ * thread only. Never allocates per mix.
+ */
+private class MixTap(private val taps: PlaybackTaps) {
+    private val stamp = AudioTimestamp()
+
+    /** Frames written to the track so far. */
+    private var writtenFrames = 0L
+    private var mixesSinceStamp = 0
+
+    /** The first [length] samples of [pcm] went to [track], whose write returned [written]. */
+    fun onWritten(track: AudioTrack, pcm: ShortArray, length: Int, played: Boolean, written: Int) {
+        if (written > 0) writtenFrames += written
+        // One volatile read while the diagnostics are inactive; the track is asked only while active.
+        if (!taps.isActive) return
+        taps.onMix(pcm, length, played, track.underrunCount, track.bufferSizeInFrames)
+        if (++mixesSinceStamp >= LATENCY_EVERY_MIXES) {
+            mixesSinceStamp = 0
+            if (track.getTimestamp(stamp)) {
+                taps.onOutputTimestamp(writtenFrames, stamp.framePosition, stamp.nanoTime)
+            }
         }
     }
 }

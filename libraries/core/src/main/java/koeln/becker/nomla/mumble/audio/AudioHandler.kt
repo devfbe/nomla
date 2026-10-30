@@ -124,7 +124,11 @@ internal class AudioHandler(
         }
         val inputMode = params.inputMode
         taps = diagnostics?.let {
-            CaptureTaps(it, pushToTalk = inputMode is ToggleInputMode, vad = (inputMode as? ActivityInputMode)?.detector)
+            CaptureTaps(
+                it,
+                pushToTalk = inputMode is ToggleInputMode,
+                vad = (inputMode as? ActivityInputMode)?.detector,
+            )
         }
         val captureSource = captureFactory.open(
             CaptureRequest(
@@ -246,10 +250,6 @@ internal class AudioHandler(
         )
     }
 
-    private fun PipelineDescription.withEncoder(bitrate: Int, framesPerPacket: Int) = copy(
-        settings = settings + mapOf("bitrate" to bitrate.toString(), "frames_per_packet" to framesPerPacket.toString()),
-    )
-
     /** Fits the bitrate and frames per packet to the server's maximum bandwidth in bps; -1 means no limit. */
     private fun setMaxBandwidth(maxBandwidth: Int) {
         if (maxBandwidth == -1) return
@@ -336,6 +336,11 @@ internal class AudioHandler(
         private const val MS_PER_FRAME = 10
     }
 }
+
+/** This description with the encoder's values the session settled on. */
+private fun PipelineDescription.withEncoder(bitrate: Int, framesPerPacket: Int) = copy(
+    settings = settings + mapOf("bitrate" to bitrate.toString(), "frames_per_packet" to framesPerPacket.toString()),
+)
 
 /**
  * The bitrate and frames per packet that fit [maxBandwidth] bps, as desktop Mumble's

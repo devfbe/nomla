@@ -19,10 +19,16 @@ package koeln.becker.nomla.mumble.diagnostics
 
 /** The fixed sizes and intervals of the debug diagnostics. */
 internal object DiagnosticsLimits {
-    /** The recording lengths offered, in seconds; the last is the maximum. */
-    val DURATIONS_SECONDS: List<Int> = listOf(5, 10, 20, 30)
+    const val SHORT_SECONDS = 5
 
     const val DEFAULT_SECONDS = 10
+
+    const val LONG_SECONDS = 20
+
+    const val MAX_SECONDS = 30
+
+    /** The recording lengths offered, in seconds; the last is the maximum. */
+    val DURATIONS_SECONDS: List<Int> = listOf(SHORT_SECONDS, DEFAULT_SECONDS, LONG_SECONDS, MAX_SECONDS)
 
     /** Talkers that get their own track, in order of first packet; later ones are only counted. */
     const val SPEAKER_SLOTS = 4

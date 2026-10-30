@@ -65,6 +65,7 @@ private const val NO_TIME = Long.MIN_VALUE
  * @param pushToTalk whether sending needs the key, i.e. a frame the input mode refuses is not sent.
  * @param vad the detector of a voice-activity input mode, read for the gate's live state.
  */
+@Suppress("TooManyFunctions") // A facade: one method per tap point, plus the per-frame helpers they share.
 internal class CaptureTaps(
     private val hub: DiagnosticsHub,
     private val pushToTalk: Boolean,

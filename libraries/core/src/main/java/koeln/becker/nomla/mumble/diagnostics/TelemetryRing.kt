@@ -130,6 +130,7 @@ internal class PacketRing(private val capacityPackets: Int, capacityBytes: Int) 
  * the [lengths] entry's many bytes of [bytes] from the [offsets] entry on. [dropped] counts writes
  * refused for lack of packet slots or bytes.
  */
+@Suppress("LongParameterList") // One parallel array per packet field, as PacketRing keeps them, plus two counts.
 internal class FrozenPackets(
     val nanos: LongArray,
     val frameNumbers: LongArray,

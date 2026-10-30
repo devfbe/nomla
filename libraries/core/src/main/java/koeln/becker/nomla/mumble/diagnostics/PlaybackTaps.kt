@@ -96,13 +96,21 @@ internal class PlaybackTaps(private val hub: DiagnosticsHub) {
         if (liveSlot >= 0) live.update(liveSlot, now, speech)
 
         val recording = hub.armed ?: return
+        hold(recording, speech, meter, length)
+    }
+
+    /**
+     * Holds [speech]'s frame and its `speakers` row until its mix is written, if the talker has a
+     * slot in [recording]; [meter] measured the frame's first [length] samples. Playback thread.
+     */
+    private fun hold(recording: ArmedRecording, speech: AudioOutputSpeech, meter: LevelMeter, length: Int) {
         val slot = recording.slotOf(speech.session)
         if (slot < 0) return
         if (pendingRecording !== recording) {
             pending.fill(false)
             pendingRecording = recording
         }
-        samples.copyInto(speakerFrames[slot], 0, 0, length)
+        speech.samples.copyInto(speakerFrames[slot], 0, 0, length)
         speakerLengths[slot] = length
         pending[slot] = true
         val row = speakerRows[slot]

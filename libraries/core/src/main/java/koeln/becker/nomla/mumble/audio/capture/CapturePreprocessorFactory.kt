@@ -71,6 +71,7 @@ internal class CapturePreprocessorFactory(
     /** Times the far end's activity; a replay faster than real time passes its own. */
     private val clock: NanoClock = NanoClock(System::nanoTime),
 ) {
+    @Suppress("LongParameterList") // Both modes, both denoiser strengths and two optional seams, all defaulted.
     fun create(
         noise: NoiseSuppressionMode,
         echo: EchoCancellationMode,
@@ -88,64 +89,45 @@ internal class CapturePreprocessorFactory(
          */
         taps: CaptureTaps? = null,
     ): CaptureChain {
-        val stages = mutableListOf<CapturePreprocessor>()
-        var farEnd: FarEndSink? = null
-        var farEndFrameSize = 0
-        var rnnoise: RnnoisePreprocessor? = null
-        var apmStage: WebRtcApmPreprocessor? = null
-        var denoiser: CapturePreprocessor? = null
+        val parts = ChainParts()
         val farEndActivity = farEndActivityFor(noise, echo)
 
         try {
             // AEC first: anything time-varying in front keeps it from converging.
-            if (echo == EchoCancellationMode.WEBRTC) {
-                val apm = tryStage(WEBRTC_APM) {
-                    WebRtcApmPreprocessor(
-                        apmApi(), WebRtcApmConfig.FOR_ECHO_CANCELLATION, farEndActivity = farEndActivity,
-                    )
-                }
-                if (apm != null) {
-                    stages += apm
-                    if (taps != null) stages += TapStage(SendStage.APM, taps)
-                    // The stage itself, so both audio threads share its lock.
-                    farEnd = apm
-                    farEndFrameSize = apm.farEndFrameSize
-                    apmStage = apm
-                }
-            }
-            beforeDenoiser?.let { stages += it }
+            if (echo == EchoCancellationMode.WEBRTC) addApm(parts, farEndActivity, taps)
+            beforeDenoiser?.let { parts.stages += it }
             when (noise) {
                 NoiseSuppressionMode.NONE -> Unit
                 NoiseSuppressionMode.SPEEX ->
                     tryStage(SPEEX) { SpeexPreprocessor(speexApi(), noiseSuppressDb = speexNoiseSuppressDb) }
-                        ?.let {
-                            stages += it
-                            denoiser = it
-                        }
+                        ?.let(parts::addDenoiser)
                 NoiseSuppressionMode.RNNOISE ->
                     // No canceller, no far-end frames: the relief would never engage.
                     tryStage(RNNOISE) {
-                        rnnoiseStage(rnnoiseAttenuationLimitDb, farEndActivity.takeIf { farEnd != null })
+                        rnnoiseStage(rnnoiseAttenuationLimitDb, farEndActivity.takeIf { parts.apm != null })
+                    }?.let {
+                        parts.addDenoiser(it)
+                        parts.rnnoise = it
                     }
-                        ?.let {
-                            stages += it
-                            rnnoise = it
-                            denoiser = it
-                        }
             }
-            if (taps != null && denoiser != null) stages += TapStage(SendStage.DENOISED, taps)
+            if (taps != null && parts.denoiser != null) parts.stages += TapStage(SendStage.DENOISED, taps)
         } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
             // Whatever ends the build, the native stages built so far are released before it propagates.
-            for (stage in stages) stage.release()
+            for (stage in parts.stages) stage.release()
             throw e
         }
+        return parts.toChain()
+    }
 
-        val preprocessor: CapturePreprocessor = when (stages.size) {
-            0 -> NoopPreprocessor
-            1 -> stages[0]
-            else -> ChainedPreprocessor(stages)
-        }
-        return CaptureChain(preprocessor, farEnd, farEndFrameSize, rnnoise, apmStage, denoiser)
+    /** Adds the WebRTC canceller, followed by its tap when there are [taps], unless it cannot be built. */
+    private fun addApm(parts: ChainParts, farEndActivity: FarEndActivity?, taps: CaptureTaps?) {
+        val apm = tryStage(WEBRTC_APM) {
+            WebRtcApmPreprocessor(apmApi(), WebRtcApmConfig.FOR_ECHO_CANCELLATION, farEndActivity = farEndActivity)
+        } ?: return
+        parts.stages += apm
+        if (taps != null) parts.stages += TapStage(SendStage.APM, taps)
+        parts.apm = apm
+        parts.farEndFrameSize = apm.farEndFrameSize
     }
 
     /** Only a chain that denoises with RNNoise behind the canceller has a use for the far end's activity. */
@@ -171,5 +153,30 @@ internal class CapturePreprocessorFactory(
     } catch (e: IllegalStateException) {
         log("$name is unavailable, continuing without it: ${e.message}")
         null
+    }
+}
+
+/** A capture chain while [CapturePreprocessorFactory.create] builds it. */
+private class ChainParts {
+    val stages = mutableListOf<CapturePreprocessor>()
+
+    /** The canceller; also the far-end sink, the stage itself, so both audio threads share its lock. */
+    var apm: WebRtcApmPreprocessor? = null
+    var farEndFrameSize = 0
+    var rnnoise: RnnoisePreprocessor? = null
+    var denoiser: CapturePreprocessor? = null
+
+    fun addDenoiser(stage: CapturePreprocessor) {
+        stages += stage
+        denoiser = stage
+    }
+
+    fun toChain(): CaptureChain {
+        val preprocessor: CapturePreprocessor = when (stages.size) {
+            0 -> NoopPreprocessor
+            1 -> stages[0]
+            else -> ChainedPreprocessor(stages)
+        }
+        return CaptureChain(preprocessor, apm, farEndFrameSize, rnnoise, apm, denoiser)
     }
 }

@@ -272,21 +272,7 @@ internal class AudioOutputSpeech(
 
         if (!hasFrame) fetchFrame(availPackets)
 
-        val decodedSamples = try {
-            if (hasFrame) {
-                hasFrame = false
-                val decoded = decoder.decodeFloat(packetBytes, 0, frameLength, out, audioBufferSize)
-                synchronized(jitterLock) { jitterBuffer.updateDelay() }
-                if (hasTerminator) nextAlive = false
-                decoded
-            } else {
-                decoder.decodeFloat(null, 0, 0, out, AudioHandler.FRAME_SIZE).also { concealedFrames++ }
-            }
-        } catch (e: NativeAudioException) {
-            decodeErrors++
-            NomlaLog.w(TAG, "Could not decode a frame of session $session; playing silence", e)
-            AudioHandler.FRAME_SIZE
-        }
+        val decodedSamples = decodeOrConceal()
 
         val gain = listener.gainOf(session) * frameVolume
         if (gain != 1f) {
@@ -303,6 +289,26 @@ internal class AudioOutputSpeech(
             repeat(decodedSamples / AudioHandler.FRAME_SIZE) { jitterBuffer.tick() }
         }
         return decodedSamples
+    }
+
+    /**
+     * Decodes the fetched frame into [out], or conceals a missing one; a frame that fails to decode
+     * counts as an error and plays as silence. Returns the number of samples.
+     */
+    private fun decodeOrConceal(): Int = try {
+        if (hasFrame) {
+            hasFrame = false
+            val decoded = decoder.decodeFloat(packetBytes, 0, frameLength, out, audioBufferSize)
+            synchronized(jitterLock) { jitterBuffer.updateDelay() }
+            if (hasTerminator) nextAlive = false
+            decoded
+        } else {
+            decoder.decodeFloat(null, 0, 0, out, AudioHandler.FRAME_SIZE).also { concealedFrames++ }
+        }
+    } catch (e: NativeAudioException) {
+        decodeErrors++
+        NomlaLog.w(TAG, "Could not decode a frame of session $session; playing silence", e)
+        AudioHandler.FRAME_SIZE
     }
 
     /** Takes the next packet out of the jitter buffer, or counts a miss. */

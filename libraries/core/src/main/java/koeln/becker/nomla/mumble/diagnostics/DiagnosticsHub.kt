@@ -185,28 +185,11 @@ internal class DiagnosticsHub(
             stages = stages,
             gateHistory = live.gateHistory(),
             gate = live.gate(),
-            echo = echo(present),
+            echo = apm?.let { echoReading(it, present, meters) },
             playback = playback.reading(),
             speakers = playback.speakers(clock.nanoTime(), armed),
             network = network,
             capture = pipeline?.capture,
-        )
-    }
-
-    private fun echo(present: Set<SendStage>): EchoReading? {
-        val canceller = apm ?: return null
-        val statistics = FloatArray(WebRtcApmApi.STATISTICS_COUNT)
-        if (!canceller.copyStatistics(statistics)) return null
-        val input = if (SendStage.RESAMPLED in present) SendStage.RESAMPLED else SendStage.MIC_RAW
-        val change = if (SendStage.APM in present) stageMeter(SendStage.APM).rmsDbfs - stageMeter(input).rmsDbfs else null
-        return EchoReading(
-            erlDb = statistics[ERL],
-            erleDb = statistics[ERLE],
-            divergentFraction = statistics[DIVERGENT],
-            delayMedianMs = statistics[DELAY_MEDIAN],
-            delayStdMs = statistics[DELAY_STD],
-            delayMs = statistics[DELAY],
-            levelChangeDb = change,
         )
     }
 
@@ -235,6 +218,34 @@ internal class DiagnosticsHub(
         const val DELAY_STD = 4
         const val DELAY = 5
     }
+}
+
+/**
+ * The statistics of [canceller], or null while it has none, with the level change across it on
+ * the stage [meters] when the APM stage is [present]. Allocates; off the audio threads.
+ */
+private fun echoReading(
+    canceller: WebRtcApmPreprocessor,
+    present: Set<SendStage>,
+    meters: Array<LevelMeter>,
+): EchoReading? {
+    val statistics = FloatArray(WebRtcApmApi.STATISTICS_COUNT)
+    if (!canceller.copyStatistics(statistics)) return null
+    val input = if (SendStage.RESAMPLED in present) SendStage.RESAMPLED else SendStage.MIC_RAW
+    val change = if (SendStage.APM in present) {
+        meters[SendStage.APM.ordinal].rmsDbfs - meters[input.ordinal].rmsDbfs
+    } else {
+        null
+    }
+    return EchoReading(
+        erlDb = statistics[DiagnosticsHub.ERL],
+        erleDb = statistics[DiagnosticsHub.ERLE],
+        divergentFraction = statistics[DiagnosticsHub.DIVERGENT],
+        delayMedianMs = statistics[DiagnosticsHub.DELAY_MEDIAN],
+        delayStdMs = statistics[DiagnosticsHub.DELAY_STD],
+        delayMs = statistics[DiagnosticsHub.DELAY],
+        levelChangeDb = change,
+    )
 }
 
 /**
@@ -332,12 +343,14 @@ internal class ArmedRecording(val seconds: Int, val t0Nanos: Long) {
 
     /** The 0-based slot of [session], or -1 if it has none. Any thread. */
     fun slotOf(session: Int): Int {
+        var slot = -1
         for (i in 0 until speakerSessions.length()) {
             val s = speakerSessions.get(i)
-            if (s == session) return i
-            if (s == NO_SESSION) return -1
+            if (s == session) slot = i
+            // Slots fill in order: past a free one no talker follows.
+            if (s == session || s == NO_SESSION) break
         }
-        return -1
+        return slot
     }
 
     /**
@@ -348,18 +361,20 @@ internal class ArmedRecording(val seconds: Int, val t0Nanos: Long) {
     fun assignSlot(session: Int): Int {
         for (i in 0 until speakerSessions.length()) {
             val s = speakerSessions.get(i)
-            if (s == session) return i
-            if (s == NO_SESSION) {
-                speakerSessions.set(i, session)
-                return i
-            }
+            if (s == NO_SESSION) speakerSessions.set(i, session)
+            if (s == session || s == NO_SESSION) return i
         }
-        for (i in 0 until untrackedCount) if (untracked[i] == session) return -1
+        countWithoutTrack(session)
+        return -1
+    }
+
+    /** Counts [session] in [speakersWithoutTrack] unless it is already. Protocol thread only. */
+    private fun countWithoutTrack(session: Int) {
+        for (i in 0 until untrackedCount) if (untracked[i] == session) return
         if (untrackedCount < untracked.size) {
             untracked[untrackedCount++] = session
             speakersWithoutTrack = untrackedCount
         }
-        return -1
     }
 
     /**
