@@ -333,12 +333,12 @@ class ChannelChatFragmentTest {
     }
 
     @Test
-    fun withoutMarkdownTheTextIsSentAsBefore() {
+    fun withoutMarkdownTheTextIsSentLiterally() {
         PreferenceManager.getDefaultSharedPreferences(ApplicationProvider.getApplicationContext())
             .edit().putBoolean(Settings.MARKDOWN.key, false).commit()
         launch()
         send("**hi** <b>there</b>")
-        verify { actions.sendChannelTextMessage(1, "**hi** <b>there</b>", false) }
+        verify { actions.sendChannelTextMessage(1, "**hi** &lt;b&gt;there&lt;/b&gt;", false) }
     }
 
     @Test
