@@ -354,6 +354,29 @@ class RecordingControllerTest {
         assertThat(flags).containsExactly(true, false).inOrder()
     }
 
+    /** libopus loads lazily at the first export; a device without it fails that recording, not the app. */
+    @Test
+    fun `a missing libopus ends the recording as failed after the flag ended`() {
+        val logged = mutableListOf<Throwable?>()
+        val sink = NomlaLog.Sink { _, _, _, error -> logged += error }
+        NomlaLog.addSink(sink)
+        try {
+            val recordings = controller(opus = ThrowingOpus(UnsatisfiedLinkError("no libopus")))
+            recordings.startRecording(DEFAULT_SECONDS)
+            sendOnePacket()
+
+            fireTimers()
+            assertThat(flags).containsExactly(true, false).inOrder()
+            dispatcher.scheduler.advanceUntilIdle()
+
+            assertThat(recordings.recording.value).isEqualTo(RecordingState.Idle(AbortReason.FAILED))
+            assertThat(flags).containsExactly(true, false).inOrder()
+            assertThat(logged.map { it?.message }).contains("no libopus")
+        } finally {
+            NomlaLog.removeSink(sink)
+        }
+    }
+
     @Test
     fun `a cancel while the export runs drops it and sends false once`() {
         val recordings = controller()

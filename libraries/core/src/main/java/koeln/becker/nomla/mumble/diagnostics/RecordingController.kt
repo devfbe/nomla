@@ -190,7 +190,8 @@ internal class RecordingController(
 
     /**
      * The capture of [armed], or null if freezing or decoding it failed; the failure is logged and
-     * never crashes the app. Cancellation of [scope] still propagates.
+     * never crashes the app. That includes a [LinkageError] from libopus, which loads lazily at the
+     * first export. Cancellation of [scope] still propagates.
      */
     @Suppress("TooGenericExceptionCaught") // Any failure of the export ends the recording, not the app.
     private suspend fun export(armed: ArmedRecording, run: Running, shown: Boolean): DiagnosticCapture? = try {
@@ -202,6 +203,9 @@ internal class RecordingController(
         null
     } catch (e: OutOfMemoryError) {
         NomlaLog.e(TAG, "The recording does not fit into memory for its export", e)
+        null
+    } catch (e: LinkageError) {
+        NomlaLog.e(TAG, "The recording could not be decoded: libopus is unavailable", e)
         null
     }
 
