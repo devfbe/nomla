@@ -132,7 +132,8 @@ object TrackRows {
 
     /**
      * The gaps of more than [PACKET_GAP_MS] between two received packets of one talker, unless the
-     * first ended a talk spurt.
+     * first ended a talk spurt. Only talkers with a slot (`speaker_1..4`) count, so packets without a
+     * known talker never merge into one.
      */
     private fun packetGaps(table: TelemetryTable): LongArray {
         val direction = table.column("direction")
@@ -142,9 +143,10 @@ object TrackRows {
         val last = HashMap<Float, Pair<Double, Boolean>>()
         val spans = ArrayList<Long>()
         for (row in 0 until table.rows) {
-            if (direction(row) != RECEIVED) continue
+            val talker = speaker(row)
+            if (direction(row) != RECEIVED || !isSlot(talker)) continue
             val time = table.time(row)
-            val before = last.put(speaker(row), time to (terminator(row) > HALF))
+            val before = last.put(talker, time to (terminator(row) > HALF))
             if (before != null && !before.second && time - before.first > PACKET_GAP_MS) {
                 spans += before.first.toLong()
                 spans += time.toLong()
@@ -153,8 +155,15 @@ object TrackRows {
         return spans.toLongArray()
     }
 
+    /** Whether [talker] is one of the slots 1 to [SPEAKER_SLOTS]; NaN and 0 are not. */
+    private fun isSlot(talker: Float): Boolean =
+        talker.toInt() in 1..SPEAKER_SLOTS && talker == talker.toInt().toFloat()
+
     private const val HALF = 0.5f
     private const val FULL_SCALE = 32768f
+
+    /** The talkers a recording gives a track (B4). */
+    private const val SPEAKER_SLOTS = 4
 }
 
 private fun TelemetryTable.time(row: Int): Double = timesMs[row]
@@ -285,11 +294,17 @@ class TrackListAdapter(
                     .toInt()
             }
             timeline.playhead = playhead
+            // TalkBack: an audio row has one play target, its button (the waveform is a second way
+            // to tap for sighted users); a lane is read once, as its label with what it counts.
+            timeline.importantForAccessibility =
+                if (audio != null) View.IMPORTANT_FOR_ACCESSIBILITY_NO else View.IMPORTANT_FOR_ACCESSIBILITY_YES
+            name.importantForAccessibility =
+                if (audio != null) View.IMPORTANT_FOR_ACCESSIBILITY_YES else View.IMPORTANT_FOR_ACCESSIBILITY_NO
             when (row) {
                 is TrackRow.Audio -> bindAudio(row)
                 is TrackRow.Lane -> {
                     name.setText(row.label)
-                    timeline.contentDescription = name.text
+                    timeline.contentDescription = laneSummary(name.text, row.spans.size / 2)
                     timeline.showSpans(row.spans, durationMs)
                 }
             }
@@ -298,7 +313,7 @@ class TrackListAdapter(
         private fun bindAudio(row: TrackRow.Audio) {
             val id = row.track.id
             name.text = trackName(name.context, id)
-            timeline.contentDescription = name.text
+            timeline.contentDescription = null
             timeline.showWaveform(row.peaks)
             val playing = id == playingId
             play.setImageResource(if (playing) R.drawable.ic_stop else R.drawable.ic_play)
@@ -314,6 +329,10 @@ class TrackListAdapter(
     companion object {
         private const val WAVEFORM_DP = 40f
         private const val LANE_DP = 12f
+
+        /** A lane for TalkBack: its label and how many runs or moments it marks, "Underruns: 3". */
+        fun laneSummary(label: CharSequence, count: Int): String =
+            String.format(java.util.Locale.getDefault(), "%s: %d", label, count)
 
         private val BUTTONS = mapOf(
             Rating.GOOD to R.id.track_rating_good,

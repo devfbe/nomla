@@ -118,6 +118,23 @@ class TrackRowsTest {
     }
 
     @Test
+    fun `packets without a talker slot never make a gap`() {
+        val columns = listOf("direction", "speaker", "frame_number", "bytes", "terminator")
+        fun received(speaker: Float) = listOf(1f, speaker, 0f, 0f, 0f)
+        val packets = table(
+            "packets", columns,
+            0.0 to received(Float.NaN),
+            200.0 to received(Float.NaN),
+            300.0 to received(0f),
+            500.0 to received(0f),
+            600.0 to received(5f),
+            900.0 to received(5f),
+        )
+
+        assertThat(lane(capture(listOf(packets)), R.string.debug_lane_packet_gaps)).isEmpty()
+    }
+
+    @Test
     fun `without tables every lane is there and empty`() {
         val lanes = TrackRows.lanes(capture(emptyList()))
 

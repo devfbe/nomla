@@ -20,6 +20,7 @@ package koeln.becker.nomla.diagnostics
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.media.AudioManager
 import android.os.SystemClock
 import android.view.View
 import android.widget.TextView
@@ -32,6 +33,9 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asCoroutineDispatcher
+import org.json.JSONObject
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -57,7 +61,11 @@ import koeln.becker.nomla.testing.addNow
 import koeln.becker.nomla.testing.drainMainUntil
 import koeln.becker.nomla.testing.hostWith
 import koeln.becker.nomla.testing.replaceParts
+import java.io.File
 import java.time.Duration
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executors
+import java.util.zip.ZipFile
 
 /**
  * The Recording page: duration, the consent notice, a recording's progress and its end, and a
@@ -74,14 +82,36 @@ class DiagnosticsRecordFragmentTest {
     private val speaker = TestPlaybackSink.Factory(sink)
     private lateinit var controller: ActivityController<ServiceHostActivity>
 
+    /** Holds the export thread of [blockExports] until opened; opened after every test. */
+    private val exportGate = CountDownLatch(1)
+    private val exportThread = Executors.newSingleThreadExecutor()
+
+    private val shareDir get() = File(context.cacheDir, DiagnosticShare.DIRECTORY)
+
     @Before
     fun setUp() {
         FileProviderCache.clear()
+        shareDir.deleteRecursively()
         setDebug(true)
         // Export and rows run inline, so a test sees their result at once; the speaker is a fake.
         val inline = Dispatchers.Unconfined
         replaceParts { it.copy(micPlayback = speaker, ioDispatcher = inline, workDispatcher = inline) }
     }
+
+    @After
+    fun tearDown() {
+        exportGate.countDown()
+        exportThread.shutdownNow()
+    }
+
+    /** Makes exports run on a thread that waits for [exportGate], so a test sees one running. */
+    private fun blockExports() {
+        exportThread.execute { exportGate.await() }
+        replaceParts { it.copy(ioDispatcher = exportThread.asCoroutineDispatcher()) }
+    }
+
+    private fun startedActivities(): List<Intent> =
+        generateSequence { shadowOf(controller.get()).nextStartedActivity }.toList()
 
     private fun setDebug(on: Boolean) {
         PreferenceManager.getDefaultSharedPreferences(context).edit()
@@ -178,6 +208,20 @@ class DiagnosticsRecordFragmentTest {
     }
 
     @Test
+    fun `rotating with the notice open, then confirming, starts exactly once`() {
+        start()
+        click(R.id.record_duration_20)
+        click(R.id.record_start)
+
+        controller.recreate()
+        idleMainLooper()
+        assertThat(consent()?.isShowing).isTrue()
+        confirm()
+
+        assertThat(diagnostics.startCalls).containsExactly(20)
+    }
+
+    @Test
     fun `a refusal shows its reason`() {
         settings.isRecordingNoticeHidden = true
         start()
@@ -209,6 +253,8 @@ class DiagnosticsRecordFragmentTest {
         // The page ticks a few times a second; just past 3 s it shows 3 s.
         idleMainLooperFor(Duration.ofMillis(THREE_SECONDS_AND_A_TICK_MS))
         assertThat(text(R.id.record_progress_text)).isEqualTo(progress(3, 10))
+        // TalkBack hears the progress in 5 s steps only.
+        assertThat(view<View>(R.id.record_progress_text).contentDescription.toString()).isEqualTo(progress(0, 10))
 
         click(R.id.record_cancel)
         assertThat(diagnostics.cancelCalls).isEqualTo(1)
@@ -269,6 +315,84 @@ class DiagnosticsRecordFragmentTest {
     }
 
     @Test
+    fun `share stays disabled while an export runs`() {
+        diagnostics.recording.value = RecordingState.Finished(capture())
+        blockExports()
+        start()
+
+        click(R.id.record_share)
+        assertThat(view<View>(R.id.record_share).isEnabled).isFalse()
+        assertThat(startedActivities()).isEmpty()
+
+        exportGate.countDown()
+        drainMainUntil { view<View>(R.id.record_share).isEnabled }
+        assertThat(startedActivities().map { it.action }).containsExactly(Intent.ACTION_CHOOSER)
+    }
+
+    @Test
+    fun `an export that finishes across a rotation opens the share sheet once`() {
+        diagnostics.recording.value = RecordingState.Finished(capture())
+        blockExports()
+        start()
+        click(R.id.record_share)
+
+        controller.recreate()
+        idleMainLooper()
+        assertThat(view<View>(R.id.record_share).isEnabled).isFalse()
+
+        exportGate.countDown()
+        drainMainUntil { view<View>(R.id.record_share).isEnabled }
+        assertThat(startedActivities().map { it.action }).containsExactly(Intent.ACTION_CHOOSER)
+
+        controller.recreate()
+        idleMainLooper()
+        assertThat(startedActivities()).isEmpty()
+    }
+
+    @Test
+    fun `an export that finishes while the page is away opens the share sheet on return`() {
+        diagnostics.recording.value = RecordingState.Finished(capture())
+        blockExports()
+        start()
+        click(R.id.record_share)
+        controller.pause().stop()
+
+        exportGate.countDown()
+        val exports = ViewModelProvider(page())[RecordExportViewModel::class.java]
+        drainMainUntil { exports.state.value is ExportState.Ready }
+        assertThat(startedActivities()).isEmpty()
+
+        controller.start().resume()
+        idleMainLooper()
+        assertThat(startedActivities().map { it.action }).containsExactly(Intent.ACTION_CHOOSER)
+    }
+
+    @Test
+    fun `the shared zip holds the ratings and the note`() {
+        diagnostics.recording.value = RecordingState.Finished(capture())
+        start()
+        row(1).findViewById<View>(R.id.track_rating_bad).performClick()
+        view<TextView>(R.id.record_note).text = "crackles"
+        idleMainLooper()
+
+        click(R.id.record_share)
+
+        @Suppress("DEPRECATION") // The typed overload needs API 33; minSdk is 31.
+        val send = startedActivities().single().getParcelableExtra<Intent>(Intent.EXTRA_INTENT)!!
+        val zip = File(shareDir, send.clipData!!.getItemAt(0).uri.lastPathSegment!!)
+        val meta = ZipFile(zip).use { file ->
+            JSONObject(file.getInputStream(file.getEntry("meta.json")).reader().readText())
+        }
+        val tracks = meta.getJSONArray("tracks")
+        val ratings = (0 until tracks.length()).associate {
+            tracks.getJSONObject(it).getString("id") to tracks.getJSONObject(it).opt("rating")
+        }
+        assertThat(ratings["3_apm"]).isEqualTo("bad")
+        assertThat(ratings["1_mic_raw"]).isEqualTo(JSONObject.NULL)
+        assertThat(meta.getString("note")).isEqualTo("crackles")
+    }
+
+    @Test
     fun `a rating is kept, can be taken back, and a new capture starts unrated`() {
         diagnostics.recording.value = RecordingState.Finished(capture())
         start()
@@ -298,21 +422,49 @@ class DiagnosticsRecordFragmentTest {
         start()
 
         row(1).findViewById<View>(R.id.track_play).performClick()
-        drainMainUntil { sink.written.sumOf { it.size } == SAMPLES }
+        // The track, then the player's tail of silence.
+        drainMainUntil { sink.written.sumOf { it.size } > SAMPLES }
 
         assertThat(speaker.openedWith).isEqualTo(Settings.PLAYBACK_STREAM to RATE)
         val played = sink.written.flatMap { it.toList() }
-        assertThat(played).containsExactlyElementsIn(apmSamples().toList()).inOrder()
+        assertThat(played.take(SAMPLES)).containsExactlyElementsIn(apmSamples().toList()).inOrder()
+    }
+
+    @Test
+    fun `without a connection a track plays on the music stream`() {
+        diagnostics.recording.value = RecordingState.Finished(capture())
+        session.state.value = SessionState.Disconnected()
+        start()
+
+        row(1).findViewById<View>(R.id.track_play).performClick()
+        drainMainUntil { speaker.openedWith != null }
+
+        assertThat(speaker.openedWith).isEqualTo(AudioManager.STREAM_MUSIC to RATE)
+    }
+
+    @Test
+    fun `TalkBack gets one play target per track and a summary per lane`() {
+        diagnostics.recording.value = RecordingState.Finished(capture())
+        start()
+
+        val timeline = row(0).findViewById<View>(R.id.track_timeline)
+        assertThat(timeline.importantForAccessibility).isEqualTo(View.IMPORTANT_FOR_ACCESSIBILITY_NO)
+        val lane = row(AUDIO_ROWS + 1).findViewById<View>(R.id.track_timeline)
+        assertThat(lane.contentDescription.toString())
+            .isEqualTo(context.getString(R.string.debug_lane_underruns) + ": 0")
     }
 
     @Test
     fun `discard drops the capture`() {
         diagnostics.recording.value = RecordingState.Finished(capture())
+        shareDir.mkdirs()
+        File(shareDir, "nomla-diagnose-old.zip").writeText("x")
         start()
 
         click(R.id.record_discard)
 
         assertThat(diagnostics.discardCalls).isEqualTo(1)
+        drainMainUntil { shareDir.list().isNullOrEmpty() }
     }
 
     @Test

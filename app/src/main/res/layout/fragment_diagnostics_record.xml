@@ -89,7 +89,6 @@
                 android:id="@+id/record_progress_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:accessibilityLiveRegion="polite"
                 android:textAppearance="?attr/textAppearanceBodyMedium" />
 
             <com.google.android.material.progressindicator.LinearProgressIndicator

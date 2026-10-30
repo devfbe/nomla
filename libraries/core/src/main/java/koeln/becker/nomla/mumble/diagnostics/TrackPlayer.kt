@@ -35,11 +35,20 @@ private const val CHUNKS_PER_SECOND = 100
 private const val MS_PER_SECOND = 1000L
 
 /**
+ * Silence written after a track's last sample, more than any sink buffers: once it is written, the
+ * track itself has been heard to its end, and the release that follows cuts only silence.
+ */
+private const val TAIL_MS = 250
+
+/**
  * Plays one track of a recording on its own sink from [sinkFactory], on [stream], at the track's
  * own rate, on its own thread (B11). The session is not touched: this is a separate playback.
  *
  * [play] and [stop] are called from one thread (the main thread); the callbacks run on the playback
  * thread. One track plays at a time: [play] stops the one before.
+ *
+ * A track played to its end is drained, not dropped: a tail of silence follows it, then the sink is
+ * stopped without a flush, so its last buffer is heard. A sink that throws ends the playback.
  */
 public class TrackPlayer(private val sinkFactory: PcmPlaybackSinkFactory, private val stream: Int) {
     private var worker: AudioWorker? = null
@@ -71,18 +80,37 @@ public class TrackPlayer(private val sinkFactory: PcmPlaybackSinkFactory, privat
         worker = playing
         sink = opened
         playing.start { isRunning ->
-            write(opened, track, start, isRunning, onPosition)
+            run(opened, track, start, isRunning, onPosition)
             if (isRunning()) onEnd()
         }
     }
 
-    private fun write(
+    /** Plays [track] from sample [start] and drains it at its end; a failing sink just ends it. */
+    private fun run(
         sink: PcmPlaybackSink,
         track: CapturedTrack,
         start: Int,
         isRunning: () -> Boolean,
         onPosition: (Long) -> Unit,
     ) {
+        try {
+            val finished = write(sink, track, start, isRunning, onPosition)
+            if (finished && isRunning()) drain(sink, track.sampleRate, isRunning)
+        } catch (@Suppress("TooGenericExceptionCaught") e: RuntimeException) {
+            // An AudioTrack throws IllegalStateException and others from play, write and stop; any of
+            // them ends this playback, never the app.
+            NomlaLog.w(TAG, "playback ended by the sink: $e")
+        }
+    }
+
+    /** Writes the track; true when all of it was written, false when stopped or the sink failed. */
+    private fun write(
+        sink: PcmPlaybackSink,
+        track: CapturedTrack,
+        start: Int,
+        isRunning: () -> Boolean,
+        onPosition: (Long) -> Unit,
+    ): Boolean {
         val rate = track.sampleRate
         val samples = track.samples
         val chunk = ShortArray((rate / CHUNKS_PER_SECOND).coerceAtLeast(1))
@@ -92,10 +120,23 @@ public class TrackPlayer(private val sinkFactory: PcmPlaybackSinkFactory, privat
             val length = minOf(chunk.size, samples.size - position)
             System.arraycopy(samples, position, chunk, 0, length)
             val written = sink.write(chunk, length)
-            if (written <= 0) break
+            if (written <= 0) return false
             position += written
             onPosition(position * MS_PER_SECOND / rate)
         }
+        return position >= samples.size
+    }
+
+    /** Writes [TAIL_MS] of silence, then stops [sink] without a flush, so what it holds plays out. */
+    private fun drain(sink: PcmPlaybackSink, rate: Int, isRunning: () -> Boolean) {
+        val silence = ShortArray((rate / CHUNKS_PER_SECOND).coerceAtLeast(1))
+        var left = rate * TAIL_MS / MS_PER_SECOND.toInt()
+        while (isRunning() && left > 0) {
+            val written = sink.write(silence, minOf(silence.size, left))
+            if (written <= 0) break
+            left -= written
+        }
+        sink.stop()
     }
 
     /**

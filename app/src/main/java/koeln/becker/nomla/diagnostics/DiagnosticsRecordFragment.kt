@@ -18,6 +18,7 @@
 package koeln.becker.nomla.diagnostics
 
 import android.content.Intent
+import android.media.AudioManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -63,10 +64,9 @@ import koeln.becker.nomla.mumble.diagnostics.RecordingStart
 import koeln.becker.nomla.mumble.diagnostics.RecordingState
 import koeln.becker.nomla.mumble.diagnostics.TrackPlayer
 import koeln.becker.nomla.mumble.session.SessionState
-import koeln.becker.nomla.mumble.util.NomlaLog
 import koeln.becker.nomla.session.SessionManager
+import koeln.becker.nomla.util.appViewModels
 import koeln.becker.nomla.util.whileViewStarted
-import java.io.IOException
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.time.Duration.Companion.milliseconds
@@ -77,11 +77,14 @@ import kotlin.time.Duration.Companion.milliseconds
  * axis: play one, rate it, write a note for the whole recording, share it as a ZIP or discard it.
  *
  * A finished recording stays on the page whatever the connection does (B12); only "Record" needs a
- * connected session. Playback uses its own sink on the playback stream (B11), never the session.
+ * connected session. Playback uses its own sink, never the session: on the session's playback
+ * stream while connected (B11), on the music stream otherwise, so it is not stuck on the earpiece.
+ * The export lives in [RecordExportViewModel], so a rotation or leaving the page loses nothing.
  */
 @Suppress("TooManyFunctions") // One page: its lifecycle, what it shows, and one action per button.
 class DiagnosticsRecordFragment : Fragment() {
     private val review by viewModels<RecordReviewViewModel>()
+    private val exports by appViewModels { RecordExportViewModel(it, AppContainer.of(it).parts.ioDispatcher) }
     private val settings get() = Settings.getInstance(requireContext())
     private val parts get() = AppContainer.of(requireContext()).parts
     private val sessions get() = SessionManager.get(requireContext())
@@ -99,7 +102,6 @@ class DiagnosticsRecordFragment : Fragment() {
     /** The capture whose rows the track view shows, or is computing. */
     private var shown: DiagnosticCapture? = null
     private var rowsJob: Job? = null
-    private var exporting: Job? = null
 
     /** The page's views, valid between onViewCreated and onDestroyView. */
     private class Views(root: View, val adapter: TrackListAdapter) {
@@ -158,6 +160,7 @@ class DiagnosticsRecordFragment : Fragment() {
             if (RecordingConsentDialog.start(result)) startRecording()
         }
         whileViewStarted {
+            launch { exports.state.collect(::showExport) }
             pageStates().collectLatest { state ->
                 show(state)
                 val recording = state.recording
@@ -208,6 +211,7 @@ class DiagnosticsRecordFragment : Fragment() {
         views.progressGroup.isVisible = !idle
         if (recording is RecordingState.Recording) showProgress(recording)
         val status = refusal ?: (recording as? RecordingState.Idle)?.aborted?.let(::messageOf)
+            ?: R.string.debug_record_failed.takeIf { exports.state.value == ExportState.Failed && finished != null }
         views.status.isVisible = status != null
         status?.let(views.status::setText)
         views.empty.isVisible = !state.connected && finished == null
@@ -223,6 +227,12 @@ class DiagnosticsRecordFragment : Fragment() {
         views.progress.progress = elapsedMs.toInt()
         views.progressText.text =
             getString(R.string.debug_record_progress, (elapsedMs / MS_PER_SECOND).toInt(), recording.seconds)
+        // TalkBack reads the progress in 5 s steps, not every tick; nothing announces it by itself.
+        val step = (elapsedMs / MS_PER_SECOND).toInt() / DESCRIPTION_STEP_S * DESCRIPTION_STEP_S
+        val description = getString(R.string.debug_record_progress, step, recording.seconds)
+        if (views.progressText.contentDescription?.toString() != description) {
+            views.progressText.contentDescription = description
+        }
     }
 
     /** Shows [capture]'s rows, computed on the work dispatcher, and its review; none for null. */
@@ -235,7 +245,8 @@ class DiagnosticsRecordFragment : Fragment() {
             views.adapter.submit(emptyList(), 1, emptyMap())
             return
         }
-        review.reviewing(capture.startedAtEpochMs)
+        // Another capture: its review and any export of the one before start afresh.
+        if (review.reviewing(capture.startedAtEpochMs)) exports.reset()
         val note = review.review.value.note
         if (views.note.text.toString() != note) views.note.text = note
         rowsJob = viewLifecycleOwner.lifecycleScope.launch {
@@ -266,33 +277,26 @@ class DiagnosticsRecordFragment : Fragment() {
         show(page)
     }
 
-    /** Writes the ZIP off the main thread, one at a time, and offers it to the share sheet. */
+    /** Writes the ZIP off the main thread, one at a time; [showExport] offers it when written. */
     private fun share() {
         val capture = shown ?: return
-        if (exporting?.isActive == true) return
-        val context = requireContext().applicationContext
-        val reviewed = review.review.value
-        views?.share?.isEnabled = false
-        exporting = viewLifecycleOwner.lifecycleScope.launch {
-            try {
-                val uri = withContext(parts.ioDispatcher) { DiagnosticShare.export(context, capture, reviewed) }
-                val send = DiagnosticShare.shareIntent(uri, getString(R.string.debug_record_share_subject))
-                startActivity(Intent.createChooser(send, null))
-            } catch (e: IOException) {
-                NomlaLog.w(TAG, "diagnostics export failed: $e")
-                views?.status?.apply {
-                    setText(R.string.debug_record_failed)
-                    isVisible = true
-                }
-            } finally {
-                views?.share?.isEnabled = true
-            }
+        exports.export(capture, review.review.value)
+    }
+
+    /** Share waits while an export runs; a written ZIP goes to the share sheet once; a failure is said. */
+    private fun showExport(state: ExportState) {
+        views?.share?.isEnabled = state != ExportState.Running
+        if (state is ExportState.Ready) {
+            val send = DiagnosticShare.shareIntent(state.uri, getString(R.string.debug_record_share_subject))
+            startActivity(Intent.createChooser(send, null))
+            exports.shared()
         }
+        show(page)
     }
 
     /** Drops the capture in the session and every shared ZIP of it (B13). */
     private fun discard() {
-        exporting?.cancel()
+        exports.reset()
         playback?.stop()
         sessions.session.value?.diagnostics?.discardRecording()
         val context = requireContext().applicationContext
@@ -308,6 +312,7 @@ class DiagnosticsRecordFragment : Fragment() {
     private inner class Playback(private val adapter: TrackListAdapter) {
         private val main = Handler(Looper.getMainLooper())
         private var player: TrackPlayer? = null
+        private var playerStream = 0
         private var playingId: String? = null
         private var durationMs = 1L
 
@@ -323,7 +328,7 @@ class DiagnosticsRecordFragment : Fragment() {
                 return
             }
             val capture = shown ?: return
-            val player = player ?: TrackPlayer(parts.micPlayback, Settings.PLAYBACK_STREAM).also { player = it }
+            val player = playerFor(if (page.connected) Settings.PLAYBACK_STREAM else AudioManager.STREAM_MUSIC)
             val mine = ++generation
             durationMs = capture.durationMs.coerceAtLeast(1)
             playingId = track.id
@@ -336,6 +341,15 @@ class DiagnosticsRecordFragment : Fragment() {
                 onPosition = { ms -> post(mine, ms) },
                 onEnd = { main.post { if (mine == generation) stop() } },
             )
+        }
+
+        /** The player on [stream], made anew when the stream changed with the connection. */
+        private fun playerFor(stream: Int): TrackPlayer {
+            val existing = player?.takeIf { playerStream == stream }
+            if (existing != null) return existing
+            player?.stop()
+            playerStream = stream
+            return TrackPlayer(parts.micPlayback, stream).also { player = it }
         }
 
         private fun post(mine: Int, ms: Long) {
@@ -357,8 +371,6 @@ class DiagnosticsRecordFragment : Fragment() {
     }
 
     private companion object {
-        const val TAG = "DiagnosticsRecord"
-
         /** The offered lengths and their buttons (B3); the session accepts exactly these. */
         val DURATIONS = mapOf(
             5 to R.id.record_duration_5,
@@ -368,6 +380,7 @@ class DiagnosticsRecordFragment : Fragment() {
         )
         const val DEFAULT_SECONDS = 10
         const val MS_PER_SECOND = 1000L
+        const val DESCRIPTION_STEP_S = 5
         val PROGRESS_TICK = 250.milliseconds
 
         @StringRes
@@ -405,11 +418,15 @@ class RecordReviewViewModel(private val state: SavedStateHandle) : ViewModel() {
         return CaptureReview(ratings, state.get<String>(KEY_NOTE).orEmpty())
     }
 
-    /** Makes the capture that started at [startedAtEpochMs] the reviewed one; a new one starts unrated. */
-    fun reviewing(startedAtEpochMs: Long) {
-        if (state.get<Long>(KEY_CAPTURE) == startedAtEpochMs) return
+    /**
+     * Makes the capture that started at [startedAtEpochMs] the reviewed one; a new one starts
+     * unrated. Returns whether it is new.
+     */
+    fun reviewing(startedAtEpochMs: Long): Boolean {
+        if (state.get<Long>(KEY_CAPTURE) == startedAtEpochMs) return false
         state[KEY_CAPTURE] = startedAtEpochMs
         update(CaptureReview(emptyMap(), ""))
+        return true
     }
 
     /** Rates [trackId]; null takes the rating back. */

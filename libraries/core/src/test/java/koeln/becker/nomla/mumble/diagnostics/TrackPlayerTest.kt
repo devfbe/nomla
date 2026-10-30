@@ -66,9 +66,41 @@ class TrackPlayerTest {
         assertThat(factory.openedWith).isEqualTo(AudioManager.STREAM_VOICE_CALL to RATE)
         assertThat(sink.events.first()).isEqualTo("play")
         val played = sink.written.flatMap { it.toList() }
-        assertThat(played).containsExactlyElementsIn(track.samples.toList()).inOrder()
+        assertThat(played.take(RATE)).containsExactlyElementsIn(track.samples.toList()).inOrder()
         assertThat(positions.last()).isEqualTo(MS_PER_SECOND)
         assertThat(positions).isInOrder()
+    }
+
+    @Test
+    fun `a track played to its end is drained, not flushed`() {
+        val sink = TestPlaybackSink()
+        val (player, _) = player(sink)
+        val ended = CountDownLatch(1)
+
+        player.play(track(), onPosition = {}, onEnd = { ended.countDown() })
+
+        assertThat(ended.await(TIMEOUT_S, TimeUnit.SECONDS)).isTrue()
+        // A tail of silence follows the last sample, then a stop that plays out what the sink holds.
+        val tail = sink.written.flatMap { it.toList() }.drop(RATE)
+        assertThat(tail).hasSize(RATE / QUARTER)
+        assertThat(tail.all { it == 0.toShort() }).isTrue()
+        assertThat(sink.events).containsExactly("play", "stop").inOrder()
+
+        player.stop()
+        assertThat(sink.events.count { it == "release" }).isEqualTo(1)
+    }
+
+    @Test
+    fun `a sink that throws ends the playback, not the app`() {
+        val sink = object : PcmPlaybackSink by TestPlaybackSink() {
+            override fun write(buffer: ShortArray, length: Int): Int = throw IllegalStateException("dead track")
+        }
+        val (player, _) = player(sink)
+        val ended = CountDownLatch(1)
+
+        player.play(track(), onPosition = {}, onEnd = { ended.countDown() })
+
+        assertThat(ended.await(TIMEOUT_S, TimeUnit.SECONDS)).isTrue()
     }
 
     @Test
@@ -82,7 +114,7 @@ class TrackPlayerTest {
 
         assertThat(ended.await(TIMEOUT_S, TimeUnit.SECONDS)).isTrue()
         val played = sink.written.flatMap { it.toList() }
-        assertThat(played).containsExactlyElementsIn(track.samples.drop(RATE / 2)).inOrder()
+        assertThat(played.take(RATE / 2)).containsExactlyElementsIn(track.samples.drop(RATE / 2)).inOrder()
     }
 
     @Test
@@ -162,6 +194,7 @@ class TrackPlayerTest {
         const val SHORT_RANGE = 1000
         const val MS_PER_SECOND = 1000L
         const val HALF_SECOND_MS = 500L
+        const val QUARTER = 4
         const val TIMEOUT_S = 5L
     }
 }
