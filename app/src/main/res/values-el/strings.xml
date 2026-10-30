@@ -457,6 +457,7 @@
     <string name="debug_stage_gated">Πύλη</string>
     <string name="debug_stage_sent">Απεσταλμένα</string>
     <string name="debug_stage_off">Ανενεργό</string>
+    <string name="debug_strip_description">%1$s, RMS %2$s</string>
     <string name="debug_block_echo">Ηχώ</string>
     <string name="debug_block_receive">Λήψη</string>
     <string name="debug_block_network">Δίκτυο</string>

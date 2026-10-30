@@ -436,6 +436,7 @@
     <string name="debug_stage_gated">கேட்</string>
     <string name="debug_stage_sent">அனுப்பப்பட்டது</string>
     <string name="debug_stage_off">அணை</string>
+    <string name="debug_strip_description">%1$s, RMS %2$s</string>
     <string name="debug_block_echo">எதிரொலி</string>
     <string name="debug_block_receive">பெறுதல்</string>
     <string name="debug_block_network">வலையமைப்பு</string>

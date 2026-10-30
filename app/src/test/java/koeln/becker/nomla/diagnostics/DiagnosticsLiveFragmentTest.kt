@@ -18,7 +18,9 @@
 package koeln.becker.nomla.diagnostics
 
 import android.content.Context
+import android.media.AudioManager
 import android.view.View
+import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.TextView
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.RecyclerView
@@ -37,13 +39,15 @@ import koeln.becker.nomla.mumble.diagnostics.StageReading
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.mumble.testutil.FakeSession
 import koeln.becker.nomla.mumble.testutil.idleMainLooper
+import koeln.becker.nomla.mumble.testutil.idleMainLooperFor
 import koeln.becker.nomla.testing.ServiceHostActivity
 import koeln.becker.nomla.testing.addNow
 import koeln.becker.nomla.testing.hostWith
+import java.time.Duration
 
 /**
  * The Live page: Console strips or List rows of the connected session's send chain, the choice
- * kept per device, inactive stages greyed and never hidden, and metering only while it is started.
+ * kept per device, inactive stages greyed and never hidden, and metering only while it is visible.
  */
 @RunWith(RobolectricTestRunner::class)
 class DiagnosticsLiveFragmentTest {
@@ -51,18 +55,18 @@ class DiagnosticsLiveFragmentTest {
     private val session = FakeSession(SessionState.Connected)
     private lateinit var controller: ActivityController<ServiceHostActivity>
 
-    private fun reading(stage: SendStage, active: Boolean = true) = StageReading(
+    private fun reading(stage: SendStage, active: Boolean, rms: Float) = StageReading(
         stage = stage,
         active = active,
-        rmsDbfs = LEVEL_DBFS,
-        peakDbfs = LEVEL_DBFS,
-        peakHoldDbfs = LEVEL_DBFS,
+        rmsDbfs = rms,
+        peakDbfs = rms,
+        peakHoldDbfs = rms,
         clippedSamples = 0,
         changeDb = if (active && stage != SendStage.MIC_RAW) 0f else null,
     )
 
-    private fun snapshotOf(vararg inactive: SendStage) = DiagnosticsSnapshot(
-        stages = SendStage.entries.map { reading(it, active = it !in inactive) },
+    private fun snapshotOf(vararg inactive: SendStage, rms: Float = LEVEL_DBFS) = DiagnosticsSnapshot(
+        stages = SendStage.entries.map { reading(it, active = it !in inactive, rms = rms) },
         gateHistory = BooleanArray(GATE_FRAMES) { it % 2 == 0 },
         gate = null,
         // The APM's divergent fraction and delay spread are always NaN in this webrtc version.
@@ -91,7 +95,21 @@ class DiagnosticsLiveFragmentTest {
         it.layout(0, 0, LIST_WIDTH, LIST_HEIGHT)
     }
 
+    /** Lays [id]'s list out at [height], exactly, as a short screen would. */
+    private fun laidOut(id: Int, height: Int = LIST_HEIGHT): RecyclerView = view<RecyclerView>(id).also {
+        it.measure(
+            View.MeasureSpec.makeMeasureSpec(LIST_WIDTH, View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY),
+        )
+        it.layout(0, 0, LIST_WIDTH, height)
+    }
+
     private fun row(stage: SendStage): View? = list().findViewHolderForAdapterPosition(stage.ordinal)?.itemView
+
+    private fun nextReading(snapshot: DiagnosticsSnapshot) {
+        session.diagnostics.nextSnapshot = snapshot
+        idleMainLooperFor(Duration.ofMillis(ONE_READING_MS))
+    }
 
     @Test
     fun `the toggle is remembered`() {
@@ -120,6 +138,8 @@ class DiagnosticsLiveFragmentTest {
         val change = row(SendStage.RESAMPLED)!!.findViewById<TextView>(R.id.stage_change)
         assertThat(change.isShown).isTrue()
         assertThat(change.text.toString()).isEqualTo(context.getString(R.string.debug_stage_off))
+        assertThat(row(SendStage.RESAMPLED)!!.findViewById<View>(R.id.stage_header).alpha).isLessThan(1f)
+        assertThat(row(SendStage.APM)!!.findViewById<View>(R.id.stage_header).alpha).isEqualTo(1f)
     }
 
     @Test
@@ -137,6 +157,68 @@ class DiagnosticsLiveFragmentTest {
     }
 
     @Test
+    fun `tapping a strip scrolls a short list to that stage`() {
+        start()
+
+        view<StageStripsView>(R.id.live_strips).strip(SendStage.SENT).performClick()
+        idleMainLooper()
+
+        val short = laidOut(R.id.live_list, SHORT_LIST_HEIGHT)
+        assertThat(short.findViewHolderForAdapterPosition(SendStage.SENT.ordinal)).isNotNull()
+        assertThat(short.findViewHolderForAdapterPosition(SendStage.MIC_RAW.ordinal)).isNull()
+    }
+
+    @Test
+    fun `a stage row offers TalkBack expand or collapse`() {
+        start()
+        showList()
+
+        val actions = { row(SendStage.APM)!!.createAccessibilityNodeInfo().actionList.map { it.id } }
+        assertThat(actions()).contains(AccessibilityNodeInfo.ACTION_EXPAND)
+        assertThat(actions()).doesNotContain(AccessibilityNodeInfo.ACTION_COLLAPSE)
+
+        row(SendStage.APM)!!.performClick()
+        idleMainLooper()
+
+        assertThat(actions()).contains(AccessibilityNodeInfo.ACTION_COLLAPSE)
+        assertThat(actions()).doesNotContain(AccessibilityNodeInfo.ACTION_EXPAND)
+    }
+
+    @Test
+    fun `a strip's description changes only with its whole dB`() {
+        start(snapshotOf(rms = -30.2f))
+        val strip = view<StageStripsView>(R.id.live_strips).strip(SendStage.APM)
+        val first = strip.contentDescription
+        assertThat(first.toString()).contains("-30")
+
+        nextReading(snapshotOf(rms = -29.8f))
+        assertThat(strip.contentDescription).isSameInstanceAs(first)
+
+        nextReading(snapshotOf(rms = -25f))
+        assertThat(strip.contentDescription.toString()).contains("-25")
+    }
+
+    @Test
+    fun `the device block reads the route at most once per second`() {
+        val audio = context.getSystemService(AudioManager::class.java)
+        val max = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        audio.setStreamVolume(AudioManager.STREAM_MUSIC, 3, 0)
+        start()
+        val volume = { texts(laidOut(R.id.live_console_blocks)) }
+        assertThat(volume()).contains("3 / $max")
+
+        audio.setStreamVolume(AudioManager.STREAM_MUSIC, 5, 0)
+        idleMainLooperFor(Duration.ofMillis(HALF_SECOND_MS))
+        view<View>(R.id.live_view_list).performClick()
+        view<View>(R.id.live_view_console).performClick()
+        idleMainLooper()
+        assertThat(volume()).contains("3 / $max")
+
+        idleMainLooperFor(Duration.ofMillis(HALF_SECOND_MS + ONE_READING_MS))
+        assertThat(volume()).contains("5 / $max")
+    }
+
+    @Test
     fun `NaN statistics show a dash, never NaN`() {
         start()
 
@@ -149,12 +231,12 @@ class DiagnosticsLiveFragmentTest {
     }
 
     @Test
-    fun `metering stops when the page is stopped`() {
+    fun `metering stops when the page is no longer visible`() {
         val fragment = start()
         assertThat(session.diagnostics.meterHolders).isEqualTo(1)
 
         controller.get().supportFragmentManager.beginTransaction()
-            .setMaxLifecycle(fragment, Lifecycle.State.CREATED)
+            .setMaxLifecycle(fragment, Lifecycle.State.STARTED)
             .commitNow()
         idleMainLooper()
 
@@ -185,5 +267,8 @@ class DiagnosticsLiveFragmentTest {
         const val GATE_FRAMES = 300
         const val LIST_WIDTH = 480
         const val LIST_HEIGHT = 4000
+        const val SHORT_LIST_HEIGHT = 100
+        const val ONE_READING_MS = 100L
+        const val HALF_SECOND_MS = 500L
     }
 }

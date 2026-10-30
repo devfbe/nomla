@@ -123,8 +123,10 @@ object LiveFormat {
  */
 class LiveMetrics(private val context: Context) {
     private val dbfsUnit = context.getString(R.string.debug_metric_dbfs)
+    private val labels = HashMap<Int, String>()
 
-    private fun label(@StringRes id: Int) = context.getString(id)
+    /** The string [id], resolved once: a reading asks for the same labels 15 times a second. */
+    private fun label(@StringRes id: Int): String = labels.getOrPut(id) { context.getString(id) }
 
     private fun dbfs(value: Float?) = LiveFormat.withUnit(LiveFormat.number(value), dbfsUnit)
 

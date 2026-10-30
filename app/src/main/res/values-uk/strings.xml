@@ -463,6 +463,7 @@
     <string name="debug_stage_gated">Гейт</string>
     <string name="debug_stage_sent">Надіслано</string>
     <string name="debug_stage_off">Вимк.</string>
+    <string name="debug_strip_description">%1$s, RMS %2$s</string>
     <string name="debug_block_echo">Луна</string>
     <string name="debug_block_receive">Прийом</string>
     <string name="debug_block_network">Мережа</string>

@@ -446,6 +446,7 @@
     <string name="debug_stage_gated">门限</string>
     <string name="debug_stage_sent">已发送</string>
     <string name="debug_stage_off">关</string>
+    <string name="debug_strip_description">%1$s，RMS %2$s</string>
     <string name="debug_block_echo">回声</string>
     <string name="debug_block_receive">接收</string>
     <string name="debug_block_network">网络</string>

@@ -439,6 +439,7 @@
     <string name="debug_stage_gated">Poartă</string>
     <string name="debug_stage_sent">Trimis</string>
     <string name="debug_stage_off">Oprit</string>
+    <string name="debug_strip_description">%1$s, RMS %2$s</string>
     <string name="debug_block_echo">Ecou</string>
     <string name="debug_block_receive">Recepție</string>
     <string name="debug_block_network">Rețea</string>

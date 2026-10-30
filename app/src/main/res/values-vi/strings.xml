@@ -433,6 +433,7 @@
     <string name="debug_stage_gated">Cổng</string>
     <string name="debug_stage_sent">Đã gửi</string>
     <string name="debug_stage_off">Tắt</string>
+    <string name="debug_strip_description">%1$s, RMS %2$s</string>
     <string name="debug_block_echo">Tiếng vọng</string>
     <string name="debug_block_receive">Nhận</string>
     <string name="debug_block_network">Mạng</string>

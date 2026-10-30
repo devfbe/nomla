@@ -439,6 +439,7 @@
     <string name="debug_stage_gated">Vārti</string>
     <string name="debug_stage_sent">Nosūtīts</string>
     <string name="debug_stage_off">Izslēgts</string>
+    <string name="debug_strip_description">%1$s, RMS %2$s</string>
     <string name="debug_block_echo">Atbalss</string>
     <string name="debug_block_receive">Uztveršana</string>
     <string name="debug_block_network">Tīkls</string>

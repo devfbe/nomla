@@ -457,6 +457,7 @@
     <string name="debug_stage_gated">Kapu</string>
     <string name="debug_stage_sent">Elküldve</string>
     <string name="debug_stage_off">Ki</string>
+    <string name="debug_strip_description">%1$s, RMS %2$s</string>
     <string name="debug_block_echo">Visszhang</string>
     <string name="debug_block_receive">Vétel</string>
     <string name="debug_block_network">Hálózat</string>

@@ -459,6 +459,7 @@
     <string name="debug_stage_gated">Porta</string>
     <string name="debug_stage_sent">Enviat</string>
     <string name="debug_stage_off">Desactivat</string>
+    <string name="debug_strip_description">%1$s, RMS %2$s</string>
     <string name="debug_block_echo">Eco</string>
     <string name="debug_block_receive">Recepció</string>
     <string name="debug_block_network">Xarxa</string>

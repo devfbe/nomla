@@ -446,6 +446,7 @@
     <string name="debug_stage_gated">Gate</string>
     <string name="debug_stage_sent">Enviado</string>
     <string name="debug_stage_off">Desligado</string>
+    <string name="debug_strip_description">%1$s, RMS %2$s</string>
     <string name="debug_block_echo">Eco</string>
     <string name="debug_block_receive">Recepção</string>
     <string name="debug_block_network">Rede</string>

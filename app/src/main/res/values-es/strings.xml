@@ -449,6 +449,7 @@
     <string name="debug_stage_gated">Puerta</string>
     <string name="debug_stage_sent">Enviado</string>
     <string name="debug_stage_off">Desactivado</string>
+    <string name="debug_strip_description">%1$s, RMS %2$s</string>
     <string name="debug_block_echo">Eco</string>
     <string name="debug_block_receive">Recepción</string>
     <string name="debug_block_network">Red</string>

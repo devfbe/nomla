@@ -444,6 +444,7 @@
     <string name="debug_stage_gated">Gate</string>
     <string name="debug_stage_sent">Gesendet</string>
     <string name="debug_stage_off">Aus</string>
+    <string name="debug_strip_description">%1$s, RMS %2$s</string>
     <string name="debug_block_echo">Echo</string>
     <string name="debug_block_receive">Empfang</string>
     <string name="debug_block_network">Netz</string>

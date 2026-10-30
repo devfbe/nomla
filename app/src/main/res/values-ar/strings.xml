@@ -467,6 +467,7 @@
     <string name="debug_stage_gated">البوابة</string>
     <string name="debug_stage_sent">المُرسَل</string>
     <string name="debug_stage_off">متوقف</string>
+    <string name="debug_strip_description">%1$s، RMS %2$s</string>
     <string name="debug_block_echo">الصدى</string>
     <string name="debug_block_receive">الاستقبال</string>
     <string name="debug_block_network">الشبكة</string>

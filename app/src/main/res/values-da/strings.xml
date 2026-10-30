@@ -436,6 +436,7 @@
     <string name="debug_stage_gated">Gate</string>
     <string name="debug_stage_sent">Sendt</string>
     <string name="debug_stage_off">Fra</string>
+    <string name="debug_strip_description">%1$s, RMS %2$s</string>
     <string name="debug_block_echo">Ekko</string>
     <string name="debug_block_receive">Modtagelse</string>
     <string name="debug_block_network">Netværk</string>

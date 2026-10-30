@@ -436,6 +436,7 @@
     <string name="debug_stage_gated">Tawwurt</string>
     <string name="debug_stage_sent">Yettwazen</string>
     <string name="debug_stage_off">Yensa</string>
+    <string name="debug_strip_description">%1$s, RMS %2$s</string>
     <string name="debug_block_echo">Aεeggi</string>
     <string name="debug_block_receive">Tuṭṭfa</string>
     <string name="debug_block_network">Aẓeṭṭa</string>

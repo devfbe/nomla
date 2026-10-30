@@ -18,11 +18,13 @@
 package koeln.becker.nomla.diagnostics
 
 import android.os.Bundle
+import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButtonToggleGroup
@@ -33,13 +35,13 @@ import koeln.becker.nomla.mumble.diagnostics.RouteInfo
 import koeln.becker.nomla.mumble.diagnostics.SendStage
 import koeln.becker.nomla.session.SessionManager
 import koeln.becker.nomla.util.appViewModels
-import koeln.becker.nomla.util.whileViewStarted
+import koeln.becker.nomla.util.repeatWhile
 
 /**
  * The debug Live page: the connected session's audio chain, stage by stage, as a Console of strips
  * or a List of rows, as the user last picked (per device). Tapping a strip opens the List at that
- * stage, expanded. It meters only while started; without a connected session it shows its empty
- * state.
+ * stage, expanded. It meters only while resumed, that is while the page is visible (a pager keeps
+ * its neighbours started); without a connected session it shows its empty state.
  */
 class DiagnosticsLiveFragment : Fragment() {
     private val viewModel by appViewModels { DiagnosticsViewModel(SessionManager.get(it)) }
@@ -60,6 +62,10 @@ class DiagnosticsLiveFragment : Fragment() {
 
         /** The last reading; null without a connected session. */
         var last: DiagnosticsSnapshot? = null
+
+        /** The Device block's route, read at most once per [DEVICE_REFRESH_MS]: it takes binder calls. */
+        var device: DeviceState? = null
+        var deviceReadAtMs = 0L
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
@@ -71,6 +77,7 @@ class DiagnosticsLiveFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = views.listAdapter
             itemAnimator = null
+            setHasFixedSize(true)
         }
         view.findViewById<RecyclerView>(R.id.live_console_blocks).apply {
             layoutManager = LinearLayoutManager(context)
@@ -86,7 +93,7 @@ class DiagnosticsLiveFragment : Fragment() {
         }
         views.strips.setOnStageClick(::openInList)
         render()
-        whileViewStarted {
+        viewLifecycleOwner.repeatWhile(Lifecycle.State.RESUMED) {
             viewModel.live.collect { snapshot ->
                 this@DiagnosticsLiveFragment.views?.last = snapshot
                 render()
@@ -121,7 +128,7 @@ class DiagnosticsLiveFragment : Fragment() {
         views.console.isVisible = snapshot != null && !list
         views.list.isVisible = snapshot != null && list
         snapshot ?: return
-        val blocks = views.metrics.blocks(snapshot, deviceState(), ::nameOf)
+        val blocks = views.metrics.blocks(snapshot, deviceState(views), ::nameOf)
         if (list) {
             views.listAdapter.submit(snapshot, blocks)
         } else {
@@ -131,13 +138,26 @@ class DiagnosticsLiveFragment : Fragment() {
         }
     }
 
-    /** The device voice goes to now, by name: the Live page never leaves the phone (G2). */
-    private fun deviceState(): DeviceState {
+    /**
+     * The device voice goes to, by name (the Live page never leaves the phone, G2), as read at most
+     * [DEVICE_REFRESH_MS] ago.
+     */
+    private fun deviceState(views: Views): DeviceState {
+        val now = SystemClock.uptimeMillis()
+        views.device?.takeIf { now - views.deviceReadAtMs < DEVICE_REFRESH_MS }?.let { return it }
         val device = SessionManager.get(requireContext()).connected?.audio?.activeDevice
-        return DeviceState(device, RouteInfo.current(requireContext(), device))
+        return DeviceState(device, RouteInfo.current(requireContext(), device)).also {
+            views.device = it
+            views.deviceReadAtMs = now
+        }
     }
 
     /** A talker's name from the session's model; live only, never exported. */
     private fun nameOf(session: Int): String? =
         SessionManager.get(requireContext()).connected?.model?.value?.user(session)?.name
+
+    private companion object {
+        /** How often the Device block reads the route and the stream volume. */
+        const val DEVICE_REFRESH_MS = 1000L
+    }
 }

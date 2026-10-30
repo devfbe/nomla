@@ -457,6 +457,7 @@
     <string name="debug_stage_gated">Grind</string>
     <string name="debug_stage_sent">Skickat</string>
     <string name="debug_stage_off">Av</string>
+    <string name="debug_strip_description">%1$s, RMS %2$s</string>
     <string name="debug_block_echo">Eko</string>
     <string name="debug_block_receive">Mottagning</string>
     <string name="debug_block_network">Nätverk</string>

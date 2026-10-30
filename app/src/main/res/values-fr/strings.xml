@@ -468,6 +468,7 @@
     <string name="debug_stage_gated">Porte</string>
     <string name="debug_stage_sent">Envoyé</string>
     <string name="debug_stage_off">Désactivé</string>
+    <string name="debug_strip_description">%1$s, RMS %2$s</string>
     <string name="debug_block_echo">Écho</string>
     <string name="debug_block_receive">Réception</string>
     <string name="debug_block_network">Réseau</string>

@@ -441,6 +441,7 @@
     <string name="debug_stage_gated">ゲート</string>
     <string name="debug_stage_sent">送信</string>
     <string name="debug_stage_off">オフ</string>
+    <string name="debug_strip_description">%1$s、RMS %2$s</string>
     <string name="debug_block_echo">エコー</string>
     <string name="debug_block_receive">受信</string>
     <string name="debug_block_network">ネットワーク</string>

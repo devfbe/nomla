@@ -28,11 +28,13 @@ import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.google.android.material.R as MaterialR
 import koeln.becker.nomla.R
 import koeln.becker.nomla.mumble.diagnostics.SendStage
 import koeln.becker.nomla.mumble.diagnostics.StageReading
+import kotlin.math.roundToInt
 
 /**
  * The Console view of the send chain, like a mixing desk: one vertical strip per [SendStage], each
@@ -44,13 +46,15 @@ class StageStripsView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
 ) : LinearLayout(context, attrs) {
 
-    private val strips: Map<SendStage, Strip> = SendStage.entries.associateWith { Strip(context, it) }
+    private val strips: List<Strip> = SendStage.entries.map { Strip(context, it) }
+    private val shown = BooleanArray(strips.size)
     private val clips = ClipWatch()
     private var onStageClick: ((SendStage) -> Unit)? = null
 
     init {
         orientation = HORIZONTAL
-        for ((stage, strip) in strips) {
+        for (stage in SendStage.entries) {
+            val strip = strips[stage.ordinal]
             addView(strip, LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f))
             strip.setOnClickListener { onStageClick?.invoke(stage) }
         }
@@ -61,23 +65,34 @@ class StageStripsView @JvmOverloads constructor(
         onStageClick = listener
     }
 
-    /** Shows [stages]; a stage without a reading shows as inactive. */
+    /** Shows [stages]; a stage without a reading shows as inactive. Allocates nothing per reading. */
     fun show(stages: List<StageReading>) {
-        val byStage = stages.associateBy { it.stage }
-        val clipping = clips.update(stages, SystemClock.uptimeMillis())
-        for ((stage, strip) in strips) strip.show(byStage[stage], stage in clipping)
+        val now = SystemClock.uptimeMillis()
+        shown.fill(false)
+        for (reading in stages) {
+            val i = reading.stage.ordinal
+            shown[i] = true
+            strips[i].show(reading, clips.update(reading, now))
+        }
+        for (i in strips.indices) if (!shown[i]) strips[i].show(null, clipping = false)
     }
 
     /** The strip of [stage]. */
-    internal fun strip(stage: SendStage): View = strips.getValue(stage)
+    internal fun strip(stage: SendStage): View = strips[stage.ordinal]
 
     /** One stage's strip: LED, meter and name. */
     private class Strip(context: Context, stage: SendStage) : LinearLayout(context) {
-        private val led = View(context).apply {
-            background = GradientDrawable().apply { shape = GradientDrawable.OVAL }
-        }
+        private val led = GradientDrawable().apply { shape = GradientDrawable.OVAL }
         private val meter = MeterView(context)
         private val name = context.getString(LiveFormat.stageName(stage))
+        private val off = context.getString(R.string.debug_stage_off)
+        private val dbfsUnit = context.getString(R.string.debug_metric_dbfs)
+
+        @ColorRes
+        private var ledColor = 0
+
+        /** The whole dB the description was built for; [OFF] or [NO_LEVEL] for those states. */
+        private var describedDb = UNSET
 
         init {
             orientation = VERTICAL
@@ -85,8 +100,8 @@ class StageStripsView @JvmOverloads constructor(
             isClickable = true
             isFocusable = true
             val ledSize = dp(LED_DP)
-            addView(led, LayoutParams(ledSize, ledSize).apply { bottomMargin = dp(GAP_DP) })
-            addView(meter, LayoutParams(dp(METER_WIDTH_DP), dp(METER_HEIGHT_DP)))
+            addView(View(context).apply { background = led }, LayoutParams(ledSize, ledSize))
+            addView(meter, LayoutParams(dp(METER_WIDTH_DP), dp(METER_HEIGHT_DP)).apply { topMargin = dp(GAP_DP) })
             addView(
                 TextView(context).apply {
                     text = name
@@ -107,13 +122,30 @@ class StageStripsView @JvmOverloads constructor(
                 clipping -> R.color.level_meter_hold_level
                 else -> R.color.level_meter_voice_level
             }
-            (led.background as GradientDrawable).setColor(ContextCompat.getColor(context, color))
+            if (color != ledColor) {
+                ledColor = color
+                led.setColor(ContextCompat.getColor(context, color))
+            }
             meter.show(reading?.rmsDbfs, reading?.peakHoldDbfs)
-            val rms = context.getString(R.string.debug_metric_rms)
-            val unit = context.getString(R.string.debug_metric_dbfs)
-            val level = LiveFormat.withUnit(LiveFormat.number(reading?.rmsDbfs), unit)
-            val off = context.getString(R.string.debug_stage_off)
-            contentDescription = if (active) "$name, $rms $level" else "$name, $off"
+            describe(if (active) reading.rmsDbfs else null, active)
+        }
+
+        /** Sets the description only when its whole-dB level or state changes: TalkBack reads it. */
+        private fun describe(rmsDbfs: Float?, active: Boolean) {
+            val db = when {
+                !active -> OFF
+                rmsDbfs == null || !rmsDbfs.isFinite() -> NO_LEVEL
+                else -> rmsDbfs.roundToInt()
+            }
+            if (db == describedDb) return
+            describedDb = db
+            val level = when (db) {
+                OFF -> null
+                NO_LEVEL -> LiveFormat.NONE
+                else -> "$db $dbfsUnit"
+            }
+            contentDescription =
+                if (level == null) "$name, $off" else context.getString(R.string.debug_strip_description, name, level)
         }
     }
 
@@ -125,12 +157,15 @@ class StageStripsView @JvmOverloads constructor(
             color = ContextCompat.getColor(context, R.color.level_meter_hold_level)
             strokeWidth = context.dp(HOLD_LINE_DP).toFloat()
         }
-        private var rmsFraction = 0f
-        private var holdFraction = 0f
+        private var rmsFraction = -1f
+        private var holdFraction = -1f
 
         fun show(rmsDbfs: Float?, holdDbfs: Float?) {
-            rmsFraction = fraction(rmsDbfs)
-            holdFraction = fraction(holdDbfs)
+            val rms = fraction(rmsDbfs)
+            val held = fraction(holdDbfs)
+            if (rms == rmsFraction && held == holdFraction) return
+            rmsFraction = rms
+            holdFraction = held
             invalidate()
         }
 
@@ -156,6 +191,9 @@ class StageStripsView @JvmOverloads constructor(
         private const val METER_WIDTH_DP = 14f
         private const val METER_HEIGHT_DP = 120f
         private const val HOLD_LINE_DP = 2f
+        private const val UNSET = Int.MIN_VALUE
+        private const val OFF = Int.MIN_VALUE + 1
+        private const val NO_LEVEL = Int.MIN_VALUE + 2
 
         /** A level in dBFS as the filled part of a meter, 0 at [FLOOR_DBFS] and below, 1 at 0 dBFS. */
         fun fraction(dbfs: Float?): Float =
@@ -170,22 +208,23 @@ class StageStripsView @JvmOverloads constructor(
 
 /**
  * Which stages clipped within the last [WINDOW_MS]: a stage clips when its clipped-sample count
- * grows between two readings. Main thread.
+ * grows between two readings. Main thread; allocates nothing per reading.
  */
 internal class ClipWatch {
-    private val counts = HashMap<SendStage, Long>()
-    private val lastClipAt = HashMap<SendStage, Long>()
+    private val counts = LongArray(SendStage.entries.size) { NEVER }
+    private val lastClipAt = LongArray(SendStage.entries.size) { NEVER }
 
-    /** Takes [stages] read at [nowMs] and answers the stages that clipped within the window. */
-    fun update(stages: List<StageReading>, nowMs: Long): Set<SendStage> {
-        for (reading in stages) {
-            val previous = counts.put(reading.stage, reading.clippedSamples)
-            if (previous != null && reading.clippedSamples > previous) lastClipAt[reading.stage] = nowMs
-        }
-        return lastClipAt.filterValues { nowMs - it < WINDOW_MS }.keys
+    /** Takes [reading], read at [nowMs], and answers whether its stage clipped within the window. */
+    fun update(reading: StageReading, nowMs: Long): Boolean {
+        val i = reading.stage.ordinal
+        val previous = counts[i]
+        counts[i] = reading.clippedSamples
+        if (previous != NEVER && reading.clippedSamples > previous) lastClipAt[i] = nowMs
+        return lastClipAt[i] != NEVER && nowMs - lastClipAt[i] < WINDOW_MS
     }
 
     private companion object {
         const val WINDOW_MS = 1000L
+        const val NEVER = -1L
     }
 }

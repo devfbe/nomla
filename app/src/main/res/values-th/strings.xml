@@ -441,6 +441,7 @@
     <string name="debug_stage_gated">เกต</string>
     <string name="debug_stage_sent">ส่งแล้ว</string>
     <string name="debug_stage_off">ปิด</string>
+    <string name="debug_strip_description">%1$s, RMS %2$s</string>
     <string name="debug_block_echo">เสียงสะท้อน</string>
     <string name="debug_block_receive">การรับ</string>
     <string name="debug_block_network">เครือข่าย</string>

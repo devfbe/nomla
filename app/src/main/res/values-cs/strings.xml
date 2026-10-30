@@ -462,6 +462,7 @@
     <string name="debug_stage_gated">Brána</string>
     <string name="debug_stage_sent">Odesláno</string>
     <string name="debug_stage_off">Vypnuto</string>
+    <string name="debug_strip_description">%1$s, RMS %2$s</string>
     <string name="debug_block_echo">Ozvěna</string>
     <string name="debug_block_receive">Příjem</string>
     <string name="debug_block_network">Síť</string>
