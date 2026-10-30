@@ -206,6 +206,22 @@ class ServerCommandsTest {
         assertThat(state.selfDeaf).isFalse()
     }
 
+    /** The recording flag of our own user: no session, nothing but the flag. */
+    @Test
+    fun setSelfRecordingSendsAUserStateWithOnlyRecording() {
+        commands.setSelfRecording(true)
+        commands.setSelfRecording(false)
+
+        val states = sent.map { it.second as Mumble.UserState }
+        assertThat(sent.map { it.first })
+            .containsExactly(NomlaTcpMessageType.UserState, NomlaTcpMessageType.UserState)
+        assertThat(states.map { it.hasSession() }).containsExactly(false, false)
+        assertThat(states.map { it.recording }).containsExactly(true, false).inOrder()
+        assertThat(states.map { it.hasRecording() }).containsExactly(true, true)
+        assertThat(states.map { it.hasSelfMute() || it.hasSelfDeaf() || it.hasChannelId() })
+            .containsExactly(false, false)
+    }
+
     @Test
     fun textMessagesTargetAUserAChannelOrATree() {
         commands.textToUser(3, "to user")

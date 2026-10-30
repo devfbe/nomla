@@ -111,6 +111,12 @@ internal class ServerCommands(private val send: (MessageLite, NomlaTcpMessageTyp
     fun setSelfMuteDeaf(mute: Boolean, deaf: Boolean) =
         userState(Mumble.UserState.newBuilder().setSelfMute(mute).setSelfDeaf(deaf))
 
+    /**
+     * Shows the other users that this client records ([recording] true) or has stopped. Only send
+     * true where the server allows recording: murmur kicks a client that records against its will.
+     */
+    fun setSelfRecording(recording: Boolean) = userState(Mumble.UserState.newBuilder().setRecording(recording))
+
     fun textToUser(session: Int, message: String) =
         textMessage(Mumble.TextMessage.newBuilder().addSession(session).setMessage(message))
 
