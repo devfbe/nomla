@@ -239,8 +239,8 @@ fill="currentColor" stroke="none">
       </div>
       <div>
         <h3><span lang="de">Server prüfen</span><span lang="en">Checking servers</span></h3>
-        <p lang="de">Ein Server gilt als vertrauenswürdig, wenn Android seiner Zertifikatskette vertraut und sie den eingegebenen Namen trägt, oder wenn du sein Zertifikat ausdrücklich angenommen hast. Geprüft wird immer der Name, den du eingegeben hast, auch wenn ein SRV-Eintrag woandershin zeigt.</p>
-        <p lang="en">A server is trusted when Android trusts its certificate chain and it carries the name you entered, or when you accepted its certificate explicitly. The name checked is always the one you typed, even when an SRV record points elsewhere.</p>
+        <p lang="de">Ein Server gilt als vertrauenswürdig, wenn Android seiner Zertifikatskette vertraut und sie den eingegebenen Namen trägt, oder wenn du sein Zertifikat ausdrücklich angenommen hast. Geprüft wird immer der Name, den du eingegeben hast, auch wenn ein SRV-Eintrag woandershin zeigt. Den Namen gleicht die bewährte Prüfung von OkHttp mit dem Zertifikat ab, nicht eigener Code.</p>
+        <p lang="en">A server is trusted when Android trusts its certificate chain and it carries the name you entered, or when you accepted its certificate explicitly. The name checked is always the one you typed, even when an SRV record points elsewhere. OkHttp's well-tested verifier matches that name against the certificate, not code of our own.</p>
       </div>
     </div>
   </div>
@@ -313,7 +313,7 @@ fill="currentColor" stroke="none">
           <tr><td>protobuf-javalite</td><td>4.36.2</td><td><span lang="de">Mumble-Protokoll</span><span lang="en">Mumble protocol</span></td></tr>
           <tr><td>Kotlin Coroutines</td><td>1.11.0</td><td><span lang="de">Nebenläufigkeit, Flows</span><span lang="en">Concurrency, flows</span></td></tr>
           <tr><td>MiniDNS</td><td>1.1.1</td><td><span lang="de">SRV-Einträge</span><span lang="en">SRV records</span></td></tr>
-          <tr><td>Coil / OkHttp</td><td>3.6.3 / 5.5.0</td><td><span lang="de">Bilder im Chat, Liste öffentlicher Server</span><span lang="en">Images in chat, public server list</span></td></tr>
+          <tr><td>Coil / OkHttp</td><td>3.6.3 / 5.5.0</td><td><span lang="de">Bilder im Chat, Liste öffentlicher Server, Namensprüfung der Serverzertifikate</span><span lang="en">Images in chat, public server list, host name check of server certificates</span></td></tr>
           <tr><td>Material Components</td><td>1.14.0</td><td><span lang="de">Oberfläche</span><span lang="en">User interface</span></td></tr>
           <tr><td>Piper (ljspeech)</td><td>medium</td><td><span lang="de">Stimme für den Selbsttest</span><span lang="en">Voice for the self-test</span></td></tr>
         </tbody>
