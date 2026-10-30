@@ -104,8 +104,9 @@ class CaptureTapsTest {
 
     /**
      * What is deliberately not sent never reaches a ZIP, not even as its level envelope: a frame
-     * that may not be sent has silence on every send ring and NaN in every level column, while its
-     * flags, read figures and the canceller's statistics stay. The live meters still measure it.
+     * that may not be sent has silence on every send ring and NaN in every stage level column, every
+     * detector column and `transmit`, while send_allowed, muted, the read figures, silenced and the
+     * canceller's statistics stay. The live meters still measure it.
      */
     @Test
     fun `muted frames are silence on every send ring and have no levels on frames csv`() {
@@ -133,17 +134,26 @@ class CaptureTapsTest {
         val frames = recording.frames.freeze(recording.t0Nanos)
         assertThat(frames.column("send_allowed")).isEqualTo(List(10) { 0f } + List(10) { 1f })
         assertThat(frames.column("muted")).isEqualTo(List(10) { 1f } + List(10) { 0f })
-        assertThat(frames.column("transmit").toSet()).containsExactly(1f)
         assertThat(frames.column("read_samples").toSet()).containsExactly(FRAME.toFloat())
+        assertThat(frames.column("silenced").toSet()).containsExactly(0f)
         val hidden = frames.columns.filter { name ->
             name.endsWith("_rms_dbfs") || name.endsWith("_peak_dbfs") || name.endsWith("_clipped")
-        } + listOf("vad_level_dbfs", "vad_floor_dbfs", "vad_speech_dbfs", "vad_probability")
-        assertThat(hidden).hasSize(SendStage.entries.size * PER_STAGE_COLUMNS + VAD_HIDDEN_COLUMNS)
+        } + listOf(
+            "transmit", "vad_probability", "vad_level_dbfs", "vad_floor_dbfs", "vad_speech_dbfs",
+            "vad_threshold_dbfs", "vad_open", "vad_holding", "vad_too_close",
+        )
+        assertThat(hidden).hasSize(SendStage.entries.size * PER_STAGE_COLUMNS + VOICE_HIDDEN_COLUMNS)
+        val kept = listOf("send_allowed", "muted", "read_samples", "expected_samples", "read_ms", "silenced")
+        assertThat(frames.columns.filter { it !in hidden && !it.startsWith("apm_") })
+            .containsExactlyElementsIn(kept)
         for (name in hidden) {
             assertWithMessage("$name while muted").that(frames.column(name).take(10).all { it.isNaN() }).isTrue()
         }
-        for (name in listOf("mic_raw_rms_dbfs", "sent_peak_dbfs", "vad_level_dbfs")) {
+        for (name in listOf("mic_raw_rms_dbfs", "sent_peak_dbfs", "vad_level_dbfs", "transmit", "vad_open")) {
             assertWithMessage("$name while sent").that(frames.column(name).drop(10).none { it.isNaN() }).isTrue()
+        }
+        for (name in kept) {
+            assertWithMessage("$name while muted").that(frames.column(name).take(10).none { it.isNaN() }).isTrue()
         }
         assertWithMessage("the live meter measures muted frames")
             .that(liveWhileMuted).isGreaterThan(DiagnosticsLimits.SILENCE_DBFS)
@@ -432,6 +442,8 @@ class CaptureTapsTest {
         const val FRAME = 480
         const val READ_NANOS = 9_000_000L
         const val PER_STAGE_COLUMNS = 3
-        const val VAD_HIDDEN_COLUMNS = 4
+
+        /** `transmit` and the eight `vad_*` columns. */
+        const val VOICE_HIDDEN_COLUMNS = 9
     }
 }

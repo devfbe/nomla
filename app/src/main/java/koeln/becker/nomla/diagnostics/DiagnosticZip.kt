@@ -232,9 +232,10 @@ internal object DiagnosticReadme {
         "frames" to listOf(
             T_MS to "time of the capture frame (its end), ms since the recording start",
             "send_allowed" to "1 if sending was allowed (not muted, push-to-talk held or not in use), else 0; " +
-                "at 0 every level column of the row (*_rms_dbfs, *_peak_dbfs, *_clipped, vad_probability, " +
-                "vad_level_dbfs, vad_floor_dbfs, vad_speech_dbfs) is empty",
-            "transmit" to "1 if the input mode's gate was open for this frame",
+                "at 0 these columns of the row are empty: transmit, every *_rms_dbfs, *_peak_dbfs and " +
+                "*_clipped, and vad_probability, vad_level_dbfs, vad_floor_dbfs, vad_speech_dbfs, " +
+                "vad_threshold_dbfs, vad_open, vad_holding, vad_too_close",
+            "transmit" to "1 if the input mode's gate was open for this frame; empty while send_allowed is 0",
             "muted" to "1 if you were muted",
             "read_samples" to "samples the microphone read returned",
             "expected_samples" to "samples a full 10 ms frame has at the microphone's rate",
@@ -374,9 +375,9 @@ internal object DiagnosticReadme {
         speaker_1 .. speaker_4: each talker's decoded voice, 48 kHz. Talkers beyond four get no
           track and are counted in meta.json speakers_without_track.
         Send-side tracks are silent while you were muted or push-to-talk was released
-        (send_allowed = 0 in frames.csv), and the levels of those frames are left empty in
-        frames.csv: what you deliberately did not send is not in this recording, not even as a
-        level curve.
+        (send_allowed = 0 in frames.csv), and those frames' levels, gate and voice detector columns
+        are left empty in frames.csv (see send_allowed below): what you deliberately did not send
+        leaves no trace of your voice in this recording, no sound and no levels.
     """.trimIndent()
 
     /** The whole README, ending in a line break. */

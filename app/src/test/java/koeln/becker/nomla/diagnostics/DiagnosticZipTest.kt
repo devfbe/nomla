@@ -257,17 +257,21 @@ class DiagnosticZipTest {
         assertThat(readme).contains("running mean")
     }
 
-    /** The frames of what was not sent carry no levels; README says so where send_allowed is explained. */
+    /** The frames of what was not sent carry no trace of the voice; README lists exactly what is blanked. */
     @Test
     fun `README says frames that were not sent have no levels`() {
         val readme = zip(capture()).getValue("README.txt").toString(Charsets.UTF_8)
         val sendAllowed = readme.lineSequence().single { it.startsWith("send_allowed: ") }
 
-        assertThat(sendAllowed).contains("at 0 every level column of the row")
-        for (column in listOf("vad_probability", "vad_level_dbfs", "vad_floor_dbfs", "vad_speech_dbfs")) {
+        assertThat(sendAllowed).contains("at 0 these columns of the row are empty")
+        val blanked = listOf(
+            "transmit", "*_rms_dbfs", "*_peak_dbfs", "*_clipped", "vad_probability", "vad_level_dbfs",
+            "vad_floor_dbfs", "vad_speech_dbfs", "vad_threshold_dbfs", "vad_open", "vad_holding", "vad_too_close",
+        )
+        for (column in blanked) {
             assertThat(sendAllowed).contains(column)
         }
-        assertThat(readme).contains("not even as a\nlevel curve")
+        assertThat(readme).contains("leaves no trace of your voice in this recording, no sound and no levels")
     }
 
     // --- helpers ---------------------------------------------------------------------------------

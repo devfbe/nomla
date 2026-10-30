@@ -47,9 +47,9 @@ private const val NO_TIME = Long.MIN_VALUE
  * while a recording is armed they copy each stage into a preallocated scratch frame. [commit]
  * writes the scratch frames to the rings, or silence where sending is not allowed (muted, or
  * push-to-talk without the key), plus one `frames` row; in the row of a frame not to be sent every
- * level column (the stages' and the detector's levels and probability) is NaN, while the live
- * meters still measure it. Every Opus packet that left the device is recorded, the terminator after
- * a release or a mute included. Nothing here allocates per frame.
+ * stage level column, every `vad_*` column and `transmit` are NaN, while the live meters still
+ * measure it. Every Opus packet that left the device is recorded, the terminator after a release
+ * or a mute included. Nothing here allocates per frame.
  *
  * Every frame of a recording is stamped with the time its microphone read returned: the **end** of
  * that 10 ms frame. All stages of a frame carry the same stamp.
@@ -331,8 +331,9 @@ internal class CaptureTaps(
         row[FrameColumns.READ_MS] = if (readNanos >= 0) readNanos / NANOS_PER_MS else Float.NaN
         row[FrameColumns.SILENCED] = flag(silenced)
         for (i in stages.indices) writeStageLevels(i, sendAllowed)
-        // What is deliberately not sent never reaches a ZIP, not even as its level envelope.
-        if (!sendAllowed) hideVoiceLevels()
+        // What is deliberately not sent leaves no trace of the voice in a ZIP: no sound, no levels,
+        // no gate or detector decision.
+        if (!sendAllowed) hideVoice()
         for (i in 0 until WebRtcApmApi.STATISTICS_COUNT) {
             row[FrameColumns.APM + i] = if (newStatistics) statistics[i] else Float.NaN
         }
@@ -354,13 +355,10 @@ internal class CaptureTaps(
         }
     }
 
-    /** The detector's levels and probability of a frame not to be sent; its gate flags stay. */
-    private fun hideVoiceLevels() {
-        val base = FrameColumns.VAD
-        row[base + FrameColumns.VAD_PROBABILITY] = Float.NaN
-        row[base + FrameColumns.VAD_LEVEL] = Float.NaN
-        row[base + FrameColumns.VAD_FLOOR] = Float.NaN
-        row[base + FrameColumns.VAD_SPEECH] = Float.NaN
+    /** Blanks the gate decision and every detector column of a frame not to be sent. */
+    private fun hideVoice() {
+        row[FrameColumns.TRANSMIT] = Float.NaN
+        for (i in FrameColumns.VAD_PROBABILITY..FrameColumns.VAD_TOO_CLOSE) row[FrameColumns.VAD + i] = Float.NaN
     }
 
     private fun endFrame() {
