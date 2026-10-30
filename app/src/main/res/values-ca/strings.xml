@@ -449,7 +449,7 @@
     <string name="debug_features_sum">Afegeix a la vista del canal una vista en directe de la cadena d\'àudio i enregistraments de diagnòstic.</string>
     <string name="debug_tab_live">En directe</string>
     <string name="debug_tab_record">Enregistrament</string>
-    <string name="debug_empty">Connecta\'t a un servidor per veure la cadena d\'àudio.</string>
+    <string name="debug_empty">Connecteu-vos a un servidor per veure la cadena d\'àudio.</string>
     <string name="debug_view_console">Consola</string>
     <string name="debug_view_list">Llista</string>
     <string name="debug_stage_mic_raw">Micròfon</string>
@@ -472,7 +472,7 @@
     <string name="debug_record_cancel">Cancel·la</string>
     <string name="debug_record_progress">Enregistrant… %1$d de %2$d s</string>
     <string name="debug_record_refused_offline">No connectat.</string>
-    <string name="debug_record_refused_not_ready">El servidor encara no ha enviat la seva configuració. Torna-ho a provar d\'aquí a un moment.</string>
+    <string name="debug_record_refused_not_ready">El servidor encara no ha enviat la seva configuració. Torneu-ho a provar d\'aquí a un moment.</string>
     <string name="debug_record_refused_server">Aquest servidor no permet enregistraments.</string>
     <string name="debug_record_refused_memory">No hi ha prou memòria per a un enregistrament tan llarg.</string>
     <string name="debug_record_aborted_disconnect">Enregistrament aturat: la connexió s\'ha tancat.</string>
@@ -481,13 +481,13 @@
     <string name="debug_record_share">Comparteix</string>
     <string name="debug_record_discard">Descarta</string>
     <string name="debug_record_share_subject">Enregistrament de diagnòstic de Nomla</string>
-    <string name="debug_record_playback_hint">Amb l\'altaveu, els altres poden sentir la reproducció a través del teu micròfon.</string>
+    <string name="debug_record_playback_hint">Amb l\'altaveu, els altres poden sentir la reproducció a través del vostre micròfon.</string>
     <string name="debug_rating_good">Bé</string>
     <string name="debug_rating_medium">Regular</string>
     <string name="debug_rating_bad">Malament</string>
-    <string name="debug_consent_title">Enregistra només amb consentiment</string>
-    <string name="debug_consent_message">L\'enregistrament també conté les veus dels altres del canal. Enregistra només si tothom hi està d\'acord. Mentre enregistres, tothom al servidor veu que estàs enregistrant. Si el servidor no permet enregistraments, no començarà.</string>
-    <string name="debug_consent_dont_show">No ho tornis a mostrar</string>
+    <string name="debug_consent_title">Enregistreu només amb consentiment</string>
+    <string name="debug_consent_message">L\'enregistrament també conté les veus dels altres del canal. Enregistreu només si tothom hi està d\'acord. Mentre enregistreu, tothom al servidor veu que esteu enregistrant. Si el servidor no permet enregistraments, no començarà.</string>
+    <string name="debug_consent_dont_show">No tornar a mostrar</string>
     <string name="debug_metric_peak">Pic</string>
     <string name="debug_label_clipped">Mostres retallades</string>
     <string name="debug_label_level_change">Canvi de nivell</string>

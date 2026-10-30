@@ -447,7 +447,7 @@
     <string name="debug_features_sum">A csatornanézethez hozzáadja a hanglánc élő nézetét és diagnosztikai felvételeket.</string>
     <string name="debug_tab_live">Élő</string>
     <string name="debug_tab_record">Felvétel</string>
-    <string name="debug_empty">Csatlakozzon egy szerverhez a hanglánc megtekintéséhez.</string>
+    <string name="debug_empty">Csatlakozz egy szerverhez a hanglánc megtekintéséhez.</string>
     <string name="debug_view_console">Keverőpult</string>
     <string name="debug_view_list">Lista</string>
     <string name="debug_stage_mic_raw">Mikrofon</string>
@@ -470,7 +470,7 @@
     <string name="debug_record_cancel">Mégse</string>
     <string name="debug_record_progress">Felvétel folyamatban … %1$d / %2$d mp</string>
     <string name="debug_record_refused_offline">Nincs kapcsolat.</string>
-    <string name="debug_record_refused_not_ready">A szerver még nem küldte el a beállításait. Próbálja újra egy pillanat múlva.</string>
+    <string name="debug_record_refused_not_ready">A szerver még nem küldte el a beállításait. Próbáld újra egy pillanat múlva.</string>
     <string name="debug_record_refused_server">Ez a szerver nem engedélyezi a felvételt.</string>
     <string name="debug_record_refused_memory">Nincs elég memória ilyen hosszú felvételhez.</string>
     <string name="debug_record_aborted_disconnect">A felvétel leállt: a kapcsolat megszakadt.</string>
@@ -479,12 +479,12 @@
     <string name="debug_record_share">Megosztás</string>
     <string name="debug_record_discard">Elvetés</string>
     <string name="debug_record_share_subject">Nomla diagnosztikai felvétel</string>
-    <string name="debug_record_playback_hint">Hangszórón át a többiek a mikrofonján keresztül hallhatják a lejátszást.</string>
+    <string name="debug_record_playback_hint">Hangszórón át a többiek a mikrofonodon keresztül hallhatják a lejátszást.</string>
     <string name="debug_rating_good">Jó</string>
     <string name="debug_rating_medium">Közepes</string>
     <string name="debug_rating_bad">Rossz</string>
-    <string name="debug_consent_title">Csak beleegyezéssel rögzítsen</string>
-    <string name="debug_consent_message">A felvétel a csatornában lévő többiek hangját is tartalmazza. Csak akkor rögzítsen, ha mindenki beleegyezik. Felvétel közben a szerveren mindenki látja, hogy felvételt készít. Ha a szerver nem engedélyezi a felvételt, az nem indul el.</string>
+    <string name="debug_consent_title">Csak beleegyezéssel rögzíts</string>
+    <string name="debug_consent_message">A felvétel a csatornában lévő többiek hangját is tartalmazza. Csak akkor rögzíts, ha mindenki beleegyezik. Felvétel közben a szerveren mindenki látja, hogy felvételt készítesz. Ha a szerver nem engedélyezi a felvételt, az nem indul el.</string>
     <string name="debug_consent_dont_show">Ne jelenjen meg újra</string>
     <string name="debug_metric_peak">Csúcs</string>
     <string name="debug_label_clipped">Levágott minták</string>

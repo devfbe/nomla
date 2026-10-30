@@ -252,7 +252,11 @@ class ChannelFragment :
         } else {
             showSidePanes(savedInstanceState)
         }
-        viewLifecycleOwner.lifecycleScope.launch {
+        // Only while started: a change while stopped (e.g. made in the settings screen) would commit
+        // a fragment transaction after the state was saved. changes() has no current value, so each
+        // start first catches up with what changed meanwhile.
+        whileViewStarted {
+            showDebugPages()
             settings.changes(Settings.DEBUG_FEATURES).collect { showDebugPages() }
         }
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)

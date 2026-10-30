@@ -18,6 +18,7 @@
 package koeln.becker.nomla.channel
 
 import android.content.Context
+import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.preference.PreferenceManager
@@ -152,6 +153,48 @@ class ChannelFragmentDebugPagesTest {
     }
 
     private fun paneFragment() = fragment.childFragmentManager.findFragmentById(R.id.chat_fragment)
+
+    /** Switched off in the settings screen: the channel screen is stopped, its state saved. */
+    private fun setDebugWhileStopped(on: Boolean) {
+        controller.pause().stop().saveInstanceState(Bundle())
+        setDebug(on)
+        controller.start().resume()
+        idleMainLooper()
+    }
+
+    @Test
+    fun `debug switched off while stopped returns to the chat on the next start`() {
+        show(debug = true)
+        showPage(3)
+
+        setDebugWhileStopped(false)
+
+        assertThat(tabs().tabCount).isEqualTo(2)
+        assertThat(pager().currentItem).isEqualTo(1)
+    }
+
+    @Test
+    fun `debug switched on while stopped shows the pages on the next start`() {
+        show(debug = false)
+
+        setDebugWhileStopped(true)
+
+        assertThat(tabs().tabCount).isEqualTo(4)
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp-w900dp-h600dp")
+    fun `wide, debug switched off while stopped brings the chat back on the next start`() {
+        show(debug = true)
+        val sideTabs = view(R.id.side_tabs) as TabLayout
+        sideTabs.getTabAt(2)!!.select()
+        idleMainLooper()
+
+        setDebugWhileStopped(false)
+
+        assertThat(sideTabs.visibility).isEqualTo(View.GONE)
+        assertThat(paneFragment()).isInstanceOf(ChannelChatFragment::class.java)
+    }
 
     @Test
     fun `the Live page shows the empty state without a connected session`() {

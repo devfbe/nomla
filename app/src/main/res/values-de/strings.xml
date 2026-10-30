@@ -434,7 +434,7 @@
     <string name="debug_features_sum">Zeigt in der Kanalansicht die Audiokette live und ermöglicht Diagnose-Aufnahmen.</string>
     <string name="debug_tab_live">Live</string>
     <string name="debug_tab_record">Aufnahme</string>
-    <string name="debug_empty">Verbinde dich mit einem Server, um die Audiokette zu sehen.</string>
+    <string name="debug_empty">Verbinden Sie sich mit einem Server, um die Audiokette zu sehen.</string>
     <string name="debug_view_console">Pult</string>
     <string name="debug_view_list">Liste</string>
     <string name="debug_stage_mic_raw">Mikrofon</string>
@@ -457,7 +457,7 @@
     <string name="debug_record_cancel">Abbrechen</string>
     <string name="debug_record_progress">Aufnahme läuft … %1$d von %2$d s</string>
     <string name="debug_record_refused_offline">Nicht verbunden.</string>
-    <string name="debug_record_refused_not_ready">Der Server hat seine Einstellungen noch nicht gesendet. Versuche es gleich noch einmal.</string>
+    <string name="debug_record_refused_not_ready">Der Server hat seine Einstellungen noch nicht gesendet. Versuchen Sie es gleich noch einmal.</string>
     <string name="debug_record_refused_server">Dieser Server erlaubt keine Aufnahmen.</string>
     <string name="debug_record_refused_memory">Zu wenig Speicher für eine so lange Aufnahme.</string>
     <string name="debug_record_aborted_disconnect">Aufnahme abgebrochen: Die Verbindung wurde getrennt.</string>
@@ -466,12 +466,12 @@
     <string name="debug_record_share">Teilen</string>
     <string name="debug_record_discard">Verwerfen</string>
     <string name="debug_record_share_subject">Nomla-Diagnoseaufnahme</string>
-    <string name="debug_record_playback_hint">Über den Lautsprecher können die anderen die Wiedergabe über dein Mikrofon hören.</string>
+    <string name="debug_record_playback_hint">Über den Lautsprecher können die anderen die Wiedergabe über Ihr Mikrofon hören.</string>
     <string name="debug_rating_good">Gut</string>
     <string name="debug_rating_medium">Mittel</string>
     <string name="debug_rating_bad">Schlecht</string>
     <string name="debug_consent_title">Nur mit Einverständnis aufnehmen</string>
-    <string name="debug_consent_message">Die Aufnahme enthält auch die Stimmen der anderen im Kanal. Nimm nur auf, wenn alle damit einverstanden sind. Während der Aufnahme sehen alle auf dem Server, dass du aufnimmst. Erlaubt der Server keine Aufnahmen, startet sie nicht.</string>
+    <string name="debug_consent_message">Die Aufnahme enthält auch die Stimmen der anderen im Kanal. Nehmen Sie nur auf, wenn alle damit einverstanden sind. Während der Aufnahme sehen alle auf dem Server, dass Sie aufnehmen. Erlaubt der Server keine Aufnahmen, startet sie nicht.</string>
     <string name="debug_consent_dont_show">Nicht mehr anzeigen</string>
     <string name="debug_metric_peak">Spitze</string>
     <string name="debug_label_clipped">Übersteuerte Samples</string>

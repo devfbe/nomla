@@ -51,8 +51,8 @@ class SessionSettingsSync(
             messages.post(context.getString(R.string.change_requires_reconnect))
         }
         // A recording runs only while the debug features are on.
-        if (key == Settings.DEBUG_FEATURES.key && !settings.isDebugFeaturesEnabled) {
-            session?.diagnostics?.cancelRecording()
+        if (key == Settings.DEBUG_FEATURES.key && !settings.isDebugFeaturesEnabled && session != null) {
+            session.diagnostics.cancelRecording()
         }
     }
 

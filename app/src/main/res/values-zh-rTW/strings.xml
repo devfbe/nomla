@@ -455,12 +455,12 @@
     <string name="debug_record_share">分享</string>
     <string name="debug_record_discard">捨棄</string>
     <string name="debug_record_share_subject">Nomla 診斷錄音</string>
-    <string name="debug_record_playback_hint">透過揚聲器播放時，其他人可能會經由您的麥克風聽到播放內容。</string>
+    <string name="debug_record_playback_hint">透過揚聲器播放時，其他人可能會經由你的麥克風聽到播放內容。</string>
     <string name="debug_rating_good">好</string>
     <string name="debug_rating_medium">普通</string>
     <string name="debug_rating_bad">差</string>
     <string name="debug_consent_title">僅在取得同意後錄音</string>
-    <string name="debug_consent_message">錄音中也包含頻道內其他人的聲音。只有在所有人都同意時才錄音。錄音期間，伺服器上的所有人都會看到您正在錄音。如果伺服器不允許錄音，錄音將不會開始。</string>
+    <string name="debug_consent_message">錄音中也包含頻道內其他人的聲音。只有在所有人都同意時才錄音。錄音期間，伺服器上的所有人都會看到你正在錄音。如果伺服器不允許錄音，錄音將不會開始。</string>
     <string name="debug_consent_dont_show">不再顯示</string>
     <string name="debug_metric_peak">峰值</string>
     <string name="debug_label_clipped">削波取樣</string>
