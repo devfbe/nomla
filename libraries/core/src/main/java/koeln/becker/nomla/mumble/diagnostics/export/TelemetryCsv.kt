@@ -68,12 +68,15 @@ internal object TelemetryCsv {
     }
 
     private fun appendText(out: Appendable, text: String) {
-        if (text.none { it == ',' || it == '"' || it == '\n' || it == '\r' }) {
+        if (text.none(::needsQuoting)) {
             out.append(text)
             return
         }
         out.append('"').append(text.replace("\"", "\"\"")).append('"')
     }
+
+    /** RFC 4180: a comma, quote or line break forces the field into quotes. */
+    private fun needsQuoting(c: Char): Boolean = c == ',' || c == '"' || c == '\n' || c == '\r'
 
     /** One decimal, always written: `0.0`, `12.4`, `-3.0`. */
     private fun appendTime(out: Appendable, ms: Double) {

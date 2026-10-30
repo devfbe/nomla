@@ -59,7 +59,8 @@ import kotlinx.coroutines.withContext
  * @param elapsed `SystemClock.elapsedRealtime`.
  * @param epochMs `System.currentTimeMillis`.
  */
-@Suppress("LongParameterList") // The session's state as lambdas, the clocks and the export seams.
+// LongParameterList: state lambdas, clocks, export seams. TooManyFunctions: one per lifecycle step.
+@Suppress("LongParameterList", "TooManyFunctions")
 internal class RecordingController(
     private val hub: DiagnosticsHub,
     private val commands: () -> ServerCommands?,
