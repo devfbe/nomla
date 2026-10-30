@@ -24,13 +24,17 @@ Writes Markdown (to stdout unless --out is given) with
    16 kHz (radix-2 FFT over 4096-sample Hann blocks);
 3. dropouts: runs of at least 30 ms of digital silence on 5_gate / 6_sent while frames.csv says
    transmit=1 and send_allowed=1;
-4. cut syllable onsets: transmit starts where 5_gate's first 30 ms are at least 10 dB below
-   4_denoised;
+4. clipped syllable onsets: transmit starts where 4_denoised already carried speech in the 30 ms
+   before the gate opened;
 5. echo and speech loss per stage: in far-end-only phases (mix playing, vad_open=0) each stage's
    level minus the mix level (echo leak); in near-end-only phases each stage's level and its change
    from the stage before;
-6. network and buffers: packet gaps over 60 ms, speaker underruns, concealment bursts and transport
-   changes, each with the nearest dropout within 200 ms.
+6. network and buffers: packet gaps, speaker underruns, concealment bursts, network lost/late
+   counters and transport changes, each with the nearest dropout within 200 ms.
+
+Time follows the exporter's 10 ms grid: a frame or telemetry row stamped t_ms belongs to grid slot
+round(t_ms / 10) and covers [slot * 10, slot * 10 + 10) ms of every track, as the app's
+TrackAssembler places it.
 
 Uses only the Python standard library. It reads the ZIP and nothing else: it opens no socket and
 plays no audio.
@@ -59,14 +63,15 @@ THIRD_OCTAVE_HALF = 2 ** (1 / 6)
 FRAME_MS = 10.0
 DROPOUT_MIN_MS = 30.0
 DROPOUT_TRACKS = ["5_gate", "6_sent"]
-ONSET_WINDOW_MS = 30.0
-ONSET_CUT_DB = 10.0
-ONSET_TRACK = "5_gate"
-ONSET_REFERENCE = "4_denoised"
+ONSET_TRACK = "4_denoised"
+ONSET_PRE_SLOTS = 3
+ONSET_POST_SLOTS = 3
+ONSET_WITHIN_DB = 10.0
+ONSET_FLOOR_DBFS = -50.0
 PACKET_GAP_MS = 60.0
 CORRELATION_MS = 200.0
 CONCEALMENT_JOIN_MS = 30.0
-CONTIGUOUS_MS = 1.0
+NETWORK_COUNTERS = ["lost", "late", "remote_lost", "remote_late"]
 MAX_LISTED = 50
 
 # frames.csv column prefix of every send stage, with its track id, in signal order.
@@ -97,6 +102,10 @@ class Track:
 
     def ms(self, index):
         return index * 1000.0 / self.rate
+
+    def slot_range(self, first_slot, slots):
+        """Sample indices (start, end) of the grid slots first_slot .. first_slot + slots - 1."""
+        return self.index(first_slot * FRAME_MS), self.index((first_slot + slots) * FRAME_MS)
 
 
 def read_wav(data, track_id):
@@ -149,6 +158,20 @@ class Recording:
             self.packets = read_table(z, "packets.csv")
             self.network = read_table(z, "network.csv")
             self.events = read_events(z)
+
+
+def slot_of(t_ms):
+    """The exporter's grid slot of a stamp: round half up, as TrackAssembler does."""
+    return int(math.floor(t_ms / FRAME_MS + 0.5))
+
+
+def by_slot(rows):
+    """Rows keyed by their grid slot; a later row in the same slot wins."""
+    slots = {}
+    for row in rows:
+        if row.get("t_ms") is not None:
+            slots[slot_of(row["t_ms"])] = row
+    return slots
 
 
 # ---------------------------------------------------------------- levels and spectra
@@ -263,20 +286,20 @@ def band_levels(samples, rate, fft=None):
 
 # ---------------------------------------------------------------- analyses
 
+def is_active(row):
+    return row.get("transmit") == 1 and row.get("send_allowed") == 1
+
+
 def active_spans(frames):
-    """Merged (start, end) ms spans of frames with transmit=1 and send_allowed=1; a row's t_ms is
-    its frame's end."""
+    """Merged (start, end) ms spans of the grid slots whose frame had transmit=1 and send_allowed=1."""
+    slots = sorted(slot for slot, row in by_slot(frames).items() if is_active(row))
     spans = []
-    for row in frames:
-        t = row.get("t_ms")
-        if t is None or row.get("transmit") != 1 or row.get("send_allowed") != 1:
-            continue
-        start = t - FRAME_MS
-        if spans and start <= spans[-1][1] + CONTIGUOUS_MS:
-            spans[-1][1] = t
+    for slot in slots:
+        if spans and slot == spans[-1][1]:
+            spans[-1][1] = slot + 1
         else:
-            spans.append([start, t])
-    return spans
+            spans.append([slot, slot + 1])
+    return [(first * FRAME_MS, end * FRAME_MS) for first, end in spans]
 
 
 def zero_runs(track, min_ms):
@@ -317,30 +340,29 @@ def dropouts(recording):
 
 
 def transmit_starts(frames):
-    """Start ms of every frame where transmit goes from 0 to 1 while sending is allowed."""
+    """Grid slots where transmit goes from 0 (previous slot) to 1 while sending is allowed."""
+    slots = by_slot(frames)
     starts = []
-    previous = None
-    for row in frames:
-        transmit = row.get("transmit")
-        if transmit == 1 and previous == 0 and row.get("send_allowed") == 1 and row.get("t_ms") is not None:
-            starts.append(row["t_ms"] - FRAME_MS)
-        previous = transmit
+    for slot in sorted(slots):
+        previous = slots.get(slot - 1)
+        if is_active(slots[slot]) and previous is not None and previous.get("transmit") == 0:
+            starts.append(slot)
     return starts
 
 
 def cut_onsets(recording):
-    """(start ms, gate dB, reference dB) of transmit starts whose gate is 10 dB or more too quiet."""
-    gate = recording.tracks.get(ONSET_TRACK)
-    reference = recording.tracks.get(ONSET_REFERENCE)
-    if gate is None or reference is None:
+    """(start ms, pre dBFS, post dBFS) of every transmit start whose gate opened late: 4_denoised
+    over the 30 ms before the start is above -50 dBFS and within 10 dB of the 30 ms from the start.
+    None without a 4_denoised track."""
+    reference = recording.tracks.get(ONSET_TRACK)
+    if reference is None:
         return None
     cuts = []
-    for start in transmit_starts(recording.frames):
-        end = start + ONSET_WINDOW_MS
-        gate_db = rms_db(gate.samples, gate.index(start), gate.index(end))
-        reference_db = rms_db(reference.samples, reference.index(start), reference.index(end))
-        if reference_db > -math.inf and gate_db <= reference_db - ONSET_CUT_DB:
-            cuts.append((start, gate_db, reference_db))
+    for slot in transmit_starts(recording.frames):
+        pre_db = rms_db(reference.samples, *reference.slot_range(slot - ONSET_PRE_SLOTS, ONSET_PRE_SLOTS))
+        post_db = rms_db(reference.samples, *reference.slot_range(slot, ONSET_POST_SLOTS))
+        if pre_db > ONSET_FLOOR_DBFS and pre_db >= post_db - ONSET_WITHIN_DB:
+            cuts.append((slot * FRAME_MS, pre_db, post_db))
     return cuts
 
 
@@ -351,26 +373,14 @@ def power_mean_db(values):
     return power_db(sum(10 ** (v / 10) if v > -math.inf else 0.0 for v in values) / len(values))
 
 
-def mix_at(playback_by_slot, t):
-    """The playback row within one mix of t, preferring one that played."""
-    slot = int(round(t / FRAME_MS))
-    rows = [playback_by_slot.get(s) for s in (slot, slot - 1, slot + 1)]
-    rows = [r for r in rows if r is not None]
-    playing = [r for r in rows if r.get("played") == 1]
-    return (playing or rows or [None])[0]
-
-
 def stage_phases(recording):
-    """Far-end-only frames (with their mix rows) and near-end-only frames."""
-    by_slot = {}
-    for row in recording.playback:
-        if row.get("t_ms") is not None:
-            by_slot[int(round(row["t_ms"] / FRAME_MS))] = row
+    """Far-end-only frames (with the mix row of the same grid slot) and near-end-only frames."""
+    mixes = by_slot(recording.playback)
     far, near = [], []
-    for row in recording.frames:
-        if row.get("t_ms") is None or row.get("send_allowed") != 1:
+    for slot, row in sorted(by_slot(recording.frames).items()):
+        if row.get("send_allowed") != 1:
             continue
-        mix = mix_at(by_slot, row["t_ms"])
+        mix = mixes.get(slot)
         mix_on = mix is not None and mix.get("played") == 1
         if mix_on and row.get("vad_open") == 0:
             far.append((row, mix))
@@ -382,30 +392,48 @@ def stage_phases(recording):
 # ---------------------------------------------------------------- network and buffers
 
 def packet_gaps(packets):
-    """(start ms, end ms, stream label) of gaps over 60 ms inside a transmission."""
+    """(start ms, end ms, stream label) of gaps longer than the packet's own duration plus 60 ms
+    inside a transmission. The duration comes from the frame-number step (10 ms frames per step)
+    before the gap, else the stream's most common step. Packets of a talker without a track
+    (empty speaker) are skipped."""
     streams = {}
     for row in packets:
-        if row.get("t_ms") is None:
+        if row.get("t_ms") is None or row.get("speaker") is None:
             continue
-        key = (row.get("direction"), row.get("speaker"))
-        streams.setdefault(key, []).append(row)
+        streams.setdefault((row.get("direction"), row["speaker"]), []).append(row)
     gaps = []
     for (direction, speaker), rows in streams.items():
         rows.sort(key=lambda r: r["t_ms"])
+        steps = frame_steps(rows)
+        usual = max(set(steps), key=steps.count) if steps else 1
         label = stream_label(direction, speaker)
-        for before, after in zip(rows, rows[1:]):
+        for i in range(1, len(rows)):
+            before, after = rows[i - 1], rows[i]
             if before.get("terminator") == 1:
                 continue
-            if after["t_ms"] - before["t_ms"] > PACKET_GAP_MS:
+            step = frame_step(rows[i - 2], before) if i >= 2 else None
+            duration = (step or usual) * FRAME_MS
+            if after["t_ms"] - before["t_ms"] > duration + PACKET_GAP_MS:
                 gaps.append((before["t_ms"], after["t_ms"], label))
     return sorted(gaps)
+
+
+def frame_step(earlier, later):
+    """The positive frame-number step from earlier to later, or None."""
+    a, b = earlier.get("frame_number"), later.get("frame_number")
+    if a is None or b is None or b <= a:
+        return None
+    return int(b - a)
+
+
+def frame_steps(rows):
+    steps = (frame_step(a, b) for a, b in zip(rows, rows[1:]) if a.get("terminator") != 1)
+    return [s for s in steps if s is not None]
 
 
 def stream_label(direction, speaker):
     if direction == 0:
         return "sent"
-    if speaker is None:
-        return "received from a talker without a track"
     return f"received from speaker_{int(speaker)}"
 
 
@@ -427,12 +455,12 @@ def counter_increases(rows, column):
 
 def concealment_bursts(speakers):
     """(start ms, end ms, speaker, frames) of concealment, joining increases under 30 ms apart."""
-    by_speaker = {}
+    per_speaker = {}
     for row in speakers:
         if row.get("speaker") is not None:
-            by_speaker.setdefault(int(row["speaker"]), []).append(row)
+            per_speaker.setdefault(int(row["speaker"]), []).append(row)
     bursts = []
-    for speaker, rows in sorted(by_speaker.items()):
+    for speaker, rows in sorted(per_speaker.items()):
         for t, frames in counter_increases(rows, "concealed_frames"):
             if bursts and bursts[-1][2] == speaker and t - bursts[-1][1] <= CONCEALMENT_JOIN_MS:
                 start, _, _, total = bursts[-1]
@@ -452,6 +480,26 @@ def nearest_dropout(found, start, end):
     if best is None:
         return "no dropout within 200 ms"
     return f"nearest dropout: {best[1]} at {fmt_s(best[2])} ({best[0]:.0f} ms away)"
+
+
+def network_items(recording):
+    """(t ms, text, start ms, end ms) of everything section 6 lists, in time order."""
+    items = []
+    for start, end, label in packet_gaps(recording.packets):
+        items.append((start, f"packet gap {end - start:.0f} ms ({label})", start, end))
+    for t, count in counter_increases(recording.playback, "underruns"):
+        items.append((t, f"speaker underrun (+{count:.0f})", t, t))
+    for start, end, speaker, frames in concealment_bursts(recording.speakers):
+        items.append((start, f"concealment burst, speaker_{speaker}: {frames:.0f} frames", start, end))
+    for column in NETWORK_COUNTERS:
+        for t, count in counter_increases(recording.network, column):
+            items.append((t, f"network {column} +{count:.0f}", t, t))
+    for event in recording.events:
+        if event["name"] == "transport_changed" and event["t_ms"] is not None:
+            items.append((event["t_ms"], f"transport changed to {event['value'] or '?'}",
+                          event["t_ms"], event["t_ms"]))
+    items.sort(key=lambda item: item[0])
+    return items
 
 
 # ---------------------------------------------------------------- Markdown
@@ -509,6 +557,9 @@ def track_section(track, entry, fft, out):
     if levels is None:
         out.append("- 1/3-octave bands: no block with sound\n")
         return
+    if not levels:
+        out.append("- 1/3-octave bands: none below the Nyquist frequency\n")
+        return
     strongest = max(levels, key=lambda c: levels[c])
     out.append(f"- Strongest band: {strongest} Hz ({fmt_db(levels[strongest])} dBFS)\n")
     out.append("| Hz | " + " | ".join(str(c) for c in levels) + " |")
@@ -531,17 +582,19 @@ def dropout_section(found, out):
 
 def onset_section(cuts, out):
     out.append("## Cut syllable onsets\n")
-    out.append(f"Transmit starts where {ONSET_TRACK} over the first {ONSET_WINDOW_MS:.0f} ms is at least "
-               f"{ONSET_CUT_DB:.0f} dB below {ONSET_REFERENCE}.\n")
+    out.append(f"A transmit start counts as a clipped onset when the gate opened late: {ONSET_TRACK} over the "
+               f"{ONSET_PRE_SLOTS * FRAME_MS:.0f} ms before the start is above {ONSET_FLOOR_DBFS:.0f} dBFS and "
+               f"within {ONSET_WITHIN_DB:.0f} dB of its level over the {ONSET_POST_SLOTS * FRAME_MS:.0f} ms "
+               f"from the start, so speech was already there before the gate opened.\n")
     if cuts is None:
-        out.append(f"Not available: the recording has no {ONSET_TRACK} or {ONSET_REFERENCE} track.\n")
+        out.append(f"Not available: the recording has no {ONSET_TRACK} track.\n")
         return
     if not cuts:
         out.append("None found.\n")
         return
-    for start, gate_db, reference_db in cuts[:MAX_LISTED]:
-        out.append(f"- {fmt_s(start)}: {ONSET_TRACK} {fmt_db(gate_db)} dBFS, {ONSET_REFERENCE} "
-                   f"{fmt_db(reference_db)} dBFS ({fmt_db(gate_db - reference_db)} dB)")
+    for start, pre_db, post_db in cuts[:MAX_LISTED]:
+        out.append(f"- {fmt_s(start)}: {ONSET_TRACK} {fmt_db(pre_db)} dBFS before the start, "
+                   f"{fmt_db(post_db)} dBFS after it")
     more(len(cuts), out)
     out.append("")
 
@@ -551,6 +604,8 @@ def stage_section(recording, out):
     out.append("## Echo and speech loss per stage\n")
     out.append(f"Far-end only (mix playing, vad_open=0): {len(far)} frames; echo leak is the stage level "
                f"minus the mix level. Near-end only (no mix, vad_open=1): {len(near)} frames.\n")
+    out.append("Capture frames and mixes are paired by the same grid slot, without the output or acoustic "
+               "latency in between, so the echo leak is a rough approximation.\n")
     mix_db = power_mean_db([mix.get("mix_rms_dbfs") for _, mix in far])
     out.append("| Stage | Echo leak (dB vs mix) | Near-end level (dBFS) | Change from previous stage (dB) |")
     out.append("|---|---|---|---|")
@@ -573,22 +628,13 @@ def stage_section(recording, out):
 
 def network_section(recording, found, out):
     out.append("## Network and buffers\n")
-    out.append(f"Each item with the nearest dropout within {CORRELATION_MS:.0f} ms.\n")
-    items = []
-    for start, end, label in packet_gaps(recording.packets):
-        items.append((start, f"packet gap {end - start:.0f} ms ({label})", start, end))
-    for t, count in counter_increases(recording.playback, "underruns"):
-        items.append((t, f"speaker underrun (+{count:.0f})", t, t))
-    for start, end, speaker, frames in concealment_bursts(recording.speakers):
-        items.append((start, f"concealment burst, speaker_{speaker}: {frames:.0f} frames", start, end))
-    for event in recording.events:
-        if event["name"] == "transport_changed" and event["t_ms"] is not None:
-            items.append((event["t_ms"], f"transport changed to {event['value'] or '?'}",
-                          event["t_ms"], event["t_ms"]))
+    out.append(f"Packet gaps longer than the packet's own duration plus {PACKET_GAP_MS:.0f} ms, speaker "
+               f"underruns, concealment bursts, increases of the network lost/late counters and transport "
+               f"changes, each with the nearest dropout within {CORRELATION_MS:.0f} ms.\n")
+    items = network_items(recording)
     if not items:
         out.append("Nothing found.\n")
         return
-    items.sort(key=lambda item: item[0])
     for t, text, start, end in items[:MAX_LISTED]:
         out.append(f"- {fmt_s(t)}: {text}; {nearest_dropout(found, start, end)}")
     more(len(items), out)

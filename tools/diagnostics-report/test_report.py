@@ -13,7 +13,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""Tests for report.py on a synthetic diagnostics ZIP in the app's format (format_version 1).
+"""Tests for report.py on synthetic diagnostics ZIPs in the app's format (format_version 1).
+
+The fixture follows the exporter's timing: every track lies on the 10 ms grid from the recording
+start, and every telemetry row is stamped at the start of its grid slot with a few ms of jitter,
+as TrackAssembler and the telemetry rings see it.
 
 Run: python3 -I tools/diagnostics-report/test_report.py
 """
@@ -39,8 +43,10 @@ ALLOWED_MODULES = {"zipfile", "json", "csv", "wave", "array", "math", "argparse"
 RATE = 48000
 RAW_RATE = 44100
 DURATION_MS = 2000
-FRAME_MS = 10
-DROPOUT_START_S = 1.0
+SLOT_MS = 10
+SLOTS = DURATION_MS // SLOT_MS
+JITTER_MS = 3
+DROPOUT_START_MS = 1000
 DROPOUT_MS = 100
 TONE_HZ = 1000
 AMPLITUDE = 8000
@@ -72,8 +78,17 @@ def load_report():
     return module
 
 
-def tone(rate, n, hz=TONE_HZ, amplitude=AMPLITUDE):
-    return array.array("h", (int(amplitude * math.sin(2 * math.pi * hz * i / rate)) for i in range(n)))
+def stamp(slot):
+    """A row's t_ms: the start of its grid slot with deterministic jitter in [-3, +3] ms."""
+    return max(0.0, slot * SLOT_MS + (slot * 37) % (2 * JITTER_MS + 1) - JITTER_MS)
+
+
+def segment(rate, start_ms=0, end_ms=DURATION_MS):
+    """A whole-recording track with a 1 kHz tone from start_ms to end_ms and silence elsewhere."""
+    n = rate * DURATION_MS // 1000
+    first, last = rate * start_ms // 1000, rate * end_ms // 1000
+    return array.array("h", (int(AMPLITUDE * math.sin(2 * math.pi * TONE_HZ * i / rate)) if first <= i < last
+                             else 0 for i in range(n)))
 
 
 def wav_bytes(rate, samples):
@@ -97,68 +112,95 @@ def csv_text(columns, rows):
     return "\n".join(lines) + "\n"
 
 
-def build_zip(path):
-    """Two seconds: transmitting throughout, a 100 ms digital-silence hole in 5_gate and 6_sent at
-    1.00 s, a 1 kHz tone on 1_mic_raw at 44.1 kHz, and a 100 ms gap in the sent packets at 1.00 s."""
-    n = RATE * DURATION_MS // 1000
-    gate = tone(RATE, n)
-    hole_start = int(DROPOUT_START_S * RATE)
-    for i in range(hole_start, hole_start + RATE * DROPOUT_MS // 1000):
-        gate[i] = 0
-    tracks = {
-        "1_mic_raw": (RAW_RATE, tone(RAW_RATE, RAW_RATE * DURATION_MS // 1000)),
-        "4_denoised": (RATE, tone(RATE, n)),
-        "5_gate": (RATE, gate),
-        "6_sent": (RATE, array.array("h", gate)),
-        "7_mix": (RATE, array.array("h", [0] * n)),
-    }
-    frames = []
-    for i in range(DURATION_MS // FRAME_MS):
-        level = -15.0
-        frames.append(((i + 1) * FRAME_MS, {
-            "send_allowed": 1, "transmit": 1, "muted": 0, "read_samples": 441, "expected_samples": 441,
-            "read_ms": 10, "silenced": 0, "mic_raw_rms_dbfs": level, "denoised_rms_dbfs": level,
-            "gated_rms_dbfs": level, "vad_open": 1,
-        }))
-    playback = [((i + 1) * FRAME_MS, {"played": 0, "mix_rms_dbfs": "-inf", "underruns": 0})
-                for i in range(DURATION_MS // FRAME_MS)]
-    packets = []
+def packets_every(interval_ms, step, skip=lambda t: False, direction=0, speaker=0):
+    rows = []
     frame_number = 0
-    t = PACKET_MS
-    while t < DURATION_MS:
-        if not (DROPOUT_START_S * 1000 < t < DROPOUT_START_S * 1000 + DROPOUT_MS):
-            packets.append((t, {"direction": 0, "speaker": 0, "frame_number": frame_number, "bytes": 60,
-                                "terminator": 0}))
-        frame_number += 2
-        t += PACKET_MS
-    meta = {
-        "format_version": 1,
-        "app": {"version_name": "0.1.0-134", "version_code": 134, "flavor": "beta"},
-        "device": {"manufacturer": "Acme", "model": "Phone 1", "android_release": "15", "sdk": 35},
-        "route": {"device_type": 2, "product_name": "Built-in speaker", "stream_volume": 7,
-                  "stream_max_volume": 15, "audio_mode": 3},
-        "audio": {"pipelines": []},
-        "started_at": "2026-10-30T12:00:00.000Z",
-        "duration_ms": DURATION_MS,
-        "server_showed_recording": True,
-        "speakers_without_track": 0,
-        "dropped_frames": 0,
-        "tracks": [{"id": tid, "file": f"{tid}.wav", "sample_rate": rate,
-                    "side": "receive" if tid == "7_mix" else "send", "meaning": "",
-                    "rating": "bad" if tid == "5_gate" else None} for tid, (rate, _) in tracks.items()],
-        "note": "cuts out mid-sentence",
-    }
-    with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
-        z.writestr("README.txt", "Nomla diagnostics recording\n")
-        z.writestr("meta.json", json.dumps(meta, indent=2) + "\n")
-        for tid, (rate, samples) in tracks.items():
-            z.writestr(f"{tid}.wav", wav_bytes(rate, samples))
-        z.writestr("frames.csv", csv_text(FRAME_COLUMNS, frames))
-        z.writestr("playback.csv", csv_text(PLAYBACK_COLUMNS, playback))
-        z.writestr("speakers.csv", csv_text(SPEAKER_COLUMNS, []))
-        z.writestr("packets.csv", csv_text(PACKET_COLUMNS, packets))
-        z.writestr("network.csv", csv_text(NETWORK_COLUMNS, [(100.0, {"using_udp": 1})]))
-        z.writestr("events.csv", "t_ms,name,value\n0.0,talk_start,\n")
+    for slot in range(interval_ms // SLOT_MS, SLOTS, interval_ms // SLOT_MS):
+        if not skip(slot * SLOT_MS):
+            rows.append((stamp(slot), {"direction": direction, "speaker": speaker, "frame_number": frame_number,
+                                       "bytes": 60, "terminator": 0}))
+        frame_number += step
+    return rows
+
+
+class Fixture:
+    """Two seconds of transmitting by default: a 100 ms digital-silence hole in 5_gate and 6_sent at
+    1.00 s, a 1 kHz tone on 1_mic_raw at 44.1 kHz, and a 100 ms gap in the 20 ms sent packets at 1.00 s."""
+
+    def __init__(self):
+        gate = segment(RATE)
+        hole = RATE * DROPOUT_START_MS // 1000
+        for i in range(hole, hole + RATE * DROPOUT_MS // 1000):
+            gate[i] = 0
+        self.tracks = {
+            "1_mic_raw": (RAW_RATE, segment(RAW_RATE)),
+            "4_denoised": (RATE, segment(RATE)),
+            "5_gate": (RATE, gate),
+            "6_sent": (RATE, array.array("h", gate)),
+            "7_mix": (RATE, array.array("h", [0] * (RATE * DURATION_MS // 1000))),
+        }
+        self.frame = lambda slot: {}
+        self.mix = lambda slot: {}
+        self.speakers = []
+        self.packets = packets_every(
+            PACKET_MS, 2, skip=lambda t: DROPOUT_START_MS < t < DROPOUT_START_MS + DROPOUT_MS)
+
+    def frames_rows(self):
+        rows = []
+        for slot in range(SLOTS):
+            values = {"send_allowed": 1, "transmit": 1, "muted": 0, "read_samples": 441,
+                      "expected_samples": 441, "read_ms": 10, "silenced": 0, "mic_raw_rms_dbfs": -15,
+                      "denoised_rms_dbfs": -15, "gated_rms_dbfs": -15, "vad_open": 1}
+            values.update(self.frame(slot))
+            rows.append((stamp(slot), values))
+        return rows
+
+    def playback_rows(self):
+        rows = []
+        for slot in range(SLOTS):
+            values = {"played": 0, "mix_rms_dbfs": "-inf", "underruns": 0}
+            values.update(self.mix(slot))
+            rows.append((stamp(slot), values))
+        return rows
+
+    def write(self, path):
+        meta = {
+            "format_version": 1,
+            "app": {"version_name": "0.1.0-134", "version_code": 134, "flavor": "beta"},
+            "device": {"manufacturer": "Acme", "model": "Phone 1", "android_release": "15", "sdk": 35},
+            "route": {"device_type": 2, "product_name": "Built-in speaker", "stream_volume": 7,
+                      "stream_max_volume": 15, "audio_mode": 3},
+            "audio": {"pipelines": []},
+            "started_at": "2026-10-30T12:00:00.000Z",
+            "duration_ms": DURATION_MS,
+            "server_showed_recording": True,
+            "speakers_without_track": 0,
+            "dropped_frames": 0,
+            "tracks": [{"id": tid, "file": f"{tid}.wav", "sample_rate": rate,
+                        "side": "receive" if tid == "7_mix" else "send", "meaning": "",
+                        "rating": "bad" if tid == "5_gate" else None} for tid, (rate, _) in self.tracks.items()],
+            "note": "cuts out mid-sentence",
+        }
+        with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
+            z.writestr("README.txt", "Nomla diagnostics recording\n")
+            z.writestr("meta.json", json.dumps(meta, indent=2) + "\n")
+            for tid, (rate, samples) in self.tracks.items():
+                z.writestr(f"{tid}.wav", wav_bytes(rate, samples))
+            z.writestr("frames.csv", csv_text(FRAME_COLUMNS, self.frames_rows()))
+            z.writestr("playback.csv", csv_text(PLAYBACK_COLUMNS, self.playback_rows()))
+            z.writestr("speakers.csv", csv_text(SPEAKER_COLUMNS, self.speakers))
+            z.writestr("packets.csv", csv_text(PACKET_COLUMNS, self.packets))
+            z.writestr("network.csv", csv_text(NETWORK_COLUMNS, [(100.0, {"using_udp": 1})]))
+            z.writestr("events.csv", "t_ms,name,value\n0.0,talk_start,\n")
+
+
+def section(markdown, heading):
+    return markdown.split(f"## {heading}\n", 1)[1].split("\n## ", 1)[0]
+
+
+def items(text, word):
+    """The list items of a section that contain word."""
+    return [line for line in text.splitlines() if line.startswith("- ") and word in line]
 
 
 class ReportTest(unittest.TestCase):
@@ -171,30 +213,90 @@ class ReportTest(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.zip_path = os.path.join(self.tmp.name, "nomla-diagnostics.zip")
-        build_zip(self.zip_path)
+        Fixture().write(self.zip_path)
         self.markdown = self.report_module.report(self.zip_path)
 
     def tearDown(self):
         self.tmp.cleanup()
+
+    def report_of(self, fixture):
+        path = os.path.join(self.tmp.name, "variant.zip")
+        fixture.write(path)
+        return self.report_module.report(path)
 
     def test_report_runs_on_a_synthetic_zip(self):
         self.assertIn("## 5_gate", self.markdown)
         self.assertIn("cuts out mid-sentence", self.markdown)
 
     def test_finds_a_dropout(self):
-        section = self.markdown.split("## Dropouts", 1)[1].split("\n## ", 1)[0]
-        lines = [line for line in section.splitlines() if "5_gate" in line and "1.00 s" in line]
-        self.assertTrue(lines, section)
+        dropouts = section(self.markdown, "Dropouts")
+        lines = items(dropouts, "5_gate at 1.00 s")
+        self.assertEqual(1, len(lines), dropouts)
+        self.assertIn("100 ms", lines[0])
 
     def test_band_peak_is_the_tone(self):
-        section = self.markdown.split("## 1_mic_raw", 1)[1].split("\n## ", 1)[0]
-        self.assertIn("Strongest band: 1000 Hz", section)
+        self.assertIn("Strongest band: 1000 Hz", section(self.markdown, "1_mic_raw"))
 
     def test_correlates_packet_gap_with_dropout(self):
-        section = self.markdown.split("## Network and buffers", 1)[1].split("\n## ", 1)[0]
-        lines = [line for line in section.splitlines() if "packet gap" in line]
-        self.assertTrue(lines, section)
+        network = section(self.markdown, "Network and buffers")
+        lines = items(network, "packet gap")
+        self.assertEqual(1, len(lines), network)
         self.assertIn("nearest dropout: 5_gate at 1.00 s", lines[0])
+
+    def test_flags_an_onset_the_gate_opened_late(self):
+        fixture = Fixture()
+        fixture.frame = lambda slot: {"transmit": int(slot >= 100)}
+        fixture.tracks["4_denoised"] = (RATE, segment(RATE, start_ms=970))
+        fixture.tracks["5_gate"] = (RATE, segment(RATE, start_ms=1000))
+        onsets = section(self.report_of(fixture), "Cut syllable onsets")
+        self.assertIn("- 1.00 s:", onsets)
+
+    def test_does_not_flag_an_onset_the_gate_caught(self):
+        fixture = Fixture()
+        fixture.frame = lambda slot: {"transmit": int(slot >= 100)}
+        fixture.tracks["4_denoised"] = (RATE, segment(RATE, start_ms=1000))
+        fixture.tracks["5_gate"] = (RATE, segment(RATE, start_ms=1000))
+        self.assertIn("None found.", section(self.report_of(fixture), "Cut syllable onsets"))
+
+    def test_measures_echo_leak_in_a_far_end_phase(self):
+        fixture = Fixture()
+        far = range(50, 150)
+        fixture.frame = lambda slot: ({"vad_open": 0, "mic_raw_rms_dbfs": -20, "apm_rms_dbfs": -40}
+                                      if slot in far else {})
+        fixture.mix = lambda slot: {"played": 1, "mix_rms_dbfs": -10} if slot in far else {}
+        fixture.speakers = [(stamp(slot), {"speaker": 1, "concealed_frames": 0, "rms_dbfs": -10}) for slot in far]
+        stages = section(self.report_of(fixture), "Echo and speech loss per stage")
+        self.assertIn("Far-end only (mix playing, vad_open=0): 100 frames", stages)
+        self.assertIn("| 1_mic_raw | -10.0 |", stages)
+        self.assertIn("| 3_apm | -30.0 |", stages)
+        self.assertIn("rough approximation", stages)
+
+    def test_lists_a_concealment_burst(self):
+        fixture = Fixture()
+        concealed = lambda slot: 0 if slot < 120 else 2 * (min(slot, 122) - 119)
+        fixture.speakers = [(stamp(slot), {"speaker": 1, "concealed_frames": concealed(slot)})
+                            for slot in range(SLOTS)]
+        network = section(self.report_of(fixture), "Network and buffers")
+        lines = items(network, "concealment burst")
+        self.assertEqual(1, len(lines), network)
+        self.assertIn("1.20 s: concealment burst, speaker_1: 6 frames", lines[0])
+
+    def test_60_ms_packets_give_no_false_gaps(self):
+        fixture = Fixture()
+        fixture.packets = (packets_every(60, 6)
+                           + packets_every(200, 2, direction=1, speaker=None))
+        network = section(self.report_of(fixture), "Network and buffers")
+        self.assertEqual([], items(network, "packet gap"))
+
+    def test_reports_a_split_raw_track(self):
+        fixture = Fixture()
+        fixture.tracks["1_mic_raw"] = (RAW_RATE, segment(RAW_RATE, end_ms=1000))
+        fixture.tracks["1_mic_raw_2"] = (RATE, segment(RATE, start_ms=1000))
+        markdown = self.report_of(fixture)
+        self.assertIn("Strongest band: 1000 Hz", section(markdown, "1_mic_raw"))
+        split = section(markdown, "1_mic_raw_2")
+        self.assertIn("48000 Hz, 2.00 s", split)
+        self.assertIn("Strongest band: 1000 Hz", split)
 
     def test_writes_the_report_to_a_file(self):
         out = os.path.join(self.tmp.name, "report.md")
