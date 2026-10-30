@@ -49,6 +49,17 @@ class RecordExportViewModelTest {
         assertThat(exports.state.value).isEqualTo(ExportState.Failed)
     }
 
+    /** A capture of up to 32 MB is written once more as a ZIP: running out of memory there is a failure. */
+    @Test
+    fun `an export that runs out of memory ends in Failed, not in a crash`() {
+        val exports = RecordExportViewModel(app, Dispatchers.Unconfined) { _, _, _ -> throw OutOfMemoryError("test") }
+
+        exports.export(capture, review)
+        idleMainLooper()
+
+        assertThat(exports.state.value).isEqualTo(ExportState.Failed)
+    }
+
     @Test
     fun `a written zip is ready until shared`() {
         val uri = Uri.parse("content://test/zip")

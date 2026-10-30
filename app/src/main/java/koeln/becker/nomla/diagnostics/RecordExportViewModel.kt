@@ -73,10 +73,17 @@ class RecordExportViewModel(
             } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
                 // Any failure of the export is reported, never a crash; a cancellation passes on.
                 ensureActive()
-                NomlaLog.w(TAG, "diagnostics export failed: $e")
-                ExportState.Failed
+                failed(e)
+            } catch (e: OutOfMemoryError) {
+                // The ZIP of a large capture may not fit next to it; that is a failed export too.
+                failed(e)
             }
         }
+    }
+
+    private fun failed(cause: Throwable): ExportState {
+        NomlaLog.w(TAG, "diagnostics export failed: $cause")
+        return ExportState.Failed
     }
 
     /** The share sheet was opened for the [ExportState.Ready] export. */
