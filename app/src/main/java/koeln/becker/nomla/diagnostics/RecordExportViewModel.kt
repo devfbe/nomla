@@ -104,10 +104,10 @@ class RecordExportViewModel(
      * dropped (back to [ExportState.Idle]) instead, since its file is gone.
      */
     fun readyUri(): Uri? {
-        val ready = current.value as? ExportState.Ready ?: return null
-        if (epoch == DiagnosticShare.epoch()) return ready.uri
-        reset()
-        return null
+        val ready = current.value as? ExportState.Ready
+        val revoked = ready != null && epoch != DiagnosticShare.epoch()
+        if (revoked) reset()
+        return ready?.uri?.takeUnless { revoked }
     }
 
     /** The share sheet was opened for the [ExportState.Ready] export. */
