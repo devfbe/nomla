@@ -23,6 +23,7 @@ import android.media.AudioDeviceInfo
 import androidx.preference.PreferenceManager
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.Dispatchers
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -33,14 +34,19 @@ import koeln.becker.nomla.mumble.audio.capture.NoiseSuppressionMode
 import koeln.becker.nomla.mumble.audio.capture.VadConfig
 import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.audio.routing.PreferredAudioDevice
+import koeln.becker.nomla.mumble.diagnostics.DiagnosticCapture
+import koeln.becker.nomla.mumble.diagnostics.RecordingState
 import koeln.becker.nomla.mumble.session.SessionConfig
 import koeln.becker.nomla.mumble.session.SessionState
 import koeln.becker.nomla.mumble.testutil.FakeSession
 import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
+import koeln.becker.nomla.diagnostics.DiagnosticShare
 import koeln.becker.nomla.ui.AppMessages
 import koeln.becker.nomla.testing.nextMessage
 import koeln.becker.nomla.testing.installSession
+import koeln.becker.nomla.testing.replaceParts
+import java.io.File
 
 /**
  * Changed preferences reach the current session: every audio setting through one reconfigure,
@@ -267,26 +273,35 @@ class SessionSettingsSyncTest {
         for (key in listOf(Settings.CERT_ID.key, Settings.FORCE_TCP.key, Settings.USE_TOR.key)) {
             val messages = AppMessages()
             session.state.value = SessionState.Connecting
-            SessionSettingsSync(context, Settings.getInstance(context), SessionManager.get(context), messages)
+            SessionSettingsSync(context, Settings.getInstance(context), SessionManager.get(context), messages) {}
                 .onPreferenceChanged(key)
             assertThat(nextMessage(messages)).isNull()
 
             session.state.value = SessionState.Connected
-            SessionSettingsSync(context, Settings.getInstance(context), SessionManager.get(context), messages)
+            SessionSettingsSync(context, Settings.getInstance(context), SessionManager.get(context), messages) {}
                 .onPreferenceChanged(key)
             assertThat(nextMessage(messages)).isEqualTo(context.getString(R.string.change_requires_reconnect))
         }
         assertThat(session.disconnectCalls).isEqualTo(0)
     }
 
-    /** A recording runs only while the debug features are on; switching them off ends it unkept. */
+    /**
+     * A recording runs only while the debug features are on; switching them off ends it unkept,
+     * drops a finished capture and deletes the shared ZIPs.
+     */
     @Test
     fun `switching debug off cancels a recording`() {
+        replaceParts { it.copy(ioDispatcher = Dispatchers.Unconfined) }
+        val shared = File(context.cacheDir, DiagnosticShare.DIRECTORY).apply { mkdirs() }
+        File(shared, "nomla-diagnose-20261030-123456.zip").writeText("zip")
         prefs.edit().putBoolean(Settings.DEBUG_FEATURES.key, true).commit()
+        session.diagnostics.recording.value = RecordingState.Finished(CAPTURE)
 
         prefs.edit().putBoolean(Settings.DEBUG_FEATURES.key, false).commit()
 
         assertThat(session.diagnostics.cancelCalls).isEqualTo(1)
+        assertThat(session.diagnostics.discardCalls).isEqualTo(1)
+        assertThat(shared.list().orEmpty().toList()).isEmpty()
     }
 
     @Test
@@ -302,5 +317,11 @@ class SessionSettingsSyncTest {
 
     private companion object {
         const val ANDROID_NS = "http://schemas.android.com/apk/res/android"
+
+        val CAPTURE = DiagnosticCapture(
+            startedAtEpochMs = 0, durationMs = 0, tracks = emptyList(), tables = emptyList(), events = emptyList(),
+            pipelines = emptyList(), serverShowedRecording = false, speakersWithoutTrack = 0, droppedFrames = 0,
+            route = null,
+        )
     }
 }

@@ -140,7 +140,9 @@ class AppContainer(
     )
 
     init {
-        SessionSettingsSync(app, settings, sessionManager, appMessages).start(scope)
+        SessionSettingsSync(app, settings, sessionManager, appMessages) {
+            scope.launch(parts.ioDispatcher) { DiagnosticShare.clear(app) }
+        }.start(scope)
         // A shared diagnostics ZIP lives until the next export, discard or process start (B13).
         // Only what earlier processes left: an export of this process is never cleared here.
         scope.launch(parts.ioDispatcher) { DiagnosticShare.clearAtStart(app) }

@@ -30,12 +30,16 @@ import koeln.becker.nomla.ui.AppMessages
 /**
  * Carries changed preferences to the current session: audio settings live, and a note when a
  * setting only takes effect on the next connection.
+ *
+ * @param clearSharedZips deletes the shared diagnostics ZIPs off the main thread; called when the
+ *   debug features are switched off.
  */
 class SessionSettingsSync(
     private val context: Context,
     private val settings: Settings,
     private val sessions: SessionManager,
     private val messages: AppMessages,
+    private val clearSharedZips: () -> Unit,
 ) {
     fun start(scope: CoroutineScope): Job = scope.launch(Dispatchers.Main.immediate, CoroutineStart.UNDISPATCHED) {
         settings.changes(OBSERVED_KEYS).collect(::onPreferenceChanged)
@@ -50,9 +54,11 @@ class SessionSettingsSync(
         if (key in RECONNECT_KEYS && sessions.connected != null) {
             messages.post(context.getString(R.string.change_requires_reconnect))
         }
-        // A recording runs only while the debug features are on.
-        if (key == Settings.DEBUG_FEATURES.key && !settings.isDebugFeaturesEnabled && session != null) {
-            session.diagnostics.cancelRecording()
+        // A recording runs, and a capture or its ZIP is kept, only while the debug features are on.
+        if (key == Settings.DEBUG_FEATURES.key && !settings.isDebugFeaturesEnabled) {
+            session?.diagnostics?.cancelRecording()
+            session?.diagnostics?.discardRecording()
+            clearSharedZips()
         }
     }
 
