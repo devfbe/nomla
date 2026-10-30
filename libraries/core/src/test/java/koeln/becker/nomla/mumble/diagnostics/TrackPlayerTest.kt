@@ -93,7 +93,7 @@ class TrackPlayerTest {
     @Test
     fun `a sink that throws ends the playback, not the app`() {
         val sink = object : PcmPlaybackSink by TestPlaybackSink() {
-            override fun write(buffer: ShortArray, length: Int): Int = throw IllegalStateException("dead track")
+            override fun write(buffer: ShortArray, length: Int): Int = error("dead track")
         }
         val (player, _) = player(sink)
         val ended = CountDownLatch(1)

@@ -274,9 +274,8 @@ class ChannelFragment :
         val tabs = side?.let {
             DebugPages.attachSideTabs(
                 it,
-                childFragmentManager,
-                R.id.chat_fragment,
-                chatTitle = ::upperString,
+                DebugPages.PageContainer(childFragmentManager, R.id.chat_fragment),
+                title = ::upperString,
                 newChat = ::ChannelChatFragment,
                 selected = if (debug) savedInstanceState?.getInt(STATE_SIDE_TAB) ?: 0 else 0,
             )
@@ -293,13 +292,17 @@ class ChannelFragment :
     private fun showDebugPages() {
         val debug = settings.isDebugFeaturesEnabled
         sideTabs?.show(debug)
-        val adapter = tabsAdapter ?: return
-        val binding = binding ?: return
-        val pager: ViewPager2 = binding.channelViewPager ?: return
+        val adapter = tabsAdapter
+        val pager = binding?.channelViewPager
+        if (adapter != null && pager != null) showDebugTabs(adapter, pager, debug)
+    }
+
+    /** The phone layout: the pager's debug tabs follow [debug]; off, a debug tab gives way to the chat. */
+    private fun showDebugTabs(adapter: TabsAdapter, pager: ViewPager2, debug: Boolean) {
         if (!debug && pager.currentItem > TAB_CHAT) pager.setCurrentItem(TAB_CHAT, false)
         adapter.debug = debug
         // The mediator rebuilt the tabs, and with them dropped the chat tab's badge.
-        binding.channelTabs?.let { showUnread(it, chat.unread.value) }
+        binding?.channelTabs?.let { showUnread(it, chat.unread.value) }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

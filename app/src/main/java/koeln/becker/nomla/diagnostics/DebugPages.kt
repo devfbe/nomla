@@ -60,23 +60,24 @@ object DebugPages {
     }
 
     /**
-     * Fills [tabs] with the chat and the debug pages; picking one shows it in [containerId] of
-     * [fragments]. [chatTitle] and [newChat] are the chat tab's; [selected] the tab picked first.
+     * Fills [tabs] with the chat and the debug pages; picking one shows it in [container].
+     * [title] names each tab, [newChat] makes the chat tab's page; [selected] is the tab picked first.
      */
     fun attachSideTabs(
         tabs: TabLayout,
-        fragments: FragmentManager,
-        @IdRes containerId: Int,
-        chatTitle: (Int) -> String,
+        container: PageContainer,
+        title: (Int) -> String,
         newChat: () -> Fragment,
         selected: Int = SideTabs.CHAT,
-    ): SideTabs = SideTabs(tabs, fragments, containerId, newChat).also { it.fill(chatTitle, selected) }
+    ): SideTabs = SideTabs(tabs, container, newChat).also { it.fill(title, selected) }
+
+    /** Where the side tabs show the picked page: the view [id] in [fragments]. */
+    class PageContainer(val fragments: FragmentManager, @param:IdRes val id: Int)
 
     /** The wide screen's side tabs; see [attachSideTabs]. */
     class SideTabs internal constructor(
         private val tabs: TabLayout,
-        private val fragments: FragmentManager,
-        @param:IdRes private val containerId: Int,
+        private val container: PageContainer,
         private val newChat: () -> Fragment,
     ) {
         /** The position of the picked tab: [CHAT] or 1 + a [Page]'s ordinal. */
@@ -91,7 +92,7 @@ object DebugPages {
             tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                 override fun onTabSelected(tab: TabLayout.Tab) {
                     selected = tab.position
-                    fragments.beginTransaction().replace(containerId, newSelectedPage()).commit()
+                    container.fragments.beginTransaction().replace(container.id, newSelectedPage()).commit()
                 }
 
                 override fun onTabUnselected(tab: TabLayout.Tab) = Unit
