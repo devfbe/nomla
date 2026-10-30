@@ -21,9 +21,11 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteCursor
 import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteException
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
 import org.junit.After
+import org.junit.Assert.assertThrows
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -162,6 +164,43 @@ class NomlaSQLiteDatabaseTest {
         )
         assertThat(tables()).doesNotContain("comments")
         assertThat(db.readableDatabase.version).isEqualTo(1)
+    }
+
+    /** A beta from before the restart at 1 left version 10; its data is kept, not a crash. */
+    @Test
+    fun aPreRestartBetaDatabaseIsTakenOverWithItsData() {
+        val s = db.addServer(server("kept"))
+        db.addCertificate("alice.p12", byteArrayOf(1, 2, 3))
+        db.writableDatabase.execSQL("CREATE TABLE `comments` (`who` TEXT NOT NULL)")
+        db.writableDatabase.version = NomlaSQLiteDatabase.PRE_RESTART_DB_VERSION
+        db.close()
+
+        val reopened = NomlaSQLiteDatabase(context, "test.db")
+        try {
+            assertThat(reopened.getServers().map { it.id to it.name }).containsExactly(s.id to "kept")
+            assertThat(reopened.getCertificates().map { it.name }).containsExactly("alice.p12")
+            assertThat(reopened.readableDatabase.version).isEqualTo(1)
+            val tables = reopened.readableDatabase
+                .rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null)
+                .use { c -> buildSet { while (c.moveToNext()) add(c.getString(0)) } }
+            assertThat(tables).doesNotContain("comments")
+        } finally {
+            reopened.close()
+        }
+    }
+
+    /** Any other newer version is not this app's schema: the platform's downgrade error stands. */
+    @Test
+    fun anUnknownNewerVersionIsStillRefused() {
+        db.writableDatabase.version = 2
+        db.close()
+
+        val reopened = NomlaSQLiteDatabase(context, "test.db")
+        try {
+            assertThrows(SQLiteException::class.java) { reopened.readableDatabase }
+        } finally {
+            reopened.close()
+        }
     }
 
     /** Every query closes its cursor, on every path (including a missing certificate id). */

@@ -60,6 +60,17 @@ class NomlaSQLiteDatabase(
         error("No upgrade path from database version $oldVersion to $newVersion")
     }
 
+    /**
+     * Betas built before the schema restarted at 1 (2026-10-23) kept Mumla's count and left
+     * version [PRE_RESTART_DB_VERSION]: today's schema plus the dropped `comments` table. Such a
+     * database is taken over as it is, without that table; any other newer version is a database
+     * this build cannot read.
+     */
+    override fun onDowngrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        if (oldVersion != PRE_RESTART_DB_VERSION) super.onDowngrade(db, oldVersion, newVersion)
+        db.execSQL("DROP TABLE IF EXISTS `comments`")
+    }
+
     override fun getServers(): List<Server> =
         readableDatabase.query(
             TABLE_SERVER,
@@ -315,5 +326,8 @@ class NomlaSQLiteDatabase(
             ");"
 
         const val CURRENT_DB_VERSION = 1
+
+        /** The version the betas before the restart at 1 left behind; see [onDowngrade]. */
+        const val PRE_RESTART_DB_VERSION = 10
     }
 }
