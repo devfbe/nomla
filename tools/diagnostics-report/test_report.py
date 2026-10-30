@@ -65,6 +65,7 @@ NETWORK_COLUMNS = ["using_udp", "tcp_ping_ms", "tcp_ping_var_ms", "udp_ping_ms",
 
 
 def load_report():
+    sys.dont_write_bytecode = True  # keep __pycache__ out of the checkout
     spec = importlib.util.spec_from_file_location("report", REPORT_PATH)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
