@@ -474,4 +474,93 @@
     <string name="double_talk_stop">Stop</string>
     <string name="double_talk_retry">Retry</string>
     <string name="license_selftest_voice">Talk-over test voice: Piper “LJ Speech” voice (MIT), trained on the LJ Speech dataset (public domain)</string>
+    <!-- Debug diagnostics -->
+    <string name="debug_category">Diagnostics</string>
+    <string name="debug_features">Enable debug features</string>
+    <string name="debug_features_sum">Adds a live view of the audio chain and diagnostic recordings to the channel view.</string>
+    <string name="debug_tab_live">Live</string>
+    <string name="debug_tab_record">Recording</string>
+    <string name="debug_empty">Connect to a server to see the audio chain.</string>
+    <string name="debug_view_console">Console</string>
+    <string name="debug_view_list">List</string>
+    <string name="debug_stage_mic_raw">Microphone</string>
+    <string name="debug_stage_resampled">Resampler</string>
+    <string name="debug_stage_apm">Echo + gain</string>
+    <string name="debug_stage_denoised">Noise reduction</string>
+    <string name="debug_stage_gated">Gate</string>
+    <string name="debug_stage_sent">Sent</string>
+    <string name="debug_stage_off">Off</string>
+    <string name="debug_block_echo">Echo</string>
+    <string name="debug_block_receive">Receive</string>
+    <string name="debug_block_network">Network</string>
+    <string name="debug_block_device">Device</string>
+    <string name="debug_change_db">%1$s dB</string>
+    <string name="debug_speaker">Speaker %d</string>
+    <string name="debug_track_mix">Playback mix</string>
+    <string name="debug_record_duration">Duration</string>
+    <string name="debug_record_seconds">%d s</string>
+    <string name="debug_record_start">Record</string>
+    <string name="debug_record_cancel">Cancel</string>
+    <string name="debug_record_progress">Recording … %1$d of %2$d s</string>
+    <string name="debug_record_refused_offline">Not connected.</string>
+    <string name="debug_record_refused_not_ready">The server has not sent its settings yet. Try again in a moment.</string>
+    <string name="debug_record_refused_server">This server does not allow recordings.</string>
+    <string name="debug_record_refused_memory">Not enough memory for a recording this long.</string>
+    <string name="debug_record_aborted_disconnect">Recording stopped: the connection ended.</string>
+    <string name="debug_record_failed">The recording could not be saved.</string>
+    <string name="debug_record_note_hint">Note for the developers</string>
+    <string name="debug_record_share">Share</string>
+    <string name="debug_record_discard">Discard</string>
+    <string name="debug_record_share_subject">Nomla diagnostic recording</string>
+    <string name="debug_record_playback_hint">On the loudspeaker, the others may hear the playback through your microphone.</string>
+    <string name="debug_rating_good">Good</string>
+    <string name="debug_rating_medium">So-so</string>
+    <string name="debug_rating_bad">Bad</string>
+    <string name="debug_consent_title">Record only with consent</string>
+    <string name="debug_consent_message">The recording also contains the voices of the others in the channel. Only record if everyone agrees. While recording, everyone on the server sees that you are recording. If the server does not allow recordings, it will not start.</string>
+    <string name="debug_consent_dont_show">Don\'t show again</string>
+    <string name="debug_metric_peak">Peak</string>
+    <string name="debug_metric_rms" translatable="false">RMS</string>
+    <string name="debug_metric_erl" translatable="false">ERL</string>
+    <string name="debug_metric_erle" translatable="false">ERLE</string>
+    <string name="debug_metric_dbfs" translatable="false">dBFS</string>
+    <string name="debug_metric_udp" translatable="false">UDP</string>
+    <string name="debug_metric_tcp" translatable="false">TCP</string>
+    <string name="debug_metric_so_sndbuf" translatable="false">SO_SNDBUF</string>
+    <string name="debug_metric_so_rcvbuf" translatable="false">SO_RCVBUF</string>
+    <string name="debug_label_clipped">Clipped samples</string>
+    <string name="debug_label_level_change">Level change</string>
+    <string name="debug_label_delay">Delay</string>
+    <string name="debug_label_divergent">Divergent filter</string>
+    <string name="debug_label_probability">Speech probability</string>
+    <string name="debug_label_noise_floor">Noise floor</string>
+    <string name="debug_label_speech_level">Speech level</string>
+    <string name="debug_label_threshold">Threshold</string>
+    <string name="debug_label_hold">Hold</string>
+    <string name="debug_label_too_close">Too close</string>
+    <string name="debug_label_transport">Transport</string>
+    <string name="debug_label_ping">Ping</string>
+    <string name="debug_label_lost">Lost</string>
+    <string name="debug_label_late">Late</string>
+    <string name="debug_label_resync">Resync</string>
+    <string name="debug_label_jitter_buffer">Jitter buffer</string>
+    <string name="debug_label_concealed">Concealed frames</string>
+    <string name="debug_label_decode_errors">Decode errors</string>
+    <string name="debug_label_underruns">Underruns</string>
+    <string name="debug_label_buffer">Buffer</string>
+    <string name="debug_label_latency">Output latency</string>
+    <string name="debug_label_socket_buffers">Socket buffers</string>
+    <string name="debug_label_source">Source</string>
+    <string name="debug_label_sample_rate">Sample rate</string>
+    <string name="debug_label_effects">Platform effects</string>
+    <string name="debug_label_output">Output</string>
+    <string name="debug_label_volume">Volume</string>
+    <string name="debug_label_audio_mode">Audio mode</string>
+    <string name="debug_lane_gate">Gate open</string>
+    <string name="debug_lane_underruns">Underruns</string>
+    <string name="debug_lane_packet_gaps">Packet gaps</string>
+    <string name="debug_lane_transport">Transport changes</string>
+    <string name="debug_track_play">Play</string>
+    <string name="debug_track_stop">Stop</string>
+    <string name="debug_record_cancelled">Recording cancelled.</string>
 </resources>

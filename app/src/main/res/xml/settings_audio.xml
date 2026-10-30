@@ -282,4 +282,18 @@
             android:title="@string/vadHold"
             app:iconSpaceReserved="false"/>
     </PreferenceCategory>
+
+    <!-- Adds the Live and Recording pages to the channel view; off, a running recording ends. -->
+    <PreferenceCategory
+        android:key="debug"
+        android:title="@string/debug_category"
+        app:iconSpaceReserved="false">
+
+        <SwitchPreferenceCompat
+            android:key="debug_features"
+            android:defaultValue="false"
+            android:title="@string/debug_features"
+            android:summary="@string/debug_features_sum"
+            app:iconSpaceReserved="false"/>
+    </PreferenceCategory>
 </PreferenceScreen>

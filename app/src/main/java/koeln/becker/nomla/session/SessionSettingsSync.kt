@@ -50,12 +50,16 @@ class SessionSettingsSync(
         if (key in RECONNECT_KEYS && sessions.connected != null) {
             messages.post(context.getString(R.string.change_requires_reconnect))
         }
+        // A recording runs only while the debug features are on.
+        if (key == Settings.DEBUG_FEATURES.key && !settings.isDebugFeaturesEnabled) {
+            session?.diagnostics?.cancelRecording()
+        }
     }
 
     internal companion object {
         /** The settings a connection is made with; a change applies from the next one. */
         val RECONNECT_KEYS = setOf(Settings.CERT_ID.key, Settings.FORCE_TCP.key, Settings.USE_TOR.key)
 
-        val OBSERVED_KEYS = SessionSettings.AUDIO_KEYS + RECONNECT_KEYS
+        val OBSERVED_KEYS = SessionSettings.AUDIO_KEYS + RECONNECT_KEYS + Settings.DEBUG_FEATURES.key
     }
 }

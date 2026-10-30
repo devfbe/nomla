@@ -40,6 +40,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.launch
@@ -48,6 +49,7 @@ import koeln.becker.nomla.R
 import koeln.becker.nomla.Settings
 import koeln.becker.nomla.audio.AudioPanelSheet
 import koeln.becker.nomla.databinding.FragmentChannelBinding
+import koeln.becker.nomla.diagnostics.DebugPages
 import koeln.becker.nomla.session.PushToTalk
 import koeln.becker.nomla.session.SelfState
 import koeln.becker.nomla.session.SelfSummary
@@ -59,7 +61,8 @@ import java.util.Locale
 
 /**
  * Holds a [ChannelListFragment] and a [ChannelChatFragment], as tabs or side by side, which share
- * the chat target through this fragment's [ChatViewModel].
+ * the chat target through this fragment's [ChatViewModel]. With the debug features on, the
+ * [DebugPages] join them: as more tabs, or as side tabs over the chat pane.
  */
 @Suppress("TooManyFunctions") // Framework callbacks, each delegating.
 class ChannelFragment :
@@ -72,6 +75,12 @@ class ChannelFragment :
 
     private var binding: FragmentChannelBinding? = null
     private var controlBar: ControlBar? = null
+
+    /** The pager's adapter on phones; null on wide screens. */
+    private var tabsAdapter: TabsAdapter? = null
+
+    /** The side tabs over the chat pane on wide screens; null on phones. */
+    private var sideTabs: DebugPages.SideTabs? = null
 
     /** True while a touch is down on the talk button, i.e. while this fragment holds transmission. */
     private var talkButtonHeld = false
@@ -235,14 +244,16 @@ class ChannelFragment :
         val tabs = binding.channelTabs
         if (pager != null && tabs != null) {
             styleTabs(tabs)
-            pager.adapter = TabsAdapter()
+            val adapter = TabsAdapter(settings.isDebugFeaturesEnabled)
+            tabsAdapter = adapter
+            pager.adapter = adapter
             TabLayoutMediator(tabs, pager) { tab, position -> tab.text = tabTitle(position) }.attach()
             whileViewStarted { chat.unread.collect { showUnread(tabs, it) } }
         } else {
-            childFragmentManager.beginTransaction()
-                .replace(R.id.list_fragment, newListFragment())
-                .replace(R.id.chat_fragment, ChannelChatFragment())
-                .commit()
+            showSidePanes(savedInstanceState)
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            settings.changes(Settings.DEBUG_FEATURES).collect { showDebugPages() }
         }
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         whileViewStarted {
@@ -252,10 +263,52 @@ class ChannelFragment :
         }
     }
 
+    /** The wide layout: the list beside the chat, or beside the debug page picked in the side tabs. */
+    private fun showSidePanes(savedInstanceState: Bundle?) {
+        val debug = settings.isDebugFeaturesEnabled
+        val side = binding?.sideTabs
+        val tabs = side?.let {
+            DebugPages.attachSideTabs(
+                it,
+                childFragmentManager,
+                R.id.chat_fragment,
+                chatTitle = ::upperString,
+                newChat = ::ChannelChatFragment,
+                selected = if (debug) savedInstanceState?.getInt(STATE_SIDE_TAB) ?: 0 else 0,
+            )
+        }
+        sideTabs = tabs
+        childFragmentManager.beginTransaction()
+            .replace(R.id.list_fragment, newListFragment())
+            .replace(R.id.chat_fragment, tabs?.newSelectedPage() ?: ChannelChatFragment())
+            .commit()
+        tabs?.show(debug)
+    }
+
+    /** Adds or removes the debug pages after the switch changed; off, a debug page gives way to the chat. */
+    private fun showDebugPages() {
+        val debug = settings.isDebugFeaturesEnabled
+        sideTabs?.show(debug)
+        val adapter = tabsAdapter ?: return
+        val binding = binding ?: return
+        val pager: ViewPager2 = binding.channelViewPager ?: return
+        if (!debug && pager.currentItem > TAB_CHAT) pager.setCurrentItem(TAB_CHAT, false)
+        adapter.debug = debug
+        // The mediator rebuilt the tabs, and with them dropped the chat tab's badge.
+        binding.channelTabs?.let { showUnread(it, chat.unread.value) }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        sideTabs?.let { outState.putInt(STATE_SIDE_TAB, it.selected) }
+    }
+
     override fun onDestroyView() {
         announcer.reset()
         shownSelf = null
         controlBar = null
+        tabsAdapter = null
+        sideTabs = null
         binding = null
         super.onDestroyView()
     }
@@ -349,15 +402,45 @@ class ChannelFragment :
 
     private fun newListFragment() = ChannelListFragment.newInstance(isShowingPinnedChannels)
 
-    private fun tabTitle(position: Int): String =
-        getString(if (position == TAB_CHANNEL) R.string.channel else R.string.chat).uppercase(Locale.getDefault())
+    private fun upperString(id: Int): String = getString(id).uppercase(Locale.getDefault())
 
-    /** The channel list and the chat, as the pager's two pages. */
-    private inner class TabsAdapter : FragmentStateAdapter(childFragmentManager, viewLifecycleOwner.lifecycle) {
-        override fun getItemCount(): Int = 2
+    private fun tabTitle(position: Int): String = upperString(
+        when (position) {
+            TAB_CHANNEL -> R.string.channel
+            TAB_CHAT -> R.string.chat
+            else -> debugPage(position).title
+        },
+    )
 
-        override fun createFragment(position: Int): Fragment =
-            if (position == TAB_CHANNEL) newListFragment() else ChannelChatFragment()
+    private fun debugPage(position: Int) = DebugPages.Page.entries[position - FIRST_DEBUG_TAB]
+
+    /**
+     * The channel list and the chat as the pager's first two pages, then the debug pages while
+     * [debug]. Each position keeps its page, so a position is its item id.
+     */
+    private inner class TabsAdapter(debug: Boolean) :
+        FragmentStateAdapter(childFragmentManager, viewLifecycleOwner.lifecycle) {
+
+        @set:SuppressLint("NotifyDataSetChanged") // Pages are added or removed at the end together.
+        var debug: Boolean = debug
+            set(value) {
+                if (field == value) return
+                field = value
+                notifyDataSetChanged()
+            }
+
+        override fun getItemCount(): Int =
+            if (debug) FIRST_DEBUG_TAB + DebugPages.Page.entries.size else FIRST_DEBUG_TAB
+
+        override fun getItemId(position: Int): Long = position.toLong()
+
+        override fun containsItem(itemId: Long): Boolean = itemId in 0L until itemCount
+
+        override fun createFragment(position: Int): Fragment = when (position) {
+            TAB_CHANNEL -> newListFragment()
+            TAB_CHAT -> ChannelChatFragment()
+            else -> DebugPages.newPage(debugPage(position))
+        }
     }
 
     companion object {
@@ -367,6 +450,10 @@ class ChannelFragment :
 
         private const val TAB_CHANNEL = 0
         private const val TAB_CHAT = 1
+
+        /** The first debug page's position; the pager has this many pages with debug off. */
+        private const val FIRST_DEBUG_TAB = 2
         private const val ARG_PINNED = "pinned"
+        private const val STATE_SIDE_TAB = "side_tab"
     }
 }

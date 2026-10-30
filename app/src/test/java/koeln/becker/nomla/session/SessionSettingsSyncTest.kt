@@ -220,6 +220,8 @@ class SessionSettingsSyncTest {
             "advanced_audio" to "a PreferenceCategory, not a setting",
             "rnnoise_strength_reset" to "not persisted: writes the strength's default through Settings",
             "double_talk_test" to "not persisted: opens the talk-over test",
+            "debug" to "a PreferenceCategory, not a setting",
+            "debug_features" to "not audio: switching it off cancels a recording, see the test below",
         )
 
         val keys = mutableSetOf<String>()
@@ -274,6 +276,27 @@ class SessionSettingsSyncTest {
                 .onPreferenceChanged(key)
             assertThat(nextMessage(messages)).isEqualTo(context.getString(R.string.change_requires_reconnect))
         }
+        assertThat(session.disconnectCalls).isEqualTo(0)
+    }
+
+    /** A recording runs only while the debug features are on; switching them off ends it unkept. */
+    @Test
+    fun `switching debug off cancels a recording`() {
+        prefs.edit().putBoolean(Settings.DEBUG_FEATURES.key, true).commit()
+
+        prefs.edit().putBoolean(Settings.DEBUG_FEATURES.key, false).commit()
+
+        assertThat(session.diagnostics.cancelCalls).isEqualTo(1)
+    }
+
+    @Test
+    fun `switching debug on does nothing to the session`() {
+        prefs.edit().putBoolean(Settings.DEBUG_FEATURES.key, true).commit()
+
+        assertThat(session.diagnostics.cancelCalls).isEqualTo(0)
+        assertThat(session.diagnostics.startCalls).isEmpty()
+        assertThat(session.diagnostics.discardCalls).isEqualTo(0)
+        assertThat(configures).isEqualTo(0)
         assertThat(session.disconnectCalls).isEqualTo(0)
     }
 

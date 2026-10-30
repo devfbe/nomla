@@ -32,12 +32,21 @@
         android:id="@+id/left_split"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1" >
+        android:layout_weight="1"
+        android:orientation="vertical" >
+
+        <!-- Chat and the debug pages; shown only while the debug features are on. -->
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/side_tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
 
         <FrameLayout
             android:id="@+id/chat_fragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="0dp"
+            android:layout_weight="1" />
     </LinearLayout>
 
     <LinearLayout

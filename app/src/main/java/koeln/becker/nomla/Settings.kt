@@ -32,6 +32,7 @@ import koeln.becker.nomla.mumble.audio.capture.VadMode
 import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.audio.routing.PreferredAudioDevice
 import koeln.becker.nomla.app.AppContainer
+import koeln.becker.nomla.diagnostics.LiveView
 import koeln.becker.nomla.util.changes
 import kotlinx.coroutines.flow.Flow
 import kotlin.properties.ReadWriteProperty
@@ -311,6 +312,15 @@ class Settings internal constructor(context: Context) {
 
     var isNotificationPermissionAsked: Boolean by pref(NOTIFICATION_PERMISSION_ASKED)
 
+    /** Whether the channel view has its Live and Recording pages; off, no recording can run. */
+    val isDebugFeaturesEnabled: Boolean by pref(DEBUG_FEATURES)
+
+    /** How the Live page shows the audio chain, as the user last picked it. */
+    var debugLiveView: LiveView by entry(DEBUG_LIVE_VIEW)
+
+    /** True once the user ticked "Don't show again" in the recording consent dialog. */
+    var isRecordingNoticeHidden: Boolean by pref(DEBUG_RECORDING_NOTICE_HIDDEN)
+
     companion object {
         val INPUT_METHOD = EnumPref(
             "audioInputMethod", TransmitMode.VOICE_ACTIVITY, TransmitMode.entries, TransmitMode::preferenceValue,
@@ -494,6 +504,13 @@ class Settings internal constructor(context: Context) {
 
         /** True once the notification permission has been requested. */
         val NOTIFICATION_PERMISSION_ASKED = Pref("notification_permission_asked", false)
+
+        /** The debug switch at the bottom of the audio settings. */
+        val DEBUG_FEATURES = Pref("debug_features", false)
+
+        val DEBUG_LIVE_VIEW = EnumPref("debug_live_view", LiveView.CONSOLE, LiveView.entries, LiveView::preferenceValue)
+
+        val DEBUG_RECORDING_NOTICE_HIDDEN = Pref("debug_recording_notice_hidden", false)
 
         private const val NO_CERTIFICATE = -1L
         private const val PERCENT = 100
