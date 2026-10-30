@@ -115,6 +115,28 @@ class DiagnosticsSamplerTest {
         assertThat(calls).isEqualTo(4)
     }
 
+    /**
+     * A transport that changed while the hub was inactive is no change seen by a sampling run: the
+     * next run starts without a previous transport, so it logs no `transport_changed`.
+     */
+    @Test(timeout = TIMEOUT_MS)
+    fun `a change while inactive logs no transport_changed in the next run`() {
+        sampler.start()
+        val handle = hub.meter()
+        scheduler.advanceTimeBy(150)
+        handle.close()
+        scheduler.advanceUntilIdle()
+
+        usingUdp = false
+        hub.arm(5)
+        scheduler.advanceTimeBy(250)
+        val recording = hub.disarm()!!
+
+        val events = recording.events.freeze(recording.t0Nanos)
+        assertThat(events.filter { it.name == DiagnosticsSampler.TRANSPORT_CHANGED }).isEmpty()
+        assertThat(recording.network.freeze(recording.t0Nanos).column("using_udp").toSet()).containsExactly(0f)
+    }
+
     private companion object {
         const val NANOS_PER_MS = 1_000_000L
         const val TIMEOUT_MS = 10_000L

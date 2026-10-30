@@ -46,7 +46,10 @@ internal class DiagnosticsSampler(
 ) {
     private var job: Job? = null
 
-    /** The transport of the last sample, null before the first: a change logs `transport_changed`. */
+    /**
+     * The transport of the last sample of this run, null before its first: a change logs
+     * `transport_changed`. Each run starts afresh, so a change while inactive is no event.
+     */
     private var lastUsingUdp: Boolean? = null
 
     /** Samples whenever the hub is active, until [stop]. Calling it again does nothing. */
@@ -67,6 +70,7 @@ internal class DiagnosticsSampler(
     }
 
     private suspend fun sampleWhileActive() {
+        lastUsingUdp = null
         try {
             while (hub.isActive) {
                 sample()
