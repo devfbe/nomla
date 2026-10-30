@@ -139,8 +139,13 @@ public class FakeSessionActions : SessionActions {
 
     override fun moveUser(session: Int, channel: Int): Unit = record("moveUser", session, channel)
 
-    override fun createChannel(parent: Int, name: String, description: String, position: Int, temporary: Boolean): Unit =
-        record("createChannel", parent, name, description, position, temporary)
+    override fun createChannel(
+        parent: Int,
+        name: String,
+        description: String,
+        position: Int,
+        temporary: Boolean,
+    ): Unit = record("createChannel", parent, name, description, position, temporary)
 
     override fun removeChannel(channel: Int): Unit = record("removeChannel", channel)
 
