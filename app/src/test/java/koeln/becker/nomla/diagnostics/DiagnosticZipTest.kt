@@ -257,6 +257,19 @@ class DiagnosticZipTest {
         assertThat(readme).contains("running mean")
     }
 
+    /** The frames of what was not sent carry no levels; README says so where send_allowed is explained. */
+    @Test
+    fun `README says frames that were not sent have no levels`() {
+        val readme = zip(capture()).getValue("README.txt").toString(Charsets.UTF_8)
+        val sendAllowed = readme.lineSequence().single { it.startsWith("send_allowed: ") }
+
+        assertThat(sendAllowed).contains("at 0 every level column of the row")
+        for (column in listOf("vad_probability", "vad_level_dbfs", "vad_floor_dbfs", "vad_speech_dbfs")) {
+            assertThat(sendAllowed).contains(column)
+        }
+        assertThat(readme).contains("not even as a\nlevel curve")
+    }
+
     // --- helpers ---------------------------------------------------------------------------------
 
     private fun zip(capture: DiagnosticCapture): Map<String, ByteArray> {

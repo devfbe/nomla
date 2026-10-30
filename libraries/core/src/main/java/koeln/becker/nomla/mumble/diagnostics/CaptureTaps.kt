@@ -46,8 +46,10 @@ private const val NO_TIME = Long.MIN_VALUE
  * allocation and no lock. While it is active the taps measure every stage on the hub's meters, and
  * while a recording is armed they copy each stage into a preallocated scratch frame. [commit]
  * writes the scratch frames to the rings, or silence where sending is not allowed (muted, or
- * push-to-talk without the key), plus one `frames` row. Every Opus packet that left the device is
- * recorded, the terminator after a release or a mute included. Nothing here allocates per frame.
+ * push-to-talk without the key), plus one `frames` row; in the row of a frame not to be sent every
+ * level column (the stages' and the detector's levels and probability) is NaN, while the live
+ * meters still measure it. Every Opus packet that left the device is recorded, the terminator after
+ * a release or a mute included. Nothing here allocates per frame.
  *
  * Every frame of a recording is stamped with the time its microphone read returned: the **end** of
  * that 10 ms frame. All stages of a frame carry the same stamp.
@@ -328,23 +330,37 @@ internal class CaptureTaps(
         row[FrameColumns.EXPECTED_SAMPLES] = if (rawExpected >= 0) rawExpected.toFloat() else Float.NaN
         row[FrameColumns.READ_MS] = if (readNanos >= 0) readNanos / NANOS_PER_MS else Float.NaN
         row[FrameColumns.SILENCED] = flag(silenced)
-        for (i in stages.indices) {
-            val at = FrameColumns.STAGES + i * FrameColumns.PER_STAGE
-            if (touched[i]) {
-                val meter = hub.stageMeter(stages[i])
-                row[at] = meter.rmsDbfs
-                row[at + 1] = meter.peakDbfs
-                row[at + 2] = clippedInFrame[i].toFloat()
-            } else {
-                row[at] = Float.NaN
-                row[at + 1] = Float.NaN
-                row[at + 2] = Float.NaN
-            }
-        }
+        for (i in stages.indices) writeStageLevels(i, sendAllowed)
+        // What is deliberately not sent never reaches a ZIP, not even as its level envelope.
+        if (!sendAllowed) hideVoiceLevels()
         for (i in 0 until WebRtcApmApi.STATISTICS_COUNT) {
             row[FrameColumns.APM + i] = if (newStatistics) statistics[i] else Float.NaN
         }
         recording.frames.write(nanos, row)
+    }
+
+    /** RMS, peak and clipped samples of stage [i] in [row]; NaN when not measured or not to be sent. */
+    private fun writeStageLevels(i: Int, sendAllowed: Boolean) {
+        val at = FrameColumns.STAGES + i * FrameColumns.PER_STAGE
+        if (sendAllowed && touched[i]) {
+            val meter = hub.stageMeter(stages[i])
+            row[at] = meter.rmsDbfs
+            row[at + 1] = meter.peakDbfs
+            row[at + 2] = clippedInFrame[i].toFloat()
+        } else {
+            row[at] = Float.NaN
+            row[at + 1] = Float.NaN
+            row[at + 2] = Float.NaN
+        }
+    }
+
+    /** The detector's levels and probability of a frame not to be sent; its gate flags stay. */
+    private fun hideVoiceLevels() {
+        val base = FrameColumns.VAD
+        row[base + FrameColumns.VAD_PROBABILITY] = Float.NaN
+        row[base + FrameColumns.VAD_LEVEL] = Float.NaN
+        row[base + FrameColumns.VAD_FLOOR] = Float.NaN
+        row[base + FrameColumns.VAD_SPEECH] = Float.NaN
     }
 
     private fun endFrame() {

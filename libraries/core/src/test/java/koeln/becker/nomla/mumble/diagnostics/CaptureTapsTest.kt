@@ -102,12 +102,25 @@ class CaptureTapsTest {
         assertThat(hub.stageMeter(SendStage.MIC_RAW).rmsDbfs).isEqualTo(DiagnosticsLimits.SILENCE_DBFS)
     }
 
+    /**
+     * What is deliberately not sent never reaches a ZIP, not even as its level envelope: a frame
+     * that may not be sent has silence on every send ring and NaN in every level column, while its
+     * flags, read figures and the canceller's statistics stay. The live meters still measure it.
+     */
     @Test
-    fun `muted frames are silence on every send ring but measured on frames csv`() {
-        val taps = CaptureTaps(hub, pushToTalk = false, vad = null)
+    fun `muted frames are silence on every send ring and have no levels on frames csv`() {
+        val vad = VoiceActivityDetector(VadConfig.DEFAULT) { now }
+        val taps = CaptureTaps(hub, pushToTalk = false, vad = vad)
         hub.arm(5)
-        repeat(10) { taps.feed(1000 + it, muted = true) }
-        repeat(10) { taps.feed(2000 + it, muted = false) }
+        repeat(10) {
+            vad.isVoice(ShortArray(FRAME) { 1000 }, FRAME, null)
+            taps.feed(1000 + it, muted = true)
+        }
+        val liveWhileMuted = hub.stageMeter(SendStage.MIC_RAW).rmsDbfs
+        repeat(10) {
+            vad.isVoice(ShortArray(FRAME) { 2000 }, FRAME, null)
+            taps.feed(2000 + it, muted = false)
+        }
         val recording = hub.disarm()!!
 
         val pcmStages = listOf(
@@ -120,8 +133,20 @@ class CaptureTapsTest {
         val frames = recording.frames.freeze(recording.t0Nanos)
         assertThat(frames.column("send_allowed")).isEqualTo(List(10) { 0f } + List(10) { 1f })
         assertThat(frames.column("muted")).isEqualTo(List(10) { 1f } + List(10) { 0f })
-        assertWithMessage("muted frames are still measured")
-            .that(frames.column("mic_raw_rms_dbfs").take(10).all { it > DiagnosticsLimits.SILENCE_DBFS }).isTrue()
+        assertThat(frames.column("transmit").toSet()).containsExactly(1f)
+        assertThat(frames.column("read_samples").toSet()).containsExactly(FRAME.toFloat())
+        val hidden = frames.columns.filter { name ->
+            name.endsWith("_rms_dbfs") || name.endsWith("_peak_dbfs") || name.endsWith("_clipped")
+        } + listOf("vad_level_dbfs", "vad_floor_dbfs", "vad_speech_dbfs", "vad_probability")
+        assertThat(hidden).hasSize(SendStage.entries.size * PER_STAGE_COLUMNS + VAD_HIDDEN_COLUMNS)
+        for (name in hidden) {
+            assertWithMessage("$name while muted").that(frames.column(name).take(10).all { it.isNaN() }).isTrue()
+        }
+        for (name in listOf("mic_raw_rms_dbfs", "sent_peak_dbfs", "vad_level_dbfs")) {
+            assertWithMessage("$name while sent").that(frames.column(name).drop(10).none { it.isNaN() }).isTrue()
+        }
+        assertWithMessage("the live meter measures muted frames")
+            .that(liveWhileMuted).isGreaterThan(DiagnosticsLimits.SILENCE_DBFS)
     }
 
     @Test
@@ -406,5 +431,7 @@ class CaptureTapsTest {
     private companion object {
         const val FRAME = 480
         const val READ_NANOS = 9_000_000L
+        const val PER_STAGE_COLUMNS = 3
+        const val VAD_HIDDEN_COLUMNS = 4
     }
 }
