@@ -275,9 +275,27 @@ class WebRtcApmPreprocessorTest {
         stage.statisticsEveryFrames = 100
         repeat(250) { stage.process(ShortArray(FRAME)) }
 
-        assertThat(api.statisticsCalls).isEqualTo(2)
+        assertWithMessage("a discarding read at frames 99 and 199, the polls at 100 and 200")
+            .that(api.statisticsCalls).isEqualTo(4)
         assertThat(stage.copyStatistics(out)).isTrue()
         assertThat(out.toList()).containsExactlyElementsIn(STATISTICS.toList()).inOrder()
+    }
+
+    /**
+     * webrtc's one-slot stats queue keeps the first frame after a read. Without the discarding read
+     * one frame before the poll, the poll at frame 30 would answer frame 21's values.
+     */
+    @Test
+    fun `a poll returns the statistics of its own frame`() {
+        api.statisticsForFrame = { n -> FloatArray(6) { n.toFloat() } }
+        val stage = WebRtcApmPreprocessor(api, ONE)
+        stage.statisticsEveryFrames = 10
+        val out = FloatArray(6)
+
+        repeat(30) { stage.process(ShortArray(FRAME)) }
+
+        assertThat(stage.copyStatistics(out)).isTrue()
+        assertThat(out.toList()).containsExactlyElementsIn(List(6) { 30f }).inOrder()
     }
 
     @Test

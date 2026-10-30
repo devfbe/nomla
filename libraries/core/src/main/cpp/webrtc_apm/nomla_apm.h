@@ -188,8 +188,10 @@ float nomla_apm_last_capture_level_dbfs(const nomla_apm *h) NOMLA_APM_NOEXCEPT;
  *
  * Staleness: webrtc passes stats through a one-slot queue. The first capture frame after a read
  * fills it and later frames are dropped until the next read, so a read returns the snapshot of the
- * first capture frame after the previous read (on a handle never read before, frame 1). Polled
- * every N frames, the values are about N - 1 frames old. */
+ * first capture frame after the previous read (on a handle never read before, frame 1). A caller
+ * polling every N frames would get values N - 1 frames old. To read the current frame's values,
+ * do a discarding read after the frame before, so that the current frame refills the empty slot;
+ * WebRtcApmPreprocessor does exactly that. */
 typedef struct {
     float erl_db;                    /* echo return loss, 10 log10(P_far / P_echo); -30 at start */
     float erle_db;                   /* echo return loss enhancement, 10 log10(P_echo / P_out) */

@@ -56,11 +56,26 @@ internal class FakeWebRtcApmApi(
     var levelReads = 0
         private set
 
-    /** What [getStatistics] answers; null answers -5, as the bridge does for a released handle. */
+    /**
+     * What [getStatistics] answers; null answers -5, as the bridge does for a released handle.
+     * Ignored while [statisticsForFrame] is set.
+     */
     var statistics: FloatArray? = null
+
+    /**
+     * When set, [getStatistics] models webrtc's one-slot stats queue: the first accepted capture
+     * frame after a read queues `statisticsForFrame(n)` (n counts accepted capture frames from 1),
+     * later frames are dropped until the next read, and a read takes the queued values (or repeats
+     * the last ones, NaN before any frame).
+     */
+    var statisticsForFrame: ((Int) -> FloatArray)? = null
 
     var statisticsCalls = 0
         private set
+
+    private var acceptedCaptureFrames = 0
+    private var queuedStatistics: FloatArray? = null
+    private var lastStatistics = FloatArray(WebRtcApmApi.STATISTICS_COUNT) { Float.NaN }
 
     /** The length of every near-end frame the bridge accepted, in order. */
     val capturedLengths = mutableListOf<Int>()
@@ -96,6 +111,9 @@ internal class FakeWebRtcApmApi(
         check(handle == HANDLE) { "unknown apm handle $handle" }
         if (frame.size < frameSize) return SHORT_FRAME
         capturedLengths += frame.size
+        acceptedCaptureFrames++
+        val perFrame = statisticsForFrame
+        if (perFrame != null && queuedStatistics == null) queuedStatistics = perFrame(acceptedCaptureFrames)
         onCapture(frame)
         return captureError
     }
@@ -117,7 +135,13 @@ internal class FakeWebRtcApmApi(
     override fun getStatistics(handle: Long, out: FloatArray): Int {
         check(handle == HANDLE) { "unknown apm handle $handle" }
         statisticsCalls++
-        val values = statistics ?: return NULL_POINTER
+        val values = if (statisticsForFrame != null) {
+            queuedStatistics?.let { lastStatistics = it }
+            queuedStatistics = null
+            lastStatistics
+        } else {
+            statistics ?: return NULL_POINTER
+        }
         if (out.size < WebRtcApmApi.STATISTICS_COUNT) return SHORT_FRAME
         values.copyInto(out, endIndex = WebRtcApmApi.STATISTICS_COUNT)
         return WebRtcApmApi.STATISTICS_COUNT

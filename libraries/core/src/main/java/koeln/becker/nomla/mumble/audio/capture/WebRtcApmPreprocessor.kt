@@ -108,9 +108,17 @@ internal class WebRtcApmPreprocessor private constructor(
      * Poll the APM statistics every this many capture frames; 0 (the default) never polls. Set by
      * the diagnostics while they are active; read once per frame on the capture thread.
      *
-     * Real-time: a poll is a JNI call that copies six floats into a preallocated array, with no
-     * allocation. It takes webrtc's stats mutex on the capture thread once per poll. That mutex is
-     * uncontended: the only other taker is this same thread, once per processed frame.
+     * Freshness: webrtc hands statistics over through a one-slot queue. The first capture frame
+     * after a read fills it and later frames are dropped until the next read (see `nomla_apm.h`).
+     * A single read per interval would return the values of the frame after the previous poll,
+     * [statisticsEveryFrames] - 1 frames old, which cannot be correlated in time with audio and
+     * network events. So one frame before each poll a discarding read empties the queue, and the
+     * poll then returns the values of its own frame. That is two `getStatistics` calls per
+     * interval (one when polling every frame, where each poll empties the queue for the next).
+     *
+     * Real-time: each read is a JNI call that copies six floats into a preallocated array, with no
+     * allocation. It takes webrtc's stats mutex on the capture thread. That mutex is uncontended:
+     * the only other taker is this same thread, once per processed frame.
      */
     @Volatile
     var statisticsEveryFrames: Int = 0
@@ -123,10 +131,12 @@ internal class WebRtcApmPreprocessor private constructor(
      * on the capture thread and read by [copyStatistics] on another thread without a lock: a reader
      * may see a mix of two consecutive polls. That tearing is accepted: the values are AEC3
      * snapshots that change slowly once converged, and the readers only display or log them. Each
-     * poll returns the snapshot of the first frame after the previous poll, so it is up to
-     * [statisticsEveryFrames] - 1 frames old (webrtc's one-slot stats queue, see `nomla_apm.h`).
+     * poll holds the snapshot of its own frame (see [statisticsEveryFrames]).
      */
     private val statistics = FloatArray(WebRtcApmApi.STATISTICS_COUNT)
+
+    /** Target of the discarding read one frame before a poll; never published. */
+    private val discardedStatistics = FloatArray(WebRtcApmApi.STATISTICS_COUNT)
 
     /** Successful polls so far; publishes [statistics] (written after the array). */
     @Volatile
@@ -143,14 +153,22 @@ internal class WebRtcApmPreprocessor private constructor(
         return probability
     }
 
-    /** One volatile read per frame while off; no allocation either way. */
+    /**
+     * One volatile read per frame while off; no allocation either way. One frame before the poll,
+     * a discarding read empties webrtc's one-slot stats queue so that the poll frame's own capture
+     * refills it (see [statisticsEveryFrames]).
+     */
     private fun pollStatisticsIfDue(handle: Long) {
         val every = statisticsEveryFrames
         if (every <= 0) {
             framesSinceStatistics = 0
             return
         }
-        if (++framesSinceStatistics < every) return
+        val frames = ++framesSinceStatistics
+        if (frames < every) {
+            if (frames == every - 1) api.getStatistics(handle, discardedStatistics)
+            return
+        }
         framesSinceStatistics = 0
         if (api.getStatistics(handle, statistics) == WebRtcApmApi.STATISTICS_COUNT) statisticsPolls++
     }
