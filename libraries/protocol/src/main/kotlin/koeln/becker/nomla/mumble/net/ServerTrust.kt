@@ -17,10 +17,10 @@
 
 package koeln.becker.nomla.mumble.net
 
+import okhttp3.internal.tls.OkHostnameVerifier
 import java.security.KeyStore
 import java.security.MessageDigest
 import java.security.cert.CertificateException
-import java.security.cert.CertificateParsingException
 import java.security.cert.X509Certificate
 import java.util.Locale
 import javax.net.ssl.X509TrustManager
@@ -54,7 +54,7 @@ public object CertificatePins {
         MessageDigest.getInstance(algorithm).digest(encoded)
 
     /** The trust store alias for [host]: lower case, without a trailing dot. */
-    public fun aliasFor(host: String): String = HostnameMatcher.normalize(host)
+    public fun aliasFor(host: String): String = host.trim().trimEnd('.').lowercase(Locale.ROOT)
 
     /** Pins stored for [host] in [trustStore]; aliases are compared case-insensitively. */
     public fun forHost(trustStore: KeyStore?, host: String): Set<String> {
@@ -68,53 +68,16 @@ public object CertificatePins {
     }
 }
 
-/** RFC 6125 style matching of a host name or IP literal against a certificate's subjectAltNames. */
-internal object HostnameMatcher {
-    private const val SAN_DNS = 2
-    private const val SAN_IP = 7
-
-    internal fun normalize(host: String): String = host.trim().trimEnd('.').lowercase(Locale.ROOT)
-
-    /**
-     * Whether [certificate] names [host]. The subject CN is not consulted. An IP literal is matched
-     * against IP SANs only, and only if it is an exact address ([IpLiteral.parse]).
-     */
-    fun matches(host: String, certificate: X509Certificate): Boolean {
-        val names = try {
-            certificate.subjectAlternativeNames ?: return false
-        } catch (_: CertificateParsingException) {
-            return false
-        }
-        val target = normalize(host.removePrefix("[").removeSuffix("]"))
-        if (target.isEmpty()) return false
-        return if (IpLiteral.isIpLiteral(target)) {
-            val address = IpLiteral.parse(target) ?: return false
-            names.any { it.size >= 2 && it[0] == SAN_IP && (it[1] as? String)?.let(IpLiteral::parse) == address }
-        } else {
-            names.any { it.size >= 2 && it[0] == SAN_DNS && matchesDnsName(target, it[1] as? String) }
-        }
-    }
-
-    private fun matchesDnsName(host: String, pattern: String?): Boolean {
-        if (pattern == null) return false
-        val name = normalize(pattern)
-        if (name.isEmpty()) return false
-        if (!name.contains('*')) return host == name
-        // Only a whole left-most label may be a wildcard, it spans exactly one label, and it must
-        // leave at least two labels (no "*.com").
-        if (!name.startsWith("*.") || name.indexOf('*', 1) != -1) return false
-        val suffix = name.substring(1) // ".example.com"
-        if (suffix.count { it == '.' } < 2) return false
-        if (!host.endsWith(suffix)) return false
-        val label = host.substring(0, host.length - suffix.length)
-        return label.isNotEmpty() && !label.contains('.')
-    }
-}
-
 /**
  * Accepts a server chain the system trusts for [host], or a leaf whose SHA-256 is one of [pins].
  * A chain that is neither fails; it fails with [CertificateChangedException] when [host] has pins,
  * so a changed certificate can be told apart from a first contact.
+ *
+ * Whether the leaf names [host] is decided by OkHttp's [OkHostnameVerifier], the same check on the
+ * JVM and on every Android version: DNS and IP subjectAltNames only (no subject CN), a wildcard
+ * only as the whole left-most label, an IP literal only against IP SANs and only if it is an exact
+ * address. It is not the platform's verifier on purpose: that one sees the socket's host, which an
+ * SRV record or the Tor proxy makes a different one, and it differs between Android versions.
  */
 internal class ServerTrustManager(
     private val system: X509TrustManager,
@@ -141,7 +104,7 @@ internal class ServerTrustManager(
         }
         val systemError = try {
             system.checkServerTrusted(chain, authType)
-            if (HostnameMatcher.matches(host, chain[0])) return
+            if (OkHostnameVerifier.verify(host.trim().removeSurrounding("[", "]"), chain[0])) return
             CertificateException("The certificate does not name $host")
         } catch (e: CertificateException) {
             e

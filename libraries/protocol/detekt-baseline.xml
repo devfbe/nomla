@@ -7,8 +7,6 @@
     <ID>LongParameterList:UdpHealthMonitor.kt$UdpHealthMonitor$( nowMicros: Long, usingUdp: Boolean, first: Sample, localDelta: Int, remoteDelta: Int, carriesBothWays: Boolean, )</ID>
     <ID>ReturnCount:MumbleLegacyPingDecoder.kt$MumbleLegacyPingDecoder$fun decodeAsServer(packet: ByteArray): Long?</ID>
     <ID>ReturnCount:MumbleLegacyPingDecoder.kt$MumbleLegacyPingDecoder$private fun readVarint(b: ByteArray): Long?</ID>
-    <ID>ReturnCount:ServerTrust.kt$HostnameMatcher$fun matches(host: String, certificate: X509Certificate): Boolean</ID>
-    <ID>ReturnCount:ServerTrust.kt$HostnameMatcher$private fun matchesDnsName(host: String, pattern: String?): Boolean</ID>
     <ID>ReturnCount:UdpHealthMonitor.kt$UdpHealthMonitor$fun onTcpPing(nowMicros: Long, localGood: Int, remoteGood: Int, usingUdp: Boolean): Decision</ID>
     <ID>ReturnCount:UdpHealthMonitor.kt$UdpHealthMonitor$private fun decide( nowMicros: Long, usingUdp: Boolean, first: Sample, localDelta: Int, remoteDelta: Int, carriesBothWays: Boolean, ): Decision</ID>
     <ID>TooManyFunctions:FakeTransports.kt$FakeTcpTransport : TcpTransport</ID>

@@ -62,6 +62,8 @@ dependencies {
     // Persistent maps keep each model snapshot O(change) instead of O(server).
     implementation(libs.kotlinx.collections.immutable)
     implementation(libs.minidns.hla)
+    // Its OkHostnameVerifier checks server certificates against the host name; the app ships OkHttp anyway.
+    implementation(libs.okhttp)
 
     testImplementation(libs.junit)
     testImplementation(libs.truth)

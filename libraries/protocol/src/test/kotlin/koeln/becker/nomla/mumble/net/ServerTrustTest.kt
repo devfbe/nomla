@@ -154,6 +154,15 @@ class ServerTrustTest {
         assertThat(m("")).isFalse()
     }
 
+    /** Case folding must not turn a non-ASCII host into a name the certificate carries. */
+    @Test
+    fun `a host with a character that lower-cases to ascii does not match`() {
+        val leaf = TestCertificates.leaf(dnsNames = listOf("kelvin.example.de"))
+        assertThat(check("kelvin.example.de", leaf)).isEqualTo(TrustFailure.NONE)
+        // U+212A KELVIN SIGN lower-cases to "k".
+        assertThat(check("${Char(0x212A)}elvin.example.de", leaf)).isEqualTo(TrustFailure.UNTRUSTED)
+    }
+
     @Test
     fun `a certificate without subjectAltNames matches nothing`() {
         val leaf = TestCertificates.leaf(cn = "mumble.example.org")
