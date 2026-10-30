@@ -440,23 +440,40 @@ class CapturePipelineTest {
             FakeSpeexPreprocessApi(probability = 40, onRun = { f -> for (i in f.indices) f[i] = (f[i] / 2).toShort() })
         },
         rnnoiseApi = {
-            FakeRnnoiseApi(probability = 0.8f, onProcess = { f -> for (i in f.indices) f[i] = (f[i] * 3 / 4).toShort() })
+            FakeRnnoiseApi(
+                probability = 0.8f,
+                onProcess = { f -> for (i in f.indices) f[i] = (f[i] * 3 / 4).toShort() },
+            )
         },
         apmApi = {
-            FakeWebRtcApmApi(levelDbfs = -30f, onCapture = { f -> for (i in f.indices) f[i] = (f[i] - f[i] / 8).toShort() })
+            FakeWebRtcApmApi(
+                levelDbfs = -30f,
+                onCapture = { f -> for (i in f.indices) f[i] = (f[i] - f[i] / 8).toShort() },
+            )
         },
         clock = { 0L },
     )
 
+    /** Whether a run resamples, and how its case is named. */
+    private val rates = listOf(false to "48 kHz", true to "resampled")
+
     private fun run(chain: Chain, mode: () -> InputMode, resampled: Boolean, hub: DiagnosticsHub?): Outputs {
         val inputMode = mode()
         val taps = hub?.let {
-            CaptureTaps(it, pushToTalk = inputMode is ToggleInputMode, vad = (inputMode as? ActivityInputMode)?.detector)
+            CaptureTaps(
+                it,
+                pushToTalk = inputMode is ToggleInputMode,
+                vad = (inputMode as? ActivityInputMode)?.detector,
+            )
         }
         val built = factory().create(chain.noise, chain.echo, taps = taps)
         taps?.attachApm(built.apm)
         val pipeline = CapturePipeline(
-            if (resampled) FakeResampler(3) else null, built.preprocessor, inputMode, amplitudeBoost = 1.5f, taps = taps,
+            if (resampled) FakeResampler(3) else null,
+            built.preprocessor,
+            inputMode,
+            amplitudeBoost = 1.5f,
+            taps = taps,
         )
         val random = Random(SEED)
         val inputLength = if (resampled) 160 else 480
@@ -478,16 +495,20 @@ class CapturePipelineTest {
     }
 
     private fun assertTapsLeaveOutputsIdentical(newHub: () -> DiagnosticsHub) {
-        for (chain in chains) for ((modeName, mode) in modes) for (resampled in listOf(false, true)) {
-            val case = "${chain.name}, $modeName, ${if (resampled) "resampled" else "48 kHz"}"
+        for (chain in chains) for ((modeName, mode) in modes) for ((resampled, rate) in rates) {
+            val case = "${chain.name}, $modeName, $rate"
             val without = run(chain, mode, resampled, hub = null)
-            val with = run(chain, mode, resampled, newHub())
-
-            assertWithMessage("$case transmit").that(with.transmit).isEqualTo(without.transmit)
-            assertWithMessage("$case probability").that(with.probability).isEqualTo(without.probability)
-            val firstDifference = without.samples.indices.firstOrNull { !with.samples[it].contentEquals(without.samples[it]) }
-            assertWithMessage("$case: first frame whose samples differ").that(firstDifference).isNull()
+            assertSameOutputs(case, without, with = run(chain, mode, resampled, newHub()))
         }
+    }
+
+    private fun assertSameOutputs(case: String, without: Outputs, with: Outputs) {
+        assertWithMessage("$case transmit").that(with.transmit).isEqualTo(without.transmit)
+        assertWithMessage("$case probability").that(with.probability).isEqualTo(without.probability)
+        val firstDifference = without.samples.indices.firstOrNull {
+            !with.samples[it].contentEquals(without.samples[it])
+        }
+        assertWithMessage("$case: first frame whose samples differ").that(firstDifference).isNull()
     }
 
     private companion object {

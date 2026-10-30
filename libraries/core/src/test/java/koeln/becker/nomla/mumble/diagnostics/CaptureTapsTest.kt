@@ -47,10 +47,11 @@ class CaptureTapsTest {
     private val clock = NanoClock { now }
     private val hub = DiagnosticsHub(clock = clock)
 
-    private fun frame(value: Int, transmit: Boolean = true) = CaptureFrame(ShortArray(FRAME) { value.toShort() }).apply {
-        length = FRAME
-        this.transmit = transmit
-    }
+    private fun frame(value: Int, transmit: Boolean = true) =
+        CaptureFrame(ShortArray(FRAME) { value.toShort() }).apply {
+            length = FRAME
+            this.transmit = transmit
+        }
 
     /** One capture frame through every tap, as AudioInput, CapturePipeline and the chain call them. */
     private fun CaptureTaps.feed(value: Int, muted: Boolean = false, transmit: Boolean = true) {
@@ -109,7 +110,10 @@ class CaptureTapsTest {
         repeat(10) { taps.feed(2000 + it, muted = false) }
         val recording = hub.disarm()!!
 
-        for (stage in listOf(SendStage.MIC_RAW, SendStage.RESAMPLED, SendStage.APM, SendStage.DENOISED, SendStage.GATED)) {
+        val pcmStages = listOf(
+            SendStage.MIC_RAW, SendStage.RESAMPLED, SendStage.APM, SendStage.DENOISED, SendStage.GATED,
+        )
+        for (stage in pcmStages) {
             assertWithMessage("$stage").that(recording.firstSamples(stage))
                 .isEqualTo(List(10) { 0 } + List(10) { 2000 + it })
         }
@@ -148,7 +152,8 @@ class CaptureTapsTest {
         assertThat(vadRecording.firstSamples(SendStage.MIC_RAW)).isEqualTo(listOf(500, 500, 500))
         assertThat(vadRecording.firstSamples(SendStage.DENOISED).all { it != 0 }).isTrue()
         assertThat(vadRecording.firstSamples(SendStage.GATED)).isEqualTo(listOf(0, 0, 0))
-        assertThat(vadRecording.frames.freeze(vadRecording.t0Nanos).column("send_allowed")).isEqualTo(listOf(1f, 1f, 1f))
+        assertThat(vadRecording.frames.freeze(vadRecording.t0Nanos).column("send_allowed"))
+            .isEqualTo(listOf(1f, 1f, 1f))
     }
 
     /**

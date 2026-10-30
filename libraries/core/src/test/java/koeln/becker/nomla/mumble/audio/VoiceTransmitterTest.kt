@@ -331,7 +331,8 @@ class VoiceTransmitterTest {
         val hub = DiagnosticsHub()
         val ptt = ToggleInputMode()
         val taps = CaptureTaps(hub, pushToTalk = true, vad = null)
-        val transmitter = VoiceTransmitter(CapturePipeline(null, NoopPreprocessor, ptt, taps = taps), RecordingListener(), taps)
+        val pipeline = CapturePipeline(null, NoopPreprocessor, ptt, taps = taps)
+        val transmitter = VoiceTransmitter(pipeline, RecordingListener(), taps)
             .apply { setCodec(NomlaUdpMessageType.UDPVoiceOpus) { FirstSampleEncoder() } }
         hub.arm(5)
 
@@ -343,7 +344,9 @@ class VoiceTransmitterTest {
         val recording = hub.disarm()!!
 
         val frames = recording.frames.freeze(recording.t0Nanos)
-        fun column(name: String) = frames.columns.indexOf(name).let { c -> List(frames.rows) { frames.values[it * frames.columns.size + c] } }
+        fun column(name: String) = frames.columns.indexOf(name).let { c ->
+            List(frames.rows) { frames.values[it * frames.columns.size + c] }
+        }
         assertThat(column("transmit")).containsExactly(0f, 0f, 1f, 1f, 1f, 1f).inOrder()
         assertThat(column("muted")).containsExactly(0f, 0f, 0f, 0f, 1f, 1f).inOrder()
         assertThat(column("send_allowed")).containsExactly(0f, 0f, 1f, 1f, 0f, 0f).inOrder()

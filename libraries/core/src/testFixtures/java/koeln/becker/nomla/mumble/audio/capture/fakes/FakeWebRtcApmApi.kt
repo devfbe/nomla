@@ -140,11 +140,16 @@ internal class FakeWebRtcApmApi(
             queuedStatistics = null
             lastStatistics
         } else {
-            statistics ?: return NULL_POINTER
+            statistics
         }
-        if (out.size < WebRtcApmApi.STATISTICS_COUNT) return SHORT_FRAME
-        values.copyInto(out, endIndex = WebRtcApmApi.STATISTICS_COUNT)
-        return WebRtcApmApi.STATISTICS_COUNT
+        return when {
+            values == null -> NULL_POINTER
+            out.size < WebRtcApmApi.STATISTICS_COUNT -> SHORT_FRAME
+            else -> {
+                values.copyInto(out, endIndex = WebRtcApmApi.STATISTICS_COUNT)
+                WebRtcApmApi.STATISTICS_COUNT
+            }
+        }
     }
 
     override fun destroy(handle: Long) {

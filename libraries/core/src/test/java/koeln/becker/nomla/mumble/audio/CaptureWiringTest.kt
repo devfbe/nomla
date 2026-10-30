@@ -275,7 +275,10 @@ class CaptureWiringTest {
     @Test
     fun `the wiring names the stages it built`() {
         val wiring = wire(
-            NoiseSuppressionMode.RNNOISE, EchoCancellationMode.WEBRTC, apmFactory(FakeWebRtcApmApi()), sampleRate = 16000,
+            NoiseSuppressionMode.RNNOISE,
+            EchoCancellationMode.WEBRTC,
+            apmFactory(FakeWebRtcApmApi()),
+            sampleRate = 16000,
         ) { _, _ -> FakeResampler(3) }
 
         assertThat(wiring.stagesPresent).containsExactlyElementsIn(SendStage.entries)
