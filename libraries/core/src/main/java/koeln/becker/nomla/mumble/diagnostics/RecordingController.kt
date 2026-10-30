@@ -95,7 +95,7 @@ internal class RecordingController(
     )
 
     fun startRecording(seconds: Int): RecordingStart {
-        val refusal = refusalFor(seconds) ?: arm(seconds)
+        val refusal = refusalFor(seconds) ?: dropFinishedThenArm(seconds)
         if (refusal != null) return RecordingStart.Refused(refusal)
         val recording = ++generation
         val startedAtEpochMs = epochMs()
@@ -143,6 +143,15 @@ internal class RecordingController(
             !settings.recordingAllowed -> RecordingRefusal.SERVER_FORBIDS
             else -> null
         }
+    }
+
+    /**
+     * Drops a finished capture first, so two captures never sit in memory at once, then allocates
+     * and arms the rings.
+     */
+    private fun dropFinishedThenArm(seconds: Int): RecordingRefusal? {
+        discardRecording()
+        return arm(seconds)
     }
 
     /** Allocates and arms the rings; nothing is armed or sent when they do not fit. */

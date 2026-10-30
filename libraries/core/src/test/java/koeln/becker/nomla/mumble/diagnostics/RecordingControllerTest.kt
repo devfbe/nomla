@@ -271,6 +271,42 @@ class RecordingControllerTest {
         assertThat(flags).containsExactly(true, false, true).inOrder()
     }
 
+    /** Two captures never sit in memory at once: the finished one is gone before the rings are allocated. */
+    @Test
+    fun `a new recording drops the previous capture before it allocates`() {
+        val statesAtArm = mutableListOf<RecordingState>()
+        lateinit var recordings: RecordingController
+        val observing = DiagnosticsHub(
+            clock = NanoClock { nowMs * NANOS_PER_MS },
+            allocate = { seconds, t0 ->
+                statesAtArm += recordings.recording.value
+                ArmedRecording(seconds, t0)
+            },
+        )
+        recordings = controller(observing)
+        recordings.startRecording(DEFAULT_SECONDS)
+        finishTimers()
+        assertThat(recordings.recording.value).isInstanceOf(RecordingState.Finished::class.java)
+
+        recordings.startRecording(SHORT_SECONDS)
+
+        assertThat(statesAtArm).containsExactly(RecordingState.Idle(), RecordingState.Idle()).inOrder()
+    }
+
+    /** A refused start keeps the finished capture: only a start that allocates drops it. */
+    @Test
+    fun `a refused start keeps the finished capture`() {
+        val recordings = controller()
+        recordings.startRecording(DEFAULT_SECONDS)
+        finishTimers()
+
+        synchronized = false
+        assertThat(recordings.startRecording(DEFAULT_SECONDS))
+            .isEqualTo(RecordingStart.Refused(RecordingRefusal.NOT_CONNECTED))
+
+        assertThat(recordings.recording.value).isInstanceOf(RecordingState.Finished::class.java)
+    }
+
     @Test
     fun `discard drops a finished capture`() {
         val recordings = controller()
