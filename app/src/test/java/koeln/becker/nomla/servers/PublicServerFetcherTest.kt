@@ -45,7 +45,7 @@ class PublicServerFetcherTest {
     }
 
     private fun fetch(client: OkHttpClient = PublicServerFetcher.defaultClient) =
-        PublicServerFetcher(server.url("/list2.cgi"), client).fetchBlocking()
+        PublicServerFetcher(server.url("/v1/list"), client).fetchBlocking()
 
     private fun respond(body: String, code: Int = 200) =
         server.enqueue(MockResponse.Builder().code(code).body(body).build())
@@ -65,7 +65,10 @@ class PublicServerFetcherTest {
         assertThat(entry.server.port).isEqualTo(64738)
         val request = server.takeRequest()
         assertThat(request.method).isEqualTo("GET")
-        assertThat(request.headers["version"]).isEqualTo(Constants.PROTOCOL_STRING)
+        assertThat(request.url.encodedPath).isEqualTo("/v1/list")
+        assertThat(request.url.queryParameter("version")).isEqualTo(Constants.PROTOCOL_STRING)
+        // The list service answers 501 to a request that does not accept gzip.
+        assertThat(request.headers["Accept-Encoding"]).contains("gzip")
     }
 
     @Test

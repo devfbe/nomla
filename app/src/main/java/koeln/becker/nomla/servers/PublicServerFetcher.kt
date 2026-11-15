@@ -34,7 +34,8 @@ import koeln.becker.nomla.db.PublicServer
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
-private const val MUMBLE_PUBLIC_URL = "https://mumble.info/list2.cgi"
+/** The list service of the Mumble project, which the desktop client asks as well. */
+private const val MUMBLE_PUBLIC_URL = "https://publist.mumble.info/v1/list"
 
 private const val TAG = "PublicServerFetcher"
 
@@ -50,7 +51,8 @@ private const val FIRST_ERROR_STATUS = 400
 /**
  * Downloads the public Mumble server list. Whether to download at all (not over Tor) is the
  * caller's decision. The client uses the system's proxy settings and follows redirects within the
- * same scheme only, as HttpURLConnection did.
+ * same scheme only, as HttpURLConnection did. It asks for gzip, as OkHttp does by itself; the
+ * service answers 501 to a request that does not.
  */
 class PublicServerFetcher(
     private val url: HttpUrl = MUMBLE_PUBLIC_URL.toHttpUrl(),
@@ -62,9 +64,8 @@ class PublicServerFetcher(
     @VisibleForTesting
     internal fun fetchBlocking(): List<PublicServer>? = try {
         val request = Request.Builder()
-            .url(url)
+            .url(url.newBuilder().setQueryParameter("version", Constants.PROTOCOL_STRING).build())
             .get()
-            .addHeader("version", Constants.PROTOCOL_STRING)
             .build()
         client.newCall(request).execute().use { response ->
             // HttpURLConnection threw on these when the body was read; the mapping stays the same.
