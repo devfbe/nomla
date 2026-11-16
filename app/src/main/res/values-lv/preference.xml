@@ -114,6 +114,8 @@
     <string name="voiceActivitySettings">Balss aktivitātes iestatījumi</string>
     <string name="echoCancellationVoiceCallSource">Atbalss slāpēšana zvana mikrofonā</string>
     <string name="echoCancellationVoiceCallSourceSum">Pievieno tālruņa zvana apstrādi. Var saraustīt runu</string>
+    <string name="bluetoothMediaPlayback">Tālruņa mikrofons ar Bluetooth austiņām</string>
+    <string name="bluetoothMediaPlaybackSum">Eksperimentāli. Austiņas mūzikas kvalitātē, ar aizkavi</string>
     <string name="hidePtt">Paslēpt pogu „Spied, lai runātu”</string>
     <string name="hidePttSum">Ja izmantojat „Spied, lai runātu” stūri vai taustiņu</string>
     <string name="useTts">Runas sintēze</string>

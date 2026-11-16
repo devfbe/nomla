@@ -24,6 +24,7 @@ import koeln.becker.nomla.mumble.audio.capture.EchoCancellationMode
 import koeln.becker.nomla.mumble.audio.capture.NoiseSuppressionMode
 import koeln.becker.nomla.mumble.audio.capture.RnnoisePreprocessor
 import koeln.becker.nomla.mumble.audio.capture.SpeexPreprocessor
+import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 
 /** The user's settings the audio pipeline is built from, handed through unchanged. */
 public data class PipelineSettings(
@@ -78,12 +79,36 @@ internal data class AudioConfig(
      */
     val routedDeviceType: Int? = null,
     val echoCancellation: EchoCancellationMode = EchoCancellationMode.NONE,
+    /**
+     * Voice plays to [routedDeviceType] as media while the phone's microphone records
+     * (`AudioRouter.isMediaRoute`): no communication mode, so nothing below may ask for one.
+     */
+    val mediaPlayback: Boolean = false,
 ) {
     /**
      * The stream the playback track is opened on: the configured one while nothing is routed, the
      * voice-call stream otherwise, because a media-stream track does not follow the communication
-     * device.
+     * device. A media route plays on the music stream, the one that reaches a headset as A2DP.
      */
     val playbackStream: Int
-        get() = if (routedDeviceType != null) AudioManager.STREAM_VOICE_CALL else settings.audioStream
+        get() = when {
+            mediaPlayback -> AudioManager.STREAM_MUSIC
+            routedDeviceType != null -> AudioManager.STREAM_VOICE_CALL
+            else -> settings.audioStream
+        }
+
+    /** The platform effects on the recorder; none on a media route, as they take the communication mode. */
+    val androidEffects: AndroidAudioEffects
+        get() = if (mediaPlayback) AndroidAudioEffects() else settings.androidEffects
+
+    /**
+     * The kind of device capture follows, for `AudioSourcePolicy`. Null on a media route: the
+     * headset only plays, and its kind would move capture to the call source.
+     */
+    val captureRoute: AudioDeviceCategory?
+        get() = routedDeviceType?.takeUnless { mediaPlayback }?.let(AudioDeviceCategory::of)
+
+    /** `PipelineSettings.echoCancellationVoiceCallSource`, never on a media route. */
+    val voiceCallSource: Boolean
+        get() = settings.echoCancellationVoiceCallSource && !mediaPlayback
 }

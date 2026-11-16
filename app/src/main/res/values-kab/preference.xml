@@ -116,6 +116,8 @@
     <string name="voiceActivitySettings">Iɣewwaren n urmud aɣectan</string>
     <string name="echoCancellationVoiceCallSource">Tukksa n tuɣalin n imesli ɣef usawaḍ n usiwel</string>
     <string name="echoCancellationVoiceCallSourceSum">Yerna asesmes n usiwel n tiliɣri. Yezmer ad yegzem awal</string>
+    <string name="bluetoothMediaPlayback">Asawaḍ n tiliɣri s Bluetooth</string>
+    <string name="bluetoothMediaPlaybackSum">Armitan. Taɣara n uẓawan, s uɛeṭṭel</string>
     <string name="hidePtt">Ffer taqeffalt n «sit akken ad temmeslayeḍ»</string>
     <string name="hidePttSum">Mi ara tesseqdaceḍ tiɣmert neɣ tasarut</string>
     <string name="useTts">Aḍris ɣer taɣect</string>

@@ -111,6 +111,8 @@
     <string name="voiceActivitySettings">Configurações da ativação por voz</string>
     <string name="echoCancellationVoiceCallSource">Cancelamento de eco no microfone de chamada</string>
     <string name="echoCancellationVoiceCallSourceSum">Adiciona o processamento de chamada; pode cortar a fala</string>
+    <string name="bluetoothMediaPlayback">Microfone do telefone com fone Bluetooth</string>
+    <string name="bluetoothMediaPlaybackSum">Experimental. Fone com qualidade de música e atraso</string>
     <string name="hidePtt">Ocultar botão Pressione para falar</string>
     <string name="hidePttSum">Quando você usa o canto do Pressione para falar ou uma tecla</string>
     <string name="useTts">Texto para fala</string>

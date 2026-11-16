@@ -642,4 +642,91 @@ class AudioRouterTest {
         assertThat(devices.listenerRegistrations).isEqualTo(2)
         assertThat(devices.listener).isNull()
     }
+
+    /**
+     * Bluetooth media playback: the headset is decided for but never made the communication device,
+     * and the communication mode is never taken, so the platform plays to it as media and records
+     * on the phone.
+     */
+    @Test
+    fun aMediaRouteLeavesTheHeadsetAndTheModeToThePlatform() {
+        phone()
+        devices.available[7] = TYPE_BLUETOOTH_SCO
+        router.bluetoothMedia = true
+
+        engaged()
+
+        assertThat(devices.selectCalls).isEmpty()
+        assertThat(devices.modeCalls).isEmpty()
+        assertThat(router.isMediaRoute).isTrue()
+        assertThat(router.activeDevice()?.id).isEqualTo(7)
+        assertThat(routes).containsExactly(TYPE_BLUETOOTH_SCO)
+    }
+
+    @Test
+    fun mediaPlaybackLeavesEveryOtherDeviceOnTheCallRoute() {
+        phone()
+        router.bluetoothMedia = true
+
+        engaged()
+
+        assertThat(devices.selectedId).isEqualTo(2)
+        assertThat(devices.inCommunicationMode).isTrue()
+        assertThat(router.isMediaRoute).isFalse()
+    }
+
+    @Test
+    fun aMediaRouteEndsWhenTheHeadsetLeaves() {
+        phone()
+        devices.available[7] = TYPE_BLUETOOTH_SCO
+        router.bluetoothMedia = true
+        engaged()
+
+        devices.deviceLeaves(7)
+
+        assertThat(router.isMediaRoute).isFalse()
+        assertThat(devices.inCommunicationMode).isTrue()
+        assertThat(devices.selectedId).isEqualTo(2)
+        assertThat(routes).containsExactly(TYPE_BLUETOOTH_SCO, TYPE_BUILTIN_SPEAKER).inOrder()
+    }
+
+    /** The type stays the headset's, yet each switch is reported: the pipeline differs. */
+    @Test
+    fun switchingMediaPlaybackMovesARoutedHeadsetBetweenTheCallAndTheMediaRoute() {
+        phone()
+        devices.available[7] = TYPE_BLUETOOTH_SCO
+        engaged()
+        assertThat(devices.selectedId).isEqualTo(7)
+
+        router.bluetoothMedia = true
+        router.apply()
+
+        assertThat(devices.selectedId).isNull()
+        assertThat(devices.inCommunicationMode).isFalse()
+        assertThat(router.isMediaRoute).isTrue()
+        assertThat(routes).containsExactly(TYPE_BLUETOOTH_SCO, TYPE_BLUETOOTH_SCO).inOrder()
+
+        router.bluetoothMedia = false
+        router.apply()
+
+        assertThat(devices.selectedId).isEqualTo(7)
+        assertThat(devices.inCommunicationMode).isTrue()
+        assertThat(router.isMediaRoute).isFalse()
+        assertThat(routes).hasSize(3)
+    }
+
+    @Test
+    fun aMediaRouteIsGivenUpWithTheSession() {
+        phone()
+        devices.available[7] = TYPE_BLUETOOTH_SCO
+        router.bluetoothMedia = true
+        engaged()
+
+        router.disengage()
+
+        assertThat(router.isMediaRoute).isFalse()
+        assertThat(router.activeDevice()).isNull()
+        assertThat(devices.modeCalls).isEmpty()
+        assertThat(routes).containsExactly(TYPE_BLUETOOTH_SCO, null).inOrder()
+    }
 }

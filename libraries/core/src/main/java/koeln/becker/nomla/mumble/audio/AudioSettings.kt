@@ -45,21 +45,28 @@ public data class AudioSettings(
     val preferredDevice: PreferredAudioDevice? = null,
     /** Take a connected Bluetooth headset automatically, now and whenever one connects. */
     val bluetoothAutomatic: Boolean = false,
+    /**
+     * Experimental: play to a Bluetooth headset as media (A2DP) and record on the phone's own
+     * microphone, instead of the headset's call link in both directions; see `AudioRouter`.
+     */
+    val bluetoothMediaPlayback: Boolean = false,
     val pipeline: PipelineSettings = PipelineSettings(),
 ) {
     /**
      * What a pipeline for a route to [routedDeviceType] is built from. The echo canceller is the
      * user's override for that kind of device, else the kind's default; with no route there is no
-     * canceller, since nothing plays that could echo.
+     * canceller, since nothing plays that could echo. On a media route ([mediaPlayback]) there is
+     * none either: it would take the communication mode, which moves playback off the media path.
      */
-    internal fun toAudioConfig(routedDeviceType: Int?): AudioConfig {
-        val echo = routedDeviceType?.let(AudioDeviceCategory::of)
+    internal fun toAudioConfig(routedDeviceType: Int?, mediaPlayback: Boolean = false): AudioConfig {
+        val echo = !mediaPlayback && routedDeviceType?.let(AudioDeviceCategory::of)
             ?.let { echoCancellationOverrides[it] ?: it.echoCancellationByDefault } == true
         return AudioConfig(
             settings = pipeline,
             halfDuplex = halfDuplex && transmitMode == TransmitMode.PUSH_TO_TALK,
             routedDeviceType = routedDeviceType,
             echoCancellation = if (echo) EchoCancellationMode.WEBRTC else EchoCancellationMode.NONE,
+            mediaPlayback = mediaPlayback,
         )
     }
 }

@@ -152,6 +152,8 @@
     <string name="language">Språk</string>
     <string name="echoCancellationVoiceCallSource">Ekkodemping på samtalemikrofonen</string>
     <string name="echoCancellationVoiceCallSourceSum">Legger til telefonens samtalebehandling; kan hakke</string>
+    <string name="bluetoothMediaPlayback">Telefonens mikrofon med Bluetooth-hodesett</string>
+    <string name="bluetoothMediaPlaybackSum">Eksperimentell. Hodesett i musikkvalitet, med forsinkelse</string>
     <string name="holdToWhisperSum">Hvisk bare mens du holder hviskeknappen inne</string>
     <string name="controlBarPosition">Plassering av kontrollinjen</string>
     <string name="controlBarPositionTop">Øverst</string>

@@ -152,6 +152,8 @@
     <string name="language">Nyelv</string>
     <string name="echoCancellationVoiceCallSource">Visszhangszűrés a hívásmikrofonon</string>
     <string name="echoCancellationVoiceCallSourceSum">A telefon hívásfeldolgozása, mint korábban. Szaggathat</string>
+    <string name="bluetoothMediaPlayback">A telefon mikrofonja Bluetooth-fejhallgatóval</string>
+    <string name="bluetoothMediaPlaybackSum">Kísérleti. Fejhallgató zenei minőségben, késleltetéssel</string>
     <string name="holdToWhisperSum">Csak a suttogás gomb nyomva tartása alatt suttog</string>
     <string name="controlBarPosition">Vezérlősáv helye</string>
     <string name="controlBarPositionTop">Fent</string>

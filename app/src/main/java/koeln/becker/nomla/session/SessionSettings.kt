@@ -61,6 +61,7 @@ object SessionSettings {
         Settings.INPUT_RATE.key,
         Settings.FRAMES_PER_PACKET.key,
         Settings.BLUETOOTH_SCO.key,
+        Settings.BLUETOOTH_MEDIA_PLAYBACK.key,
     )
 
     /** [base] with every audio setting replaced by the user's current choice. */
@@ -74,6 +75,7 @@ object SessionSettings {
         echoCancellationOverrides = settings.echoCancellationOverrides,
         preferredDevice = settings.preferredAudioDevice,
         bluetoothAutomatic = settings.isBluetoothScoEnabled,
+        bluetoothMediaPlayback = settings.isBluetoothMediaPlayback,
         pipeline = PipelineSettings(
             audioStream = Settings.PLAYBACK_STREAM,
             inputSampleRate = settings.inputSampleRate,

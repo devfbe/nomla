@@ -152,6 +152,8 @@
     <string name="accountAndCertificates">Konto &amp; certifikat</string>
     <string name="echoCancellationVoiceCallSource">Ekoreducering på samtalsmikrofonen</string>
     <string name="echoCancellationVoiceCallSourceSum">Lägger till telefonens samtalsbehandling; kan hacka talet</string>
+    <string name="bluetoothMediaPlayback">Telefonens mikrofon med Bluetooth-headset</string>
+    <string name="bluetoothMediaPlaybackSum">Experimentell. Headset i musikkvalitet, med fördröjning</string>
     <string name="holdToWhisperSum">Viska bara medan viskknappen hålls ned</string>
     <string name="controlBarPosition">Kontrollfältets placering</string>
     <string name="controlBarPositionTop">Överst</string>

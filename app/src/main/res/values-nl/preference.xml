@@ -139,6 +139,8 @@
     <string name="language">Taal</string>
     <string name="echoCancellationVoiceCallSource">Echo-onderdrukking op de gespreksmicrofoon</string>
     <string name="echoCancellationVoiceCallSourceSum">Voegt de gespreksverwerking van de telefoon toe; kan haperen</string>
+    <string name="bluetoothMediaPlayback">Telefoonmicrofoon met bluetooth-headset</string>
+    <string name="bluetoothMediaPlaybackSum">Experimenteel. Headset in muziekkwaliteit, met vertraging</string>
     <string name="shortTtsMessages">Verkorte Text-to-Speech-berichten</string>
     <string name="shortTtsMessagesSum">Lees bij links alleen de domeinnaam voor</string>
     <string name="holdToWhisperSum">Fluister alleen zolang je de fluisterknop ingedrukt houdt</string>

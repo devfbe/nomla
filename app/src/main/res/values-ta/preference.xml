@@ -152,6 +152,8 @@
     <string name="language">மொழி</string>
     <string name="echoCancellationVoiceCallSource">அழைப்பு ஓரியில் எதிரொலி நீக்கம்</string>
     <string name="echoCancellationVoiceCallSourceSum">முன்புபோல் அழைப்புச் செயலாக்கம்; பேச்சு துண்டாகலாம்</string>
+    <string name="bluetoothMediaPlayback">புளூடூத் ஹெட்செட்டுடன் தொலைபேசி மைக்</string>
+    <string name="bluetoothMediaPlaybackSum">சோதனை. ஹெட்செட் இசைத் தரத்தில், தாமதத்துடன்</string>
     <string name="holdToWhisperSum">கத்து பொத்தானைப் பிடிக்கும்போது மட்டும் கத்து</string>
     <string name="controlBarPosition">கட்டுப்பாட்டுப் பட்டையின் இடம்</string>
     <string name="controlBarPositionTop">மேலே</string>

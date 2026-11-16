@@ -111,6 +111,8 @@
     <string name="voiceActivitySettings">Puheaktivoinnin asetukset</string>
     <string name="echoCancellationVoiceCallSource">Kaiunpoisto puhelumikrofonissa</string>
     <string name="echoCancellationVoiceCallSourceSum">Lisää puhelimen puhelukäsittelyn; voi katkoa puhetta</string>
+    <string name="bluetoothMediaPlayback">Puhelimen mikrofoni Bluetooth-kuulokkeiden kanssa</string>
+    <string name="bluetoothMediaPlaybackSum">Kokeellinen. Kuulokkeissa musiikkilaatu, mutta viivettä</string>
     <string name="hidePtt">Piilota puhepikanäppäin</string>
     <string name="hidePttSum">Kun käytät puhepikakulmaa tai näppäintä</string>
     <string name="useTts">Tekstistä puheeksi</string>

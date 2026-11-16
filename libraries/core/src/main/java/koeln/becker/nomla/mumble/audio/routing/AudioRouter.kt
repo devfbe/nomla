@@ -33,6 +33,11 @@ import android.media.AudioDeviceInfo
  * (or the preferred one) takes over (newest wins). Only a change of the device set triggers a
  * new decision, so the router doesn't fight the dialler during a call. Nothing touches the platform
  * before [engage], so no SCO link is held open without a voice session.
+ *
+ * With [bluetoothMedia] a Bluetooth headset is decided for as before but not routed to: the router
+ * gives the communication device and the communication mode back, so no call link (SCO) is opened,
+ * playback reaches the headset as media (A2DP, music quality) and the phone's own microphone
+ * records. [isMediaRoute] says so; every other device is routed as always.
  */
 internal class AudioRouter(
     private val devices: CommunicationDevices,
@@ -47,6 +52,9 @@ internal class AudioRouter(
     }
 
     var bluetoothAutomatic: Boolean = false
+
+    /** Play to a Bluetooth headset as media and record on the phone; the next [apply] routes by it. */
+    var bluetoothMedia: Boolean = false
 
     /**
      * The device the user saved, across sessions; null for the automatic default alone. A new one
@@ -73,12 +81,19 @@ internal class AudioRouter(
     /** Whether the current route is one this router selected and may give back. */
     private var claimed = false
 
+    /** The headset voice plays to as media, while [bluetoothMedia] keeps it off the call route. */
+    private var mediaTarget: CommunicationDevice? = null
+
+    /** Whether voice plays to a Bluetooth headset as media instead of over a route this router took. */
+    val isMediaRoute: Boolean get() = mediaTarget != null
+
     private var modeHeld = false
 
     /** Device ids present at the last decision; anything else has just arrived. */
     private var known: Set<Int> = emptySet()
 
-    private var lastRouted: Int? = null
+    /** The routed type and whether it is a media route, as last reported. */
+    private var lastRouted: Pair<Int?, Boolean> = null to false
 
     private var applying = false
 
@@ -91,10 +106,6 @@ internal class AudioRouter(
 
     fun engage() {
         isEngaged = true
-        if (!modeHeld) {
-            devices.setCommunicationMode(true)
-            modeHeld = true
-        }
         val available = devices.available()
         known = available.mapTo(HashSet()) { it.id }
         if (choice == null) {
@@ -108,10 +119,7 @@ internal class AudioRouter(
     fun disengage() {
         isEngaged = false
         apply()
-        if (modeHeld) {
-            devices.setCommunicationMode(false)
-            modeHeld = false
-        }
+        holdMode(false)
     }
 
     fun choose(id: Int) {
@@ -130,8 +138,8 @@ internal class AudioRouter(
     fun availableDevices(): List<CommunicationDevice> =
         if (isEngaged) devices.available() else emptyList()
 
-    /** The device voice goes to, or null without a session. */
-    fun activeDevice(): CommunicationDevice? = if (isEngaged) devices.current() else null
+    /** The device voice goes to, on a media route the headset it plays to; null without a session. */
+    fun activeDevice(): CommunicationDevice? = if (isEngaged) mediaTarget ?: devices.current() else null
 
     fun apply() {
         if (applying) return
@@ -150,6 +158,7 @@ internal class AudioRouter(
 
     private fun decide() {
         if (!isEngaged) {
+            mediaTarget = null
             giveBack()
             return
         }
@@ -162,11 +171,26 @@ internal class AudioRouter(
         if (chosen == null || chosen.id == automatic?.id) choice = null
         if (choice != seeded) seeded = null
         val target = if (choice != null) chosen else automatic
+        mediaTarget = target?.takeIf { bluetoothMedia && it.type in BLUETOOTH }
+        if (mediaTarget != null) {
+            // The route first, then the mode: nothing of the call route is left to follow the mode.
+            giveBack()
+            holdMode(false)
+            return
+        }
+        holdMode(true)
         if (target == null) {
             giveBack()
         } else if (!claimed || devices.current()?.id != target.id) {
             if (devices.select(target.id)) claimed = true else listener.onRouteRefused()
         }
+    }
+
+    /** Takes or gives back the communication mode, once per change. */
+    private fun holdMode(on: Boolean) {
+        if (modeHeld == on) return
+        devices.setCommunicationMode(on)
+        modeHeld = on
     }
 
     private fun automatic(available: List<CommunicationDevice>): CommunicationDevice? {
@@ -199,10 +223,11 @@ internal class AudioRouter(
     }
 
     private fun notifyIfChanged() {
-        val routed = if (claimed) devices.current()?.type else null
+        val media = mediaTarget
+        val routed = (media?.type ?: if (claimed) devices.current()?.type else null) to (media != null)
         if (routed == lastRouted) return
         lastRouted = routed
-        listener.onRouteChanged(routed)
+        listener.onRouteChanged(routed.first)
     }
 
     companion object {

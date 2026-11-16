@@ -152,6 +152,8 @@
     <string name="accountAndCertificates">帳號與憑證</string>
     <string name="echoCancellationVoiceCallSource">在通話麥克風上進行回音消除</string>
     <string name="echoCancellationVoiceCallSourceSum">如以往加入手機的通話處理，可能使語音斷續</string>
+    <string name="bluetoothMediaPlayback">藍牙耳機搭配手機麥克風</string>
+    <string name="bluetoothMediaPlaybackSum">實驗性功能。耳機以音樂音質播放，但有延遲</string>
     <string name="holdToWhisperSum">只在按住廣播按鈕時廣播</string>
     <string name="controlBarPosition">控制列位置</string>
     <string name="controlBarPositionTop">頂端</string>

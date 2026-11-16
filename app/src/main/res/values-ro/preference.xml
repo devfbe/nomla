@@ -111,6 +111,8 @@
     <string name="voiceActivitySettings">Setări activitate vocală</string>
     <string name="echoCancellationVoiceCallSource">Anularea ecoului pe microfonul de apel</string>
     <string name="echoCancellationVoiceCallSourceSum">Adaugă procesarea de apel a telefonului. Poate tăia vocea</string>
+    <string name="bluetoothMediaPlayback">Microfonul telefonului cu căști Bluetooth</string>
+    <string name="bluetoothMediaPlaybackSum">Experimental. Căști la calitate de muzică, cu întârziere</string>
     <string name="hidePtt">Ascunde butonul push-to-talk</string>
     <string name="hidePttSum">Când folosești colțul push-to-talk sau o tastă</string>
     <string name="useTts">Sinteză vocală</string>

@@ -80,7 +80,7 @@ internal class AudioSession(
     /** Whether the platform silences the running pipeline's microphone. */
     val captureSilenced: StateFlow<Boolean> = mutableCaptureSilenced.asStateFlow()
 
-    val config: AudioConfig get() = settings.toAudioConfig(mutableRoute.value)
+    val config: AudioConfig get() = settings.toAudioConfig(mutableRoute.value, router.isMediaRoute)
 
     private val toggleInputMode = ToggleInputMode()
     val activityInputMode = ActivityInputMode(VoiceActivityDetector(settings.vad))
@@ -101,6 +101,7 @@ internal class AudioSession(
     ).apply {
         preferred = settings.preferredDevice
         bluetoothAutomatic = settings.bluetoothAutomatic
+        bluetoothMedia = settings.bluetoothMediaPlayback
     }
 
     /** One controller and one thread for the life of this object; [release] quits it. */
@@ -132,11 +133,13 @@ internal class AudioSession(
         if (changed.isNotEmpty()) onEvent(SETTINGS_CHANGED, changed.joinToString(",") { it.first })
         inputMode = inputModeFor(next.transmitMode)
         activityInputMode.setVadConfig(next.vad)
-        val routing = next.preferredDevice to next.bluetoothAutomatic
-        if (routing != previous.preferredDevice to previous.bluetoothAutomatic) {
+        val routing = Triple(next.preferredDevice, next.bluetoothAutomatic, next.bluetoothMediaPlayback)
+        val routed = Triple(previous.preferredDevice, previous.bluetoothAutomatic, previous.bluetoothMediaPlayback)
+        if (routing != routed) {
             // A user's explicit choice is left standing; one the old preference seeded is not.
             router.preferred = next.preferredDevice
             router.bluetoothAutomatic = next.bluetoothAutomatic
+            router.bluetoothMedia = next.bluetoothMediaPlayback
             router.apply()
         }
         controller.reconfigure(config, inputMode)
@@ -202,6 +205,7 @@ internal class AudioSession(
             "echo_cancellation_overrides" to { it.echoCancellationOverrides },
             "preferred_device" to { it.preferredDevice },
             "bluetooth_automatic" to { it.bluetoothAutomatic },
+            "bluetooth_media_playback" to { it.bluetoothMediaPlayback },
             "audio_stream" to { it.pipeline.audioStream },
             "audio_source" to { it.pipeline.audioSource },
             "input_sample_rate" to { it.pipeline.inputSampleRate },

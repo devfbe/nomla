@@ -155,6 +155,8 @@
     <string name="accountAndCertificates">Аккаунт и сертификаты</string>
     <string name="echoCancellationVoiceCallSource">Эхоподавление на микрофоне звонков</string>
     <string name="echoCancellationVoiceCallSourceSum">Добавляет обработку звонков телефона. Может обрывать речь</string>
+    <string name="bluetoothMediaPlayback">Микрофон телефона с Bluetooth-гарнитурой</string>
+    <string name="bluetoothMediaPlaybackSum">Экспериментально. Гарнитура в качестве музыки, с задержкой</string>
     <string name="holdToWhisperSum">Шептать только пока удерживается кнопка шёпота</string>
     <string name="controlBarPosition">Положение панели управления</string>
     <string name="controlBarPositionTop">Сверху</string>

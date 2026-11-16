@@ -152,6 +152,8 @@
     <string name="language">Мова</string>
     <string name="echoCancellationVoiceCallSource">Придушення луни на мікрофоні дзвінків</string>
     <string name="echoCancellationVoiceCallSourceSum">Додає обробку дзвінків телефона. Може обривати мовлення</string>
+    <string name="bluetoothMediaPlayback">Мікрофон телефона з Bluetooth-гарнітурою</string>
+    <string name="bluetoothMediaPlaybackSum">Експериментально. Гарнітура в якості музики, із затримкою</string>
     <string name="holdToWhisperSum">Шепотіти лише доки утримується кнопка шепоту</string>
     <string name="controlBarPosition">Розташування панелі керування</string>
     <string name="controlBarPositionTop">Зверху</string>

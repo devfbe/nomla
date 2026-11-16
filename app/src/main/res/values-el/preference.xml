@@ -152,6 +152,8 @@
     <string name="language">Γλώσσα</string>
     <string name="echoCancellationVoiceCallSource">Ακύρωση ηχούς στο μικρόφωνο κλήσεων</string>
     <string name="echoCancellationVoiceCallSourceSum">Επεξεργασία κλήσεων του τηλεφώνου, όπως πριν· ίσως κόβει</string>
+    <string name="bluetoothMediaPlayback">Μικρόφωνο τηλεφώνου με ακουστικά Bluetooth</string>
+    <string name="bluetoothMediaPlaybackSum">Πειραματικό. Ακουστικά σε ποιότητα μουσικής, με καθυστέρηση</string>
     <string name="holdToWhisperSum">Ψίθυρος μόνο όσο κρατάτε πατημένο το κουμπί ψιθύρου</string>
     <string name="controlBarPosition">Θέση γραμμής ελέγχου</string>
     <string name="controlBarPositionTop">Επάνω</string>

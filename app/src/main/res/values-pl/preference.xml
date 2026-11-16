@@ -155,6 +155,8 @@
     <string name="accountAndCertificates">Konto i certyfikaty</string>
     <string name="echoCancellationVoiceCallSource">Redukcja echa na mikrofonie rozmów</string>
     <string name="echoCancellationVoiceCallSourceSum">Przetwarzanie rozmów telefonu, jak dawniej; może ciąć mowę</string>
+    <string name="bluetoothMediaPlayback">Mikrofon telefonu ze słuchawkami Bluetooth</string>
+    <string name="bluetoothMediaPlaybackSum">Eksperymentalne. Słuchawki w jakości muzyki, z opóźnieniem</string>
     <string name="holdToWhisperSum">Szeptaj tylko, gdy trzymasz przycisk szeptu</string>
     <string name="controlBarPosition">Położenie paska sterowania</string>
     <string name="controlBarPositionTop">Góra</string>

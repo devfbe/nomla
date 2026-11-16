@@ -111,6 +111,8 @@
     <string name="voiceActivitySettings">إعدادات النشاط الصوتي</string>
     <string name="echoCancellationVoiceCallSource">إلغاء الصدى عبر ميكروفون المكالمات</string>
     <string name="echoCancellationVoiceCallSourceSum">يضيف معالجة المكالمات في الهاتف كما سبق. قد يقطّع الكلام</string>
+    <string name="bluetoothMediaPlayback">ميكروفون الهاتف مع سماعة البلوتوث</string>
+    <string name="bluetoothMediaPlaybackSum">تجريبي. السماعة بجودة الموسيقى مع تأخير</string>
     <string name="hidePtt">أخفِ زر اضغط للتحدث</string>
     <string name="hidePttSum">عند استخدام زاوية اضغط للتحدث أو مفتاح</string>
     <string name="useTts">تحويل النص إلى كلام</string>

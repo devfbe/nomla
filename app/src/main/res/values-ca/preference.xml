@@ -152,6 +152,8 @@
     <string name="language">Idioma</string>
     <string name="echoCancellationVoiceCallSource">Cancel·lació d\'eco al micròfon de trucada</string>
     <string name="echoCancellationVoiceCallSourceSum">Afegeix el processament de trucada del telèfon. Pot tallar</string>
+    <string name="bluetoothMediaPlayback">Micròfon del telèfon amb auriculars Bluetooth</string>
+    <string name="bluetoothMediaPlaybackSum">Experimental. Auriculars amb qualitat de música i retard</string>
     <string name="holdToWhisperSum">Xiuxiueja només mentre manteniu premut el botó</string>
     <string name="controlBarPosition">Posició de la barra de control</string>
     <string name="controlBarPositionTop">A dalt</string>

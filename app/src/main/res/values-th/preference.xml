@@ -152,6 +152,8 @@
     <string name="accountAndCertificates">บัญชีและใบรับรอง</string>
     <string name="echoCancellationVoiceCallSource">ตัดเสียงสะท้อนผ่านไมโครโฟนสำหรับการโทร</string>
     <string name="echoCancellationVoiceCallSourceSum">เพิ่มการประมวลผลการโทรของโทรศัพท์แบบเดิม อาจทำให้เสียงขาด</string>
+    <string name="bluetoothMediaPlayback">ไมโครโฟนโทรศัพท์กับหูฟังบลูทูธ</string>
+    <string name="bluetoothMediaPlaybackSum">ทดลอง หูฟังเล่นเสียงคุณภาพเพลง แต่มีดีเลย์</string>
     <string name="holdToWhisperSum">ตะโกนเฉพาะตอนที่กดปุ่มตะโกนค้างไว้</string>
     <string name="controlBarPosition">ตำแหน่งแถบควบคุม</string>
     <string name="controlBarPositionTop">ด้านบน</string>

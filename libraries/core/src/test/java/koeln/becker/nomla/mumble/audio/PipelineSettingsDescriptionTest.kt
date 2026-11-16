@@ -55,7 +55,8 @@ class PipelineSettingsDescriptionTest {
                 "input_mode", "input_sample_rate", "noise_suppression", "rnnoise_attenuation_limit_db",
                 "speex_noise_suppress_db", "echo_cancellation", "vad", "amplitude_boost", "half_duplex",
                 "android_noise_suppressor", "android_automatic_gain_control",
-                "echo_cancellation_voice_call_source", "opus_fec", "opus_loss_percent", "opus_dtx",
+                "echo_cancellation_voice_call_source", "media_playback", "opus_fec", "opus_loss_percent",
+                "opus_dtx",
             ).inOrder()
             assertThat(described["input_mode"]).isEqualTo(name)
             assertThat(described["input_sample_rate"]).isEqualTo("16000")

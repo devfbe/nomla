@@ -152,6 +152,8 @@
     <string name="language">Idioma</string>
     <string name="echoCancellationVoiceCallSource">Cancelamento de eco no microfone de chamada</string>
     <string name="echoCancellationVoiceCallSourceSum">Adiciona o processamento de chamada; pode cortar a fala</string>
+    <string name="bluetoothMediaPlayback">Microfone do telefone com auscultadores Bluetooth</string>
+    <string name="bluetoothMediaPlaybackSum">Experimental. Auscultadores com qualidade de música e atraso</string>
     <string name="holdToWhisperSum">Sussurrar só enquanto segura o botão de sussurro</string>
     <string name="controlBarPosition">Posição da barra de controles</string>
     <string name="controlBarPositionTop">Em cima</string>

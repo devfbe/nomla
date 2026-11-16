@@ -155,6 +155,8 @@
     <string name="language">Langue</string>
     <string name="echoCancellationVoiceCallSource">Annulation d\'écho sur le micro d\'appel</string>
     <string name="echoCancellationVoiceCallSourceSum">Traitement d\'appel du téléphone, comme avant. Peut hacher</string>
+    <string name="bluetoothMediaPlayback">Micro du téléphone avec casque Bluetooth</string>
+    <string name="bluetoothMediaPlaybackSum">Expérimental. Casque en qualité musique, avec un délai</string>
     <string name="holdToWhisperSum">Chuchoter uniquement en maintenant le bouton de chuchotement</string>
     <string name="controlBarPosition">Position de la barre de commandes</string>
     <string name="controlBarPositionTop">En haut</string>

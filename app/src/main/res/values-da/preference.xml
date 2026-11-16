@@ -111,6 +111,8 @@
     <string name="voiceActivitySettings">Indstillinger for stemmeaktivitet</string>
     <string name="echoCancellationVoiceCallSource">Ekkoannullering på opkaldsmikrofonen</string>
     <string name="echoCancellationVoiceCallSourceSum">Tilføjer telefonens opkaldsbehandling som før. Kan hakke</string>
+    <string name="bluetoothMediaPlayback">Telefonens mikrofon med Bluetooth-headset</string>
+    <string name="bluetoothMediaPlaybackSum">Eksperimentel. Headset i musikkvalitet, med forsinkelse</string>
     <string name="hidePtt">Skjul tryk-for-snak-knappen</string>
     <string name="hidePttSum">Når du bruger tryk-for-snak-hjørnet eller en tast</string>
     <string name="useTts">Tekst-til-tale</string>

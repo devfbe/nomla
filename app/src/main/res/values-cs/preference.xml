@@ -111,6 +111,8 @@
     <string name="voiceActivitySettings">Nastavení hlasové aktivity</string>
     <string name="echoCancellationVoiceCallSource">Potlačení ozvěny na mikrofonu pro hovory</string>
     <string name="echoCancellationVoiceCallSourceSum">Přidá zpracování hovoru telefonu jako dřív. Může sekat řeč</string>
+    <string name="bluetoothMediaPlayback">Mikrofon telefonu se sluchátky Bluetooth</string>
+    <string name="bluetoothMediaPlaybackSum">Experimentální. Sluchátka v hudební kvalitě, se zpožděním</string>
     <string name="hidePtt">Skrýt tlačítko Drž-a-mluv</string>
     <string name="hidePttSum">Když používáte roh Drž-a-mluv nebo klávesu</string>
     <string name="useTts">Převod textu na řeč</string>

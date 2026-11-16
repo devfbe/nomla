@@ -141,6 +141,8 @@
     <string name="language">言語</string>
     <string name="echoCancellationVoiceCallSource">通話用マイクでエコーキャンセル</string>
     <string name="echoCancellationVoiceCallSourceSum">以前と同様に端末の通話処理を追加。音声が途切れる場合あり</string>
+    <string name="bluetoothMediaPlayback">Bluetoothヘッドセットで端末のマイクを使用</string>
+    <string name="bluetoothMediaPlaybackSum">実験的。ヘッドセットは音楽品質で再生、遅延あり</string>
     <string name="shortTtsMessages">短縮したテキスト読み上げ</string>
     <string name="shortTtsMessagesSum">リンクはドメイン名だけを読み上げます</string>
     <string name="holdToWhisperSum">ささやきボタンを押している間だけささやく</string>

@@ -304,6 +304,9 @@ class Settings internal constructor(context: Context) {
 
     var isBluetoothScoEnabled: Boolean by pref(BLUETOOTH_SCO)
 
+    /** Whether a Bluetooth headset only plays, as media, while the phone's microphone records. */
+    val isBluetoothMediaPlayback: Boolean by pref(BLUETOOTH_MEDIA_PLAYBACK)
+
     val mediaButtonAction: MediaButtonAction by entry(MEDIA_BUTTON_ACTION)
 
     var isBatteryOptimizationAsked: Boolean by pref(BATTERY_OPTIMIZATION_ASKED)
@@ -484,6 +487,9 @@ class Settings internal constructor(context: Context) {
 
         /** Use a connected Bluetooth headset automatically while connected. */
         val BLUETOOTH_SCO = Pref("pref_bluetooth_sco", true)
+
+        /** Experimental, opt-in: `AudioSettings.bluetoothMediaPlayback`. */
+        val BLUETOOTH_MEDIA_PLAYBACK = Pref("bluetooth_media_playback", false)
 
         /** Headset / AVRCP media button behavior, one of the `mediaButtonActionValues`. */
         val MEDIA_BUTTON_ACTION = EnumPref(

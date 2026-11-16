@@ -244,6 +244,14 @@
             android:summary="@string/echoCancellationVoiceCallSourceSum"
             app:iconSpaceReserved="false"/>
 
+        <!-- Experimental, opt-in: a Bluetooth headset plays as media (A2DP), the phone records. -->
+        <SwitchPreferenceCompat
+            android:key="bluetooth_media_playback"
+            android:defaultValue="false"
+            android:title="@string/bluetoothMediaPlayback"
+            android:summary="@string/bluetoothMediaPlaybackSum"
+            app:iconSpaceReserved="false"/>
+
         <!-- The voice detector's tuning; like the section above, only used with voice activity. -->
         <SwitchPreferenceCompat
             android:key="vad_adaptive_floor"

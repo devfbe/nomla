@@ -155,6 +155,8 @@
     <string name="accountAndCertificates">账户与证书</string>
     <string name="echoCancellationVoiceCallSource">在通话麦克风上进行回声消除</string>
     <string name="echoCancellationVoiceCallSourceSum">像以前一样加入手机的通话处理，可能会使语音断续</string>
+    <string name="bluetoothMediaPlayback">蓝牙耳机配合手机麦克风</string>
+    <string name="bluetoothMediaPlaybackSum">实验性功能。耳机以音乐音质播放，但有延迟</string>
     <string name="holdToWhisperSum">仅在按住呼喊按钮时呼喊</string>
     <string name="controlBarPosition">控制栏位置</string>
     <string name="controlBarPositionTop">顶部</string>

@@ -152,6 +152,8 @@
     <string name="accountAndCertificates">Hesap ve sertifikalar</string>
     <string name="echoCancellationVoiceCallSource">Arama mikrofonunda yankı giderme</string>
     <string name="echoCancellationVoiceCallSourceSum">Telefonun arama işlemesini ekler; konuşmayı kesebilir</string>
+    <string name="bluetoothMediaPlayback">Bluetooth kulaklıkla telefon mikrofonu</string>
+    <string name="bluetoothMediaPlaybackSum">Deneysel. Kulaklık müzik kalitesinde çalar, gecikmeli</string>
     <string name="holdToWhisperSum">Yalnızca fısıltı düğmesi basılıyken fısılda</string>
     <string name="controlBarPosition">Denetim çubuğu konumu</string>
     <string name="controlBarPositionTop">Üst</string>

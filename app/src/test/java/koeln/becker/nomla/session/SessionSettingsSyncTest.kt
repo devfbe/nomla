@@ -171,6 +171,15 @@ class SessionSettingsSyncTest {
         assertThat(config.audio.bluetoothAutomatic).isTrue()
     }
 
+    /** Both directions: the field is what the switch wrote, not a constant. */
+    @Test
+    fun `the bluetooth media playback switch reaches the session`() {
+        for (on in listOf(true, false)) {
+            prefs.edit().putBoolean(Settings.BLUETOOTH_MEDIA_PLAYBACK.key, on).commit()
+            assertThat(config.audio.bluetoothMediaPlayback).isEqualTo(on)
+        }
+    }
+
     /**
      * The chooser's echo switch writes a per-device override; the session has to hold all of them,
      * so the next device of that kind gets it too. Read off the map the route decision uses.

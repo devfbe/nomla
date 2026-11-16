@@ -161,11 +161,23 @@ class NomlaActivity :
             if (intent?.action == Intent.ACTION_VIEW) offerServerFromUrl(intent.dataString)
         }
 
-        volumeControlStream = Settings.PLAYBACK_STREAM
-
         // Only on a real start, not when the activity is recreated, e.g. on rotation.
         if (savedInstanceState == null) {
             if (settings.isFirstRun) showFirstRunGuide() else maybeShowNewsDialog(this)
+        }
+    }
+
+    /**
+     * The volume keys set the call stream, the one voice plays on. With Bluetooth media playback a
+     * headset plays on the music stream instead, so the keys are left to follow whatever plays.
+     * Read on every resume, as the switch is on the settings screen.
+     */
+    override fun onResume() {
+        super.onResume()
+        volumeControlStream = if (settings.isBluetoothMediaPlayback) {
+            android.media.AudioManager.USE_DEFAULT_STREAM_TYPE
+        } else {
+            Settings.PLAYBACK_STREAM
         }
     }
 

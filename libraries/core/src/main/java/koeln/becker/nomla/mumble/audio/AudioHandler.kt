@@ -34,7 +34,6 @@ import koeln.becker.nomla.mumble.audio.encoder.Encoder
 import koeln.becker.nomla.mumble.audio.encoder.OpusEncoder
 import koeln.becker.nomla.mumble.audio.inputmode.ActivityInputMode
 import koeln.becker.nomla.mumble.audio.inputmode.ToggleInputMode
-import koeln.becker.nomla.mumble.audio.routing.AudioDeviceCategory
 import koeln.becker.nomla.mumble.diagnostics.CaptureTaps
 import koeln.becker.nomla.mumble.diagnostics.DiagnosticsHub
 import koeln.becker.nomla.mumble.audio.capture.InputMode
@@ -108,10 +107,10 @@ internal class AudioHandler(
 
     init {
         val settings = config.settings
-        val effects = settings.androidEffects
+        val effects = config.androidEffects
         val echo = config.echoCancellation
-        val route = config.routedDeviceType?.let(AudioDeviceCategory::of)
-        val voiceCallSource = settings.echoCancellationVoiceCallSource
+        val route = config.captureRoute
+        val voiceCallSource = config.voiceCallSource
         // AudioSourcePolicy resolves the source again inside PcmCaptureSource from the same inputs,
         // so both agree. In a session AudioRouter already holds MODE_IN_COMMUNICATION; this is a
         // second request for the same mode.
@@ -340,6 +339,7 @@ internal fun describePipelineSettings(config: AudioConfig, mode: InputMode): Map
         "android_noise_suppressor" to settings.androidEffects.noiseSuppressor.toString(),
         "android_automatic_gain_control" to settings.androidEffects.automaticGainControl.toString(),
         "echo_cancellation_voice_call_source" to settings.echoCancellationVoiceCallSource.toString(),
+        "media_playback" to config.mediaPlayback.toString(),
         "opus_fec" to "1",
         "opus_loss_percent" to OpusEncoder.EXPECTED_PACKET_LOSS_PERCENT.toString(),
         "opus_dtx" to "0",

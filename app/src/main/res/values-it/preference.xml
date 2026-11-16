@@ -155,6 +155,8 @@
     <string name="accountAndCertificates">Account e certificati</string>
     <string name="echoCancellationVoiceCallSource">Cancellazione dell\'eco sul microfono di chiamata</string>
     <string name="echoCancellationVoiceCallSourceSum">Aggiunge l\'elaborazione chiamate del telefono. Può troncare</string>
+    <string name="bluetoothMediaPlayback">Microfono del telefono con cuffie Bluetooth</string>
+    <string name="bluetoothMediaPlaybackSum">Sperimentale. Cuffie in qualità musicale, con ritardo</string>
     <string name="holdToWhisperSum">Sussurra solo tenendo premuto il pulsante sussurro</string>
     <string name="controlBarPosition">Posizione della barra dei controlli</string>
     <string name="controlBarPositionTop">In alto</string>

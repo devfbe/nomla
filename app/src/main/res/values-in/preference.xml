@@ -152,6 +152,8 @@
     <string name="language">Bahasa</string>
     <string name="echoCancellationVoiceCallSource">Peredam gema pada mikrofon panggilan</string>
     <string name="echoCancellationVoiceCallSourceSum">Menambah pemrosesan panggilan ponsel. Suara bisa terpotong</string>
+    <string name="bluetoothMediaPlayback">Mikrofon ponsel dengan headset Bluetooth</string>
+    <string name="bluetoothMediaPlaybackSum">Eksperimental. Headset berkualitas musik, dengan jeda</string>
     <string name="holdToWhisperSum">Shout hanya selama tombol shout ditahan</string>
     <string name="controlBarPosition">Posisi bar kontrol</string>
     <string name="controlBarPositionTop">Atas</string>
